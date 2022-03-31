@@ -35,7 +35,7 @@
 </tr>
 <tr style="height: 17px;">
 <td style="height: 17px; width: 293.913px;">&nbsp;UT_AlgorithmsClientServer</td>
-<td style="height: 17px; width: 66.8125px;">&nbsp;</td>
+<td style="height: 17px; width: 66.8125px;">100%</td>
 <td style="width: 43.875px; height: 17px;">203</td>
 </tr>
 <tr style="height: 17px;">

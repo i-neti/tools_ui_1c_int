@@ -2190,7 +2190,7 @@ Procedure ReplaceInConstant(Result, Val UsageInstance, Val WriteParameters, Val 
 			SetPrivilegedMode(False);
 		EndIf;
 
-		Попытка
+		Try
 			WriteObjectOnRefsReplace(Manager, WriteParameters);
 		Except
 			ErrorDescription = BriefErrorDescription(ErrorInfo());
