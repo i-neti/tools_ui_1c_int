@@ -1017,34 +1017,34 @@ Procedure kOpenDynamicList(Command)
 EndProcedure
 
 &AtServer
-Function вОбновитьТабНастройки(Val NodeType, Val Name)
+Function vUpdateTableSettings(Val NodeType, Val Name)
 	SetPrivilegedMode(True);
 
 	If NodeType = "Х" Then
-		МенеджерХН = Eval(Name);
+		StorageManager = Eval(Name);
 	Else
 		Return False;
 	EndIf;
 
-	If TypeOf(МенеджерХН) <> Type("StandardSettingsStorageManager") Then
+	If TypeOf(StorageManager) <> Type("StandardSettingsStorageManager") Then
 		Return False;
 	EndIf;
 
 	If Not vIsAdministratorRights() Then
-		ТекПользователь = InfoBaseUsers.CurrentUser();
-		Filter = New Structure("User", ТекПользователь.Name);
+		CurrentUser = InfoBaseUsers.CurrentUser();
+		Filter = New Structure("User", CurrentUser.Name);
 	Else
 		Filter = Undefined;
 	EndIf;
 
 	Try
-		Выборка = МенеджерХН.StartChoosing(Filter);
-		While Выборка.Next() Do
+		Selection = StorageManager.StartChoosing(Filter);
+		While Selection.Next() Do
 			НС = SettingsTable.Add();
-			НС.SettingsKey = Выборка.SettingsKey;
-			НС.ObjectKey = Выборка.ObjectKey;
-			НС.User = Выборка.User;
-			НС.Presentation = Выборка.Presentation;
+			НС.SettingsKey = Selection.SettingsKey;
+			НС.ObjectKey = Selection.ObjectKey;
+			НС.User = Selection.User;
+			НС.Presentation = Selection.Presentation;
 		EndDo;
 	Except
 		Message(BriefErrorDescription(ErrorInfo()));
@@ -1054,16 +1054,16 @@ Function вОбновитьТабНастройки(Val NodeType, Val Name)
 EndFunction
 
 &AtServer
-Procedure вУдалитьМассивНастроек(Val Name, Val RowArray)
+Procedure vDeleteSettings(Val Name, Val RowArray)
 	SetPrivilegedMode(True);
 
 	Try
-		МенеджерХН = Eval(Name);
+		StorageManager = Eval(Name);
 
 		For Each Item In RowArray Do
 			Row = SettingsTable.FindByID(Item);
 			If Row <> Undefined Then
-				МенеджерХН.Delete(Row.ObjectKey, Row.SettingsKey, Row.User);
+				StorageManager.Delete(Row.ObjectKey, Row.SettingsKey, Row.User);
 				SettingsTable.Delete(Row);
 			EndIf;
 		EndDo;
@@ -1073,26 +1073,26 @@ Procedure вУдалитьМассивНастроек(Val Name, Val RowArray)
 EndProcedure
 
 &AtClient
-Procedure ТабНастройкиПередНачаломДобавления(Item, Cancel, Copy, Parent, Group, Parameter)
+Procedure SettingsTableBeforeAddRow(Item, Cancel, Copy, Parent, Group, Parameter)
 	Cancel = True;
 EndProcedure
 
 &AtClient
-Procedure ТабНастройкиПередУдалением(Item, Cancel)
+Procedure SettingsTableBeforeDeleteRow(Item, Cancel)
 	Cancel = True;
 	If Not IsBlankString(_NameOfSettingsManager) Then
 		StructureOfParameters = New Structure;
 		StructureOfParameters.Insert("RowArray", New FixedArray(Item.SelectedRows));
-		vShowQueryBox("Отмеченные настройки будут удалены. Continue?", "ТабНастройкиПередУдалениемДалее",
+		vShowQueryBox(NStr("ru = 'Отмеченные настройки будут удалены. Продолжить?';en = 'The marked settings will be deleted. Continue?'"), "SettingsTableBeforeDeleteRowNext",
 			StructureOfParameters);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure ТабНастройкиПередУдалениемДалее(Result, Parameters) Export
+Procedure SettingsTableBeforeDeleteRowNext(Result, Parameters) Export
 	If Result = DialogReturnCode.Yes Then
-		вУдалитьМассивНастроек(_NameOfSettingsManager, Parameters.RowArray);
-		вОбновитьЗаголовкиНастройки();
+		vDeleteSettings(_NameOfSettingsManager, Parameters.RowArray);
+		vUpdateHeadersSettings();
 	EndIf;
 EndProcedure
 
@@ -1103,66 +1103,66 @@ Procedure kUpdateSettingsTable(Command)
 	If CurrentData <> Undefined And CurrentData.NodeType = "Х" Then
 		SettingsTable.Clear();
 
-		If Not вОбновитьТабНастройки(CurrentData.NodeType, CurrentData.Name) Then
+		If Not vUpdateTableSettings(CurrentData.NodeType, CurrentData.Name) Then
 			CurrentData.NodeType = "-";
 			CurrentData.Presentation = CurrentData.Name + " (не поддерживается)";
 		EndIf;
 
 		_NameOfSettingsManager = CurrentData.Name;
 
-		вОбновитьЗаголовкиНастройки();
+		vUpdateHeadersSettings();
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure вОбновитьЗаголовкиНастройки()
-	Items.DecorationSettings.Title = _NameOfSettingsManager + " (" + SettingsTable.Count() + " шт.)";
+Procedure vUpdateHeadersSettings()
+	Items.DecorationSettings.Title = _NameOfSettingsManager + " (" + SettingsTable.Count() + NStr("ru = ' шт.';en = 'pcs.'") + ")";
 EndProcedure
 
 
 
-// страница Service
+// Page Service
 
 &AtServer
 Procedure vFillServiceTree()
-	Template = vGetProcessor().GetTemplate("МакетСервис");
+	Template = vGetProcessor().GetTemplate("ServiceTamplate");
 	If Template = Undefined Then
 		Template = New SpreadsheetDocument;
 	EndIf;
 
-	СтрукСвойства = New Structure("Enabled, Presentation, NodeType, Name, Comment, AvailabilityExpression",
+	PropertyStructure = New Structure("Enabled, Presentation, NodeType, Name, Comment, AvailabilityExpression",
 		True);
 
-	КореньДЗ = ServiceTree;
+	TreeRoot = ServiceTree;
 	TreeNode = ServiceTree;
 
 	For LineNumber = 2 To Template.TableHeight Do
-		СтрукСвойства.Presentation = TrimAll(Template.Region(LineNumber, 1).Text);
+		PropertyStructure.Presentation = TrimAll(Template.Region(LineNumber, 1).Text);
 
-		If Not IsBlankString(СтрукСвойства.Presentation) Then
-			СтрукСвойства.NodeType = TrimAll(Template.Region(LineNumber, 2).Text);
-			СтрукСвойства.Name = TrimAll(Template.Region(LineNumber, 3).Text);
-			СтрукСвойства.AvailabilityExpression = TrimAll(Template.Region(LineNumber, 4).Text);
-			СтрукСвойства.Comment = TrimAll(Template.Region(LineNumber, 5).Text);
+		If Not IsBlankString(PropertyStructure.Presentation) Then
+			PropertyStructure.NodeType = TrimAll(Template.Region(LineNumber, 2).Text);
+			PropertyStructure.Name = TrimAll(Template.Region(LineNumber, 3).Text);
+			PropertyStructure.AvailabilityExpression = TrimAll(Template.Region(LineNumber, 4).Text);
+			PropertyStructure.Comment = TrimAll(Template.Region(LineNumber, 5).Text);
 
-			If СтрукСвойства.NodeType = "Г" Then
-				TreeNode = КореньДЗ.GetItems().Add();
-				FillPropertyValues(TreeNode, СтрукСвойства);
+			If PropertyStructure.NodeType = "Г" Then
+				TreeNode = TreeRoot.GetItems().Add();
+				FillPropertyValues(TreeNode, PropertyStructure);
 				TreeNode.IsGroup = True;
 				TreeNode.Picture = -1;
 			Else
 				TreeLine = TreeNode.GetItems().Add();
-				FillPropertyValues(TreeLine, СтрукСвойства);
-				If Not IsBlankString(СтрукСвойства.AvailabilityExpression) Then
-					TreeLine.Enabled = Eval(СтрукСвойства.AvailabilityExpression);
+				FillPropertyValues(TreeLine, PropertyStructure);
+				If Not IsBlankString(PropertyStructure.AvailabilityExpression) Then
+					TreeLine.Enabled = Eval(PropertyStructure.AvailabilityExpression);
 				EndIf;
 				If Not TreeLine.Enabled Then
 					TreeLine.Presentation = TreeLine.Presentation + " (не доступно)";
 				EndIf;
 
-				If TreeLine.Name = "ПереключитьМонопольныйРежим" Then
-					TreeLine.Presentation = ?(_FormContext.ExclusiveMode, "Отключить монопольный режим",
-						"Set монопольный режим");
+				If TreeLine.Name = "ExclusiveMode" Then
+					TreeLine.Presentation = ?(_FormContext.ExclusiveMode, Nstr("ru = 'Отключить монопольный режим';en = 'Turn off exclusive mode'"),
+						NStr("ru = 'Установить монопольный режим';en = 'Set exclusive mode'"));
 				EndIf;
 			EndIf;
 		EndIf;
@@ -1170,14 +1170,14 @@ Procedure vFillServiceTree()
 EndProcedure
 
 &AtClient
-Procedure ДеревоСервисВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure ServiceTreeSelection(Item, SelectedRow, Field, StandardProcessing)
 	TreeLine = ServiceTree.FindByID(SelectedRow);
 	If TreeLine <> Undefined Then
 		If Not TreeLine.IsGroup Then
 			StandardProcessing = False;
 			If TreeLine.Enabled Then
 				Try
-					вОбработатьКомандуСервис(TreeLine);
+					vProcessServiceCommand(TreeLine);
 				Except
 				EndTry;
 			EndIf;
@@ -1186,7 +1186,7 @@ Procedure ДеревоСервисВыбор(Item, SelectedRow, Field, StandardP
 EndProcedure
 
 &AtClient
-Procedure вОбработатьКомандуСервис(TreeLine)
+Procedure vProcessServiceCommand(TreeLine)
 	If TreeLine.Name = "SubsystemVersions" Then
 		OpenForm("InformationRegister.ВерсииПодсистем.ФормаСписка");
 	ElsIf TreeLine.Name = "RefreshReusableValues" Then
@@ -1697,14 +1697,14 @@ Function вРассчитатьКоличествоОбъектов(ObjectsArray
 
 		If пИспользоватьПопытку Then
 			Try
-				Выборка = Query.Execute().StartChoosing();
-				Item.NumberOfObjects = ?(Выборка.Next(), Выборка.ObjectCount, 0);
+				Selection = Query.Execute().StartChoosing();
+				Item.NumberOfObjects = ?(Selection.Next(), Selection.ObjectCount, 0);
 			Except
 				Item.NumberOfObjects = 0;
 			EndTry;
 		Else
-			Выборка = Query.Execute().StartChoosing();
-			Item.NumberOfObjects = ?(Выборка.Next(), Выборка.ObjectCount, 0);
+			Selection = Query.Execute().StartChoosing();
+			Item.NumberOfObjects = ?(Selection.Next(), Selection.ObjectCount, 0);
 		EndIf;
 
 	EndDo;
