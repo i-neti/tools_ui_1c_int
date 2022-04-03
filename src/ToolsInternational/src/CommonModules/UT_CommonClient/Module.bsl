@@ -37,6 +37,9 @@ EndProcedure
 
 Procedure OnExit() Export
 	UT_AdditionalLibrariesDirectory=UT_AssistiveLibrariesDirectory();
+	If Not ValueIsFilled(UT_AdditionalLibrariesDirectory) Then
+		Return;
+	EndIf;
 	Try
 		BeginDeletingFiles(,UT_AdditionalLibrariesDirectory);
 	Except
@@ -254,11 +257,11 @@ EndProcedure
 #EndRegion
 
 Function IsWebClient() Export
-	#Если WebClient Тогда
+	#If WebClient Then
 		Return True;
-	#Иначе 
+	#Else
 		Return False;
-	#КонецЕсли
+	#EndIf
 EndFunction
 
 Function ApplicationRunEmptyNotifyDescription() Export

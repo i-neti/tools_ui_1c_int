@@ -558,10 +558,8 @@ EndFunction
 
 Procedure StorageSave(StorageManager, ObjectKey, SettingsKey, Settings,
 			SettingsDetails, Username, UpdateCachedValues)
-	
-	If Not AccessRight("SaveUserData", Metadata) Then
-		Return;
-	EndIf;
+
+      SetPrivilegedMode(True);	
 	
 	StorageManager.Save(ObjectKey, SettingsKey(SettingsKey), Settings,
 		SettingsDetails, Username);
@@ -569,37 +567,36 @@ Procedure StorageSave(StorageManager, ObjectKey, SettingsKey, Settings,
 	If UpdateCachedValues Then
 		RefreshReusableValues();
 	EndIf;
-	
+	SetPrivilegedMode(False);	
 EndProcedure
 
 Function StorageLoad(StorageManager, ObjectKey, SettingsKey, DefaultValue,
 			SettingsDetails, Username)
 	
 	Result = Undefined;
+	SetPrivilegedMode(True);
 	
-	If AccessRight("SaveUserData", Metadata) Then
-		Result = StorageManager.Load(ObjectKey, SettingsKey(SettingsKey),
+	Result = StorageManager.Load(ObjectKey, SettingsKey(SettingsKey),
 			SettingsDetails, Username);
-	EndIf;
-	
+		
 	If Result = Undefined Then
 		Result = DefaultValue;
 	Else
-		SetPrivilegedMode(True);
+		
 		If DeleteInvalidRefs(Result) Then
 			Result = DefaultValue;
 		EndIf;
 	EndIf;
-	
+	SetPrivilegedMode(False);
 	Return Result;
 	
 EndFunction
 
 Procedure StorageDelete(StorageManager, ObjectKey, SettingsKey, Username)
 	
-	If AccessRight("SaveUserData", Metadata) Then
-		StorageManager.Delete(ObjectKey, SettingsKey(SettingsKey), Username);
-	EndIf;
+	     SetPrivilegedMode(True);
+	     StorageManager.Delete(ObjectKey, SettingsKey(SettingsKey), Username);
+	     SetPrivilegedMode(False);
 	
 EndProcedure
 
@@ -4578,17 +4575,10 @@ EndFunction
 //   UpdateCachedValues - Boolean - the flag that indicates whether to execute the method.
 //
 Procedure CommonSettingsStorageSave(ObjectKey, SettingsKey, Settings,
-			SettingsDetails = Undefined,
-			Username = Undefined,
-			UpdateCachedValues = False) Export
+			SettingsDetails = Undefined,Username = Undefined,UpdateCachedValues = False) Export
 	
-	StorageSave(CommonSettingsStorage,
-		ObjectKey,
-		SettingsKey,
-		Settings,
-		SettingsDetails,
-		Username,
-		UpdateCachedValues);
+	StorageSave(CommonSettingsStorage, ObjectKey, SettingsKey,Settings,
+		SettingsDetails,Username,UpdateCachedValues);
 	
 EndProcedure
 
@@ -4609,7 +4599,7 @@ EndProcedure
 //
 Procedure CommonSettingsStorageSaveArray(MultipleSettings,
 			UpdateCachedValues = False) Export
-	
+	SetPrivilegedMode(True);
 	If Not AccessRight("SaveUserData", Metadata) Then
 		Return;
 	EndIf;
@@ -4621,7 +4611,7 @@ Procedure CommonSettingsStorageSaveArray(MultipleSettings,
 	If UpdateCachedValues Then
 		RefreshReusableValues();
 	EndIf;
-	
+	SetPrivilegedMode(False);
 EndProcedure
 
 // Loads a setting from the general settings storage as the Load method, 

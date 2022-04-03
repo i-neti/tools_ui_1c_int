@@ -48,12 +48,18 @@ Procedure FormOnCreateAtServer(Form, EditorType = Undefined) Export
 	Form[AttributeNameCodeEditorFormCodeEditors] = New Structure;
 EndProcedure
 
-Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorLanguage = "bsl") Export
-	AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
+Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Undefined, EditorLanguage = "bsl",
+	CommandBarGroup = Undefined) Export
+	//AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
 	
-	EditorType = Form[AttributeNameEditorType];
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
 	
 	EditorData = New Structure;
+	EditorData.Insert("EditorEvents",EditorEvents);
+	
+	If EditorData.EditorEvents = Undefined Then 
+		EditorData.EditorEvents = NewEditorEventsParameters();
+	EndIf;
 
 	If UT_CodeEditorClientServer.CodeEditorUsesHTMLField(EditorType) Then
 		If EditorField.Type <> FormFieldType.HTMLDocumentField Then
@@ -67,6 +73,10 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorLanguage = "b
 	Else
 		EditorField.Type = FormFieldType.TextDocumentField;
 		EditorData.Insert("Initialized", True);
+		
+		If ValueIsFilled(EditorData.EditorEvents.OnChange) Then 
+			EditorField.SetAction("OnChange",EditorData.EditorEvents.OnChange);
+		Endif;	
 	EndIf;
 
 	EditorData.Insert("EditorLanguage", EditorLanguage);
@@ -84,8 +94,39 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorLanguage = "b
 		EndDo;
 	EndIf;
 	
-	Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()].Insert(EditorID,  EditorData);	
+	Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()].Insert(EditorID,  EditorData);
+	
+	If CommandBarGroup = Undefined Then 
+		Return;
+	EndIf;
+	
+//Buttons
+//	1 - Конструктор запроса
+//2 - конструктор форматной строки
+//3 - Редактор запроса
+//4 - форматировать текст
+//6- Проверить синтаксис
+//7 - Выполнить
+//8 - Добавить комментарий
+//9 - Удалить комментарий
+//10 - Добавить закладку
+//11 - Удалить закладку
+//12 - Следующая закладка
+//13 - Добавить перенос строки
+//14 - Удалить перенос строки
+//15 - Переход к строке
+//16 - Вставить предопределенное значение
+//17 - Добавить макроколонку
+//18 - Сохранить как обработку
+
 EndProcedure
+
+Function NewEditorEventsParameters() Export
+	EditorEvents = New Structure;
+	EditorEvents.Insert("OnChange", "");
+	
+	Return EditorEvents;
+EndFunction
 
 #EndRegion
 
@@ -176,19 +217,19 @@ Function CodeEditorCurrentSettings() Export
 		UT_CommonClientServer.SettingsDataKeyInSettingsStorage(), "CodeEditorSettings");
 
 	DefaultSettings = UT_CodeEditorClientServer.CodeEditorCurrentSettingsByDefault();
-	If EditorSavedSettings = Undefined Then		
+	If EditorSavedSettings = Undefined Then
+		DefaultSettings.Variant = UT_CodeEditorClientServer.EditorVariantByDefault();
 		MonacoEditorParameters = CurrentMonacoEditorParameters();
-		
+
 		FillPropertyValues(DefaultSettings.Monaco, MonacoEditorParameters);
 	Else
-		FillPropertyValues(DefaultSettings, EditorSavedSettings,,"Monaco");
+		FillPropertyValues(DefaultSettings, EditorSavedSettings, , "Monaco");
 		FillPropertyValues(DefaultSettings.Monaco, EditorSavedSettings.Monaco);
 	EndIf;
-	
-	Return DefaultSettings;
-	
-EndFunction
 
+	Return DefaultSettings;
+
+EndFunction
 #EndRegion
 
 #Region WorkWithMetaData
@@ -203,7 +244,7 @@ EndFunction
 
 Function MetadataObjectHasPredefined(MetadataTypeName)
 	
-	Objects = New Array();
+	Objects = New Array;
 	Objects.Add("сatalog");
 	Objects.Add("catalogs");
 	Objects.Add("chartofaccounts");	
@@ -219,7 +260,7 @@ EndFunction
 
 Function MetadataObjectHasVirtualTables(MetadataTypeName)
 	
-	Objects = New Array();
+	Objects = New Array;
 	Objects.Add("InformationRegisters");
 	Objects.Add("AccumulationRegisters");	
 	Objects.Add("CalculationRegisters");
@@ -237,7 +278,7 @@ Function MetadataObjectAttributeDescription(Attribute,AllRefsType)
 	Description.Insert("Comment", Attribute.Comment);
 	
 	RefTypes = New Array;
-	For каждого CurrentType In Attribute.Type.Types() Do
+	For Each CurrentType In Attribute.Type.Types() Do
 		If AllRefsType.ContainsType(CurrentType) Then
 			RefTypes.Add(CurrentType);
 		EndIf;
@@ -266,11 +307,9 @@ Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, Al
 	Else
 		ItemDescription.Insert("Extension", Undefined);
 	EndIf;
-	If Lower(ObjectType) = "constant"
-		Or Lower(ObjectType) = "constants" Then
+	If Lower(ObjectType) = "constant"  Or Lower(ObjectType) = "constants" Then
 		ItemDescription.Insert("Type", ObjectOfMetadata.Type);
-	ElsIf Lower(ObjectType) = "enum"
-		Or Lower(ObjectType) = "enums"Then
+	ElsIf Lower(ObjectType) = "enum"  Or Lower(ObjectType) = "enums"Then
 		EnumValues = New Structure;
 
 		For Each CurrentValue In ObjectOfMetadata.EnumValues Do
@@ -356,7 +395,7 @@ Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, Al
 EndFunction
 
 Function ConfigurationMetadataCollectionDescription(Collection, ObjectType, TypesMap, AllRefsType, IncludeAttributesDescription) 
-	CollectionDescription = New Structure();
+	CollectionDescription = New Structure;
 
 	For Each ObjectOfMetadata In Collection Do
 		ItemDescription = ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, AllRefsType, IncludeAttributesDescription);
@@ -413,7 +452,7 @@ Function ConfigurationMetadataDescription(IncludeAttributesDescription = True) E
 	MetadataDescription.Insert("AccumulationRegisters", ConfigurationMetadataCollectionDescription(Metadata.AccumulationRegisters, "AccumulationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
 	MetadataDescription.Insert("AccountingRegisters", ConfigurationMetadataCollectionDescription(Metadata.AccountingRegisters, "AccountingRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
 	MetadataDescription.Insert("CalculationRegisters", ConfigurationMetadataCollectionDescription(Metadata.CalculationRegisters, "CalculationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("DataProcessors", ConfigurationMetadataCollectionDescription(Metadata.DataProcessors, "Processing", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("DataProcessors", ConfigurationMetadataCollectionDescription(Metadata.DataProcessors, "DataProcessor", TypesMap, AllRefsType, IncludeAttributesDescription));
 	MetadataDescription.Insert("Reports", ConfigurationMetadataCollectionDescription(Metadata.Reports, "Report", TypesMap, AllRefsType, IncludeAttributesDescription));
 	MetadataDescription.Insert("Enums", ConfigurationMetadataCollectionDescription(Metadata.Enums, "Enum", TypesMap, AllRefsType, IncludeAttributesDescription));
 	MetadataDescription.Insert("CommonModules", ConfigurationMetadataCollectionDescription(Metadata.CommonModules, "CommonModule", TypesMap, AllRefsType, IncludeAttributesDescription));
