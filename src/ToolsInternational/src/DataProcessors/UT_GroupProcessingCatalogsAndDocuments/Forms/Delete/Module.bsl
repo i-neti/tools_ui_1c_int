@@ -52,63 +52,7 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 	Return IndexOf;
 EndFunction // ExecuteProcessing()
 
-// Stores form attribute values.
-//
-// Parameters:
-//  None.
-//
-&AtClient
-Procedure SaveSetting() Export
 
-	If IsBlankString(CurrentSettingRepresentation) Then
-		ShowMessageBox( ,
-			Nstr("ru = 'Задайте имя новой настройки для сохранения или выберите существующую настройку для перезаписи.';en = 'Specify a name for the new setting to save, or select an existing setting to overwrite.'"));
-	EndIf;
-
-	NewSetting = New Structure;
-	NewSetting.Insert("Processing", CurrentSettingRepresentation);
-	NewSetting.Insert("Other", New Structure);
-
-	For Each AttributeSetting In mSetting Do
-		Execute ("NewSetting.Other.Insert(String(AttributeSetting.Key), " + String(AttributeSetting.Key)
-			+ ");");
-	EndDo;
-
-	AvailableDataProcessors = ThisForm.FormOwner.AvailableDataProcessors;
-	CurrentAvailableSetting = Undefined;
-	For Each CurrentAvailableSetting In AvailableDataProcessors.GetItems() Do
-		If CurrentAvailableSetting.GetID() = Parent Then
-			Break;
-		EndIf;
-	EndDo;
-
-	If CurrentSetting = Undefined Or Not CurrentSetting.Processing = CurrentSettingRepresentation Then
-		If CurrentAvailableSetting <> Undefined Then
-			NewLine = CurrentAvailableSetting.GetItems().Add();
-			NewLine.Processing = CurrentSettingRepresentation;
-			NewLine.Setting.Add(NewSetting);
-
-			ThisForm.FormOwner.Items.AvailableDataProcessors.CurrentLine = NewLine.GetID();
-		EndIf;
-	EndIf;
-
-	If CurrentAvailableSetting <> Undefined And CurrentLine > -1 Then
-		For Each CurrentSettingItem In CurrentAvailableSetting.GetItems() Do
-			If CurrentSettingItem.GetID() = CurrentLine Then
-				Break;
-			EndIf;
-		EndDo;
-
-		If CurrentSettingItem.Setting.Count() = 0 Then
-			CurrentSettingItem.Setting.Add(NewSetting);
-		Else
-			CurrentSettingItem.Setting[0].Value = NewSetting;
-		EndIf;
-	EndIf;
-
-	CurrentSetting = NewSetting;
-	ThisForm.Modified = False;
-EndProcedure // SaveSetting()
 
 // Restores saved form attribute values.
 //
@@ -263,7 +207,7 @@ EndProcedure
 
 &AtClient
 Procedure SaveSettings(Command)
-	SaveSetting();
+	UT_FormsClient.SaveSetting(ThisForm, mSetting);
 EndProcedure
 
 &AtClient
@@ -289,7 +233,7 @@ Procedure CurrentSettingChoiceProcessingEnd(ResultQuestion, AdditionalParameters
 
 	SelectedValue = AdditionalParameters.SelectedValue;
 	If ResultQuestion = DialogReturnCode.Yes Then
-		SaveSetting();
+		UT_FormsClient.SaveSetting(ThisForm, mSetting);
 	EndIf;
 
 	CurrentSettingChoiceProcessingFragment(SelectedValue);
