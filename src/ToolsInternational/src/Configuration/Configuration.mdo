@@ -164,5 +164,5 @@
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
   <dataProcessors>DataProcessor.УИ_КонсольСравненияДанных</dataProcessors>
   <dataProcessors>DataProcessor.УИ_КонструкторРегулярныхВыражений</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_НавигаторПоКонфигурации</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
 </mdclass:Configuration>

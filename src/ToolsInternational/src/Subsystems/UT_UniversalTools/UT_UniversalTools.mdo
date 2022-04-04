@@ -69,7 +69,7 @@
   <content>CommonModule.UT_AlgorithmsClientServer</content>
   <content>CommonModule.UT_HTTPConnector</content>
   <content>CommonModule.UT_</content>
-  <content>DataProcessor.УИ_НавигаторПоКонфигурации</content>
+  <content>DataProcessor.UT_ConfigurationNavigator</content>
   <content>DataProcessor.УИ_КонструкторРегулярныхВыражений</content>
   <content>DataProcessor.UT_FileManager</content>
   <content>DataProcessor.UT_LicenseInformation1C</content>

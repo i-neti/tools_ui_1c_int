@@ -11526,7 +11526,7 @@
     </title>
     <id>1</id>
     <valueType>
-      <types>DataProcessorObject.УИ_НавигаторПоКонфигурации</types>
+      <types>DataProcessorObject.UT_ConfigurationNavigator</types>
     </valueType>
     <view>
       <common>true</common>
