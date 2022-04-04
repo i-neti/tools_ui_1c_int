@@ -8872,11 +8872,11 @@
         </autoCommandBar>
         <handlers>
           <event>BeforeAddRow</event>
-          <name>ТабНастройкиПередНачаломДобавления</name>
+          <name>SettingsTableBeforeAddRow</name>
         </handlers>
         <handlers>
           <event>BeforeDeleteRow</event>
-          <name>ТабНастройкиПередУдалением</name>
+          <name>SettingsTableBeforeDeleteRow</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -10549,7 +10549,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>ДеревоСервисВыбор</name>
+          <name>ServiceTreeSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
