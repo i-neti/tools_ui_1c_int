@@ -32,4 +32,63 @@ Function GetProcessIndicator(NumberOfPasses, ProcessRepresentation = "Done", Int
 
 EndFunction // GetProcessIndicator()
 
+// Stores form attribute values.
+//
+// Parameters:
+//  None.
+//
+&AtClient
+Procedure SaveSetting(Form, mSetting) Export
+
+	If IsBlankString(Form.CurrentSettingRepresentation) Then
+		ShowMessageBox( ,
+			Nstr("ru = 'Задайте имя новой настройки для сохранения или выберите существующую настройку для перезаписи.';en = 'Specify a name for the new setting to save, or select an existing setting to overwrite.'"));
+	EndIf;
+
+	NewSetting = New Structure;
+	NewSetting.Insert("Processing", Form.CurrentSettingRepresentation);
+	NewSetting.Insert("Other", New Structure);
+
+	For Each AttributeSetting In mSetting Do
+		Execute ("NewSetting.Other.Insert(String(AttributeSetting.Key), " + String(AttributeSetting.Key)
+			+ ");");
+	EndDo;
+
+	AvailableDataProcessors = Form.FormOwner.AvailableDataProcessors;
+	CurrentAvailableSetting = Undefined;
+	For Each CurrentAvailableSetting In AvailableDataProcessors.GetItems() Do
+		If CurrentAvailableSetting.GetID() = Form.Parent Then
+			Break;
+		EndIf;
+	EndDo;
+
+	If Form.CurrentSetting = Undefined Or Not Form.CurrentSetting.Processing = Form.CurrentSettingRepresentation Then
+		If CurrentAvailableSetting <> Undefined Then
+			NewLine = CurrentAvailableSetting.GetItems().Add();
+			NewLine.Processing = Form.CurrentSettingRepresentation;
+			NewLine.Setting.Add(NewSetting);
+
+			Form.FormOwner.Items.AvailableDataProcessors.CurrentLine = NewLine.GetID();
+		EndIf;
+	EndIf;
+
+	If CurrentAvailableSetting <> Undefined And Form.CurrentLine > -1 Then
+		For Each CurrentSettingItem In CurrentAvailableSetting.GetItems() Do
+			If CurrentSettingItem.GetID() = Form.CurrentLine Then
+				Break;
+			EndIf;
+		EndDo;
+
+		If CurrentSettingItem.Setting.Count() = 0 Then
+			CurrentSettingItem.Setting.Add(NewSetting);
+		Else
+			CurrentSettingItem.Setting[0].Value = NewSetting;
+		EndIf;
+	EndIf;
+
+	Form.CurrentSetting = NewSetting;
+	Form.Modified = False;
+	
+EndProcedure // SaveSetting()
+
 #EndRegion
