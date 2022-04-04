@@ -23,7 +23,7 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>_ОтображатьПраваНаОбъектыПриИзменении</name>
+          <name>_DisplayObjectsRightsOnChange</name>
         </handlers>
         <extendedTooltip>
           <name>_DisplayObjectsRightsExtendedTooltip</name>
@@ -3179,6 +3179,10 @@
                 <handlers>
                   <event>OnStartEdit</event>
                   <name>ТабПроверяемыеПраваПриНачалеРедактирования</name>
+                </handlers>
+                <handlers>
+                  <event>Selection</event>
+                  <name>VerifiableRightsTableSelection</name>
                 </handlers>
                 <searchStringAddition>
                   <visible>true</visible>
@@ -14955,7 +14959,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаполнитьСписокСоединений</name>
+        <name>_FillInConnectionsList</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

@@ -56,10 +56,10 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="32ac977a-9192-4dcb-9d09-f7aa02bd35db">
-    <name>ФормаБлокировкиСеансов</name>
+    <name>SessionLockForm</name>
     <synonym>
       <key>ru</key>
-      <value>Форма блокировки сеансов</value>
+      <value>Session lock form</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
