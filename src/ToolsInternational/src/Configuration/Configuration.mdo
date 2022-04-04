@@ -116,6 +116,7 @@
   <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
   <commonModules>CommonModule.UT_Users</commonModules>
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
+  <commonModules>CommonModule.UT_FormsClient</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
   <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>
