@@ -119,6 +119,7 @@ Function  MonacoEditorParametersByDefault() Export
 	EditorSettings.Insert("ScriptVariant", MonacoEditorSyntaxLanguageByDefault());
 	EditorSettings.Insert("UseScriptMap", False);
 	EditorSettings.Insert("HideLineNumbers", False);
+	EditorSettings.Insert("renderWhitespace", False);
 	EditorSettings.Insert("SourceFilesDirectories", New Array);
 	
 	Return EditorSettings;

@@ -515,7 +515,7 @@ Function UT_AssistiveLibrariesDirectory() Export
 		Return "";
 	EndIf;
 	
-	Return FileVariablesStructure.TempFilesDirectory + GetPathSeparator() + "tools_ui_1c_international" + GetPathSeparator()
+	Return FileVariablesStructure.TempFilesDirectory + GetPathSeparator() + "tools_ui_1c_int" + GetPathSeparator()
 EndFunction
 #EndRegion
 
