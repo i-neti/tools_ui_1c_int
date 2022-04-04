@@ -23,7 +23,7 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>_ОтображатьПраваНаОбъектыПриИзменении</name>
+          <name>_DisplayObjectsRightsOnChange</name>
         </handlers>
         <extendedTooltip>
           <name>_DisplayObjectsRightsExtendedTooltip</name>
@@ -3179,6 +3179,10 @@
                 <handlers>
                   <event>OnStartEdit</event>
                   <name>ТабПроверяемыеПраваПриНачалеРедактирования</name>
+                </handlers>
+                <handlers>
+                  <event>Selection</event>
+                  <name>VerifiableRightsTableSelection</name>
                 </handlers>
                 <searchStringAddition>
                   <visible>true</visible>
@@ -8872,11 +8876,11 @@
         </autoCommandBar>
         <handlers>
           <event>BeforeAddRow</event>
-          <name>ТабНастройкиПередНачаломДобавления</name>
+          <name>SettingsTableBeforeAddRow</name>
         </handlers>
         <handlers>
           <event>BeforeDeleteRow</event>
-          <name>ТабНастройкиПередУдалением</name>
+          <name>SettingsTableBeforeDeleteRow</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -10549,7 +10553,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>ДеревоСервисВыбор</name>
+          <name>ServiceTreeSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -11522,7 +11526,7 @@
     </title>
     <id>1</id>
     <valueType>
-      <types>DataProcessorObject.УИ_НавигаторПоКонфигурации</types>
+      <types>DataProcessorObject.UT_ConfigurationNavigator</types>
     </valueType>
     <view>
       <common>true</common>
@@ -14955,7 +14959,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаполнитьСписокСоединений</name>
+        <name>_FillInConnectionsList</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
