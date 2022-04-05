@@ -547,6 +547,9 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
+	
 	If Parameters.Property("Setting") Then
 		ТекущаяНастройка = Parameters.Setting;
 	EndIf;

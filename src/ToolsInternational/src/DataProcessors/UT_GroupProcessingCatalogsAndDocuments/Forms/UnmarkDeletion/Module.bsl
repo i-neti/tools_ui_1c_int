@@ -251,31 +251,8 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	If Parameters.Property("Setting") Then
-		CurrentSetting = Parameters.Setting;
-	EndIf;
-	If Parameters.Property("FoundObjects") Then
-		FoundObjects.LoadValues(Parameters.НайденныеОбъекты);
-	EndIf;
-	CurrentLine = -1;
-	If Parameters.Property("CurrentLine") Then
-		If Parameters.CurrentLine <> Undefined Then
-			CurrentLine = Parameters.CurrentLine;
-		EndIf;
-	EndIf;
-	If Parameters.Property("Parent") Then
-		Parent = Parameters.Parent;
-	EndIf;
-	If Parameters.Property("ОбъектПоиска") Then
-		ОбъектПоиска = Parameters.ОбъектПоиска;
-	EndIf;
-
-	Items.CurrentSetting.ChoiceList.Clear();
-	If Parameters.Property("Settings") Then
-		For Each String In Parameters.Settings Do
-			Items.CurrentSetting.ChoiceList.Add(String, String.Processing);
-		EndDo;
-	EndIf;
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
 
 	DeletionMark=True;
 EndProcedure
