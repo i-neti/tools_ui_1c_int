@@ -117,6 +117,7 @@
   <commonModules>CommonModule.UT_Users</commonModules>
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
   <commonModules>CommonModule.UT_FormsClient</commonModules>
+  <commonModules>CommonModule.UT_FormsServer</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
   <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>

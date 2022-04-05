@@ -159,4 +159,28 @@ Procedure SetNameSettings(Form, NameSettings = "") Export
 
 EndProcedure // SetNameSettings()
 
+// Restores saved form attribute values.
+//
+// Parameters:
+//  None.
+//
+&AtClient
+Procedure DownloadSettings(Form, mSetting) Export
+
+	If Form.Items.CurrentSetting.ChoiceList.Count() = 0 Then
+		UT_FormsClient.SetNameSettings(Form, Nstr("ru = 'Новая настройка';en = 'New setting'"));
+	Else
+		If Not Form.CurrentSetting.Other = Undefined Then
+			mSetting = Form.CurrentSetting.Other;
+		EndIf;
+	EndIf;
+
+	For Each AttributeSetting In mSetting Do
+		//@skip-warning
+		Value = mSetting[AttributeSetting.Key];
+		Execute (String(AttributeSetting.Key) + " = Value;");
+	EndDo;
+
+EndProcedure //DownloadSettings()
+
 #EndRegion
