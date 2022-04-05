@@ -14,7 +14,6 @@
 // Return value:
 //  Structure - which will then need to be passed to the method ProcessIndicator.
 //
-&AtClient
 Function GetProcessIndicator(NumberOfPasses, ProcessRepresentation = "Done", InternalCounter = True,
 	NumberOfUpdates = 100, OutputTime = True, AllowBreaking = True) Export
 
@@ -37,7 +36,6 @@ EndFunction // GetProcessIndicator()
 // Parameters:
 //  None.
 //
-&AtClient
 Procedure SaveSetting(Form, mSetting) Export
 
 	If IsBlankString(Form.CurrentSettingRepresentation) Then
@@ -97,7 +95,6 @@ EndProcedure // SaveSetting()
 //  Indicator   -Structure - indicator obtained by the method GetProcessIndicator;
 //  Counter     - Number - external loop counter, used when InternalCounter = False.
 //
-&AtClient
 Procedure ProcessIndicator(Form, Indicator, Counter = 0) Export
 
 	If Indicator.InternalCounter Then
@@ -144,7 +141,6 @@ EndProcedure // ProcessIndicator()
 // Parameters:
 //  NameSettings   - arbitrary setting name to be set.
 //
-&AtClient
 Procedure SetNameSettings(Form, NameSettings = "") Export
 
 	If IsBlankString(NameSettings) Then
@@ -164,7 +160,6 @@ EndProcedure // SetNameSettings()
 // Parameters:
 //  None.
 //
-&AtClient
 Procedure DownloadSettings(Form, mSetting) Export
 
 	If Form.Items.CurrentSetting.ChoiceList.Count() = 0 Then
