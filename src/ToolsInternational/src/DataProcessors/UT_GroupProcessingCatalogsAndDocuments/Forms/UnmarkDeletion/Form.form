@@ -23,7 +23,7 @@
     </dataPath>
     <handlers>
       <event>OnChange</event>
-      <name>ТекущаяНастройкаПриИзменении</name>
+      <name>CurrentSettingOnChange</name>
     </handlers>
     <extendedTooltip>
       <name>CurrentSettingExtendedTooltip</name>
@@ -58,7 +58,7 @@
     <extInfo xsi:type="form:InputFieldExtInfo">
       <handlers>
         <event>ChoiceProcessing</event>
-        <name>ТекущаяНастройкаОбработкаВыбора</name>
+        <name>CurrentSettingChoiceProcessing</name>
       </handlers>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -259,11 +259,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
