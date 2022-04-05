@@ -39,7 +39,7 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 
 	Indicator = UT_FormsClient.GetProcessIndicator(FoundObjects.Count());
 	For IndexOf = 0 To FoundObjects.Count() - 1 Do
-		ProcessIndicator(Indicator, IndexOf + 1);
+		UT_FormsClient.ProcessIndicator(Indicator, IndexOf + 1);
 
 		RowFoundObjectValue = FoundObjects.Get(IndexOf).Value;
 		ProcessObject(RowFoundObjectValue, IndexOf, ParametersWriteObjects);
@@ -52,8 +52,6 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 	Return IndexOf;
 EndFunction // ExecuteProcessing()
 
-
-
 // Restores saved form attribute values.
 //
 // Parameters:
@@ -63,7 +61,7 @@ EndFunction // ExecuteProcessing()
 Procedure DownloadSettings() Export
 
 	If Items.CurrentSetting.ChoiceList.Count() = 0 Then
-		SetNameSettings(Nstr("ru = 'Новая настройка';en = 'New setting'"));
+		UT_FormsClient.SetNameSettings(ThisForm, Nstr("ru = 'Новая настройка';en = 'New setting'"));
 	Else
 		If Not CurrentSetting.Other = Undefined Then
 			mSetting = CurrentSetting.Other;
@@ -78,81 +76,14 @@ Procedure DownloadSettings() Export
 
 EndProcedure //DownloadSettings()
 
-// Sets the value of the "CurrentSetting" attribute by the name of the setting or arbitrarily.
 //
-// Parameters:
-//  NameSettings   - arbitrary setting name to be set.
-//
-&AtClient
-Procedure SetNameSettings(NameSettings = "") Export
-
-	If IsBlankString(NameSettings) Then
-		If CurrentSetting = Undefined Then
-			CurrentSettingRepresentation = "";
-		Else
-			CurrentSettingRepresentation = CurrentSetting.Processing;
-		EndIf;
-	Else
-		CurrentSettingRepresentation = NameSettings;
-	EndIf;
-
-EndProcedure // SetNameSettings()
-
-// Checks and updates the indicator. Must be called on each pass of the indicated loop.
-//
-// Parameters:
-//  Indicator   -Structure - indicator obtained by the method GetProcessIndicator;
-//  Counter     - Number - external loop counter, used when InternalCounter = False.
-//
-&AtClient
-Procedure ProcessIndicator(Indicator, Counter = 0) Export
-
-	If Indicator.InternalCounter Then
-		Indicator.Counter = Indicator.Counter + 1;
-		Counter = Indicator.Counter;
-	EndIf;
-	If Indicator.AllowBreaking Then
-		UserInterruptProcessing();
-	EndIf;
-
-	If Counter > Indicator.NextCounter Then
-		Indicator.NextCounter = Int(Counter + Indicator.Step);
-		If Indicator.OutputTime Then
-			TimePassed = CurrentDate() - Indicator.ProcessStartDate;
-			Remaining = TimePassed * (Indicator.NumberOfPasses / Counter - 1);
-			Hours = Int(Remaining / 3600);
-			Remaining = Remaining - (Hours * 3600);
-			Minutes = Int(Remaining / 60);
-			Seconds = Int(Int(Remaining - (Minutes * 60)));
-			TimeRemaining = Format(Hours, "ND=2; NZ=00; NLZ=") + ":" + Format(Minutes, "ND=2; NZ=00; NLZ=") + ":"
-				+ Format(Seconds, "ND=2; NZ=00; NLZ=");
-			TextRemaining = StrTemplate(Nstr("ru = 'Осталось: ~ %1';en = 'Remaining: ~ %1'"), TimeRemaining);
-		Else
-			TextRemaining = "";
-		EndIf;
-
-		If Indicator.NumberOfPasses > 0 Then
-			TextStates = TextRemaining;
-		Else
-			TextStates = "";
-		EndIf;
-
-		Status(Indicator.ProcessRepresentation, Counter / Indicator.NumberOfPasses * 100, TextStates);
-	EndIf;
-
-	If Counter = Indicator.NumberOfPasses Then
-		Status(Indicator.ProcessRepresentation, 100, TextStates);
-	EndIf;
-
-EndProcedure // ProcessIndicator()
-
 ////////////////////////////////////////////////////////////////////////////////
 // FORM EVENT HANDLERS
 
 &AtClient
 Procedure OnOpen(Cancel)
 	If mUseSettings Then
-		SetNameSettings();
+		UT_FormsClient.SetNameSettings(ThisForm);
 		DownloadSettings();
 	Else
 		Items.CurrentSetting.Enabled = False;
@@ -212,6 +143,7 @@ EndProcedure
 
 &AtClient
 Procedure CurrentSettingChoiceProcessing(Item, SelectedValue, StandardProcessing)
+	
 	StandardProcessing = False;
 
 	If Not CurrentSetting = SelectedValue Then
@@ -226,6 +158,7 @@ Procedure CurrentSettingChoiceProcessing(Item, SelectedValue, StandardProcessing
 		CurrentSettingChoiceProcessingFragment(SelectedValue);
 
 	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -244,7 +177,7 @@ EndProcedure
 Procedure CurrentSettingChoiceProcessingFragment(Val SelectedValue)
 
 	CurrentSetting = SelectedValue;
-	SetNameSettings();
+	UT_FormsClient.SetNameSettings(ThisForm);
 
 	DownloadSettings();
 

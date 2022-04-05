@@ -41,8 +41,8 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 	For IndexOf = 0 To FoundObjects.Count() - 1 Do
 		ProcessIndicator(Indicator, IndexOf + 1);
 
-		Object = FoundObjects.Get(IndexOf).Value;
-		ProcessObject(Object, IndexOf, ParametersWriteObjects);
+		RowFoundObjectValue = FoundObjects.Get(IndexOf).Value;
+		ProcessObject(RowFoundObjectValue, IndexOf, ParametersWriteObjects);
 	EndDo;
 
 	If IndexOf > 0 Then
@@ -108,6 +108,7 @@ Procedure SaveSetting() Export
 
 	CurrentSetting = NewSetting;
 	ThisForm.Modified = False;
+	
 EndProcedure // вSaveSetting()
 
 // // Restores saved form attribute values.
