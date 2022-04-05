@@ -52,74 +52,30 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 	Return IndexOf;
 EndFunction // ExecuteProcessing()
 
-// Restores saved form attribute values.
-//
-// Parameters:
-//  None.
-//
-&AtClient
-Procedure DownloadSettings() Export
-
-	If Items.CurrentSetting.ChoiceList.Count() = 0 Then
-		UT_FormsClient.SetNameSettings(ThisForm, Nstr("ru = 'Новая настройка';en = 'New setting'"));
-	Else
-		If Not CurrentSetting.Other = Undefined Then
-			mSetting = CurrentSetting.Other;
-		EndIf;
-	EndIf;
-
-	For Each AttributeSetting In mSetting Do
-		//@skip-warning
-		Value = mSetting[AttributeSetting.Key];
-		Execute (String(AttributeSetting.Key) + " = Value;");
-	EndDo;
-
-EndProcedure //DownloadSettings()
-
 //
 ////////////////////////////////////////////////////////////////////////////////
 // FORM EVENT HANDLERS
 
 &AtClient
 Procedure OnOpen(Cancel)
+	
 	If mUseSettings Then
 		UT_FormsClient.SetNameSettings(ThisForm);
-		DownloadSettings();
+		UT_FormsClient.DownloadSettings(ThisForm, mSetting);
 	Else
 		Items.CurrentSetting.Enabled = False;
 		Items.SaveSettings.Enabled = False;
 	EndIf;
+	
 EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	If Parameters.Property("Setting") Then
-		CurrentSetting = Parameters.Setting;
-	EndIf;
-	If Parameters.Property("FoundObjects") Then
-		FoundObjects.LoadValues(Parameters.FoundObjects);
-	EndIf;
-	CurrentLine = -1;
-	If Parameters.Property("CurrentLine") Then
-		If Parameters.CurrentLine <> Undefined Then
-			CurrentLine = Parameters.CurrentLine;
-		EndIf;
-	EndIf;
-	If Parameters.Property("Parent") Then
-		Parent = Parameters.Parent;
-	EndIf;
-	If Parameters.Property("SearchObject") Then
-		SearchObject = Parameters.SearchObject;
-	EndIf;
-
-	Items.CurrentSetting.ChoiceList.Clear();
-	If Parameters.Property("Settings") Then
-		For Each String In Parameters.Settings Do
-			Items.CurrentSetting.ChoiceList.Add(String, String.Processing);
-		EndDo;
-	EndIf;
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
 
 	DeletionMark = True;
+	
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -127,6 +83,7 @@ EndProcedure
 
 &AtClient
 Procedure ExecuteCommand(Command)
+	
 	ProcessedObjects = ExecuteProcessing(UT_CommonClientServer.FormWriteSettings(
 		ThisObject.FormOwner));
 
@@ -134,6 +91,7 @@ Procedure ExecuteCommand(Command)
 					 |Обработано объектов: %2.';en = 'Processing of <%1> completed!
 					 |Objects processed: %2.'"), TrimAll(ThisForm.Title), ProcessedObjects);
 	ShowMessageBox(, Message);
+	
 EndProcedure
 
 &AtClient
@@ -179,7 +137,7 @@ Procedure CurrentSettingChoiceProcessingFragment(Val SelectedValue)
 	CurrentSetting = SelectedValue;
 	UT_FormsClient.SetNameSettings(ThisForm);
 
-	DownloadSettings();
+	UT_FormsClient.DownloadSettings(ThisForm, mSetting);
 
 EndProcedure
 
