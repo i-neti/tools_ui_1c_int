@@ -32,7 +32,7 @@ Procedure FillSettingByParametersForm(Form) Export
 
 		FoundObjectsValueTable = Form.Parameters.FoundObjectsTP.Unload();
 
-		Form.FoundObjects.Load(FoundObjectsValueTable);
+		Form.FoundObjectsTP.Load(FoundObjectsValueTable);
 	EndIf;
 
 	If Form.Parameters.Property("ProcessTabularParts") Then
@@ -48,11 +48,32 @@ Procedure FillSettingByParametersForm(Form) Export
 			NewLine.Type = Attribute.Type;
 			NewLine.Value = NewLine.Type.AdjustValue();
 			NewLine.AttributeTP = Attribute.ThisTP;
+			If Form.Items.Find("CurrentAttribute") <> Undefined Then
+				If Attribute.Type = TypeDescription("Number") Then
+					Form.Items.CurrentAttribute.ChoiceList.Add(Attribute.Name + ?(Attribute.ThisTP, "_TP_12345", ""),
+						Attribute.Presentation + ?(Attribute.ThisTP, " [TP]", ""));
+				EndIf;
+			EndIf;
 		EndDo;
+		If Form.Items.Find("CurrentAttribute") <> Undefined Then
+			If Form.Items.CurrentAttribute.ChoiceList.Count() > 0 Then
+				Form.CurrentAttribute= Form.Items.CurrentAttribute.ChoiceList[0].Value;
+			EndIf;
+		EndIf;
 
 	EndIf;
 	
 EndProcedure
+
+Function TypeDescription(TypeString) Export
+
+	ArrayTypes = New Array;
+	ArrayTypes.Add(Type(TypeString));
+	TypeDescription = New TypeDescription(ArrayTypes);
+
+	Return TypeDescription;
+
+EndFunction
 
 #EndRegion
 
