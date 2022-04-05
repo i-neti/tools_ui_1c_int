@@ -1,112 +1,113 @@
-Функция ПолучитьМакетОбработки(Имя) Экспорт
-	Возврат ПолучитьМакет(Имя);
-КонецФункции
+Function GetDataProcessorTemplate(Name) Export
+	Return GetTemplate(Name);
+EndFunction
 
 /////////////////////////////////////////////////////////////////////////////
-// ОПИСАНИЕ ИНТЕРФЕЙСОВ
+// INTERFACE
 
-// Интерфейс для регистрации обработки.
-// Вызывается при добавлении обработки в справочник "ВнешниеОбработки"
+// Data processor register interface.
+// Called on import data processor to the ExternalDataProcessor catalog.
 //
-// Возвращаемое значение:
-// Структура:
-// Вид - строка - возможные значения:	"ДополнительнаяОбработка"
-//										"ДополнительныйОтчет"
-//										"ЗаполнениеОбъекта"
-//										"Отчет"
-//										"ПечатнаяФорма"
-//										"СозданиеСвязанныхОбъектов"
+// Return value:
+// 	- Structure:
+// 		- Kind - String - available values:	"AdditionalDataProcessor"
+//											"AdditionalReport"
+//											"ObjectFilling"
+//											"Report"
+//											"PrintForm"
+//											"RelatedObjectsCreation".
 //
-// Назначение - массив строк имен объектов метаданных в формате:
-//			<ИмяКлассаОбъектаМетаданного>.[ * | <ИмяОбъектаМетаданных>]
-//			Например, "Документ.СчетЗаказ" или "Справочник.*"
-//			Прим. параметр имеет смысл только для назначаемых обработок
+// 		- Purpose - metadata types array with mask:
+//					   <MetadataObjectClassName>.[ * | <MetadataObjectName>]
+//					   For example, "Document.InvoiceOrder" or "Catalog.*".
+//					   This parameter in used only for assignable data processors. 
 //
-// Наименование - строка - наименование обработки, которым будет заполнено
-//						наименование справочника по умолчанию - краткая строка для
-//						идентификации обработки администратором
+// 		- Description - String - data processor description 
+// 						to be written to catalog item description as default - 
+// 						short name for identifying data processor.
 //
-// Версия - строка - версия обработки в формате <старший номер>.<младший номер>
-//					используется при загрузке обработок в информационную базу
-// БезопасныйРежим – Булево – Если истина, обработка будет запущена в безопасном режиме.
-//							Более подбробная информация в справке.
+// 		- Version - String - data processor version. Conforms to <senior number>.<junior number> format.
+//					It is used when data processor is imported to the infobase.
+//					
+// 		- SafeMode – Boolean – if True, Data processor will be started in safe mode.
+//					 See Help for further information.
 //
-// Информация - Строка- краткая информация по обработке, описание обработки
+// 		- Information - String - data processor details.
 //
-// Команды - ТаблицаЗначений - команды, поставляемые обработкой, одная строка таблицы соотвествует
-//							одной команде
-//				колонки: 
-//				 - Представление - строка - представление команды конечному пользователю
-//				 - Идентификатор - строка - идентефикатор команды. В случае печатных форм
-//											перечисление через запятую списка макетов
-//				 - Использование - строка - варианты запуска обработки:
-//						"ОткрытиеФормы" - открыть форму обработки
-//						"ВызовКлиентскогоМетода" - вызов клиентского экспортного метода из формы обработки
-//						"ВызовСерверногоМетода" - вызов серверного экспортного метода из модуля объекта обработки
-//				 - ПоказыватьОповещение – Булево – если Истина, требуется оказывать оповещение при начале
-//								и при окончании запуска обработки. Прим. Имеет смысл только
-//								при запуске обработки без открытия формы.
-//				 - Модификатор – строка - для печатных форм MXL, которые требуется
-//										отображать в форме ПечатьДокументов подсистемы Печать
-//										требуется установить как "ПечатьMXL"
+// 		- Commands - ValueTable - command interface provided by data processor.
+// 					 Every table row describes a different command.
+// 					 
+//				columns: 
+//				 - Presentation - String - a user presentation of the command.
+//				 - ID - String - command ID. For external print forms (when Kind = "PrintForm"):
+//                 		ID can contain comma-separated names of one or more print commands.
+//				 - Usage - String - data processor usage options:
+//						"FormOpening" - open data processor form.
+//						"ClientMethodCall" - calling of data processor form client export method.
+//						"ServerMethodCall" - calling of data processor object module server export method.
+//				 - ShowNotification – boolean – if True, show "Executing command..." notification upon command execution.
+//				  		It is used for all command types except for commands for opening a form (Usage = "FormOpening".)
+//				 - Modifier – String - an additional command classification.
+//				 		For external print forms (when Kind = "PrintForm"):
+//                 		"MXLPrinting" - for print forms generated on the basis of spreadsheet templates.
 //
-Функция СведенияОВнешнейОбработке() Экспорт
+Function ExternalDataProcessorInfo() Export
 
-	ПараметрыРегистрации = Новый Структура;
+	RegistrationParameters = New Structure;
 
-	ПараметрыРегистрации.Вставить("Вид", "ДополнительнаяОбработка");
-	ПараметрыРегистрации.Вставить("Назначение", Неопределено);
-	ПараметрыРегистрации.Вставить("Наименование", НСтр("ru = 'Загрузка данных из табличного документа'"));
-	ПараметрыРегистрации.Вставить("Версия", "1.4");
-	ПараметрыРегистрации.Вставить("БезопасныйРежим", Ложь);
-	ПараметрыРегистрации.Вставить("Информация", НСтр(
-		"ru = 'Обработка используется для загрузки данных в справочники, табличные части документов и справочников, а также в регистры сведений из табличного документа в формате Excel, MXL, DBF, txt.'"));
+	RegistrationParameters.Insert("Kind", "AdditionalDataProcessor");
+	RegistrationParameters.Insert("Purpose", Undefined);
+	RegistrationParameters.Insert("Description", NStr("ru = 'Загрузка данных из табличного документа'; en = 'Import data from spreadsheet document'"));
+	RegistrationParameters.Insert("Version", "1.4");
+	RegistrationParameters.Insert("SafeMode", False);
+	RegistrationParameters.Insert("Information", NStr(
+		"ru = 'Обработка используется для загрузки данных в справочники, табличные части документов и справочников, а также в регистры сведений из табличного документа в формате Excel, MXL, DBF, txt.';
+		|en = 'The data processor is used to import data into catalogs, tabular sections of documents and catalogs, as well as into information registers from a spreadsheet document in Excel, MXL, DBF, txt format.'"));
 
-	ТаблицаКоманд = ПолучитьТаблицуКоманд();
+	CommandTable = GetCommandTable();
 
-	ДобавитьКоманду(ТаблицаКоманд, НСтр("ru = 'Загрузка из табличного документа'"),
-		"Открытие_ЗагрузкаДанныхИзТабличногоДокумента_" + СтрЗаменить(ПараметрыРегистрации.Версия, ".", "_"),
-		"ОткрытиеФормы");
+	AddCommand(CommandTable, NStr("ru = 'Загрузка из табличного документа'; en = 'Import from spreadsheet document'"),
+		"Opening_ImportDataFromSpreadsheetDocument_" + StrReplace(RegistrationParameters.Version, ".", "_"),
+		"FormOpening");
 
-	ПараметрыРегистрации.Вставить("Команды", ТаблицаКоманд);
+	RegistrationParameters.Insert("Commands", CommandTable);
 
-	Возврат ПараметрыРегистрации;
+	Return RegistrationParameters;
 
-КонецФункции
+EndFunction
 
 /////////////////////////////////////////////////////////////////////////////
-// ВСПОМОГАТЕЛЬНЫЕ ПРОЦЕДУРЫ И ФУНКЦИИ
+// PRIVATE
 
-Функция ПолучитьТаблицуКоманд()
+Function GetCommandTable()
 
-	Команды = Новый ТаблицаЗначений;
-	Команды.Колонки.Добавить("Представление", Новый ОписаниеТипов("Строка"));
-	Команды.Колонки.Добавить("Идентификатор", Новый ОписаниеТипов("Строка"));
-	Команды.Колонки.Добавить("Использование", Новый ОписаниеТипов("Строка"));
-	Команды.Колонки.Добавить("ПоказыватьОповещение", Новый ОписаниеТипов("Булево"));
-	Команды.Колонки.Добавить("Модификатор", Новый ОписаниеТипов("Строка"));
+	Commands = New ValueTable;
+	Commands.Columns.Add("Presentation", New TypeDescription("String"));
+	Commands.Columns.Add("ID", New TypeDescription("String"));
+	Commands.Columns.Add("Usage", New TypeDescription("String"));
+	Commands.Columns.Add("ShowNotification", New TypeDescription("Boolean"));
+	Commands.Columns.Add("Modifier", New TypeDescription("String"));
 
-	Возврат Команды;
+	Return Commands;
 
-КонецФункции
+EndFunction
 
-Процедура ДобавитьКоманду(ТаблицаКоманд, Представление, Идентификатор, Использование, ПоказыватьОповещение = Ложь,
-	Модификатор = "")
+Procedure AddCommand(CommandTable, Presentation, ID, Usage, ShowNotification = False,
+	Modifier = "")
 
-	НоваяКоманда = ТаблицаКоманд.Добавить();
-	НоваяКоманда.Представление = Представление;
-	НоваяКоманда.Идентификатор = Идентификатор;
-	НоваяКоманда.Использование = Использование;
-	НоваяКоманда.ПоказыватьОповещение = ПоказыватьОповещение;
-	НоваяКоманда.Модификатор = Модификатор;
+	NewCommand = CommandTable.Add();
+	NewCommand.Presentation = Presentation;
+	NewCommand.ID = ID;
+	NewCommand.Usage = Usage;
+	NewCommand.ShowNotification = ShowNotification;
+	NewCommand.Modifier = Modifier;
 
-КонецПроцедуры
+EndProcedure
 
-// Интерфейс для запуска логики обработки
+// Interface for starting data processor
 //
-// Параметры
-// ОбъектыНазначения - массив -  ссылоки на объекты информационной базы, для которых требуется
-//					вызвать обработку
+// Parameters
+// 	- CommandID - String - Internal ID of calling command
 //
-Процедура ВыполнитьКоманду(ИдентификаторКоманды) Экспорт
-КонецПроцедуры
+Procedure ExecuteCommand(CommandID) Export
+EndProcedure
