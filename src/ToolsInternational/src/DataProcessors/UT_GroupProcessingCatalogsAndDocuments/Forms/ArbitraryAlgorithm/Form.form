@@ -512,10 +512,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ОбрабатыватьТабличныеЧасти</name>
+    <name>ProcessTabularParts</name>
     <title>
       <key>ru</key>
       <value>Обрабатывать табличные части</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Process tabular parts</value>
     </title>
     <id>10</id>
     <valueType>

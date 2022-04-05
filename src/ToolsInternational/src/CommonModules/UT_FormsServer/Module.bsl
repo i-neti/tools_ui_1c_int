@@ -28,6 +28,30 @@ Procedure FillSettingByParametersForm(Form) Export
 		EndDo;
 	EndIf;
 
+	If Form.Parameters.Property("FoundObjectsTP") Then
+
+		FoundObjectsValueTable = Form.Parameters.FoundObjectsTP.Unload();
+
+		Form.FoundObjects.Load(FoundObjectsValueTable);
+	EndIf;
+
+	If Form.Parameters.Property("ProcessTabularParts") Then
+		Form.ProcessTabularParts = Form.Parameters.ProcessTabularParts;
+	EndIf;
+	If Form.Parameters.Property("TableAttributes") Then
+		TableAttributes = Form.Parameters.TableAttributes;
+		TableAttributes.Sort("ThisTP");
+		For Each Attribute In Form.Parameters.TableAttributes Do
+			NewLine = Form.Attributes.Add();
+			NewLine.Attribute = Attribute.Name;//?(IsBlankString(Attribute.Synonym), Attribute.Name, Attribute.Synonym);
+			NewLine.ID = Attribute.Presentation;
+			NewLine.Type = Attribute.Type;
+			NewLine.Value = NewLine.Type.AdjustValue();
+			NewLine.AttributeTP = Attribute.ThisTP;
+		EndDo;
+
+	EndIf;
+	
 EndProcedure
 
 #EndRegion

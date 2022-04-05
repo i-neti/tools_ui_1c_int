@@ -20,7 +20,7 @@ Procedure ОбработатьОбъект(Reference, ПорядковыйНом
 
 	Try
 		Object = Reference.GetObject();
-		If ОбрабатыватьТабличныеЧасти Then
+		If ProcessTabularParts Then
 			//@skip-warning
 			СтрокаТЧ=Object[НайденныеОбъекты[ПорядковыйНомерОбъекта].Т_ТЧ][НайденныеОбъекты[ПорядковыйНомерОбъекта].Т_НомерСтроки
 				- 1];
@@ -265,39 +265,8 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	If Parameters.Property("Setting") Then
-		ТекущаяНастройка = Parameters.Setting;
-	EndIf;
-	If Parameters.Property("НайденныеОбъектыТЧ") Then
-
-		ТЗНО=Parameters.НайденныеОбъектыТЧ.Unload();
-
-		НайденныеОбъекты.Load(ТЗНО);
-	EndIf;
-	CurrentLine = -1;
-	If Parameters.Property("CurrentLine") Then
-		If Parameters.CurrentLine <> Undefined Then
-			CurrentLine = Parameters.CurrentLine;
-		EndIf;
-	EndIf;
-	If Parameters.Property("Parent") Then
-		Parent = Parameters.Parent;
-	EndIf;
-	If Parameters.Property("ОбъектПоиска") Then
-		ОбъектПоиска = Parameters.ОбъектПоиска;
-	EndIf;
-
-	Items.ТекущаяНастройка.ChoiceList.Clear();
-	If Parameters.Property("Settings") Then
-		For Each String In Parameters.Settings Do
-			Items.ТекущаяНастройка.ChoiceList.Add(String, String.Processing);
-		EndDo;
-	EndIf;
-
-	If Parameters.Property("ProcessTabularParts") Then
-		ОбрабатыватьТабличныеЧасти=Parameters.ProcessTabularParts;
-	EndIf;
-
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
 	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
 	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Редактор", Items.ПолеПроизвольногоАлгоритма);
 

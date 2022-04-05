@@ -356,47 +356,9 @@ EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	If Parameters.Property("Setting") Then
-		CurrentSetting = Parameters.Setting;
-	EndIf;
-	If Parameters.Property("FoundObjectsTP") Then
-
-		FoundObjectsValueTable = Parameters.FoundObjectsTP.Unload();
-
-		FoundObjects.Load(FoundObjectsValueTable);
-	EndIf;
-	CurrentLine = -1;
-	If Parameters.Property("CurrentLine") Then
-		If Parameters.CurrentLine <> Undefined Then
-			CurrentLine = Parameters.CurrentLine;
-		EndIf;
-	EndIf;
-	If Parameters.Property("Parent") Then
-		Parent = Parameters.Parent;
-	EndIf;
-
-	Items.CurrentSettingRepresentation.ChoiceList.Clear();
-	If Parameters.Property("Settings") Then
-		For Each String In Parameters.Settings Do
-			Items.CurrentSettingRepresentation.ChoiceList.Add(String, String.Processing);
-		EndDo;
-	EndIf;
-	If Parameters.Property("ProcessTabularParts") Then
-		ProcessTabularParts = Parameters.ProcessTabularParts;
-	EndIf;
-	If Parameters.Property("TableAttributes") Then
-		TableAttributes = Parameters.TableAttributes;
-		TableAttributes.Sort("ThisTP");
-		For Each Attribute In Parameters.TableAttributes Do
-			NewLine = Attributes.Add();
-			NewLine.Attribute = Attribute.Name;//?(IsBlankString(Attribute.Synonym), Attribute.Name, Attribute.Synonym);
-			NewLine.ID = Attribute.Presentation;
-			NewLine.Type = Attribute.Type;
-			NewLine.Value = NewLine.Type.AdjustValue();
-			NewLine.AttributeTP = Attribute.ThisTP;
-		EndDo;
-
-	EndIf;
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
+	
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
