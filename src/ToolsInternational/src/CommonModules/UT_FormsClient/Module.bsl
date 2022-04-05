@@ -91,4 +91,72 @@ Procedure SaveSetting(Form, mSetting) Export
 	
 EndProcedure // SaveSetting()
 
+// Checks and updates the indicator. Must be called on each pass of the indicated loop.
+//
+// Parameters:
+//  Indicator   -Structure - indicator obtained by the method GetProcessIndicator;
+//  Counter     - Number - external loop counter, used when InternalCounter = False.
+//
+&AtClient
+Procedure ProcessIndicator(Form, Indicator, Counter = 0) Export
+
+	If Indicator.InternalCounter Then
+		Indicator.Counter = Indicator.Counter + 1;
+		Counter = Indicator.Counter;
+	EndIf;
+	If Indicator.AllowBreaking Then
+		UserInterruptProcessing();
+	EndIf;
+
+	If Counter > Indicator.NextCounter Then
+		Indicator.NextCounter = Int(Counter + Indicator.Step);
+		If Indicator.OutputTime Then
+			TimePassed = CurrentDate() - Indicator.ProcessStartDate;
+			Remaining = TimePassed * (Indicator.NumberOfPasses / Counter - 1);
+			Hours = Int(Remaining / 3600);
+			Remaining = Remaining - (Hours * 3600);
+			Minutes = Int(Remaining / 60);
+			Seconds = Int(Int(Remaining - (Minutes * 60)));
+			TimeRemaining = Format(Hours, "ND=2; NZ=00; NLZ=") + ":" + Format(Minutes, "ND=2; NZ=00; NLZ=") + ":"
+				+ Format(Seconds, "ND=2; NZ=00; NLZ=");
+			TextRemaining = StrTemplate(Nstr("ru = 'Осталось: ~ %1';en = 'Remaining: ~ %1'"), TimeRemaining);
+		Else
+			TextRemaining = "";
+		EndIf;
+
+		If Indicator.NumberOfPasses > 0 Then
+			TextStates = TextRemaining;
+		Else
+			TextStates = "";
+		EndIf;
+
+		Status(Indicator.ProcessRepresentation, Counter / Indicator.NumberOfPasses * 100, TextStates);
+	EndIf;
+
+	If Counter = Indicator.NumberOfPasses Then
+		Status(Indicator.ProcessRepresentation, 100, TextStates);
+	EndIf;
+
+EndProcedure // ProcessIndicator()
+//
+// Sets the value of the "CurrentSetting" attribute by the name of the setting or arbitrarily.
+//
+// Parameters:
+//  NameSettings   - arbitrary setting name to be set.
+//
+&AtClient
+Procedure SetNameSettings(Form, NameSettings = "") Export
+
+	If IsBlankString(NameSettings) Then
+		If Form.CurrentSetting = Undefined Then
+			Form.CurrentSettingRepresentation = "";
+		Else
+			Form.CurrentSettingRepresentation = Form.CurrentSetting.Processing;
+		EndIf;
+	Else
+		Form.CurrentSettingRepresentation = NameSettings;
+	EndIf;
+
+EndProcedure // SetNameSettings()
+
 #EndRegion
