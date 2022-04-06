@@ -1,5 +1,10 @@
+#Region VariablesDescription
 &AtClient
 Var FormCloseConfirmed;
+&AtClient
+Var UT_CodeEditorClientData Export;
+
+#EndRegion
 
 #Region FormEvents
 
@@ -50,12 +55,15 @@ Procedure Attachable_CodeEditorInitializingCompletion() Export
 		UT_CommonClient.ReadConsoleFromFile("CodeConsole", SavedFilesDescriptionStructure(),
 			New NotifyDescription("OpenFileEnd", ThisObject), True);
 	Else
-		SetEditorText("Client", TextAlgorithmClient);
-		SetEditorText("Server", TextAlgorithmServer);
+		SetEditorText("Client", TextAlgorithmClient,True);
+		SetEditorText("Server", TextAlgorithmServer,True);
 	EndIf;
 EndProcedure
 
-
+&AtClient
+Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
+	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
+EndProcedure
 #EndRegion
 
 #Region FormCommandsEvents
@@ -92,8 +100,8 @@ Procedure NewAlgorithm(Command)
 	TextAlgorithmClient="";
 	TextAlgorithmServer="";
 
-	SetEditorText("Client",TextAlgorithmClient);
-	SetEditorText("Server",TextAlgorithmServer);
+	SetEditorText("Client",TextAlgorithmClient,True);
+	SetEditorText("Server",TextAlgorithmServer,True);
 
 	SetTitle();
 EndProcedure
@@ -198,6 +206,8 @@ Procedure SaveFileEnd(SaveFileName, AdditionalParameters) Export
 	AlgorithmFileName=SaveFileName;
 	SetTitle();
 	
+	UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject, "Client");
+	UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject, "Server");
 //	Message("The algorithm has been successfully saved");
 
 EndProcedure
@@ -213,8 +223,8 @@ Procedure OpenFileEnd(Result, AdditionalParameters) Export
 
 	OpenAlgorithmAtServer(Result.Address);
 
-	SetEditorText("Client",TextAlgorithmClient);
-	SetEditorText("Server",TextAlgorithmServer);
+	SetEditorText("Client",TextAlgorithmClient,True);
+	SetEditorText("Server",TextAlgorithmServer,True);
 
 	SetTitle();
 EndProcedure
@@ -254,8 +264,8 @@ Procedure UpdateAlgorithmVariablesValueFromEditor()
 EndProcedure
 
 &AtClient
-Procedure SetEditorText(EditorID, AlgorithmText)
-	UT_CodeEditorClient.SetEditorText(ThisObject, EditorID, AlgorithmText);
+Procedure SetEditorText(EditorID, AlgorithmText,SetOriginalText = False)
+	UT_CodeEditorClient.SetEditorText(ThisObject, EditorID, AlgorithmText,SetOriginalText);
 	AddAdditionalContextToCodeEditor(EditorID);	
 EndProcedure
 

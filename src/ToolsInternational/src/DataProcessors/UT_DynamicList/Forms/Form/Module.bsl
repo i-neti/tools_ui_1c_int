@@ -9,26 +9,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		MetadataObjectName=Parameters.MetadataObjectName;
 	EndIf;
 
-// Collect avalible object types to tree
-	AddObjectTypeToTree(PictureLib.Catalog, "Catalogs", "Catalog", "Catalogs");
-	AddObjectTypeToTree(PictureLib.Document, "Documents", "Document", "Documents");
-	AddObjectTypeToTree(PictureLib.DocumentJournal, "DocumentJournals", "DocumentJournal", "Document journals");
-	AddObjectTypeToTree(PictureLib.ChartOfCharacteristicTypes, "ChartsOfCharacteristicTypes",
-		"ChartOfCharacteristicTypes", "Charts  of characteristic types");
-	AddObjectTypeToTree(PictureLib.ChartOfAccounts, "ChartsOfAccounts", "ChartOfAccounts", "Charts of Accounts");
-	AddObjectTypeToTree(PictureLib.ChartOfCalculationTypes, "ChartsOfCalculationTypes", "ChartOfCalculationTypes",
-		"Charts of calculation types");
-	AddObjectTypeToTree(PictureLib.ExchangePlan, "ExchangePlans", "ExchangePlan", "Планы обмена");
-	AddObjectTypeToTree(PictureLib.InformationRegister, "InformationRegisters", "InformationRegister",
-		"Information registers");
-	AddObjectTypeToTree(PictureLib.AccumulationRegister, "AccumulationRegisters", "AccumulationRegister",
-		"Accumulation registers");
-	AddObjectTypeToTree(PictureLib.CalculationRegister, "CalculationRegisters", "CalculationRegister",
-		"Calculation registers");
-	AddObjectTypeToTree(PictureLib.AccountingRegister, "AccountingRegisters", "AccountingRegister",
-		"Accounting registers");
-	AddObjectTypeToTree(PictureLib.BusinessProcess, "BusinessProcesses", "BusinessProcess", "Business processes");
-	AddObjectTypeToTree(PictureLib.Task, "Tasks", "Task", "Tasks");
+     FillMetadataTree();
 
 	If ValueIsFilled(MetadataObjectName) Then
 		Items.MetadataTree.Visible=False;
@@ -248,6 +229,12 @@ Procedure AddObjectTypeToTree(Picture, MetadataTypeName, ObjectTypeName, Present
 
 	For Each ObjectMD In Metadata[MetadataTypeName] Do
 		MetadaObjectSynonym = ?(IsBlankString(ObjectMD.Synonym), "", " (" + ObjectMD.Synonym + ")");
+		
+		If ValueIsFilled(SearchString) 
+			И StrFind(Upper(MetadaObjectSynonym), Upper(SearchString)) = 0 Then
+			
+			Continue;
+	     EndIf;
 		IsDocumentJournal=UT_Common.IsDocumentJournal(ObjectMD);
 
 		RowOfType = TreeRowItems.Add();
@@ -281,6 +268,18 @@ Procedure AddObjectTypeToTree(Picture, MetadataTypeName, ObjectTypeName, Present
 	EndDo;
 
 EndProcedure
+
+&AtClient
+Procedure SearchStringOnChange(Item)
+	FillMetadataTree();
+	If ValueIsFilled(SearchString) Then
+		DeleteTreeRowsIfNotChildsAtSearch();	
+		For each TreeRow In MetadataTree.GetItems() Do 
+			Items.MetadataTree.Expand(TreeRow.GetID());
+		EndDo;
+	EndIf;
+EndProcedure
+
 &AtClient
 Procedure Choose(Command)
 	If Items.Find("DynamicList") = Undefined Then
@@ -353,6 +352,46 @@ Procedure DeleteSelectedObjectsAtServer(RefsArray)
 		Except
 			Message("Ошибка при удалении объекта:" + Chars.LF + ErrorDescription());
 		EndTry;
+	EndDo;
+EndProcedure
+
+&НаСервере
+Procedure FillMetadataTree()
+	
+	MetadataTree.GetItems().Clear();
+	
+	AddObjectTypeToTree(PictureLib.Catalog, "Catalogs", "Catalog", "Catalogs");
+	AddObjectTypeToTree(PictureLib.Document, "Documents", "Document", "Documents");
+	AddObjectTypeToTree(PictureLib.DocumentJournal, "DocumentJournals", "DocumentJournal", "Document journals");
+	AddObjectTypeToTree(PictureLib.ChartOfCharacteristicTypes, "ChartsOfCharacteristicTypes",
+		"ChartOfCharacteristicTypes", "Charts  of characteristic types");
+	AddObjectTypeToTree(PictureLib.ChartOfAccounts, "ChartsOfAccounts", "ChartOfAccounts", "Charts of Accounts");
+	AddObjectTypeToTree(PictureLib.ChartOfCalculationTypes, "ChartsOfCalculationTypes", "ChartOfCalculationTypes",
+		"Charts of calculation types");
+	AddObjectTypeToTree(PictureLib.ExchangePlan, "ExchangePlans", "ExchangePlan", "Планы обмена");
+	AddObjectTypeToTree(PictureLib.InformationRegister, "InformationRegisters", "InformationRegister",
+		"Information registers");
+	AddObjectTypeToTree(PictureLib.AccumulationRegister, "AccumulationRegisters", "AccumulationRegister",
+		"Accumulation registers");
+	AddObjectTypeToTree(PictureLib.CalculationRegister, "CalculationRegisters", "CalculationRegister",
+		"Calculation registers");
+	AddObjectTypeToTree(PictureLib.AccountingRegister, "AccountingRegisters", "AccountingRegister",
+		"Accounting registers");
+	AddObjectTypeToTree(PictureLib.BusinessProcess, "BusinessProcesses", "BusinessProcess", "Business processes");
+	AddObjectTypeToTree(PictureLib.Task, "Tasks", "Task", "Tasks");
+		
+EndProcedure
+
+&AtClient
+Procedure DeleteTreeRowsIfNotChildsAtSearch()
+	TreeItems = MetadataTree.GetItems();
+	Counter = TreeItems.Count() - 1;
+	While Counter >= 0 Do
+		TreeRow = TreeItems[Counter];
+		If TreeRow.GetItems().Count() = 0 Then
+			TreeItems.Удалить(TreeRow);
+		EndIf;
+		Counter = Counter - 1;
 	EndDo;
 EndProcedure
 
