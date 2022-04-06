@@ -1,6 +1,10 @@
 #Region Public
 #Region FormEventsWithEditor
 Procedure FormOnOpen(Form, CompletionNotifyDescription = Undefined) Export
+	Form.UT_CodeEditorClientData = New Structure;
+	Form.UT_CodeEditorClientData.Insert("Events", new Array);
+	Form.UT_CodeEditorClientData.Insert("EventsHandlers", New Structure);
+	
 	AdditionalParameters = New Structure;
 	AdditionalParameters.Insert("CompletionNotifyDescription", CompletionNotifyDescription);
 	AdditionalParameters.Insert("Form", Form);
@@ -21,7 +25,7 @@ Procedure HTMLEditorFieldDocumentGenerated(Form, Item) Export
 	Form.AttachIdleHandler("Attachable_CodeEditorDeferredInitializingEditors", 0.1, True);
 EndProcedure
 Procedure HTMLEditorFieldOnClick(Form, Item, EventData, StandardProcessing) Export
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 
 	If EditorType = EditorTypes.Monaco Then
@@ -77,7 +81,7 @@ Function AllFormEditorsInitialized(FormEditors)
 EndFunction
 
 Procedure CodeEditorDeferredInitializingEditors(Form) Export
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 
@@ -158,7 +162,7 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 				DocumentView.hideLineNumbers();
 			EndIf;
 
-			If EditorSettings.EditorSettings.renderWhitespace Then
+			If EditorSettings.EditorSettings.DisplaySpacesAndTabs Then
 				DocumentView.renderWhitespace(True);
 			EndIf;
 
@@ -186,9 +190,9 @@ Procedure SetFormItemEditorText(Form, Item, Text) Export
 	SetEditorText(Form, EditorID, Text);
 EndProcedure
 
-Procedure SetEditorText(Form, EditorID, Text) Export
+Procedure SetEditorText(Form, EditorID, Text, SetOriginalText = False) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 	If Not AllFormEditorsInitialized(FormEditors) Then
@@ -203,8 +207,44 @@ Procedure SetEditorText(Form, EditorID, Text) Export
 		HTMLDocument.editor.setValue(Text, -1);
 	ElsIf EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		If SetOriginalText Then 
+			HTMLDocument.setOriginalText(Text);
+		EndIf;
 		HTMLDocument.updateText(Text);
 	EndIf;
+EndProcedure
+
+Procedure SetEditorOriginalText(Form, EditorID, Text) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+
+	EditorSettings = FormEditors[EditorID];
+	If EditorType = EditorsTypes.Monaco Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		HTMLDocument.setOriginalText(Text);
+	EndIf;
+EndProcedure
+
+Procedure SetEditorOriginalTextEqualToCurrent(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+
+	EditorSettings = FormEditors[EditorID];
+	If EditorType = EditorsTypes.Monaco Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.getText();
+		HTMLDocument.setOriginalText(CodeText);
+	Endif;
 EndProcedure
 
 Function EditorCodeText(Form, EditorID) Export
@@ -243,7 +283,7 @@ EndFunction
 
 Function EditorSelectionBorders(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 	If Not AllFormEditorsInitialized(FormEditors) Then
@@ -293,7 +333,7 @@ EndFunction
 Procedure SetTextSelectionBorders(Form, EditorID, RowBeginning, ColumnBeginning, RowEnd, ColumnEnd) Export
 
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 	If Not AllFormEditorsInitialized(FormEditors) Then
@@ -362,7 +402,7 @@ EndProcedure
 
 Procedure AddCodeEditorContext(Form, EditorID, AddedContext) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 	If Not AllFormEditorsInitialized(FormEditors) Then
@@ -526,7 +566,7 @@ Procedure DeleteEditorLinesComments(Form, EditorID) Export
 		CodeText = Form[EditorSettings.AttributeName];
 		SelectionBorders = EditorSelectionBorders(Form, EditorID);
 
-		УдалитьТекстДополнениеВНачалеСтрокиПоГраницамВыделения(CodeText, SelectionBorders, "//");
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
 		Form[EditorSettings.AttributeName] = CodeText;
 
 		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
@@ -539,7 +579,7 @@ Procedure DeleteEditorLinesComments(Form, EditorID) Export
 		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
 		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
 
-		УдалитьТекстДополнениеВНачалеСтрокиПоГраницамВыделения(CodeText, SelectionBorders, "//");
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
 
 		HTMLDocument.editor.setValue(CodeText, -1);
 		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
@@ -564,7 +604,7 @@ Procedure DeleteEditorLinesCommentsFormItem(Form, Item) Export
 
 	DeleteEditorLinesComments(Form, EditorID);
 EndProcedure
-Procedure AddEditorLinesBreak(Form, EditorID) Export
+Procedure AddEditorLineBreaks(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
@@ -608,21 +648,21 @@ Procedure AddEditorLinesBreak(Form, EditorID) Export
 
 EndProcedure
 
-Procedure AddEditorLinesBreakFormItem(Form, Item) Export
+Procedure AddEditorLineBreaksFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
 		Return;
 	EndIf;
 
-	AddEditorLinesBreak(Form, EditorID);
+	AddEditorLineBreaks(Form, EditorID);
 EndProcedure
 
-Procedure УдалитьПереносСтрокРедактора(Form, EditorID) Export
+Procedure DeleteEditorLineBreaks(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Не AllFormEditorsInitialized(FormEditors) Then
+	If Not AllFormEditorsInitialized(FormEditors) Then
 		Return;
 	EndIf;
 	EditorSettings = FormEditors[EditorID];
@@ -631,7 +671,7 @@ Procedure УдалитьПереносСтрокРедактора(Form, EditorI
 		CodeText = Form[EditorSettings.AttributeName];
 		SelectionBorders = EditorSelectionBorders(Form, EditorID);
 
-		УдалитьТекстДополнениеВНачалеСтрокиПоГраницамВыделения(CodeText, SelectionBorders, "|");
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
 		Form[EditorSettings.AttributeName] = CodeText;
 
 		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
@@ -644,7 +684,7 @@ Procedure УдалитьПереносСтрокРедактора(Form, EditorI
 		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
 		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
 
-		УдалитьТекстДополнениеВНачалеСтрокиПоГраницамВыделения(CodeText, SelectionBorders, "|");
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
 
 		HTMLDocument.editor.setValue(CodeText, -1);
 		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
@@ -661,13 +701,13 @@ Procedure УдалитьПереносСтрокРедактора(Form, EditorI
 
 EndProcedure
 
-Procedure УдалитьПереносСтрокРедактораЭлементаФормы(Form, Item) Export
+Procedure DeleteEditorLineBreaksFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
 		Return;
 	EndIf;
 
-	УдалитьПереносСтрокРедактора(Form, EditorID);
+	DeleteEditorLineBreaks(Form, EditorID);
 EndProcedure
 #EndRegion
 
@@ -678,7 +718,7 @@ Procedure FormOnOpenEndAttachFileSystemExtension(Result, AdditionalParameters) E
 	If LibraryURL = Undefined Or Not ValueIsFilled(LibraryURL) Then
 		FormOnOpenEndEditorLibrarySaving(True, AdditionalParameters);
 	Else
-		EditorType = AdditionalParameters.UT_CodeEditorClientServer.FormCodeEditorType;
+		EditorType = UT_CodeEditorClientServer.FormCodeEditorType(AdditionalParameters.Form);
 
 		SaveEditorLibraryToDisk(LibraryURL, EditorType, New NotifyDescription("FormOnOpenEndEditorLibrarySaving",
 			ThisObject, AdditionalParameters));
@@ -687,7 +727,7 @@ EndProcedure
 
 Procedure FormOnOpenEndEditorLibrarySaving(Result, AdditionalParameters) Export
 	Form = AdditionalParameters.Form;
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 
 	If UT_CodeEditorClientServer.CodeEditorUsesHTMLField(EditorType) Then
@@ -1098,18 +1138,18 @@ Procedure AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, Selection
 	CodeText = Text.GetText();
 EndProcedure
 
-Procedure УдалитьТекстДополнениеВНачалеСтрокиПоГраницамВыделения(CodeText, SelectionBorders, Addition)
+Procedure DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, Addition)
 	Text = New TextDocument;
 	Text.SetText(CodeText);
 
-	If Не ValueIsFilled(SelectionBorders.RowBeginning) И Не ValueIsFilled(SelectionBorders.RowEnd) Then
+	If Not ValueIsFilled(SelectionBorders.RowBeginning) And Not ValueIsFilled(SelectionBorders.RowEnd) Then
 		Return;
 	EndIf;
 
-	Для LineNumber = SelectionBorders.RowBeginning По SelectionBorders.RowEnd Цикл
+	For LineNumber = SelectionBorders.RowBeginning To SelectionBorders.RowEnd Do
 		TextLine = Text.GetLine(LineNumber);
-		If СтрНачинаетсяС(TextLine, Addition) Then
-			TextLine = Сред(TextLine, СтрДлина(Addition) + 1);
+		If StrStartsWith(TextLine, Addition) Then
+			TextLine = Mid(TextLine, StrLen(Addition) + 1);
 		EndIf;
 
 		Text.ReplaceLine(LineNumber, TextLine);
@@ -1191,7 +1231,7 @@ Function MetadataDescriptionForMonacoEditorInitialization()
 
 EndFunction
 
-Procedure SetTextMonaco(DocumentView, Text, Position = Undefined, УчитыватьОтступПервойСтроки = True)
+Procedure SetTextMonaco(DocumentView, Text, Position = Undefined, ConsiderFirstLineIndent = True)
 	DocumentView.setText(Text, Position);
 EndProcedure
 
@@ -1378,8 +1418,7 @@ Procedure SetModuleDescriptionForMonacoEditor(UpdatedMetadataObject, AdditionalP
 	EndIf;
 
 	FormEditors = AdditionalParameters.Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(
-		AdditionalParameters.Form, AdditionalParameters.Item);
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(AdditionalParameters.Form, AdditionalParameters.Item);
 	EditorSettings = FormEditors[EditorID];
 	AdditionalParameters.Insert("SourcesDirectories", EditorSettings.EditorSettings.SourceFilesDirectories);
 

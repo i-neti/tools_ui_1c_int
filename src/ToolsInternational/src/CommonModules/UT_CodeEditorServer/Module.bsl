@@ -52,7 +52,7 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Unde
 	CommandBarGroup = Undefined) Export
 	//AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
 	
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType;
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	
 	EditorData = New Structure;
 	EditorData.Insert("EditorEvents",EditorEvents);
