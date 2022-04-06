@@ -38,6 +38,7 @@ Procedure FillSettingByParametersForm(Form) Export
 	If Form.Parameters.Property("ProcessTabularParts") Then
 		Form.ProcessTabularParts = Form.Parameters.ProcessTabularParts;
 	EndIf;
+	
 	If Form.Parameters.Property("TableAttributes") Then
 		TableAttributes = Form.Parameters.TableAttributes;
 		TableAttributes.Sort("ThisTP");
@@ -60,6 +61,17 @@ Procedure FillSettingByParametersForm(Form) Export
 				Form.CurrentAttribute= Form.Items.CurrentAttribute.ChoiceList[0].Value;
 			EndIf;
 		EndIf;
+
+	EndIf;
+	
+	If Form.Parameters.Property("TableFieldTypesObjects") Then
+
+		Row = Form.Parameters.TableFieldTypesObjects[0];
+
+		Form.SearchObject = New Structure;
+		Form.SearchObject.Insert("Type", ?(Form.Parameters.ObjectType = 0, "Catalog", "Document"));
+		Form.SearchObject.Insert("Name", Row.TableName);
+		Form.SearchObject.Insert("Presentation", Row.PresentationTable);
 
 	EndIf;
 	

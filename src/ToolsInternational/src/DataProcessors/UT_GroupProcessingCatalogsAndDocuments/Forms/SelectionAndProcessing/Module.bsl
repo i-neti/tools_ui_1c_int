@@ -15,7 +15,7 @@ EndFunction
 // вОписаниеТипа()
 &AtServer
 Function ПолучитьСписокВидовОбъектов()
-	ТЗ = FormDataToValue(ТабличноеПолеВидыОбъектов, Type("ValueTable"));
+	ТЗ = FormDataToValue(TableFieldTypesObjects, Type("ValueTable"));
 
 	ListOfSelected = New ValueList;
 	ListOfSelected.LoadValues(ТЗ.UnloadColumn("TableName"));
@@ -41,12 +41,12 @@ Procedure ОткрытьФормуВыбораТаблицыЗавершение
 		Return;
 	EndIf;
 
-	ТабличноеПолеВидыОбъектов.Clear();
+	TableFieldTypesObjects.Clear();
 	For Each Value In Result Do
 
-		String = ТабличноеПолеВидыОбъектов.Add();
+		String = TableFieldTypesObjects.Add();
 		String.TableName = Value.Value;
-		String.ПредставлениеТаблицы = Value.Presentation;
+		String.PresentationTable = Value.Presentation;
 
 	EndDo;
 	ИнициализацияЗапроса();
@@ -515,7 +515,7 @@ EndFunction
 
 &AtClient
 Procedure Filter(Command)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
@@ -561,7 +561,7 @@ EndProcedure
 
 &AtClient
 Procedure ДоступныеОбработкиВыбор(Item, SelectedRow, Field, StandardProcessing)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
@@ -621,7 +621,7 @@ Function СформироватьСтруктуруПараметров()
 	СтруктураПараметров.Insert("TableAttributes", TableAttributes);
 	СтруктураПараметров.Insert("ProcessTabularParts", Object.ОбрабатыватьТабличныеЧасти);
 	СтруктураПараметров.Insert("ListOfSelected", ПолучитьСписокВидовОбъектов());
-	СтруктураПараметров.Insert("ТабличноеПолеВидыОбъектов", ТабличноеПолеВидыОбъектов);
+	СтруктураПараметров.Insert("TableFieldTypesObjects", TableFieldTypesObjects);
 
 	СтруктураПараметров.Insert("НайденныеОбъектыТЧ", НайденныеОбъекты);
 
@@ -635,7 +635,7 @@ EndFunction
 
 &AtClient
 Procedure ДоступныеОбработкиПередНачаломДобавления(Item, Cancel, Copy, Parent, Group)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
@@ -729,7 +729,7 @@ EndFunction
 
 &AtClient
 Procedure ДоступныеОбработкиПередНачаломИзменения(Item, Cancel)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
@@ -843,7 +843,7 @@ Function ОбработкаДоступна(ПроверяемыйТипОбъе
 	EndTry;
 
 	If ИмяОбработки = "RenumberingObjects" Then
-		If ТабличноеПолеВидыОбъектов.Count() > 1 Then
+		If TableFieldTypesObjects.Count() > 1 Then
 			Message("Выбрано более одного вида объектов. Перенумерация невозможна");
 			Return False;
 		EndIf;
@@ -893,7 +893,7 @@ Procedure ТабличноеПолеВидыОбъектовПередУдале
 	
 	Cancel=True;
 	
-	CurrentLine = Items.ТабличноеПолеВидыОбъектов.CurrentData.GetID();
+	CurrentLine = Items.TableFieldTypesObjects.CurrentData.GetID();
 	ДопПараметрыОповещения = New Structure("CurrentLine", CurrentLine);
 	ПроверкаНеобходимостиОчищатьРезультаты(
 			New NotifyDescription("ТабличноеПолеВидыОбъектовПередУдалениемЗавершение", 
@@ -911,9 +911,9 @@ Procedure ТабличноеПолеВидыОбъектовПередУдале
 	EndIf;
 
 	ТекСтрока=AdditionalParameters.CurrentLine;
-	ТабличноеПолеВидыОбъектов.Delete(ТабличноеПолеВидыОбъектов.FindByID(ТекСтрока));
+	TableFieldTypesObjects.Delete(TableFieldTypesObjects.FindByID(ТекСтрока));
 
-	Items.ТабличноеПолеВидыОбъектов.Update();
+	Items.TableFieldTypesObjects.Update();
 EndProcedure
 Function УсечьМассив(Array, Массив2)
 	Мас = New Array;
@@ -934,7 +934,7 @@ Procedure ИнициализацияЗапроса()
 
 	масЗапросовПоОбъектам = New Array;
 
-	ВсегоСтрок = ТабличноеПолеВидыОбъектов.Count();
+	ВсегоСтрок = TableFieldTypesObjects.Count();
 	//If ВсегоСтрок = 0 Then
 	//	If Not QueryBuilder = Undefined And Not QueryBuilder.Filter = Undefined Then
 	//		КоличествоОтборов = QueryBuilder.Filter.Count();
@@ -972,7 +972,7 @@ Procedure ИнициализацияЗапроса()
 	ИмяВидаОдногоТипа = Undefined;
 	ПрошлоеЗначение = Undefined;
 	///============================= ПОДСЧЕТ ОДОИМЕННЫХ РЕКВИЗИТОВ
-	For Each String In ТабличноеПолеВидыОбъектов Do
+	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
 			ИмяВида = String.TableName;
@@ -1330,7 +1330,7 @@ Procedure ИнициализацияЗапроса()
 	//EndIf;
 	QueryText = "";
 
-	For Each String In ТабличноеПолеВидыОбъектов Do
+	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
 			ИмяВида = String.TableName;
@@ -1708,7 +1708,7 @@ Procedure OnLoadDataFromSettingsAtServer(Settings)
 	МассивСтрокКУдалению=New Array;
 	МетаданныеОбъектов=Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
 
-	For Each СтрокаТаблицы In ТабличноеПолеВидыОбъектов Do
+	For Each СтрокаТаблицы In TableFieldTypesObjects Do
 		МассивИмени=StrSplit(СтрокаТаблицы.TableName, ".");
 
 		ИмяВида=МассивИмени[0];
@@ -1719,7 +1719,7 @@ Procedure OnLoadDataFromSettingsAtServer(Settings)
 	
 	//Удаляем того что сейчас не можем обработать
 	For Each УдаляемаяСтрока In МассивСтрокКУдалению Do
-		ТабличноеПолеВидыОбъектов.Delete(УдаляемаяСтрока);
+		TableFieldTypesObjects.Delete(УдаляемаяСтрока);
 	EndDo;
 
 	ИнициализацияЗапроса();
@@ -1737,7 +1737,7 @@ EndProcedure
 Procedure ОбрабатыватьТабличныеЧастиПриИзмененииЗавершение(Result, AdditionalParameters) Export
 	Item=AdditionalParameters.Item;
 	If Result Then
-		ТабличноеПолеВидыОбъектов.Clear();
+		TableFieldTypesObjects.Clear();
 		ИнициализацияЗапроса();
 	Else
 		Item.Value = Not Item.Value;
@@ -1746,7 +1746,7 @@ EndProcedure
 
 &AtClient
 Procedure ТипОбъектаПриИзменении(Item)
-	ТабличноеПолеВидыОбъектов.Clear();
+	TableFieldTypesObjects.Clear();
 	ИнициализацияЗапроса();
 EndProcedure
 

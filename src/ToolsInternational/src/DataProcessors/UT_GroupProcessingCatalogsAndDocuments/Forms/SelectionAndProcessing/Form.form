@@ -227,7 +227,7 @@
       <name>ГруппаВыборОбъектов</name>
       <id>75</id>
       <items xsi:type="form:Table">
-        <name>ТабличноеПолеВидыОбъектов</name>
+        <name>TableFieldTypesObjects</name>
         <id>79</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -235,7 +235,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>ТабличноеПолеВидыОбъектов</segments>
+          <segments>TableFieldTypesObjects</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormField">
@@ -247,7 +247,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ТабличноеПолеВидыОбъектов.ИмяТаблицы</segments>
+              <segments>TableFieldTypesObjects.ИмяТаблицы</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -299,7 +299,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ТабличноеПолеВидыОбъектов.ПредставлениеТаблицы</segments>
+              <segments>TableFieldTypesObjects.PresentationTable</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -342,7 +342,7 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>ТабличноеПолеВидыОбъектовКоманднаяПанель</name>
+          <name>TableFieldTypesObjectsCommandBar</name>
           <id>81</id>
           <items xsi:type="form:Button">
             <name>ТабличноеПолеВидыОбъектовОтбор</name>
@@ -434,10 +434,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовSearchString</name>
+          <name>TableFieldTypesObjectsSearchString</name>
           <id>97</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовSearchStringExtendedTooltip</name>
+            <name>TableFieldTypesObjectsSearchStringExtendedTooltip</name>
             <id>99</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -452,7 +452,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовSearchStringContextMenu</name>
+            <name>TableFieldTypesObjectsSearchStringContextMenu</name>
             <id>98</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -471,10 +471,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовViewStatus</name>
+          <name>TableFieldTypesObjectsViewStatus</name>
           <id>100</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовViewStatusExtendedTooltip</name>
+            <name>TableFieldTypesObjectsViewStatusExtendedTooltip</name>
             <id>102</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -489,7 +489,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовViewStatusContextMenu</name>
+            <name>TableFieldTypesObjectsViewStatusContextMenu</name>
             <id>101</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -510,10 +510,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовSearchControl</name>
+          <name>TableFieldTypesObjectsSearchControl</name>
           <id>103</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовSearchControlExtendedTooltip</name>
+            <name>TableFieldTypesObjectsSearchControlExtendedTooltip</name>
             <id>105</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -528,7 +528,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовSearchControlContextMenu</name>
+            <name>TableFieldTypesObjectsSearchControlContextMenu</name>
             <id>104</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -543,7 +543,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>ТабличноеПолеВидыОбъектовExtendedTooltip</name>
+          <name>TableFieldTypesObjectsExtendedTooltip</name>
           <id>96</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -558,7 +558,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ТабличноеПолеВидыОбъектовКонтекстноеМеню</name>
+          <name>TableFieldTypesObjectsContextMenu</name>
           <id>80</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2790,10 +2790,14 @@
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ТабличноеПолеВидыОбъектов</name>
+    <name>TableFieldTypesObjects</name>
     <title>
       <key>ru</key>
       <value>Табличное поле виды объектов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Table field types objects</value>
     </title>
     <id>15</id>
     <valueType>
@@ -2806,7 +2810,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ТабличноеПолеВидыОбъектов</segments>
+      <segments>TableFieldTypesObjects</segments>
     </settingsSavedData>
     <columns>
       <name>ИмяТаблицы</name>
@@ -2827,10 +2831,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПредставлениеТаблицы</name>
+      <name>PresentationTable</name>
       <title>
         <key>ru</key>
         <value>Представление таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation table</value>
       </title>
       <id>2</id>
       <valueType>
