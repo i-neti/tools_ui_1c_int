@@ -351,13 +351,6 @@
 		</right>
 	</object>
 	<object>
-		<name>Catalog.UT_Algorithms.Command.ExecuteAlgorithm</name>
-		<right>
-			<name>View</name>
-			<value>true</value>
-		</right>
-	</object>
-	<object>
 		<name>DataProcessor.UT_MarkedObjectsDeletion</name>
 		<right>
 			<name>Use</name>
@@ -622,13 +615,6 @@
 	</object>
 	<object>
 		<name>CommonForm.UT_ConfigurationSourseFilesSaveSettings</name>
-		<right>
-			<name>View</name>
-			<value>true</value>
-		</right>
-	</object>
-	<object>
-		<name>Catalog.UT_Algorithms.Command.ExecuteAlgorithm</name>
 		<right>
 			<name>View</name>
 			<value>true</value>

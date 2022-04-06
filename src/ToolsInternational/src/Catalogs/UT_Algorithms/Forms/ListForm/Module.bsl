@@ -1,7 +1,10 @@
-&AtClient
-Procedure CommandProcessing(CommandParameter, CommandExecuteParameters)
 
-	For Each Algorithm In  CommandParameter Do
+&AtClient
+Procedure ExecuteAlgorithm(Command)
+	
+	AlgorithmsArray = Items.List.SelectedRows;
+	
+		For Each Algorithm In  AlgorithmsArray Do
 		Error = False;
 		ErrorMessage = "";
 
