@@ -427,7 +427,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.Применить</commandName>
+      <commandName>Form.Command.Apply</commandName>
       <representation>Auto</representation>
       <defaultButton>true</defaultButton>
       <autoMaxWidth>true</autoMaxWidth>
@@ -474,11 +474,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <autoTitle>true</autoTitle>
   <autoUrl>true</autoUrl>
@@ -507,10 +507,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ТекстВыражения</name>
+    <name>ExpressionText</name>
     <title>
       <key>ru</key>
       <value>Текст выражения</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Expression text</value>
     </title>
     <id>3</id>
     <valueType>
@@ -612,10 +616,14 @@
     </columns>
   </attributes>
   <formCommands>
-    <name>Применить</name>
+    <name>Apply</name>
     <title>
       <key>ru</key>
       <value>Применить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Apply</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -627,7 +635,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Применить</name>
+        <name>Apply</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
