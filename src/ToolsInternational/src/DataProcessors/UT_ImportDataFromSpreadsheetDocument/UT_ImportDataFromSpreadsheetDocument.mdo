@@ -14,7 +14,7 @@
     <value>Загрузка данных из табличного документа [УИ]</value>
   </synonym>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_ImportDataFromSpreadsheetDocument.Form.Форма</defaultForm>
+  <defaultForm>DataProcessor.UT_ImportDataFromSpreadsheetDocument.Form.Form</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -254,7 +254,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <forms uuid="7300ef50-b49f-4a7f-b6dc-9717503e3e4c">
-    <name>Форма</name>
+    <name>Form</name>
     <synonym>
       <key>en</key>
       <value>Form</value>
