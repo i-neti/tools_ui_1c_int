@@ -72,10 +72,10 @@ Procedure SetConditionalAppearance()
 
 	AppearanceItem = ThisForm.ConditionalAppearance.Items.Add();
 	FilterItem = AppearanceItem.Filter.Items.Add(Type("DataCompositionFilterItem"));
-	FilterItem.LeftValue = New DataCompositionField("ObjectsTree.NodeType");
+	FilterItem.LeftValue = New DataCompositionField("ObjectsTree.NType");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = 1;
-	AppearanceItem.Appearance.SetParameterValue("Text", WebColors.DarkBlue);
+	AppearanceItem.Appearance.SetParameterValue("TextColor", WebColors.DarkBlue);
 	AppearanceItem.Fields.Items.Add().Field = New DataCompositionField("ObjectsTreeName");
 
 	AppearanceItem = ThisForm.ConditionalAppearance.Items.Add();
@@ -109,7 +109,7 @@ Procedure SetConditionalAppearance()
 	FilterItem.LeftValue = New DataCompositionField("_SessionList.CurrentSession");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = True;
-	AppearanceItem.Appearance.SetParameterValue("Text", WebColors.Blue);
+	AppearanceItem.Appearance.SetParameterValue("TextColor", WebColors.Blue);
 	AppearanceItem.Fields.Items.Add().Field = New DataCompositionField("_SessionList");
 
 	AppearanceItem = ThisForm.ConditionalAppearance.Items.Add();
@@ -117,7 +117,7 @@ Procedure SetConditionalAppearance()
 	FilterItem.LeftValue = New DataCompositionField("_ConnectionsList.CurrentConnections");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = True;
-	AppearanceItem.Appearance.SetParameterValue("Text", WebColors.Blue);
+	AppearanceItem.Appearance.SetParameterValue("TextColor", WebColors.Blue);
 	AppearanceItem.Fields.Items.Add().Field = New DataCompositionField("_ConnectionsList");
 
 EndProcedure
@@ -232,14 +232,14 @@ Procedure OnOpen(Cancel)
 
 	TreeLine = TreeLines.Add();
 	FillPropertyValues(TreeLine, vFormConfigurationNode());
-	TreeLine.NodeType = 1;
+	TreeLine.NType = 1;
 	
 	
 	// избранное
 	TreeLine = TreeLines.Add();
 	TreeLine.Name = "Favorites...";
 	TreeLine.NodeType = "Favorites";
-	TreeLine.NodeType = 1;
+	TreeLine.NType = 1;
 	TreeLine.FullName = "Favorites";
 	mFavoriteID = TreeLine.GetID();
 
@@ -250,7 +250,7 @@ Procedure OnOpen(Cancel)
 	TreeLine = TreeLines.Add();
 	TreeLine.Name = "Common";
 	TreeLine.NodeType = "SectionGroupMD";
-	TreeLine.NodeType = 1;
+	TreeLine.NType = 1;
 	TreeLine.GetItems().Add();
 
 	SectionStructure = New Structure("Constants, Catalogs, Documents, DocumentJournals, Enums, ChartsOfCharacteristicTypes, ChartsOfCalculationTypes, ChartsOfAccounts
@@ -263,7 +263,7 @@ Procedure OnOpen(Cancel)
 		TreeLine.Name = Item.Key;
 		TreeLine.Name = Item.Key + " (" + Item.Value + ")";
 		TreeLine.NodeType = "SectionMD";
-		TreeLine.NodeType = 1;
+		TreeLine.NType = 1;
 		TreeLine.GetItems().Add();
 	EndDo;
 
@@ -509,7 +509,7 @@ Procedure kCollapseTreeSection(Command)
 		TreeNode = CurrentData.GetParent();
 		If TreeNode <> Undefined Then
 			String = TreeNode.GetID();
-			Items.ObjectsTree.CurrentLine = String;
+			Items.ObjectsTree.CurrentRow = String;
 			Items.ObjectsTree.Collapse(String);
 		EndIf;
 	EndIf;
@@ -546,9 +546,9 @@ Procedure kRun1CForAnyBase(Command)
 EndProcedure
 
 &AtClient
-Procedure ДеревоОбъектовПередРазворачиванием(Item, String, Cancel)
+Procedure ObjectsTreeBeforeExpand(Item, String, Cancel)
 	If Not _DisplayObjectsRights Then
-		Items.ObjectsTree.CurrentLine = String; // it is usefull when opening nodes are above
+		Items.ObjectsTree.CurrentRow = String; // it is usefull when opening nodes are above
 	EndIf;
 
 	TreeNode = ObjectsTree.FindByID(String);
@@ -621,7 +621,7 @@ Procedure ДеревоОбъектовПередРазворачиванием(I
 				TreeLine.Name = Item.Key;
 				TreeLine.Name = Item.Key + " (" + Item.Value + ")";
 				TreeLine.NodeType = "SectionMD";
-				TreeLine.NodeType = 1;
+				TreeLine.NType = 1;
 				TreeLine.GetItems().Add();
 			EndDo;
 
@@ -688,7 +688,7 @@ Procedure vAfterRunningApplication(КодВозврата, AdditionalParameters 
 EndProcedure
 &AtClientAtServerNoContext
 Function vListOfTreeFields()
-	Return "Name, Synonym, MainSQLTable, FullName, NodeType, NodeType, ObjectPresentation, NumberOfObjects";
+	Return "Name, Synonym, MainSQLTable, FullName, NodeType, NType, ObjectPresentation, NumberOfObjects";
 EndFunction
 
 &AtServerNoContext
@@ -738,14 +738,14 @@ Function vGetCompositionSectionMD(Val NameOfSection)
 	StringType = New TypeDescription("String");
 
 	Table = New ValueTable;
-	Table.Cols.Add("MetadataObject");
-	Table.Cols.Add("Name", StringType);
-	Table.Cols.Add("Synonym", StringType);
-	Table.Cols.Add("ObjectPresentation", StringType);
-	Table.Cols.Add("MainSQLTable", StringType);
-	Table.Cols.Add("FullName", StringType);
-	Table.Cols.Add("NodeType", StringType);
-	Table.Cols.Add("ThereAreChildren", New TypeDescription("Boolean"));
+	Table.Columns.Add("MetadataObject");
+	Table.Columns.Add("Name", StringType);
+	Table.Columns.Add("Synonym", StringType);
+	Table.Columns.Add("ObjectPresentation", StringType);
+	Table.Columns.Add("MainSQLTable", StringType);
+	Table.Columns.Add("FullName", StringType);
+	Table.Columns.Add("NodeType", StringType);
+	Table.Columns.Add("ThereAreChildren", New TypeDescription("Boolean"));
 
 	If NameOfSection = "Users" Then
 		If vIsAdministratorRights() Then
@@ -876,13 +876,13 @@ Function vGetCompositionSubsytem(Val FullName)
 	StringType = New TypeDescription("String");
 
 	Table = New ValueTable;
-	Table.Cols.Add("MetadataObject");
-	Table.Cols.Add("Name", StringType);
-	Table.Cols.Add("Synonym", StringType);
-	Table.Cols.Add("ObjectPresentation", StringType);
-	Table.Cols.Add("FullName", StringType);
-	Table.Cols.Add("NodeType", StringType);
-	Table.Cols.Add("ThereAreChildren", New TypeDescription("Boolean"));
+	Table.Columns.Add("MetadataObject");
+	Table.Columns.Add("Name", StringType);
+	Table.Columns.Add("Synonym", StringType);
+	Table.Columns.Add("ObjectPresentation", StringType);
+	Table.Columns.Add("FullName", StringType);
+	Table.Columns.Add("NodeType", StringType);
+	Table.Columns.Add("ThereAreChildren", New TypeDescription("Boolean"));
 
 	ObjectMD = Metadata.FindByFullName(FullName);
 	If ObjectMD <> Undefined Then
@@ -966,8 +966,8 @@ Procedure ObjectTreeSelection(Item, SelectedRow, Field, StandardProcessing)
 				Return;
 			EndIf;
 
-			СпецПеречень = "Processing, Report";
-			_Structure = New Structure(СпецПеречень);
+			SpecialList = "Processing, Report";
+			_Structure = New Structure(SpecialList);
 
 			ObjectTypeMD = Left(CurrentData.FullName, StrFind(CurrentData.FullName, ".") - 1);
 			If _Structure.Property(ObjectTypeMD) Then
@@ -1137,13 +1137,13 @@ Procedure vFillServiceTree()
 	TreeNode = ServiceTree;
 
 	For LineNumber = 2 To Template.TableHeight Do
-		PropertyStructure.Presentation = TrimAll(Template.Region(LineNumber, 1).Text);
+		PropertyStructure.Presentation = TrimAll(Template.Area(LineNumber, 1).Text);
 
 		If Not IsBlankString(PropertyStructure.Presentation) Then
-			PropertyStructure.NodeType = TrimAll(Template.Region(LineNumber, 2).Text);
-			PropertyStructure.Name = TrimAll(Template.Region(LineNumber, 3).Text);
-			PropertyStructure.AvailabilityExpression = TrimAll(Template.Region(LineNumber, 4).Text);
-			PropertyStructure.Comment = TrimAll(Template.Region(LineNumber, 5).Text);
+			PropertyStructure.NodeType = TrimAll(Template.Area(LineNumber, 2).Text);
+			PropertyStructure.Name = TrimAll(Template.Area(LineNumber, 3).Text);
+			PropertyStructure.AvailabilityExpression = TrimAll(Template.Area(LineNumber, 4).Text);
+			PropertyStructure.Comment = TrimAll(Template.Area(LineNumber, 5).Text);
 
 			If PropertyStructure.NodeType = "Г" Then
 				TreeNode = TreeRoot.GetItems().Add();
@@ -1192,7 +1192,7 @@ Procedure vProcessServiceCommand(TreeLine)
 	ElsIf TreeLine.Name = "RefreshReusableValues" Then
 		RefreshReusableValues();
 	ElsIf TreeLine.Name = "ClearFavorites" Then
-		vShowQueryBox(Nstr("ru = 'Избранное будет очищено. Продолжить?';en = 'The favorites will clear. Continue?'"), "вОчиститьИзбранное");
+		vShowQueryBox(Nstr("ru = 'Избранное будет очищено. Продолжить?';en = 'The favorites will clear. Continue?'"), "vClearFavorites");
 	ElsIf TreeLine.Name = "DisplayScale" Then
 		kChangeScaleOfForm(Undefined);
 	ElsIf TreeLine.Name = "SetSessionsLock" Then
@@ -1226,7 +1226,7 @@ Procedure vProcessServiceCommand(TreeLine)
 EndProcedure
 
 &AtClient
-Procedure вОчиститьИзбранное(Result, AdditionalParameters = Undefined) Export
+Procedure vClearFavorites(Result, AdditionalParameters = Undefined) Export
 	If Result = DialogReturnCode.Yes Then
 		vClearFavoritesServer();
 	EndIf;
@@ -1252,7 +1252,7 @@ EndProcedure
 &AtClient
 Procedure kRunServiceCommand(Command)
 	CurrentData = Items.ServiceTree.CurrentData;
-	ServiceTreeSelection(Items.ServiceTree, Items.ServiceTree.CurrentLine, Undefined, False);
+	ServiceTreeSelection(Items.ServiceTree, Items.ServiceTree.CurrentRow, Undefined, False);
 EndProcedure
 
 &AtClient
@@ -1402,12 +1402,12 @@ Function vGetAccessRightsToObject(Val RightName, Val FullName, AddressOfRolesAnd
 	ResultStructure = New Structure("HaveData, Roles, Users", False);
 
 	RoleTable = New ValueTable;
-	RoleTable.Cols.Add("Name", New TypeDescription("String"));
-	RoleTable.Cols.Add("Synonym", New TypeDescription("String"));
+	RoleTable.Columns.Add("Name", New TypeDescription("String"));
+	RoleTable.Columns.Add("Synonym", New TypeDescription("String"));
 
 	UsersTable = New ValueTable;
-	UsersTable.Cols.Add("Name", New TypeDescription("String"));
-	UsersTable.Cols.Add("FullName", New TypeDescription("String"));
+	UsersTable.Columns.Add("Name", New TypeDescription("String"));
+	UsersTable.Columns.Add("FullName", New TypeDescription("String"));
 	If StrFind(FullName, ".Command.") <> 0 Then
 		TypeMD = "CommonCommand";
 	Else
@@ -1438,9 +1438,9 @@ Function vGetAccessRightsToObject(Val RightName, Val FullName, AddressOfRolesAnd
 	EndIf;
 	If IsBlankString(AddressOfRolesAndUsersTable) Then
 		__RolesAndUsersTable = New ValueTable;
-		__RolesAndUsersTable.Cols.Add("RoleName", New TypeDescription("String"));
-		__RolesAndUsersTable.Cols.Add("UserName", New TypeDescription("String"));
-		__RolesAndUsersTable.Cols.Add("FullUserName", New TypeDescription("String"));
+		__RolesAndUsersTable.Columns.Add("RoleName", New TypeDescription("String"));
+		__RolesAndUsersTable.Columns.Add("UserName", New TypeDescription("String"));
+		__RolesAndUsersTable.Columns.Add("FullUserName", New TypeDescription("String"));
 
 		For Each User In InfoBaseUsers.GetUsers() Do
 			For Each Role In User.Roles Do
@@ -1528,19 +1528,19 @@ Procedure vFillAccessRights()
 EndProcedure
 
 &AtClient
-Procedure ТабПроверяемыеПраваПриНачалеРедактирования(Item, NewLine, Copy)
+Procedure VerifiableRightsTableOnStartEdit(Item, NewLine, Copy)
 	CurrentData = Item.CurrentData;
 	_Structure = New Structure(mDescriptionAccessRights[CurrentData.MetadataObject]);
 
-	ЭФ = Items.VerifiableRightsTableRight;
-	ЭФ.ChoiceList.Clear();
+	ElemF = Items.VerifiableRightsTableRight;
+	ElemF.ChoiceList.Clear();
 	For Each Item In _Structure Do
-		ЭФ.ChoiceList.Add(Item.Key);
+		ElemF.ChoiceList.Add(Item.Key);
 	EndDo;
 EndProcedure
 
 &AtClient
-Procedure ТабРолиСДоступомВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure RolesWithAccessTableSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
 
 	CurrentData = Items.RolesWithAccessTable.CurrentData;
@@ -1554,14 +1554,9 @@ Procedure ТабРолиСДоступомВыбор(Item, SelectedRow, Field, S
 	EndIf;
 EndProcedure
 
-&AtClient
-Procedure VerifiableRightsTableSelection(Item, RowSelected, Field, StandardProcessing)
-	//TODO: Insert the handler content
-EndProcedure
-
 
 &AtClient
-Procedure ТабПользователиСДоступомВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure UsersWithAccessTableSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
 
 	CurrentData = Items.UsersWithAccessTable.CurrentData;
@@ -1867,25 +1862,26 @@ EndProcedure
 
 &AtServer
 Procedure vFillInSX()
-	ТабРезультат = GetDBStorageStructureInfo( , Not _ShowStorageStructureInTermsOf1C);
+	ResultTable = GetDBStorageStructureInfo( , Not _ShowStorageStructureInTermsOf1C);
 
-	For Each Row In ТабРезультат Do
+	For Each Row In ResultTable Do
 		NewRow = _Tables.Add();
 		FillPropertyValues(NewRow, Row);
 
 		If NewRow.TableName = "" Then
-			NewRow.TableName = "<не задано>";
+			NewRow.TableName = NStr("ru = '<не задано>'; en = '<not set>'");
 		EndIf;
 		If NewRow.Metadata = "" Then
-			NewRow.Metadata = "<не задано>";
-		EndIf;
+			NewRow.Metadata = NStr("ru = '<не задано>'; en = '<not set>'");
+		EndIf;    
+		
 
 		For Each LineX In Row.Indexes Do
 			NewRow = _Indexes.Add();
-			NewRow.IndexName = LineX.IndexName;
+			NewRow.IndexName = LineX.StorageIndexName;
 			FillPropertyValues(NewRow, Row, "TableName, Metadata");
 			If NewRow.Metadata = "" Then
-				NewRow.Metadata = "<не задано>";
+				NewRow.Metadata = NStr("ru = '<не задано>'; en = '<not set>'");
 			EndIf;
 		EndDo;
 	EndDo;
@@ -1893,13 +1889,13 @@ Procedure vFillInSX()
 EndProcedure
 
 &AtClient
-Procedure _СХТаблицыВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure _TablesSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
 	kShowObjectProperties(Undefined);
 EndProcedure
 
 &AtClient
-Procedure _СХИндексыВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure _IndexesSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
 	kShowObjectProperties(Undefined);
 EndProcedure
@@ -1913,7 +1909,7 @@ Procedure _MoveToTableFromIndex(Command)
 			String = Array[0].GetID();
 			ТекСтрока = _Tables.FindByID(String);
 			If ТекСтрока <> Undefined Then
-				Items._Tables.CurrentLine = String;
+				Items._Tables.CurrentRow = String;
 				Items.TableAndIndexesGrpip.CurrentPage = Items.TablePage;
 			EndIf;
 		EndIf;
@@ -1973,7 +1969,7 @@ Function вПолучитьПользователейИБ(Val pFieldList, Val п
 EndFunction
 
 &AtClient
-Procedure _СписокПользователейИБВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure _DBUserListSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
 
 	CurrentData = _DBUserList.FindByID(SelectedRow);
@@ -1985,7 +1981,7 @@ Procedure _СписокПользователейИБВыбор(Item, SelectedRo
 EndProcedure
 
 &AtClient
-Procedure _СписокПользователейИБПередНачаломДобавления(Item, Cancel, Copy, Parent, Group, Parameter)
+Procedure _DBUserListBeforeAddRow(Item, Cancel, Copy, Parent, Group, Parameter)
 	Cancel = True;
 
 	If Copy Then
@@ -2003,7 +1999,7 @@ Procedure _СписокПользователейИБПередНачаломД�
 EndProcedure
 
 &AtClient
-Procedure _СписокПользователейИБПередУдалением(Item, Cancel)
+Procedure _DBUserListBeforeDeleteRow(Item, Cancel)
 	Cancel = True;
 
 	pSelectedLines = Item.SelectedRows;
@@ -2508,6 +2504,13 @@ EndProcedure
 Procedure Attachable_ExecuteToolsCommonCommand(Command) 
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
+
+
+
+
+
+
+
 
 
 

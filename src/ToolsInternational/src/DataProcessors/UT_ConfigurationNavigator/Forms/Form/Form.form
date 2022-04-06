@@ -941,6 +941,7 @@
                     <autoMaxWidth>true</autoMaxWidth>
                     <autoMaxHeight>true</autoMaxHeight>
                     <placementArea>UserCmds</placementArea>
+                    <toolTipRepresentation>Auto</toolTipRepresentation>
                     <representationInContextMenu>Auto</representationInContextMenu>
                   </items>
                   <items xsi:type="form:Button">
@@ -971,6 +972,7 @@
                     <autoMaxWidth>true</autoMaxWidth>
                     <autoMaxHeight>true</autoMaxHeight>
                     <placementArea>UserCmds</placementArea>
+                    <toolTipRepresentation>Auto</toolTipRepresentation>
                     <representationInContextMenu>Auto</representationInContextMenu>
                   </items>
                   <visible>true</visible>
@@ -1405,12 +1407,12 @@
             <name>ObjectTreeSelection</name>
           </handlers>
           <handlers>
-            <event>BeforeExpand</event>
-            <name>ДеревоОбъектовПередРазворачиванием</name>
-          </handlers>
-          <handlers>
             <event>OnActivateRow</event>
             <name>ObjectsTreeOnActivateRow</name>
+          </handlers>
+          <handlers>
+            <event>BeforeExpand</event>
+            <name>ObjectsTreeBeforeExpand</name>
           </handlers>
           <handlers>
             <event>OnChange</event>
@@ -2232,7 +2234,7 @@
                 </autoCommandBar>
                 <handlers>
                   <event>Selection</event>
-                  <name>ТабРолиСДоступомВыбор</name>
+                  <name>RolesWithAccessTableSelection</name>
                 </handlers>
                 <searchStringAddition>
                   <visible>true</visible>
@@ -2713,7 +2715,7 @@
                 </autoCommandBar>
                 <handlers>
                   <event>Selection</event>
-                  <name>ТабПользователиСДоступомВыбор</name>
+                  <name>UsersWithAccessTableSelection</name>
                 </handlers>
                 <searchStringAddition>
                   <visible>true</visible>
@@ -3178,11 +3180,7 @@
                 </autoCommandBar>
                 <handlers>
                   <event>OnStartEdit</event>
-                  <name>ТабПроверяемыеПраваПриНачалеРедактирования</name>
-                </handlers>
-                <handlers>
-                  <event>Selection</event>
-                  <name>VerifiableRightsTableSelection</name>
+                  <name>VerifiableRightsTableOnStartEdit</name>
                 </handlers>
                 <searchStringAddition>
                   <visible>true</visible>
@@ -5489,15 +5487,15 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>_СписокПользователейИБВыбор</name>
+          <name>_DBUserListSelection</name>
         </handlers>
         <handlers>
           <event>BeforeAddRow</event>
-          <name>_СписокПользователейИБПередНачаломДобавления</name>
+          <name>_DBUserListBeforeAddRow</name>
         </handlers>
         <handlers>
           <event>BeforeDeleteRow</event>
-          <name>_СписокПользователейИБПередУдалением</name>
+          <name>_DBUserListBeforeDeleteRow</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -9364,7 +9362,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>_Tables.Metadate</segments>
+                <segments>_Tables.Metadata</segments>
               </dataPath>
               <extendedTooltip>
                 <name>_TablesMetadateExtendedTooltip</name>
@@ -9573,7 +9571,7 @@
             </autoCommandBar>
             <handlers>
               <event>Selection</event>
-              <name>_СХТаблицыВыбор</name>
+              <name>_TablesSelection</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -10167,7 +10165,7 @@
             </autoCommandBar>
             <handlers>
               <event>Selection</event>
-              <name>_СХИндексыВыбор</name>
+              <name>_IndexesSelection</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -11493,19 +11491,19 @@
   </autoCommandBar>
   <handlers>
     <event>OnSaveDataInSettingsAtServer</event>
-    <name>ПриСохраненииДанныхВНастройкахНаСервере</name>
+    <name>OnSaveDataInSettingsAtServer</name>
   </handlers>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnLoadDataFromSettingsAtServer</event>
-    <name>ПриЗагрузкеДанныхИзНастроекНаСервере</name>
+    <name>OnLoadDataFromSettingsAtServer</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <saveDataInSettings>UseList</saveDataInSettings>
@@ -11711,6 +11709,26 @@
         <value>Number of objects</value>
       </title>
       <id>7</id>
+      <valueType>
+        <types>Number</types>
+        <numberQualifiers>
+          <precision>10</precision>
+        </numberQualifiers>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>NType</name>
+      <title>
+        <key>en</key>
+        <value>N type</value>
+      </title>
+      <id>8</id>
       <valueType>
         <types>Number</types>
         <numberQualifiers>
@@ -12717,14 +12735,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Metadate</name>
+      <name>Metadata</name>
       <title>
         <key>ru</key>
         <value>Метаданные</value>
       </title>
       <title>
         <key>en</key>
-        <value>Metadate</value>
+        <value>Metadata</value>
       </title>
       <id>4</id>
       <valueType>
@@ -15136,7 +15154,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ЗапускПодПользователемКонфигуратор</name>
+        <name>RunConfiguratorUnderUser</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -15199,7 +15217,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ЗапускПодПользователемТонкийКлиент</name>
+        <name>RunThinClientUnderUser</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
