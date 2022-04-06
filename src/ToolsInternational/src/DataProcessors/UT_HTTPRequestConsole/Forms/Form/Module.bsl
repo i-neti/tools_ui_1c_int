@@ -534,7 +534,7 @@ Function PreparedHTTPRequest(URLStructure)
 
 	ParamsString = "";
 	For Each KeyAndValue In URLStructure.RequestParameters Do
-		ParamsString = ParamsString + ?(ValueIsFilled(ParamsString), "?", "&") + KeyAndValue.Key + "="
+		ParamsString = ParamsString + ?(Not ValueIsFilled(ParamsString), "?", "&") + KeyAndValue.Key + "="
 			+ KeyAndValue.Value;
 	EndDo;
 
