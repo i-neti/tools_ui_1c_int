@@ -21,6 +21,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	UseScriptMap = EditorSettings.Monaco.UseScriptMap;
 	HideLineNumbers = EditorSettings.Monaco.HideLineNumbers;
 	LinesHeight = EditorSettings.Monaco.LinesHeight;
+	DisplaySpacesAndTabs = EditorSettings.Monaco.DisplaySpacesAndTabs;
 
 	ConfigurationSourceFilesDirectories.Clear();
 	Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Clear();
@@ -76,7 +77,7 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	SourceValueTable = ConfigurationSourceFilesDirectories.Unload(, "Source");
 	SourceValueTable.GroupBy("Source");
 	
-	For Each Row ИЗ SourceValueTable Do
+	For Each Row In SourceValueTable Do
 		SearchStructure = New Structure;
 		SearchStructure.Insert("Source", Row.Source);
 
@@ -140,7 +141,7 @@ Procedure SaveConfigurationModulesToFiles(Command)
 	CurrentDirectories = New Map;
 	For Each CurrentRow In ConfigurationSourceFilesDirectories Do
 		If Not ValueIsFilled(CurrentRow.Source) 
-			Или Not ValueIsFilled(CurrentRow.Directory) Then
+			Or  Not ValueIsFilled(CurrentRow.Directory) Then
 				Continue;
 		EndIf;
 
@@ -224,7 +225,7 @@ Procedure ApplyAtServer()
 	CodeEditorParameters.Monaco.UseScriptMap = UseScriptMap;
 	CodeEditorParameters.Monaco.HideLineNumbers = HideLineNumbers;
 	CodeEditorParameters.Monaco.LinesHeight = LinesHeight;
-	
+	CodeEditorParameters.Monaco.DisplaySpacesAndTabs = DisplaySpacesAndTabs;
 	For Each CurrentRow In ConfigurationSourceFilesDirectories Do
 		If Not ValueIsFilled(CurrentRow.Directory) Then
 			Continue;
