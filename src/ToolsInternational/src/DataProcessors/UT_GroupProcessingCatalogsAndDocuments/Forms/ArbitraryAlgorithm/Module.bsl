@@ -1,39 +1,38 @@
-//Types объектов, для которых может использоваться обработка.
-//To умолчанию для всех.
+//Types of objects for which processing can be used.
+//To default for everyone.
 &AtClient
-Var мТипыОбрабатываемыхОбъектов Export;
+Var mTypesOfProcessedObjects Export;
 
 &AtClient
-Var мНастройка;
+Var mSetting;
 
 ////////////////////////////////////////////////////////////////////////////////
-// ВСПОМОГАТЕЛЬНЫЕ ПРОЦЕДУРЫ And ФУНКЦИИ
+// AUXILIARY PROCEDURES AND FUNCTIONS
 
-// Выполняет обработку объектов.
+// Performs object processing.
 //
 // Parameters:
-//  Object                 - обрабатываемый объект.
-//  ПорядковыйНомерОбъекта - порядковый номер обрабатываемого объекта.
+//  ProcessedObject                 - processed object.
+//  SequenceNumberObject - serial number of the processed object.
 //
 &AtServer
-Procedure ОбработатьОбъект(Reference, ПорядковыйНомерОбъекта, ТекстАлгоритма)
+Procedure ProcessObject(Reference, SequenceNumberObject, TextAlgorithm)
 
 	Try
-		Object = Reference.GetObject();
+		ProcessedObject = Reference.GetObject();
 		If ProcessTabularParts Then
 			//@skip-warning
-			СтрокаТЧ=Object[НайденныеОбъекты[ПорядковыйНомерОбъекта].Т_ТЧ][НайденныеОбъекты[ПорядковыйНомерОбъекта].Т_НомерСтроки
-				- 1];
+			Line_TP = ProcessedObject[FoundObjects[SequenceNumberObject].T_TP][FoundObjects[SequenceNumberObject].T_LineNumber - 1];
 		EndIf;
 
-		Execute (ТекстАлгоритма);
+		Execute (TextAlgorithm);
 	Except
 		Message(ErrorDescription());
 	EndTry;
 
-EndProcedure // ОбработатьОбъект()
+EndProcedure // ProcessObject()
 
-// Выполняет обработку объектов.
+// Performs object processing.
 //
 // Parameters:
 //  None.
@@ -41,17 +40,17 @@ EndProcedure // ОбработатьОбъект()
 &AtClient
 Function ExecuteProcessing() Export
 	If IsOpen() Then
-		ТекстПроизвольногоАлгоритма = UT_CodeEditorClient.EditorCodeText(ThisObject, "Редактор");
+		ArbitraryAlgorithmText = UT_CodeEditorClient.EditorCodeText(ThisObject, "Editor");
 	EndIf;
-	Indicator = ПолучитьИндикаторПроцесса(НайденныеОбъекты.Count());
-	For IndexOf = 0 To НайденныеОбъекты.Count() - 1 Do
-		ОбработатьИндикатор(Indicator, IndexOf + 1);
+	Indicator = UT_FormsClient.GetProcessIndicator(FoundObjects.Count());
+	For IndexOf = 0 To FoundObjects.Count() - 1 Do
+		UT_FormsClient.ProcessIndicator(Indicator, IndexOf + 1);
 
-		СтрокаНайденныхОбъектов=НайденныеОбъекты.Get(IndexOf);
+		RowFoundObjects = FoundObjects.Get(IndexOf);
 
-		If СтрокаНайденныхОбъектов.StartChoosing Then//
+		If RowFoundObjects.StartChoosing Then//
 
-			ОбработатьОбъект(СтрокаНайденныхОбъектов.Object, IndexOf, ТекстПроизвольногоАлгоритма);
+			ProcessObject(RowFoundObjects.Object, IndexOf, ArbitraryAlgorithmText);
 		EndIf;
 
 	EndDo;
@@ -61,202 +60,19 @@ Function ExecuteProcessing() Export
 	EndIf;
 
 	Return IndexOf;
-EndFunction // вВыполнитьОбработку()
-
-// Сохраняет значения реквизитов формы.
-//
-// Parameters:
-//  None.
-//
-&AtClient
-Procedure СохранитьНастройку() Export
-	ТекстПроизвольногоАлгоритма = UT_CodeEditorClient.EditorCodeText(ThisObject, "Редактор");
-
-	If IsBlankString(ТекущаяНастройкаПредставление) Then
-		ShowMessageBox( ,
-			"Задайте имя новой настройки для сохранения или выберите существующую настройку для перезаписи.");
-	EndIf;
-
-	НоваяНастройка = New Structure;
-	НоваяНастройка.Insert("Processing", ТекущаяНастройкаПредставление);
-	НоваяНастройка.Insert("Прочее", New Structure);
-
-	For Each РеквизитНастройки In мНастройка Do
-		Execute ("НоваяНастройка.Прочее.Insert(String(РеквизитНастройки.Key), " + String(РеквизитНастройки.Key)
-			+ ");");
-	EndDo;
-
-	AvailableDataProcessors = ThisForm.FormOwner.AvailableDataProcessors;
-	ТекущаяДоступнаяНастройка = Undefined;
-	For Each ТекущаяДоступнаяНастройка In AvailableDataProcessors.GetItems() Do
-		If ТекущаяДоступнаяНастройка.GetID() = Parent Then
-			Break;
-		EndIf;
-	EndDo;
-
-	If ТекущаяНастройка = Undefined Or Not ТекущаяНастройка.Processing = ТекущаяНастройкаПредставление Then
-		If ТекущаяДоступнаяНастройка <> Undefined Then
-			NewLine = ТекущаяДоступнаяНастройка.GetItems().Add();
-			NewLine.Processing = ТекущаяНастройкаПредставление;
-			NewLine.Setting.Add(НоваяНастройка);
-
-			ThisForm.FormOwner.Items.AvailableDataProcessors.CurrentLine = NewLine.GetID();
-		EndIf;
-	EndIf;
-
-	If ТекущаяДоступнаяНастройка <> Undefined And CurrentLine > -1 Then
-		For Each ТекНастройка In ТекущаяДоступнаяНастройка.GetItems() Do
-			If ТекНастройка.GetID() = CurrentLine Then
-				Break;
-			EndIf;
-		EndDo;
-
-		If ТекНастройка.Setting.Count() = 0 Then
-			ТекНастройка.Setting.Add(НоваяНастройка);
-		Else
-			ТекНастройка.Setting[0].Value = НоваяНастройка;
-		EndIf;
-	EndIf;
-
-	ТекущаяНастройка = НоваяНастройка;
-	ThisForm.Modified = False;
-EndProcedure // вСохранитьНастройку()
-
-// Восстанавливает сохраненные значения реквизитов формы.
-//
-// Parameters:
-//  None.
-//
-&AtClient
-Procedure ЗагрузитьНастройку() Export
-
-	If Items.ТекущаяНастройка.ChoiceList.Count() = 0 Then
-		УстановитьИмяНастройки("Новая настройка");
-	Else
-		If Not ТекущаяНастройка.Прочее = Undefined Then
-			мНастройка = ТекущаяНастройка.Прочее;
-		EndIf;
-	EndIf;
-
-	For Each РеквизитНастройки In мНастройка Do
-		//@skip-warning
-		Value = мНастройка[РеквизитНастройки.Key];
-		Execute (String(РеквизитНастройки.Key) + " = Value;");
-	EndDo;
-
-EndProcedure //вЗагрузитьНастройку()
-
-// Устанавливает значение реквизита "ТекущаяНастройка" по имени настройки или произвольно.
-//
-// Parameters:
-//  ИмяНастройки   - произвольное имя настройки, которое необходимо установить.
-//
-&AtClient
-Procedure УстановитьИмяНастройки(ИмяНастройки = "") Export
-
-	If IsBlankString(ИмяНастройки) Then
-		If ТекущаяНастройка = Undefined Then
-			ТекущаяНастройкаПредставление = "";
-		Else
-			ТекущаяНастройкаПредставление = ТекущаяНастройка.Processing;
-		EndIf;
-	Else
-		ТекущаяНастройкаПредставление = ИмяНастройки;
-	EndIf;
-
-EndProcedure // вУстановитьИмяНастройки()
-
-// Получает структуру для индикации прогресса цикла.
-//
-// Parameters:
-//  КоличествоПроходов - Number - максимальное значение счетчика;
-//  ПредставлениеПроцесса - String, "Выполнено" - отображаемое название процесса;
-//  ВнутреннийСчетчик - Boolean, *True - использовать внутренний счетчик с начальным значением 1,
-//                    иначе нужно будет передавать значение счетчика при каждом вызове обновления индикатора;
-//  КоличествоОбновлений - Number, *100 - всего количество обновлений индикатора;
-//  ЛиВыводитьВремя - Boolean, *True - выводить приблизительное время до окончания процесса;
-//  РазрешитьПрерывание - Boolean, *True - разрешает пользователю прерывать процесс.
-//
-// Возвращаемое значение:
-//  Structure - которую потом нужно будет передавать в метод ЛксОбработатьИндикатор.
-//
-&AtClient
-Function ПолучитьИндикаторПроцесса(КоличествоПроходов, ПредставлениеПроцесса = "Выполнено", ВнутреннийСчетчик = True,
-	КоличествоОбновлений = 100, ЛиВыводитьВремя = True, РазрешитьПрерывание = True) Export
-
-	Indicator = New Structure;
-	Indicator.Insert("КоличествоПроходов", КоличествоПроходов);
-	Indicator.Insert("ДатаНачалаПроцесса", CurrentDate());
-	Indicator.Insert("ПредставлениеПроцесса", ПредставлениеПроцесса);
-	Indicator.Insert("ЛиВыводитьВремя", ЛиВыводитьВремя);
-	Indicator.Insert("РазрешитьПрерывание", РазрешитьПрерывание);
-	Indicator.Insert("ВнутреннийСчетчик", ВнутреннийСчетчик);
-	Indicator.Insert("Step", КоличествоПроходов / КоличествоОбновлений);
-	Indicator.Insert("СледующийСчетчик", 0);
-	Indicator.Insert("Счетчик", 0);
-	Return Indicator;
-
-EndFunction // ЛксПолучитьИндикаторПроцесса()
-
-// Проверяет и обновляет индикатор. Нужно вызывать на каждом проходе индицируемого цикла.
-//
-// Parameters:
-//  Indicator    - Structure - индикатора, полученная методом ЛксПолучитьИндикаторПроцесса;
-//  Счетчик      - Number - внешний счетчик цикла, используется при ВнутреннийСчетчик = False.
-//
-&AtClient
-Procedure ОбработатьИндикатор(Indicator, Счетчик = 0) Export
-
-	If Indicator.ВнутреннийСчетчик Then
-		Indicator.Счетчик = Indicator.Счетчик + 1;
-		Счетчик = Indicator.Счетчик;
-	EndIf;
-	If Indicator.РазрешитьПрерывание Then
-		UserInterruptProcessing();
-	EndIf;
-
-	If Счетчик > Indicator.СледующийСчетчик Then
-		Indicator.СледующийСчетчик = Int(Счетчик + Indicator.Step);
-		If Indicator.ЛиВыводитьВремя Then
-			ПрошлоВремени = CurrentDate() - Indicator.ДатаНачалаПроцесса;
-			Осталось = ПрошлоВремени * (Indicator.КоличествоПроходов / Счетчик - 1);
-			Часов = Int(Осталось / 3600);
-			Осталось = Осталось - (Часов * 3600);
-			Минут = Int(Осталось / 60);
-			Секунд = Int(Int(Осталось - (Минут * 60)));
-			ОсталосьВремени = Format(Часов, "ЧЦ=2; ЧН=00; ЧВН=") + ":" + Format(Минут, "ЧЦ=2; ЧН=00; ЧВН=") + ":"
-				+ Format(Секунд, "ЧЦ=2; ЧН=00; ЧВН=");
-			ТекстОсталось = "Осталось: ~" + ОсталосьВремени;
-		Else
-			ТекстОсталось = "";
-		EndIf;
-
-		If Indicator.КоличествоПроходов > 0 Then
-			ТекстСостояния = ТекстОсталось;
-		Else
-			ТекстСостояния = "";
-		EndIf;
-
-		Status(Indicator.ПредставлениеПроцесса, Счетчик / Indicator.КоличествоПроходов * 100, ТекстСостояния);
-	EndIf;
-
-	If Счетчик = Indicator.КоличествоПроходов Then
-		Status(Indicator.ПредставлениеПроцесса, 100, ТекстСостояния);
-	EndIf;
-
-EndProcedure // ЛксОбработатьИндикатор()
+EndFunction // FoundObjects()
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ФОРМЫ
+// FORM EVENT HANDLERS
 
 &AtClient
 Procedure OnOpen(Cancel)
-	If мИспользоватьНастройки Then
-		УстановитьИмяНастройки();
-		ЗагрузитьНастройку();
+	If mUseSettings Then
+		UT_FormsClient.SetNameSettings(ThisForm);
+		UT_FormsClient.DownloadSettings(ThisForm, mSetting);
 	Else
-		Items.ТекущаяНастройка.Enabled = False;
-		Items.СохранитьНастройки.Enabled = False;
+		Items.CurrentSetting.Enabled = False;
+		Items.SaveSettings.Enabled = False;
 	EndIf;
 	
 	UT_CodeEditorClient.FormOnOpen(ThisObject);
@@ -268,74 +84,77 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	UT_FormsServer.FillSettingByParametersForm(ThisForm);
 	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
-	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Редактор", Items.ПолеПроизвольногоАлгоритма);
+	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Editor", Items.ArbitraryAlgorithmField);
 
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ, ВЫЗЫВАЕМЫЕ ИЗ ЭЛЕМЕНТОВ ФОРМЫ
+// EVENT HANDLERS CALLED FROM FORM ELEMENTS
 
 &AtClient
-Procedure ВыполнитьОбработкуКоманда(Command)
-	ОбработаноОбъектов = ExecuteProcessing();
+Procedure ExecuteCommand(Command)
+	
+	ProcessedObjects = ExecuteProcessing();
 
-	ShowMessageBox( , "Processing <" + TrimAll(ThisForm.Title) + "> завершена!
-																		   |Обработано объектов: " + ОбработаноОбъектов
-		+ ".");
+	Message = StrTemplate(Nstr("ru = 'Обработка <%1> завершена! 
+					 |Обработано объектов: %2.';en = 'Processing of <%1> completed!
+					 |Objects processed: %2.'"), TrimAll(ThisForm.Title), ProcessedObjects);
+	ShowMessageBox(, Message);
+	
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиКоманда(Command)
-	СохранитьНастройку();
+Procedure SaveSettings(Command)
+	UT_FormsClient.SaveSetting(ThisForm, mSetting);
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбора(Item, ВыбранноеЗначение, StandardProcessing)
+Procedure CurrentSettingChoiceProcessing(Item, SelectedValue, StandardProcessing)
 	StandardProcessing = False;
 
-	If Not ТекущаяНастройка = ВыбранноеЗначение Then
+	If Not CurrentSetting = SelectedValue Then
 
 		If ThisForm.Modified Then
-			ShowQueryBox(New NotifyDescription("ТекущаяНастройкаОбработкаВыбораЗавершение", ThisForm,
-				New Structure("ВыбранноеЗначение", ВыбранноеЗначение)), "Save текущую настройку?",
+			ShowQueryBox(New NotifyDescription("CurrentSettingChoiceProcessingEnd", ThisForm,
+				New Structure("SelectedValue", SelectedValue)), Nstr("ru = 'Сохранить текущую настройку?';en = 'Save current setting?'"),
 				QuestionDialogMode.YesNo, , DialogReturnCode.Yes);
 			Return;
 		EndIf;
 
-		ТекущаяНастройкаОбработкаВыбораФрагмент(ВыбранноеЗначение);
+		CurrentSettingChoiceProcessingFragment(SelectedValue);
 
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбораЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure CurrentSettingChoiceProcessingEnd(ResultQuestion, AdditionalParameters) Export
 
-	ВыбранноеЗначение = AdditionalParameters.ВыбранноеЗначение;
-	If РезультатВопроса = DialogReturnCode.Yes Then
-		СохранитьНастройку();
+	SelectedValue = AdditionalParameters.SelectedValue;
+	If ResultQuestion = DialogReturnCode.Yes Then
+		UT_FormsClient.SaveSetting(ThisForm, mSetting);
 	EndIf;
 
-	ТекущаяНастройкаОбработкаВыбораФрагмент(ВыбранноеЗначение);
+	CurrentSettingChoiceProcessingFragment(SelectedValue);
 
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбораФрагмент(Val ВыбранноеЗначение)
+Procedure CurrentSettingChoiceProcessingFragment(Val SelectedValue)
 
-	ТекущаяНастройка = ВыбранноеЗначение;
-	УстановитьИмяНастройки();
+	CurrentSetting = SelectedValue;
+	UT_FormsClient.SetNameSettings(ThisForm);
 
-	ЗагрузитьНастройку();
+	UT_FormsClient.DownloadSettings(ThisForm, mSetting);
 
 EndProcedure
 
 &AtClient
-Procedure ТекстПроизвольногоАлгоритмаПриИзменении(Item)
+Procedure ArbitraryAlgorithmTextCurrentLine(Item)
 	ThisForm.Modified = True;
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаПриИзменении(Item)
+Procedure CurrentSettingOnChange(Item)
 	ThisForm.Modified = True;
 EndProcedure
 
@@ -347,8 +166,8 @@ EndProcedure
 
 //@skip-warning
 &AtClient
-Procedure Attachable_EditorFieldOnClick(Item, ДанныеСобытия, StandardProcessing)
-	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, ДанныеСобытия, StandardProcessing);
+Procedure Attachable_EditorFieldOnClick(Item, EventData, StandardProcessing)
+	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, EventData, StandardProcessing);
 EndProcedure
 
 //@skip-warning
@@ -360,23 +179,23 @@ EndProcedure
 //@skip-warning
 &AtClient 
 Procedure Attachable_CodeEditorInitializingCompletion() Export
-	UT_CodeEditorClient.SetEditorText(ThisObject, "Редактор", ТекстПроизвольногоАлгоритма);
+	UT_CodeEditorClient.SetEditorText(ThisObject, "Editor", ArbitraryAlgorithmText);
 	
-	ДобавляемыйКонтекст = New Structure;
-	If НайденныеОбъекты.Count()>0 Then
-		ДобавляемыйКонтекст.Insert("Object", TypeOf(НайденныеОбъекты[0].Object));
+	AddedContext = New Structure;
+	If FoundObjects.Count()>0 Then
+		AddedContext.Insert("Object", TypeOf(FoundObjects[0].Object));
 	Else
-		ДобавляемыйКонтекст.Insert("Object");
+		AddedContext.Insert("Object");
 	EndIf;
-	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Редактор", ДобавляемыйКонтекст);
+	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Editor", AddedContext);
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// ИНИЦИАЛИЗАЦИЯ МОДУЛЬНЫХ ПЕРЕМЕННЫХ
+// INITIALIZING MODULAR VARIABLES
 
-мИспользоватьНастройки = True;
+mUseSettings = True;
 
-//Attributes настройки и значения по умолчанию.
-мНастройка = New Structure("ТекстПроизвольногоАлгоритма");
+//Attributes settings and defaults.
+mSetting = New Structure("ArbitraryAlgorithmText");
 
-мТипыОбрабатываемыхОбъектов = Undefined;
+mTypesOfProcessedObjects = Undefined;
