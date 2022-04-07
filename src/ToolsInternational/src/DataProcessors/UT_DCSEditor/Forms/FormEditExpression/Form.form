@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГруппаДосутныеПоляИМетоды</name>
+    <name>AvailableFieldAndMethodsGroup</name>
     <id>30</id>
     <items xsi:type="form:Table">
-      <name>ПоляСКД</name>
+      <name>DCSFields</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -12,14 +12,14 @@
         <common>true</common>
       </userVisible>
       <dataPath xsi:type="form:DataPath">
-        <segments>ПоляСКД</segments>
+        <segments>DCSFields</segments>
       </dataPath>
       <titleLocation>None</titleLocation>
       <items xsi:type="form:FormGroup">
-        <name>ПоляСКДГруппаПоле</name>
+        <name>DCSFiledsGroupFiled</name>
         <id>32</id>
         <items xsi:type="form:FormField">
-          <name>ПоляСКДКартинка</name>
+          <name>DCSFieldsPicture</name>
           <id>34</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -27,11 +27,11 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>ПоляСКД.Картинка</segments>
+            <segments>DCSFields.Picture</segments>
           </dataPath>
           <titleLocation>None</titleLocation>
           <extendedTooltip>
-            <name>ПоляСКДКартинкаРасширеннаяПодсказка</name>
+            <name>DCSFieldsPictureExtendedTooltip</name>
             <id>36</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -46,7 +46,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ПоляСКДКартинкаКонтекстноеМеню</name>
+            <name>DCSFieldsPictureContextMenu</name>
             <id>35</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -68,7 +68,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ПоляСКДПоле</name>
+          <name>DCSFieldsField</name>
           <id>21</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -76,10 +76,10 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>ПоляСКД.Поле</segments>
+            <segments>DCSFields.Field</segments>
           </dataPath>
           <extendedTooltip>
-            <name>ПоляСКДПолеРасширеннаяПодсказка</name>
+            <name>DCSFieldsFieldExtendedTooltip</name>
             <id>23</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -94,7 +94,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ПоляСКДПолеКонтекстноеМеню</name>
+            <name>DCSFieldsFieldContextMenu</name>
             <id>22</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -123,11 +123,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>DCSGroup fields field</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Поля СКДГруппа поле</value>
         </title>
         <extendedTooltip>
-          <name>ПоляСКДГруппаПолеРасширеннаяПодсказка</name>
+          <name>DCSFiledsGroupFiledExtendedTooltip</name>
           <id>33</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -148,7 +152,7 @@
         </extInfo>
       </items>
       <autoCommandBar>
-        <name>ПоляСКДКоманднаяПанель</name>
+        <name>DCSFieldsCommandBar</name>
         <id>9</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -159,7 +163,7 @@
       </autoCommandBar>
       <handlers>
         <event>Selection</event>
-        <name>ПоляСКДВыбор</name>
+        <name>DCSFieldsSelection</name>
       </handlers>
       <searchStringAddition>
         <visible>true</visible>
@@ -167,10 +171,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>ПоляСКДСтрокаПоиска</name>
+        <name>DCSFieldsSearchString</name>
         <id>12</id>
         <extendedTooltip>
-          <name>ПоляСКДСтрокаПоискаРасширеннаяПодсказка</name>
+          <name>DCSFieldsSearchStringExtendedTooltip</name>
           <id>14</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -185,7 +189,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПоляСКДСтрокаПоискаКонтекстноеМеню</name>
+          <name>DCSFieldsSearchStringContextMenu</name>
           <id>13</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -204,10 +208,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>ПоляСКДСостояниеПросмотра</name>
+        <name>DCSFieldsViewStatus</name>
         <id>18</id>
         <extendedTooltip>
-          <name>ПоляСКДСостояниеПросмотраРасширеннаяПодсказка</name>
+          <name>DCSFieldsViewStatusExtendedTooltip</name>
           <id>20</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -222,7 +226,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПоляСКДСостояниеПросмотраКонтекстноеМеню</name>
+          <name>DCSFieldsViewStatusContextMenu</name>
           <id>19</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -242,10 +246,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>ПоляСКДУправлениеПоиском</name>
+        <name>DCSFieldsSearchControl</name>
         <id>15</id>
         <extendedTooltip>
-          <name>ПоляСКДУправлениеПоискомРасширеннаяПодсказка</name>
+          <name>DCSFieldsSearchControlExtendedTooltip</name>
           <id>17</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -260,7 +264,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПоляСКДУправлениеПоискомКонтекстноеМеню</name>
+          <name>DCSFieldsSearchControlContextMenu</name>
           <id>16</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -275,7 +279,7 @@
         </extInfo>
       </searchControlAddition>
       <extendedTooltip>
-        <name>ПоляСКДРасширеннаяПодсказка</name>
+        <name>DCSFieldsExtendedTooltip</name>
         <id>11</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -290,7 +294,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПоляСКДКонтекстноеМеню</name>
+        <name>DCSFieldsContextMenu</name>
         <id>10</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -324,11 +328,15 @@
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Group avalible fields and methods</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Группа досутные поля и методы</value>
     </title>
     <extendedTooltip>
-      <name>ГруппаДосутныеПоляИМетодыРасширеннаяПодсказка</name>
+      <name>AvailableFieldAndMethodsGroupExtendedTooltip</name>
       <id>31</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -352,7 +360,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>ПолеРедактированияВыражения</name>
+    <name>ExpressionEditingField</name>
     <id>1</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -360,11 +368,11 @@
       <common>true</common>
     </userVisible>
     <dataPath xsi:type="form:DataPath">
-      <segments>ПолеРедактированияВыражения</segments>
+      <segments>ExpressionEditingField</segments>
     </dataPath>
     <titleLocation>None</titleLocation>
     <extendedTooltip>
-      <name>ПолеРедактированияВыраженияРасширеннаяПодсказка</name>
+      <name>ExpressionEditingFieldExtendedTooltip</name>
       <id>3</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -379,7 +387,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ПолеРедактированияВыраженияКонтекстноеМеню</name>
+      <name>ExpressionEditingFieldContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -405,7 +413,7 @@
     <name>ФормаКоманднаяПанель</name>
     <id>-1</id>
     <items xsi:type="form:Button">
-      <name>ФормаОК</name>
+      <name>FormOK</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -413,7 +421,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаОКРасширеннаяПодсказка</name>
+        <name>FormOKExtendedTooltip</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -436,7 +444,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>ФормаЗакрыть</name>
+      <name>FormClose</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -444,7 +452,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаЗакрытьРасширеннаяПодсказка</name>
+        <name>FormCloseExtendedTooltip</name>
         <id>7</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -489,7 +497,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>ПолеРедактированияВыражения</name>
+    <name>ExpressionEditingField</name>
+    <title>
+      <key>en</key>
+      <value>Expression editing field</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Поле редактирования выражения</value>
@@ -529,10 +541,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПоляСКД</name>
+    <name>DCSFields</name>
     <title>
       <key>ru</key>
       <value>Поля СКД</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>DCSFields</value>
     </title>
     <id>4</id>
     <valueType>
@@ -545,10 +561,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Поле</name>
+      <name>Field</name>
       <title>
         <key>ru</key>
         <value>Поле</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Field</value>
       </title>
       <id>5</id>
       <valueType>
@@ -563,10 +583,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПутьКДанным</name>
+      <name>DataPath</name>
       <title>
         <key>ru</key>
         <value>Путь к данным</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Data path</value>
       </title>
       <id>6</id>
       <valueType>
@@ -581,10 +605,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Картинка</name>
+      <name>Picture</name>
       <title>
         <key>ru</key>
         <value>Картинка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Picture</value>
       </title>
       <id>8</id>
       <valueType>
@@ -598,10 +626,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ТипЗначения</name>
+      <name>ValueType</name>
       <title>
         <key>ru</key>
         <value>Тип значения</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Value type</value>
       </title>
       <id>9</id>
       <valueType>

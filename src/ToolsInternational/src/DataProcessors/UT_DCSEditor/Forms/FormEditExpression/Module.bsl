@@ -15,34 +15,36 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 	ExpressionText = Parameters.Text;
 	
-	ЗаполнитьДоступныеПоляСКД();
+	FillAvailableDCSFields();
 	
 	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
 
 	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,
 													   "Expression",
-													   Items.ПолеРедактированияВыражения,
+													   Items.ExpressionEditingField,
 													   ,
 													   "dcs_query");
 EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
-	UT_CodeEditorClient.ФормаПриОткрытии(ThisObject);
+	UT_CodeEditorClient.FormOnOpen(ThisObject);
 EndProcedure
 
 #EndRegion
 
 #Region FormHeaderItemsEventHandlers
 
-
 &AtClient
-Procedure ПоляСКДВыбор(Item, SelectedRow, Field, StandardProcessing)
+Procedure DCSFieldsSelection(Item, RowSelected, Field, StandardProcessing)
+	
 	StandardProcessing = False;
 	
-	RowData = ПоляСКД.FindByID(SelectedRow);
-	UT_CodeEditorClient.ВставитьТекстПоПозицииКурсора(ThisObject, "Expression", RowData.DataPath);
+	RowData = DCSFields.FindByID(RowSelected);
+	UT_CodeEditorClient.InsertTextInCursorLocation(ThisObject, "Expression", RowData.DataPath);
+	
 EndProcedure
+
 
 #EndRegion
 
@@ -51,157 +53,157 @@ EndProcedure
 
 &AtClient
 Procedure Apply(Command)
-	Close(ТекущийТекстВыражения());
+	Close(ExpressionCurrentText());
 EndProcedure
 
 #EndRegion
 
 #Region Private
 
-#Region РедакторКода
+#Region CodeEditor
 
 &AtClient
-Procedure УстановитьТекстВыражения(НовыйТекст, УстанавливатьОригинальныйТекст = False, НовыйОригинальныйТекст = "")
-	UT_CodeEditorClient.УстановитьТекстРедактора(ThisObject, "Expression", НовыйТекст);
+Procedure SetExpressionText(NewText, SetOriginalText = False, NewOriginalText = "")
+	UT_CodeEditorClient.SetEditorText(ThisObject, "Expression", NewText);
 
-	If УстанавливатьОригинальныйТекст Then
-		UT_CodeEditorClient.УстановитьОригинальныйТекстРедактора(ThisObject, "Expression", НовыйОригинальныйТекст);
+	If SetOriginalText Then
+		UT_CodeEditorClient.SetEditorOriginalText(ThisObject, "Expression", NewOriginalText);
 	EndIf;
 EndProcedure
 
 &AtClient
-Function ТекущийТекстВыражения()
-	Return UT_CodeEditorClient.ТекстКодаРедактора(ThisObject, "Expression");
+Function ExpressionCurrentText()
+	Return UT_CodeEditorClient.EditorCodeText(ThisObject, "Expression");
 EndFunction
 
 //@skip-warning
 &AtClient
 Procedure Подключаемый_ПолеРедактораДокументСформирован(Item)
-	UT_CodeEditorClient.ПолеРедактораHTMLДокументСформирован(ThisObject, Item);
+	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
 EndProcedure
 
 //@skip-warning
 &AtClient
 Procedure Подключаемый_ПолеРедактораПриНажатии(Item, ДанныеСобытия, StandardProcessing)
-	UT_CodeEditorClient.ПолеРедактораHTMLПриНажатии(ThisObject, Item, ДанныеСобытия, StandardProcessing);
+	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, ДанныеСобытия, StandardProcessing);
 EndProcedure
 
 //@skip-warning
 &AtClient
 Procedure Подключаемый_РедакторКодаОтложеннаяИнициализацияРедакторов()
-	UT_CodeEditorClient.РедакторКодаОтложеннаяИнициализацияРедакторов(ThisObject);
+	UT_CodeEditorClient.CodeEditorDeferredInitializingEditors(ThisObject);
 EndProcedure
 
 &AtClient
 Procedure Подключаемый_РедакторКодаЗавершениеИнициализации() Export
-	УстановитьТекстВыражения(ExpressionText, True, ExpressionText);
-	УИ_ДобавитьКонтекстПолей();
+	SetExpressionText(ExpressionText, True, ExpressionText);
+	UT_AddFieldsContext();
 EndProcedure
 
 &AtClient
 Procedure Подключаемый_РедакторКодаОтложеннаяОбработкаСобытийРедактора() Export
-	UT_CodeEditorClient.ОтложеннаяОбработкаСобытийРедактора(ThisObject);
+	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject);
 EndProcedure
 
 #EndRegion
 
 &AtServer
-Procedure ЗаполнитьДоступныеПоляСКД()
+Procedure FillAvailableDCSFields()
 	
-	ВидыПолей = Parameters.ВидыПолейНаборовДанных;
-	КартинкаРеквизит=PictureLib.Attribute;
-	КартинкаПроизвольноеВыражение=PictureLib.CustomExpression;
-	КартинкаПапка = PictureLib.Folder;
+	FieldsTypes = Parameters.DataSetFieldsTypes;
+	PictureAttribute=PictureLib.Attribute;
+	PictureCustomExpression=PictureLib.CustomExpression;
+	PictureFolder = PictureLib.Folder;
 	
-	СоответствиеИдентификаторовСтрок = New Map;
+	RowsIDMap = New Map;
 
-	For Each ТекПоле ИЗ Parameters.Fields Do
-		If ТекПоле.Type <> ВидыПолей.Field Then
+	For Each CurrentFiled ИЗ Parameters.Fields Do
+		If CurrentFiled.Type <> FieldsTypes.Field Then
 			Continue;
 		EndIf;
 		
-		МассивПути = StrSplit(ТекПоле.DataPath, ".", False);
+		PathArray = StrSplit(CurrentFiled.DataPath, ".", False);
 		
-		ТекПуть = "";
-		CurrentParent = ПоляСКД;
+		CurrentPath = "";
+		CurrentParent = DCSFields;
 		
-		For ИндексПути=0  To МассивПути.Count()-1 Do
-			ЭлементПути = МассивПути[ИндексПути];
+		For PathIndex=0  To PathArray.Count()-1 Do
+			PathItem = PathArray[PathIndex];
 			
-			ТекПуть = ТекПуть + ?(ValueIsFilled(ТекПуть),".","") + ЭлементПути;
+			CurrentPath = CurrentPath + ?(ValueIsFilled(CurrentPath),".","") + PathItem;
 			
-			If ТекПуть = ТекПоле.DataPath Then
-				НовоеПоле = CurrentParent.GetItems().Add();
-				НовоеПоле.Field = ЭлементПути;
-				НовоеПоле.DataPath = ТекПуть;
-				НовоеПоле.ValueType = ТекПоле.ValueType;
-				If НовоеПоле.ValueType = New TypeDescription Then
-					НовоеПоле.ValueType = ТекПоле.ТипЗначенияЗапроса;
+			If CurrentPath = CurrentFiled.DataPath Then
+				NewField = CurrentParent.GetItems().Add();
+				NewField.Field = PathItem;
+				NewField.DataPath = CurrentPath;
+				NewField.ValueType = CurrentFiled.ValueType;
+				If NewField.ValueType = New TypeDescription Then
+					NewField.ValueType = CurrentFiled.QueryValueType;
 				EndIf;
-				If ТекПоле.ВычисляемоеПоле Then
-					НовоеПоле.Picture = КартинкаПроизвольноеВыражение;	
+				If CurrentFiled.CalculatedField Then
+					NewField.Picture = PictureCustomExpression;	
 				Else
-					НовоеПоле.Picture = КартинкаРеквизит;
+					NewField.Picture = PictureAttribute;
 				EndIf;
 				
 				Continue;
 			EndIf;
 			
-			ИдентификаторСтроки = СоответствиеИдентификаторовСтрок[Lower(ТекПуть)];
-			If ИдентификаторСтроки = Undefined Then
-				НовоеПоле = CurrentParent.GetItems().Add();
-				НовоеПоле.Field = ЭлементПути;
-				НовоеПоле.DataPath = ТекПуть;
-				НовоеПоле.ValueType = New TypeDescription("Number");
-				НовоеПоле.Picture = КартинкаПапка;
+			RowID = RowsIDMap[Lower(CurrentPath)];
+			If RowID = Undefined Then
+				NewField = CurrentParent.GetItems().Add();
+				NewField.Field = PathItem;
+				NewField.DataPath = CurrentPath;
+				NewField.ValueType = New TypeDescription("Number");
+				NewField.Picture = PictureFolder;
 
-				ИдентификаторСтроки = НовоеПоле.GetID();
-				СоответствиеИдентификаторовСтрок.Insert(Lower(ТекПуть), ИдентификаторСтроки);
+				RowID = NewField.GetID();
+				RowsIDMap.Insert(Lower(CurrentPath), RowID);
 				
-				CurrentParent = НовоеПоле;
+				CurrentParent = NewField;
 			Else
-				CurrentParent = ПоляСКД.FindByID(ИдентификаторСтроки);
+				CurrentParent = DCSFields.FindByID(RowID);
 			EndIf;
 		EndDo;
 	EndDo;
 	
-	ПапкаСистемныеПоля = ПоляСКД.GetItems().Add();
-	ПапкаСистемныеПоля.DataPath = "СистемныеПоля";
-	ПапкаСистемныеПоля.Field = "СистемныеПоля";
-	ПапкаСистемныеПоля.Picture = КартинкаПапка;
+	FolderSystemFields = DCSFields.GetItems().Add();
+	FolderSystemFields.DataPath = "SystemFields";
+	FolderSystemFields.Field = "SystemFields";
+	FolderSystemFields.Picture = PictureFolder;
 	
-	НовоеПоле = ПапкаСистемныеПоля.GetItems().Add();
-	НовоеПоле.Field = "НомерПоПорядку";
-	НовоеПоле.DataPath = ПапкаСистемныеПоля.DataPath+"."+НовоеПоле.Field;
-	НовоеПоле.ValueType = New TypeDescription("Number");
-	НовоеПоле.Picture = КартинкаРеквизит;
+	NewField = FolderSystemFields.GetItems().Add();
+	NewField.Field = "SerialNumber";
+	NewField.DataPath = FolderSystemFields.DataPath+"."+NewField.Field;
+	NewField.ValueType = New TypeDescription("Number");
+	NewField.Picture = PictureAttribute;
 	
-	НовоеПоле = ПапкаСистемныеПоля.GetItems().Add();
-	НовоеПоле.Field = "НомерПоПорядкуВГруппировке";
-	НовоеПоле.DataPath = ПапкаСистемныеПоля.DataPath+"."+НовоеПоле.Field;
-	НовоеПоле.ValueType = New TypeDescription("Number");
-	НовоеПоле.Picture = КартинкаРеквизит;
+	NewField = FolderSystemFields.GetItems().Add();
+	NewField.Field = "GroupSerialNumber";
+	NewField.DataPath = FolderSystemFields.DataPath+"."+NewField.Field;
+	NewField.ValueType = New TypeDescription("Number");
+	NewField.Picture = PictureAttribute;
 	
-	НовоеПоле = ПапкаСистемныеПоля.GetItems().Add();
-	НовоеПоле.Field = "Level";
-	НовоеПоле.DataPath = ПапкаСистемныеПоля.DataPath+"."+НовоеПоле.Field;
-	НовоеПоле.ValueType = New TypeDescription("Number");
-	НовоеПоле.Picture = КартинкаРеквизит;
+	NewField = FolderSystemFields.GetItems().Add();
+	NewField.Field = "Level";
+	NewField.DataPath = FolderSystemFields.DataPath+"."+NewField.Field;
+	NewField.ValueType = New TypeDescription("Number");
+	NewField.Picture = PictureAttribute;
 	
-	НовоеПоле = ПапкаСистемныеПоля.GetItems().Add();
-	НовоеПоле.Field = "УровеньВГруппировке";
-	НовоеПоле.DataPath = ПапкаСистемныеПоля.DataPath+"."+НовоеПоле.Field;
-	НовоеПоле.ValueType = New TypeDescription("Number");
-	НовоеПоле.Picture = КартинкаРеквизит;
+	NewField = FolderSystemFields.GetItems().Add();
+	NewField.Field = "LevelInGroup";
+	NewField.DataPath = FolderSystemFields.DataPath+"."+NewField.Field;
+	NewField.ValueType = New TypeDescription("Number");
+	NewField.Picture = PictureAttribute;
 	
 EndProcedure
 
 &AtClient
-Procedure ДобавитьКонтекстГруппыПолей(СтруктураДополнительногоКонтекста, СтрокаПолейСКД, ПустоеОписаниеТипов)
-	For Each ДоступнаяПеременная In СтрокаПолейСКД.GetItems() Do
-		КоллекцияПодчиненных = ДоступнаяПеременная.GetItems();
+Procedure AddFieldsGroupContext(AdditionalContextStructure, DCSFieldsRow, EmptyTypesDescription)
+	For Each AvailableVariable In DCSFieldsRow.GetItems() Do
+		КоллекцияПодчиненных = AvailableVariable.GetItems();
 		If КоллекцияПодчиненных.Count() = 0 Then
-			Types = ДоступнаяПеременная.ValueType.Types();
+			Types = AvailableVariable.ValueType.Types();
 			If Types.Count() = 0 Then
 				СтруктураПеременной = "";
 			Else
@@ -209,34 +211,33 @@ Procedure ДобавитьКонтекстГруппыПолей(Структу�
 			EndIf;
 		Else
 			СтруктураПеременной = New Structure;
-			If ДоступнаяПеременная.ValueType = ПустоеОписаниеТипов Then
+			If AvailableVariable.ValueType = EmptyTypesDescription Then
 				СтруктураПеременной.Insert("Type", "");
 			Else
-				СтруктураПеременной.Insert("Type", ДоступнаяПеременная.ValueType);
+				СтруктураПеременной.Insert("Type", AvailableVariable.ValueType);
 			EndIf;
 			ПодчиненныеСвойства = New Structure;
 			
-			ДобавитьКонтекстГруппыПолей(ПодчиненныеСвойства, ДоступнаяПеременная, ПустоеОписаниеТипов);
+			AddFieldsGroupContext(ПодчиненныеСвойства, AvailableVariable, EmptyTypesDescription);
 			СтруктураПеременной.Insert("ПодчиненныеСвойства", ПодчиненныеСвойства);
 			
 		EndIf;
 		
-		СтруктураДополнительногоКонтекста.Insert(ДоступнаяПеременная.Field, СтруктураПеременной);
+		AdditionalContextStructure.Insert(AvailableVariable.Field, СтруктураПеременной);
 	EndDo;
 	
 EndProcedure
 
 &AtClient
-Procedure УИ_ДобавитьКонтекстПолей()
-	СтруктураДополнительногоКонтекста = New Structure;
+Procedure UT_AddFieldsContext()
+	AdditionalContextStructure = New Structure;
 
-	ПустоеОписаниеТипов = New TypeDescription;
+	EmptyTypesDescription = New TypeDescription;
 	
-	ДобавитьКонтекстГруппыПолей(СтруктураДополнительногоКонтекста, ПоляСКД, ПустоеОписаниеТипов);
+	AddFieldsGroupContext(AdditionalContextStructure, DCSFields, EmptyTypesDescription);
 	
-	UT_CodeEditorClient.ДобавитьКонтекстРедактораКода(ThisObject, "Expression", СтруктураДополнительногоКонтекста);
+	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Expression", AdditionalContextStructure);
 
 EndProcedure
-
 
 #EndRegion
