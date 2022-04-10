@@ -1,5 +1,7 @@
 #Region Public
+
 #Region FormEventsWithEditor
+
 Procedure FormOnOpen(Form, CompletionNotifyDescription = Undefined) Export
 	Form.UT_CodeEditorClientData = New Structure;
 	Form.UT_CodeEditorClientData.Insert("Events", new Array);
@@ -12,6 +14,7 @@ Procedure FormOnOpen(Form, CompletionNotifyDescription = Undefined) Export
 	UT_CommonClient.AttachFileSystemExtensionWithPossibleInstallation(
 			New NotifyDescription("FormOnOpenEndAttachFileSystemExtension", ThisObject, AdditionalParameters));
 EndProcedure
+
 Procedure HTMLEditorFieldDocumentGenerated(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
@@ -24,6 +27,7 @@ Procedure HTMLEditorFieldDocumentGenerated(Form, Item) Export
 	EndIf;
 	Form.AttachIdleHandler("Attachable_CodeEditorDeferredInitializingEditors", 0.1, True);
 EndProcedure
+
 Procedure HTMLEditorFieldOnClick(Form, Item, EventData, StandardProcessing) Export
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
@@ -31,7 +35,9 @@ Procedure HTMLEditorFieldOnClick(Form, Item, EventData, StandardProcessing) Expo
 	If EditorType = EditorTypes.Monaco Then
 		HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing);
 	EndIf;
+	
 EndProcedure
+
 Procedure EditorEventsDeferProcessing(Form) Export
 
 	For Each CurrentEvent In Form.UT_CodeEditorClientData.Events Do
@@ -47,9 +53,13 @@ Procedure EditorEventsDeferProcessing(Form) Export
 			MetadataNameArray = StrSplit(CurrentEvent.EventData, ".");
 
 			If MetadataNameArray[0] = "module" Then
+				
 				SetModuleDescriptionForMonacoEditor(CurrentEvent.EventData, AdditionalParameters);
+				
 			Else
+				
 				SetMetadataEditorForMonacoEditor(CurrentEvent.EventData, AdditionalParameters);
+				
 			EndIf;
 		Elsif CurrentEvent.EventName = "EVENT_CONTENT_CHANGED" Then
 			FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
@@ -65,9 +75,10 @@ Procedure EditorEventsDeferProcessing(Form) Export
 	EndDo;
 
 	Form.UT_CodeEditorClientData.Events.Clear();
-КонецПроцедуры
+EndProcedure
 
 #EndRegion
+
 Function AllFormEditorsInitialized(FormEditors)
 	Result = True;
 	For Each KeyValue In FormEditors Do
@@ -79,16 +90,6 @@ Function AllFormEditorsInitialized(FormEditors)
 
 	Return Result;
 EndFunction
-
-Procedure CodeEditorDeferredInitializingEditors(Form) Export
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
-	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-
-	InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorType, EditorTypes);
-	Form.Attachable_CodeEditorInitializingCompletion();
-//	Form.Attachable_EditorFieldInitializingCompletion(UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item));
-EndProcedure
 
 Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorType, EditorTypes)
 	For Each KeyValue In FormEditors Do
@@ -179,6 +180,16 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 				ConfigurationDescriptionForInitialization.CommonModules)), "commonModules.items");
 		EndIf;
 	EndDo;
+EndProcedure
+
+Procedure CodeEditorDeferredInitializingEditors(Form) Export
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+
+	InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorType, EditorTypes);
+	Form.Attachable_CodeEditorInitializingCompletion();
+//	Form.Attachable_EditorFieldInitializingCompletion(UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item));
 EndProcedure
 
 Procedure SetFormItemEditorText(Form, Item, Text) Export

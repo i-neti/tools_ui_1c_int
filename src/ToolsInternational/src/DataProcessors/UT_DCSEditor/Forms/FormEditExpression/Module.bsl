@@ -78,30 +78,30 @@ EndFunction
 
 //@skip-warning
 &AtClient
-Procedure Подключаемый_ПолеРедактораДокументСформирован(Item)
+Procedure Attachable_EditorFieldDocumentGenerated(Item)
 	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
 EndProcedure
 
 //@skip-warning
 &AtClient
-Procedure Подключаемый_ПолеРедактораПриНажатии(Item, ДанныеСобытия, StandardProcessing)
-	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, ДанныеСобытия, StandardProcessing);
+Procedure Attachable_EditorFieldOnClick(Item, EventData, StandardProcessing)
+	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, EventData, StandardProcessing);
 EndProcedure
 
 //@skip-warning
 &AtClient
-Procedure Подключаемый_РедакторКодаОтложеннаяИнициализацияРедакторов()
+Procedure Attachable_CodeEditorDeferredInitializingEditors()
 	UT_CodeEditorClient.CodeEditorDeferredInitializingEditors(ThisObject);
 EndProcedure
 
 &AtClient
-Procedure Подключаемый_РедакторКодаЗавершениеИнициализации() Export
+Procedure Attachable_CodeEditorInitializingCompletion() Export
 	SetExpressionText(ExpressionText, True, ExpressionText);
 	UT_AddFieldsContext();
 EndProcedure
 
 &AtClient
-Procedure Подключаемый_РедакторКодаОтложеннаяОбработкаСобытийРедактора() Export
+Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
 	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject);
 EndProcedure
 
@@ -201,29 +201,29 @@ EndProcedure
 &AtClient
 Procedure AddFieldsGroupContext(AdditionalContextStructure, DCSFieldsRow, EmptyTypesDescription)
 	For Each AvailableVariable In DCSFieldsRow.GetItems() Do
-		КоллекцияПодчиненных = AvailableVariable.GetItems();
-		If КоллекцияПодчиненных.Count() = 0 Then
+		ChildsCollection = AvailableVariable.GetItems();
+		If ChildsCollection.Count() = 0 Then
 			Types = AvailableVariable.ValueType.Types();
 			If Types.Count() = 0 Then
-				СтруктураПеременной = "";
+				VariableStructure = "";
 			Else
-				СтруктураПеременной = Types[0];
+				VariableStructure = Types[0];
 			EndIf;
 		Else
-			СтруктураПеременной = New Structure;
+			VariableStructure = New Structure;
 			If AvailableVariable.ValueType = EmptyTypesDescription Then
-				СтруктураПеременной.Insert("Type", "");
+				VariableStructure.Insert("Type", "");
 			Else
-				СтруктураПеременной.Insert("Type", AvailableVariable.ValueType);
+				VariableStructure.Insert("Type", AvailableVariable.ValueType);
 			EndIf;
-			ПодчиненныеСвойства = New Structure;
+			ChildProperties = New Structure;
 			
-			AddFieldsGroupContext(ПодчиненныеСвойства, AvailableVariable, EmptyTypesDescription);
-			СтруктураПеременной.Insert("ПодчиненныеСвойства", ПодчиненныеСвойства);
+			AddFieldsGroupContext(ChildProperties, AvailableVariable, EmptyTypesDescription);
+			VariableStructure.Insert("ChildProperties", ChildProperties);
 			
 		EndIf;
 		
-		AdditionalContextStructure.Insert(AvailableVariable.Field, СтруктураПеременной);
+		AdditionalContextStructure.Insert(AvailableVariable.Field, VariableStructure);
 	EndDo;
 	
 EndProcedure
