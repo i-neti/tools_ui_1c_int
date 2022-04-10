@@ -226,11 +226,6 @@ Procedure DataSetsFieldsOnActivateRow(Item)
 EndProcedure
 
 &AtClient
-Procedure DataSetsQueryOnChange(Item)
-		FillDataSetFieldsOnQueryChange(Items.DataSets.CurrentRow);
-EndProcedure
-
-&AtClient
 Procedure DataSetsFieldsRolePresentationStartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing=False;
 
@@ -2804,6 +2799,12 @@ Procedure AssembleDCSFromFormData(EnableSettingsVariants = False)
 
 	InitializeSettingsComposerByAssembledDCS();
 EndProcedure
+
+&AtClient
+Procedure FieldsPresentationExpressionOpening(Item, StandardProcessing)
+	//TODO: Insert the handler content
+EndProcedure
+
 
 #EndRegion
 
