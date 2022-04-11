@@ -1493,27 +1493,27 @@
             </autoCommandBar>
             <handlers>
               <event>OnEditEnd</event>
-              <name>ДоступныеОбработкиПриОкончанииРедактирования</name>
+              <name>AvailableDataProcessorsEditEnd</name>
             </handlers>
             <handlers>
               <event>Selection</event>
-              <name>ДоступныеОбработкиВыбор</name>
+              <name>AvailableDataProcessorsSelection</name>
             </handlers>
             <handlers>
               <event>BeforeAddRow</event>
-              <name>ДоступныеОбработкиПередНачаломДобавления</name>
+              <name>AvailableDataProcessorsBeforeAddRow</name>
             </handlers>
             <handlers>
               <event>BeforeDeleteRow</event>
-              <name>ДоступныеОбработкиПередУдалением</name>
+              <name>AvailableDataProcessorsBeforeDeleteRow</name>
             </handlers>
             <handlers>
               <event>DragStart</event>
-              <name>ДоступныеОбработкиНачалоПеретаскивания</name>
+              <name>AvailableDataProcessorsDragStart</name>
             </handlers>
             <handlers>
               <event>BeforeRowChange</event>
-              <name>ДоступныеОбработкиПередНачаломИзменения</name>
+              <name>AvailableDataProcessorsBeforeRowChange</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -1945,7 +1945,7 @@
             </autoCommandBar>
             <handlers>
               <event>Drag</event>
-              <name>ВыбранныеОбработкиПеретаскивание</name>
+              <name>SelectedDataProcessorsDrag</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
