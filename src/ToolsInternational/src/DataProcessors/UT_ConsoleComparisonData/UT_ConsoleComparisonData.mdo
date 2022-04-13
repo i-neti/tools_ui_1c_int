@@ -4,14 +4,14 @@
     <objectType typeId="5bda7b2e-548f-11ea-a08b-e86a6452d1f2" valueTypeId="5bda7b2f-548f-11ea-a08b-e86a6452d1f2"/>
     <managerType typeId="5bda7b30-548f-11ea-a08b-e86a6452d1f2" valueTypeId="5bda7b31-548f-11ea-a08b-e86a6452d1f2"/>
   </producedTypes>
-  <name>УИ_КонсольСравненияДанных</name>
+  <name>UT_ConsoleComparisonData</name>
   <synonym>
     <key></key>
-    <value>У и консоль сравнения данных</value>
+    <value>Console comparison data</value>
   </synonym>
   <synonym>
     <key>en</key>
-    <value>{} УИ_КонсольСравненияДанных</value>
+    <value>Console comparison data</value>
   </synonym>
   <synonym>
     <key>ru</key>
@@ -19,7 +19,7 @@
   </synonym>
   <comment>15.4.55</comment>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.УИ_КонсольСравненияДанных.Form.ФормаУправляемая</defaultForm>
+  <defaultForm>DataProcessor.UT_ConsoleComparisonData.Form.ФормаУправляемая</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
