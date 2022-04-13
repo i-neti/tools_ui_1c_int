@@ -47,8 +47,20 @@ Function ExecuteProcessing() Export
 	EndIf;
 
 	Return IndexOf;
-EndFunction // вВыполнитьОбработку()
+EndFunction // ExecuteProcessing()
 
+//// Restores saved form attribute values.
+//
+// Parameters:
+//  None.
+//
+&AtClient
+Procedure DownloadSettings() Export
+
+	UT_FormsClient.DownloadSettings(ThisForm, mSetting);
+
+EndProcedure //DownloadSettings()
+//
 ////////////////////////////////////////////////////////////////////////////////
 // FORM EVENT HANDLERS
 
@@ -56,7 +68,7 @@ EndFunction // вВыполнитьОбработку()
 Procedure OnOpen(Cancel)
 	If mUseSettings Then
 		UT_FormsClient.SetNameSettings(ThisForm);
-		UT_FormsClient.DownloadSettings(ThisForm, mSetting);
+		DownloadSettings();
 	Else
 		Items.CurrentSetting.Enabled = False;
 		Items.SaveSettings.Enabled = False;
@@ -124,7 +136,7 @@ Procedure CurrentSettingChoiceProcessingFragment(Val SelectedValue)
 	CurrentSetting = SelectedValue;
 	UT_FormsClient.SetNameSettings(ThisForm);
 
-	UT_FormsClient.DownloadSettings(ThisForm, mSetting);
+	DownloadSettings();
 
 EndProcedure
 
