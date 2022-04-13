@@ -32,14 +32,14 @@ Function GetCompositionScheme()
 	CompositionScheme = New DataCompositionSchema;
 
 	Src = CompositionScheme.DataSources.Add();
-	Src.Name = "Источник1";
+	Src.Name = "Source1";
 	Src.ConnectionString = "";
 	Src.DataSourceType = "local";
 
 	DataSet = CompositionScheme.DataSets.Add(Type("DataCompositionSchemaDataSetQuery"));
 	DataSet.Query = QueryText;
 	DataSet.Name = "Query";
-	DataSet.DataSource = "Источник1";
+	DataSet.DataSource = "Source1";
 
 	For Each Item In ViewList Do
 		Field = DataSet.Fields.Find(Item.Presentation);

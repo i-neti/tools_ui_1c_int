@@ -94,7 +94,13 @@ EndProcedure
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
+	If Parameters.Property("FoundObjectsTP") Then
+		FoundObjectsValueTable = Parameters.FoundObjectsTP.Unload();
+		FoundObjects.Load(FoundObjectsValueTable);
+	EndIf;
+	
 	UT_FormsServer.FillSettingByParametersForm(ThisForm);
+	UT_FormsServer.FillSettingByParametersForm_ProcessTabularParts(ThisForm);
 	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
 	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Editor", Items.ArbitraryAlgorithmField);
 

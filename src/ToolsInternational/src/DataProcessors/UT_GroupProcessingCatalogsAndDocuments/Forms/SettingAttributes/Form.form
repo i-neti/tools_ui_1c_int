@@ -5,7 +5,7 @@
     <value>Установка реквизитов</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>CurrentSettingRepresentation</name>
+    <name>CurrentSetting</name>
     <id>1</id>
     <title>
       <key>ru</key>
@@ -26,7 +26,7 @@
       <name>CurrentSettingOnChange</name>
     </handlers>
     <extendedTooltip>
-      <name>CurrentSettingRepresentationExtendedTooltip</name>
+      <name>CurrentSettingExtendedTooltip</name>
       <id>26</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -41,7 +41,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>CurrentSettingRepresentationContextMenu</name>
+      <name>CurrentSettingContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>

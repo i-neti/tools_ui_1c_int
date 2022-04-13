@@ -1395,7 +1395,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>AvailableDataProcessorsDataProcessor</name>
+                <name>AvailableDataProcessorsProcessing</name>
                 <id>69</id>
                 <title>
                   <key>ru</key>
@@ -1408,11 +1408,11 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>AvailableDataProcessors.DataProcessor</segments>
+                    <segments>AvailableDataProcessors.Processing</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>AvailableDataProcessorsDataProcessorExtendedTooltip</name>
+                  <name>AvailableDataProcessorsProcessingExtendedTooltip</name>
                   <id>142</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1427,7 +1427,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>AvailableDataProcessorsDataProcessorContextMenu</name>
+                  <name>AvailableDataProcessorsProcessingContextMenu</name>
                   <id>70</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2418,14 +2418,14 @@
       <segments>AvailableDataProcessors</segments>
     </settingsSavedData>
     <columns>
-      <name>DataProcessor</name>
+      <name>Processing</name>
       <title>
         <key>ru</key>
         <value>Обработка</value>
       </title>
       <title>
         <key>en</key>
-        <value>Data processor</value>
+        <value>Processing</value>
       </title>
       <id>1</id>
       <valueType>
