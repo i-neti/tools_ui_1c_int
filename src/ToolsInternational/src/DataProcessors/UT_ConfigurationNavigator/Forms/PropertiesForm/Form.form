@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГруппаСтраницы</name>
+    <name>PagesGroup</name>
     <id>55</id>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаОбъект</name>
+      <name>ObjectPage</name>
       <id>57</id>
       <items xsi:type="form:Table">
-        <name>ДеревоСвойств</name>
+        <name>PropertyTree</name>
         <id>1</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -15,13 +15,13 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>ДеревоСвойств</segments>
+          <segments>PropertyTree</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <excludedCommands>HierarchicalList</excludedCommands>
         <excludedCommands>List</excludedCommands>
         <items xsi:type="form:FormField">
-          <name>ДеревоСвойствИмя</name>
+          <name>PropertyTreeName</name>
           <id>14</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -30,11 +30,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ДеревоСвойств.Имя</segments>
+              <segments>PropertyTree.Name</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДеревоСвойствИмяРасширеннаяПодсказка</name>
+            <name>PropertyTreeNameExtendedTooltip</name>
             <id>16</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -49,7 +49,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствИмяКонтекстноеМеню</name>
+            <name>PropertyTreeNameContextMenu</name>
             <id>15</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -75,7 +75,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДеревоСвойствИндексирование</name>
+          <name>PropertyTreeIndexing</name>
           <id>48</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -84,11 +84,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ДеревоСвойств.Индексирование</segments>
+              <segments>PropertyTree.Indexing</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДеревоСвойствИндексированиеРасширеннаяПодсказка</name>
+            <name>PropertyTreeIndexingExtendedTooltip</name>
             <id>50</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -103,7 +103,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствИндексированиеКонтекстноеМеню</name>
+            <name>PropertyTreeIndexingContextMenu</name>
             <id>49</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -128,7 +128,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДеревоСвойствСиноним</name>
+          <name>PropertyTreeSynonym</name>
           <id>17</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -137,11 +137,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ДеревоСвойств.Синоним</segments>
+              <segments>PropertyTree.Synonym</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДеревоСвойствСинонимРасширеннаяПодсказка</name>
+            <name>PropertyTreeSynonymExtendedTooltip</name>
             <id>19</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -156,7 +156,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствСинонимКонтекстноеМеню</name>
+            <name>PropertyTreeSynonymContextMenu</name>
             <id>18</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -182,7 +182,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДеревоСвойствТипСтрокой</name>
+          <name>PropertyTreeStringType</name>
           <id>23</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -191,11 +191,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ДеревоСвойств.ТипСтрокой</segments>
+              <segments>PropertyTree.StringType</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДеревоСвойствТипСтрокойРасширеннаяПодсказка</name>
+            <name>PropertyTreeStringTypeExtendedTooltip</name>
             <id>25</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -210,7 +210,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствТипСтрокойКонтекстноеМеню</name>
+            <name>PropertyTreeStringTypeContextMenu</name>
             <id>24</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -236,7 +236,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДеревоСвойствКомментарий</name>
+          <name>PropertyTreeComment</name>
           <id>20</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -245,11 +245,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ДеревоСвойств.Комментарий</segments>
+              <segments>PropertyTree.Comment</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДеревоСвойствКомментарийРасширеннаяПодсказка</name>
+            <name>PropertyTreeCommentExtendedTooltip</name>
             <id>22</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -264,7 +264,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствКомментарийКонтекстноеМеню</name>
+            <name>PropertyTreeCommentContextMenu</name>
             <id>21</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -290,13 +290,13 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>ДеревоСвойствКоманднаяПанель</name>
+          <name>PropertyTreeCommandBar</name>
           <id>3</id>
           <items xsi:type="form:FormGroup">
-            <name>ДеревоСвойствГруппа1</name>
+            <name>PropertyTreeGroup1</name>
             <id>46</id>
             <items xsi:type="form:Button">
-              <name>ДеревоСвойств_СвернутьВсеУзлы</name>
+              <name>PropertyTreeGroup_CollapseAllNodes</name>
               <id>44</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -304,7 +304,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДеревоСвойств_СвернутьВсеУзлыРасширеннаяПодсказка</name>
+                <name>PropertyTreeGroup_CollapseAllNodesExtendedTooltip</name>
                 <id>45</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -318,7 +318,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._СвернутьВсеУзлы</commandName>
+              <commandName>Form.Command._CollapseAllNodes</commandName>
               <representation>Auto</representation>
               <onlyInAllActions>false</onlyInAllActions>
               <autoMaxWidth>true</autoMaxWidth>
@@ -327,7 +327,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>ДеревоСвойств_РазвернутьВсеУзлы</name>
+              <name>PropertyTreeGroup_ExpandAllNodes</name>
               <id>40</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -335,7 +335,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДеревоСвойств_РазвернутьВсеУзлыРасширеннаяПодсказка</name>
+                <name>PropertyTreeGroup_ExpandAllNodesExtendedTooltip</name>
                 <id>41</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -349,7 +349,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._РазвернутьВсеУзлы</commandName>
+              <commandName>Form.Command._ExpandAllNodes</commandName>
               <representation>Auto</representation>
               <onlyInAllActions>false</onlyInAllActions>
               <autoMaxWidth>true</autoMaxWidth>
@@ -362,8 +362,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Property tree group1</value>
+            </title>
             <extendedTooltip>
-              <name>ДеревоСвойствГруппа1РасширеннаяПодсказка</name>
+              <name>PropertyTreeGroup1ExtendedTooltip</name>
               <id>47</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -380,7 +384,7 @@
             <extInfo xsi:type="form:ButtonGroupExtInfo"/>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойствкОткрытьФормуСписка</name>
+            <name>PropertyTreeGroupkOpemListForm</name>
             <id>28</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -388,7 +392,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойствкОткрытьФормуСпискаРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupkOpemListFormExtendedTooltip</name>
               <id>29</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -402,7 +406,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.кОткрытьФормуСписка</commandName>
+            <commandName>Form.Command.kOpemListForm</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -410,7 +414,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойствкОткрытьФормуСпискаДоп</name>
+            <name>PropertyTreeGroupkOpemListFormAdditional</name>
             <id>38</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -418,7 +422,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойствкОткрытьФормуСпискаДопРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupkOpemListFormAdditionalExtendedTooltip</name>
               <id>39</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -432,7 +436,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.кОткрытьФормуСпискаДоп</commandName>
+            <commandName>Form.Command.kOpemListFormAdditional</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -440,7 +444,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойствкПоказатьСвойстваОбъекта</name>
+            <name>PropertyTreeGroupkShowObjectProperties</name>
             <id>30</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -448,7 +452,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойствкПоказатьСвойстваОбъектаРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupkShowObjectPropertiesExtendedTooltip</name>
               <id>31</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -462,7 +466,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.кПоказатьСвойстваОбъекта</commandName>
+            <commandName>Form.Command.kShowObjectProperties</commandName>
             <representation>Auto</representation>
             <defaultButton>true</defaultButton>
             <autoMaxWidth>true</autoMaxWidth>
@@ -471,7 +475,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойств_ОбновитьНумерациюОбъектов</name>
+            <name>PropertyTreeGroup_UpdateNumberOfObjects</name>
             <id>163</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -479,7 +483,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойств_ОбновитьНумерациюОбъектовРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroup_UpdateNumberOfObjectsExtendedTooltip</name>
               <id>164</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -493,7 +497,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._ОбновитьНумерациюОбъектов</commandName>
+            <commandName>Form.Command._UpdateNumberOfObjects</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -501,14 +505,14 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойств_ОткрытьОбъект</name>
+            <name>PropertyTreeGroup_OpenObject</name>
             <id>51</id>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойств_ОткрытьОбъектРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroup_OpenObjectExtendedTooltip</name>
               <id>52</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -522,7 +526,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._ОткрытьОбъект</commandName>
+            <commandName>Form.Command._OpenObject</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -531,10 +535,10 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ДеревоСвойствГруппа2</name>
+            <name>PropertyTreeGroup2</name>
             <id>53</id>
             <items xsi:type="form:Button">
-              <name>ДеревоСвойствИзменитьФорму</name>
+              <name>PropertyTreeGroupCustomizeForm</name>
               <id>26</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -542,7 +546,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДеревоСвойствИзменитьФормуРасширеннаяПодсказка</name>
+                <name>PropertyTreeGroupCustomizeFormExtendedTooltip</name>
                 <id>27</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -568,8 +572,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Property tree group2</value>
+            </title>
             <extendedTooltip>
-              <name>ДеревоСвойствГруппа2РасширеннаяПодсказка</name>
+              <name>PropertyTreeGroup2ExtendedTooltip</name>
               <id>54</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -603,10 +611,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ДеревоСвойствСтрокаПоиска</name>
+          <name>PropertyTreeSearchString</name>
           <id>5</id>
           <extendedTooltip>
-            <name>ДеревоСвойствСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>PropertyTreeSearchStringExtendedTooltip</name>
             <id>7</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -621,7 +629,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствСтрокаПоискаКонтекстноеМеню</name>
+            <name>PropertyTreeSearchStringContextMenu</name>
             <id>6</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -640,10 +648,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ДеревоСвойствСостояниеПросмотра</name>
+          <name>PropertyTreeViewStatus</name>
           <id>8</id>
           <extendedTooltip>
-            <name>ДеревоСвойствСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>PropertyTreeViewStatusExtendedTooltip</name>
             <id>10</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -658,7 +666,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствСостояниеПросмотраКонтекстноеМеню</name>
+            <name>PropertyTreeViewStatusContextMenu</name>
             <id>9</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -679,10 +687,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ДеревоСвойствУправлениеПоиском</name>
+          <name>PropertyTreeSearchControl</name>
           <id>11</id>
           <extendedTooltip>
-            <name>ДеревоСвойствУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>PropertyTreeSearchControlExtendedTooltip</name>
             <id>13</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -697,7 +705,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДеревоСвойствУправлениеПоискомКонтекстноеМеню</name>
+            <name>PropertyTreeSearchControlContextMenu</name>
             <id>12</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -712,7 +720,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>ДеревоСвойствРасширеннаяПодсказка</name>
+          <name>PropertyTreeExtendedTooltip</name>
           <id>4</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -727,10 +735,10 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ДеревоСвойствКонтекстноеМеню</name>
+          <name>PropertyTreeContextMenu</name>
           <id>2</id>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойствКонтекстноеМенюСортироватьСписокПоВозрастанию</name>
+            <name>PropertyTreeGroupContextMenuSortListAsc</name>
             <id>34</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -738,7 +746,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойствКонтекстноеМенюСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupContextMenuSortListAscExtendedTooltip</name>
               <id>35</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -752,7 +760,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item.ДеревоСвойств.StandardCommand.SortListAsc</commandName>
+            <commandName>Form.Item.PropertyTree.StandardCommand.SortListAsc</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -760,7 +768,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ДеревоСвойствКонтекстноеМенюСортироватьСписокПоУбыванию</name>
+            <name>PropertyTreeGroupContextMenuSortListDesc</name>
             <id>36</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -768,7 +776,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДеревоСвойствКонтекстноеМенюСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupContextMenuSortListDescExtendedTooltip</name>
               <id>37</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -782,7 +790,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item.ДеревоСвойств.StandardCommand.SortListDesc</commandName>
+            <commandName>Form.Item.PropertyTree.StandardCommand.SortListDesc</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -790,10 +798,10 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ДеревоСвойствКонтекстноеМенюГруппа1</name>
+            <name>PropertyTreeGroupContextMenuGroup1</name>
             <id>42</id>
             <items xsi:type="form:Button">
-              <name>ДеревоСвойствКонтекстноеМенюкПоказатьСвойстваОбъекта</name>
+              <name>PropertyTreeGroupContextMenukShowObjectProperties</name>
               <id>32</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -801,7 +809,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДеревоСвойствКонтекстноеМенюкПоказатьСвойстваОбъектаРасширеннаяПодсказка</name>
+                <name>PropertyTreeGroupContextMenukShowObjectPropertiesExtendedTooltip</name>
                 <id>33</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -815,7 +823,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command.кПоказатьСвойстваОбъекта</commandName>
+              <commandName>Form.Command.kShowObjectProperties</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -827,8 +835,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Property tree group context menu group1</value>
+            </title>
             <extendedTooltip>
-              <name>ДеревоСвойствКонтекстноеМенюГруппа1РасширеннаяПодсказка</name>
+              <name>PropertyTreeGroupContextMenuGroup1ExtendedTooltip</name>
               <id>43</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -878,11 +890,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Object property</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Свойства объекта</value>
       </title>
       <extendedTooltip>
-        <name>СтраницаОбъектРасширеннаяПодсказка</name>
+        <name>ObjectPageExtendedTooltip</name>
         <id>58</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -903,7 +919,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаЗначение</name>
+      <name>ValuePage</name>
       <id>484</id>
       <items xsi:type="form:FormGroup">
         <name>ГруппаЗначение</name>
@@ -931,7 +947,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ПрочитатьКонстанту</commandName>
+          <commandName>Form.Command._ReadConstant</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -961,7 +977,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ЗаписатьКонстанту</commandName>
+          <commandName>Form.Command._RecordConstant</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -1067,7 +1083,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ЗначениеКонстанты</segments>
+              <segments>_ConstantValue</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -1121,7 +1137,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ТипЗначенияКонстанты</segments>
+              <segments>_TypeOfConstantValue</segments>
             </paths>
           </dataPath>
           <titleLocation>None</titleLocation>
@@ -1213,7 +1229,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ИспользоватьТекстПриЗаписиКонстанты</segments>
+            <segments>_UseTextWhenWritingConstants</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -1259,7 +1275,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТекстовоеЗначениеКостанты</segments>
+            <segments>_TextConstantValue</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
@@ -1307,6 +1323,10 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Values</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Значение</value>
       </title>
@@ -1315,7 +1335,7 @@
         <value>Страница значение</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницаЗначениеРасширеннаяПодсказка</name>
+        <name>ValuePageExtendedTooltip</name>
         <id>485</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1354,7 +1374,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ПравоДоступаКОбъекту</segments>
+              <segments>_AccessRightToObject</segments>
             </paths>
           </dataPath>
           <handlers>
@@ -1429,7 +1449,7 @@
             </extInfo>
           </extendedTooltip>
           <type>UsualButton</type>
-          <commandName>Form.Command._ЗаполнитьПраваДоступа</commandName>
+          <commandName>Form.Command._FullInAccessRights</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -1480,7 +1500,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>ТабРолиСДоступом</segments>
+              <segments>RolesWithAccessTable</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <excludedCommands>Add</excludedCommands>
@@ -1501,7 +1521,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТабРолиСДоступом.ОграничениеУсловием</segments>
+                  <segments>RolesWithAccessTable.RestrictionCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -1547,7 +1567,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТабРолиСДоступом.Имя</segments>
+                  <segments>RolesWithAccessTable.Name</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -1600,7 +1620,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТабРолиСДоступом.Синоним</segments>
+                  <segments>RolesWithAccessTable.Synonym</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -1824,7 +1844,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -1997,7 +2017,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2078,7 +2098,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>_ДоступныеОбъекты</segments>
+              <segments>_AvailableObjects</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <excludedCommands>Add</excludedCommands>
@@ -2098,7 +2118,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_ДоступныеОбъекты.ОграничениеУсловием</segments>
+                  <segments>_AvailableObjects.RestrictionCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2144,7 +2164,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_ДоступныеОбъекты.Вид</segments>
+                  <segments>_AvailableObjects.Kind</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2198,7 +2218,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_ДоступныеОбъекты.Имя</segments>
+                  <segments>_AvailableObjects.Name</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2252,7 +2272,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_ДоступныеОбъекты.Представление</segments>
+                  <segments>_AvailableObjects.Presentation</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2306,7 +2326,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_ДоступныеОбъекты.ПолноеИмя</segments>
+                  <segments>_AvailableObjects.FullName</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2500,7 +2520,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2674,7 +2694,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2755,7 +2775,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>ТабПользователиСДоступом</segments>
+              <segments>UsersWithAccessTable</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <excludedCommands>Add</excludedCommands>
@@ -2776,7 +2796,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТабПользователиСДоступом.Имя</segments>
+                  <segments>UsersWithAccessTable.Name</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2829,7 +2849,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТабПользователиСДоступом.ПолноеИмя</segments>
+                  <segments>UsersWithAccessTable.FullName</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -3053,7 +3073,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -3226,7 +3246,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command._ОткрытьОбъектПравДоступа</commandName>
+                <commandName>Form.Command._OpenAccessRightsObject</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -3378,7 +3398,7 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_СХТаблицы</segments>
+            <segments>_SXTable</segments>
           </dataPath>
           <titleLocation>None</titleLocation>
           <items xsi:type="form:FormField">
@@ -3391,7 +3411,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>_СХТаблицы.ИмяТаблицы</segments>
+                <segments>_SXTable.TableName</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -3444,7 +3464,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>_СХТаблицы.Назначение</segments>
+                <segments>_SXTable.Purpose</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -3866,7 +3886,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Items._СХТаблицы.CurrentData.ИмяТаблицыХранения</segments>
+                <segments>Items._СХТаблицы.CurrentData.StorageTableName</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -3919,7 +3939,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Items._СХТаблицы.CurrentData.Назначение</segments>
+                <segments>Items._СХТаблицы.CurrentData.Purpose</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
@@ -4002,7 +4022,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ПоказыватьСтруктуруХраненияВТерминах1С</segments>
+              <segments>_ShowStorageStructureIn1CTerms</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -4057,7 +4077,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>_СХПоля</segments>
+                <segments>_SXFielsd</segments>
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
@@ -4070,7 +4090,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>_СХПоля.ИмяПоля</segments>
+                    <segments>_SXFielsd.FieldName</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -4123,7 +4143,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>_СХПоля.ИмяПоляХранения</segments>
+                    <segments>_SXFielsd.StorageFieldName</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -4534,7 +4554,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>_СХИндексы</segments>
+                <segments>_SXIndexes</segments>
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
@@ -4547,7 +4567,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>_СХИндексы.ИмяИндексаХранения</segments>
+                    <segments>_SXIndexes.StorageIndexName</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -4925,7 +4945,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>_СХПоляИндексов</segments>
+                <segments>_SXIndexFields</segments>
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
@@ -4938,7 +4958,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>_СХПоляИндексов.ИмяПоля</segments>
+                    <segments>_SXIndexFields.FieldName</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -4991,7 +5011,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>_СХПоляИндексов.ИмяПоляХранения</segments>
+                    <segments>_SXIndexFields.StorageFieldName</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -5573,7 +5593,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ОбновитьУправлениеИтогами</commandName>
+          <commandName>Form.Command._UpdateTotalsManagement</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -5603,7 +5623,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ПересчитатьИтоги</commandName>
+          <commandName>Form.Command._RecalculateTotals</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -5633,7 +5653,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ПересчитатьТекущиеИтоги</commandName>
+          <commandName>Form.Command._RecalculateCurrentTotals</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -5686,7 +5706,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_РежимАгрегатов</segments>
+              <segments>_AggregateMode</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5736,7 +5756,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ИспользованиеАгрегатов</segments>
+              <segments>_UseAggregates</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5786,7 +5806,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ИспользованиеТекущихИтогов</segments>
+              <segments>_UseCurrentTotals</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5836,7 +5856,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ИспользованиеИтогов</segments>
+              <segments>_UseTotals</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5886,7 +5906,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_РежимРазделенияИтогов</segments>
+              <segments>_DividingTotalsMode</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5974,7 +5994,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ПериодПересчетаИтогов</segments>
+              <segments>_PeriodRecalculationTotals</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -6040,7 +6060,7 @@
             </extInfo>
           </extendedTooltip>
           <type>UsualButton</type>
-          <commandName>Form.Command._ПересчитатьИтогиЗаПериод</commandName>
+          <commandName>Form.Command._RecalculateTotalsForThePeriod</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -6102,7 +6122,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>_МинимальныйПериодРассчитанныхИтогов</segments>
+                <segments>_MinimumPeriodOfCalculatedTotals</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -6154,7 +6174,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>_МаксимальныйПериодРассчитанныхИтогов</segments>
+                <segments>_MaximumPeriodOfCalculatedTotals</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -6253,7 +6273,7 @@
               </extInfo>
             </extendedTooltip>
             <type>UsualButton</type>
-            <commandName>Form.Command._УстановитьПериодРассчитанныхИтогов</commandName>
+            <commandName>Form.Command._InstallPriodOfCalculatedTotals</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6284,7 +6304,7 @@
               </extInfo>
             </extendedTooltip>
             <type>UsualButton</type>
-            <commandName>Form.Command._УстановитьПериодРассчитанныхИтогов</commandName>
+            <commandName>Form.Command._InstallPriodOfCalculatedTotals</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6402,7 +6422,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>_ЗависимыеОбъекты</segments>
+          <segments>_DependentObjects</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <excludedCommands>Add</excludedCommands>
@@ -6423,7 +6443,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ЗависимыеОбъекты.Имя</segments>
+              <segments>_DependentObjects.Name</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -6476,7 +6496,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ЗависимыеОбъекты.Представление</segments>
+              <segments>_DependentObjects.Presentation</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -6529,7 +6549,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ЗависимыеОбъекты.ПолноеИмя</segments>
+              <segments>_DependentObjects.FullName</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -6582,7 +6602,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>_ЗависимыеОбъекты.ГдеНайдено</segments>
+              <segments>_DependentObjects.WhereFound</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -6716,7 +6736,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._СвернутьВсеУзлы</commandName>
+              <commandName>Form.Command._CollapseAllNodes</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -6746,7 +6766,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._РазвернутьВсеУзлы</commandName>
+              <commandName>Form.Command._ExpandAllNodes</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -6832,7 +6852,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._ЗаполнитьЗависимыеОбъекты</commandName>
+              <commandName>Form.Command._FillInDependentObjects</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -6862,7 +6882,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command._ОткрытьЗависимыйОбъект</commandName>
+              <commandName>Form.Command._OpenSubordinateObject</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -7075,7 +7095,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ГдеНайдено</segments>
+            <segments>_WhereFound</segments>
           </paths>
         </dataPath>
         <titleLocation>Top</titleLocation>
@@ -7162,12 +7182,16 @@
       <key>ru</key>
       <value>Группа страницы</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Pages group</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа страницы</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаСтраницыРасширеннаяПодсказка</name>
+      <name>PagesGroupExtendedTooltip</name>
       <id>56</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -7228,10 +7252,14 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ДеревоСвойств</name>
+    <name>PropertyTree</name>
     <title>
       <key>ru</key>
       <value>Дерево свойств</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Property tree</value>
     </title>
     <id>2</id>
     <valueType>
@@ -7244,10 +7272,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -7264,10 +7296,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Синоним</name>
+      <name>Synonym</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Synonym</value>
       </title>
       <id>2</id>
       <valueType>
@@ -7284,10 +7320,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Комментарий</name>
+      <name>Comment</name>
       <title>
         <key>ru</key>
         <value>Комментарий</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Comment</value>
       </title>
       <id>3</id>
       <valueType>
@@ -7304,10 +7344,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ТипСтрокой</name>
+      <name>StringType</name>
       <title>
         <key>ru</key>
         <value>Тип</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>String type</value>
       </title>
       <id>4</id>
       <valueType>
@@ -7322,10 +7366,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Ссылка</name>
+      <name>Ref</name>
       <title>
         <key>ru</key>
         <value>Ссылка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Ref</value>
       </title>
       <id>5</id>
       <valueType>
@@ -7339,10 +7387,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ВидУзла</name>
+      <name>NodeType</name>
       <title>
         <key>ru</key>
         <value>Вид узла</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Node type</value>
       </title>
       <id>6</id>
       <valueType>
@@ -7359,10 +7411,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Индексирование</name>
+      <name>Indexing</name>
       <title>
         <key>ru</key>
         <value>Индексирование</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Indexing</value>
       </title>
       <id>7</id>
       <valueType>
@@ -7378,10 +7434,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ИмяФормыСписка</name>
+    <name>_ListFormName</name>
     <title>
       <key>ru</key>
       <value>Имя формы списка</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>List form name</value>
     </title>
     <id>3</id>
     <valueType>
@@ -7437,10 +7497,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ПоказыватьПодпискиОбъекта</name>
+    <name>_ShowEventSubscriptions</name>
     <title>
       <key>ru</key>
       <value>Показывать подписки объекта</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show event subscriptions</value>
     </title>
     <id>7</id>
     <valueType>
@@ -7453,14 +7517,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПоказыватьПодпискиОбъекта</segments>
+      <segments>_ShowEventSubscriptions</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ПоказыватьПодсистемыОбъекта</name>
+    <name>_ShowJbjectsSubsytems</name>
     <title>
       <key>ru</key>
       <value>Показывать подсистемы объекта</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show jbjects subsytems</value>
     </title>
     <id>8</id>
     <valueType>
@@ -7473,14 +7541,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПоказыватьПодсистемыОбъекта</segments>
+      <segments>_ShowJbjectsSubsytems</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ПоказыватьЧужиеКомандыОбъекта</name>
+    <name>_ShowExternalObjectCommands</name>
     <title>
       <key>ru</key>
       <value>Показывать чужие команды объекта</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show external object commands</value>
     </title>
     <id>9</id>
     <valueType>
@@ -7493,14 +7565,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПоказыватьЧужиеКомандыОбъекта</segments>
+      <segments>_ShowExternalObjectCommands</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ПоказыватьОбщиеКомандыОбъекта</name>
+    <name>_ShowCommonObjectCommands</name>
     <title>
       <key>ru</key>
       <value>Показывать общие команды объекта</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show common object commands</value>
     </title>
     <id>10</id>
     <valueType>
@@ -7513,18 +7589,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПоказыватьОбщиеКомандыОбъекта</segments>
+      <segments>_ShowCommonObjectCommands</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ПолноеИмя</name>
+    <name>_FullName</name>
     <title>
       <key>ru</key>
       <value>Полное имя</value>
     </title>
     <title>
       <key>en</key>
-      <value>Полное имя</value>
+      <value>Full name</value>
     </title>
     <id>11</id>
     <valueType>
@@ -7539,10 +7615,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ПустаяСсылкаНаОбъект</name>
+    <name>_EmptyRef</name>
     <title>
       <key>ru</key>
       <value>Пустая ссылка на объект</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Empty ref</value>
     </title>
     <id>12</id>
     <valueType>
@@ -7556,10 +7636,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_СХТаблицы</name>
+    <name>_SXTable</name>
     <title>
       <key>ru</key>
       <value>СХТаблицы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>SXTable</value>
     </title>
     <id>13</id>
     <valueType>
@@ -7572,10 +7656,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ИмяТаблицы</name>
+      <name>TableName</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Table name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -7590,10 +7678,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяТаблицыХранения</name>
+      <name>StorageTableName</name>
       <title>
         <key>ru</key>
         <value>Имя таблицы БД</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage table name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -7608,10 +7700,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Назначение</name>
+      <name>Purpose</name>
       <title>
         <key>ru</key>
         <value>Назначение</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Purpose</value>
       </title>
       <id>3</id>
       <valueType>
@@ -7626,10 +7722,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Метаданные</name>
+      <name>Metadata</name>
       <title>
         <key>ru</key>
         <value>Метаданные</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Metadata</value>
       </title>
       <id>4</id>
       <valueType>
@@ -7644,10 +7744,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерТаблицы</name>
+      <name>TableNumber</name>
       <title>
         <key>ru</key>
         <value>Номер таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Table number</value>
       </title>
       <id>5</id>
       <valueType>
@@ -7663,10 +7767,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_СХПоля</name>
+    <name>_SXFielsd</name>
     <title>
       <key>ru</key>
       <value>СХПоля</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>SXFielsd</value>
     </title>
     <id>14</id>
     <valueType>
@@ -7679,10 +7787,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ИмяТаблицыХранения</name>
+      <name>StorageTableName</name>
       <title>
         <key>ru</key>
         <value>Имя таблицы БД</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage table name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -7697,10 +7809,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяПоля</name>
+      <name>FieldName</name>
       <title>
         <key>ru</key>
         <value>Имя поля</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Field name</value>
       </title>
       <id>3</id>
       <valueType>
@@ -7715,10 +7831,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяПоляХранения</name>
+      <name>StorageFieldName</name>
       <title>
         <key>ru</key>
         <value>Имя поля БД</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage field name</value>
       </title>
       <id>4</id>
       <valueType>
@@ -7733,10 +7853,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерТаблицы</name>
+      <name>TableNumber</name>
       <title>
         <key>ru</key>
         <value>Номер таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Table number</value>
       </title>
       <id>2</id>
       <valueType>
@@ -7752,10 +7876,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_СХИндексы</name>
+    <name>_SXIndexes</name>
     <title>
       <key>ru</key>
       <value>СХИндексы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>SXIndexes</value>
     </title>
     <id>15</id>
     <valueType>
@@ -7768,10 +7896,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ИмяТаблицыХранения</name>
+      <name>StorageTableName</name>
       <title>
         <key>ru</key>
         <value>Имя таблицы БД</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage table name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -7786,10 +7918,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяИндексаХранения</name>
+      <name>StorageIndexName</name>
       <title>
         <key>ru</key>
         <value>Имя индекса</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage index name</value>
       </title>
       <id>3</id>
       <valueType>
@@ -7804,10 +7940,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерТаблицы</name>
+      <name>TableNumber</name>
       <title>
         <key>ru</key>
         <value>Номер таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Table number</value>
       </title>
       <id>1</id>
       <valueType>
@@ -7822,10 +7962,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерИндекса</name>
+      <name>IndexNumber</name>
       <title>
         <key>ru</key>
         <value>Номер индекса</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Index number</value>
       </title>
       <id>4</id>
       <valueType>
@@ -7841,10 +7985,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_СХПоляИндексов</name>
+    <name>_SXIndexFields</name>
     <title>
       <key>ru</key>
       <value>СХПоля индексов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>SXIndex fields</value>
     </title>
     <id>16</id>
     <valueType>
@@ -7857,10 +8005,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ИмяИндексаХранения</name>
+      <name>StorageIndexName</name>
       <title>
         <key>ru</key>
         <value>Имя индекса хранения</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage index name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -7875,10 +8027,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяПоля</name>
+      <name>FieldName</name>
       <title>
         <key>ru</key>
         <value>Имя поля</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Field name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -7893,10 +8049,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяПоляХранения</name>
+      <name>StorageFieldName</name>
       <title>
         <key>ru</key>
         <value>Имя поля БД</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Storage field name</value>
       </title>
       <id>3</id>
       <valueType>
@@ -7911,10 +8071,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерИндекса</name>
+      <name>IndexNumber</name>
       <title>
         <key>ru</key>
         <value>Номер индекса</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Index number</value>
       </title>
       <id>4</id>
       <valueType>
@@ -7930,10 +8094,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ПоказыватьСтруктуруХраненияВТерминах1С</name>
+    <name>_ShowStorageStructureIn1CTerms</name>
     <title>
       <key>ru</key>
       <value>Показывать структуру хранения в терминах модели 1С</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show storage structure in1 c terms</value>
     </title>
     <id>17</id>
     <valueType>
@@ -7946,14 +8114,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПоказыватьСтруктуруХраненияВТерминах1С</segments>
+      <segments>_ShowStorageStructureIn1CTerms</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ИспользованиеИтогов</name>
+    <name>_UseTotals</name>
     <title>
       <key>ru</key>
       <value>Использование итогов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Use totals</value>
     </title>
     <id>18</id>
     <valueType>
@@ -7967,10 +8139,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ИспользованиеТекущихИтогов</name>
+    <name>_UseCurrentTotals</name>
     <title>
       <key>ru</key>
       <value>Использование текущих итогов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Use current totals</value>
     </title>
     <id>19</id>
     <valueType>
@@ -7984,10 +8160,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_РежимРазделенияИтогов</name>
+    <name>_DividingTotalsMode</name>
     <title>
       <key>ru</key>
       <value>Режим разделения итогов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Dividing totals mode</value>
     </title>
     <id>20</id>
     <valueType>
@@ -8001,10 +8181,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_РежимАгрегатов</name>
+    <name>_AggregateMode</name>
     <title>
       <key>ru</key>
       <value>Режим агрегатов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Aggregate mode</value>
     </title>
     <id>21</id>
     <valueType>
@@ -8018,10 +8202,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ИспользованиеАгрегатов</name>
+    <name>_UseAggregates</name>
     <title>
       <key>ru</key>
       <value>Использование агрегатов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Use aggregates</value>
     </title>
     <id>22</id>
     <valueType>
@@ -8035,10 +8223,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ПериодПересчетаИтогов</name>
+    <name>_PeriodRecalculationTotals</name>
     <title>
       <key>ru</key>
       <value>Период пересчета</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Period recalculation totals</value>
     </title>
     <id>23</id>
     <valueType>
@@ -8052,10 +8244,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_МинимальныйПериодРассчитанныхИтогов</name>
+    <name>_MinimumPeriodOfCalculatedTotals</name>
     <title>
       <key>ru</key>
       <value>Минимальный период рассчитанных итогов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Minimum period of calculated totals</value>
     </title>
     <id>24</id>
     <valueType>
@@ -8070,10 +8266,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_МаксимальныйПериодРассчитанныхИтогов</name>
+    <name>_MaximumPeriodOfCalculatedTotals</name>
     <title>
       <key>ru</key>
       <value>Максимальный период рассчитанных итогов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Maximum period of calculated totals</value>
     </title>
     <id>25</id>
     <valueType>
@@ -8088,10 +8288,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ДоступныеОбъекты</name>
+    <name>_AvailableObjects</name>
     <title>
       <key>ru</key>
       <value>Доступные объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Available objects</value>
     </title>
     <id>27</id>
     <valueType>
@@ -8104,10 +8308,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Вид</name>
+      <name>Kind</name>
       <title>
         <key>ru</key>
         <value>Вид</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Kind</value>
       </title>
       <id>1</id>
       <valueType>
@@ -8122,10 +8330,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -8140,10 +8352,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
       </title>
       <id>3</id>
       <valueType>
@@ -8158,10 +8374,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПолноеИмя</name>
+      <name>FullName</name>
       <title>
         <key>ru</key>
         <value>Полное имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Full name</value>
       </title>
       <id>4</id>
       <valueType>
@@ -8176,10 +8396,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ОграничениеУсловием</name>
+      <name>RestrictionCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Restriction condition</value>
       </title>
       <id>5</id>
       <valueType>
@@ -8194,10 +8418,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ДопПеременные</name>
+    <name>_AdditionalVars</name>
     <title>
       <key>ru</key>
       <value>Доп переменные</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Additional vars</value>
     </title>
     <id>28</id>
     <valueType/>
@@ -8209,10 +8437,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ТабПользователиСДоступом</name>
+    <name>UsersWithAccessTable</name>
     <title>
       <key>ru</key>
       <value>Таб пользователи с доступом</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Users with access table</value>
     </title>
     <id>29</id>
     <valueType>
@@ -8225,10 +8457,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -8245,10 +8481,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПолноеИмя</name>
+      <name>FullName</name>
       <title>
         <key>ru</key>
         <value>Полное имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Full name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -8266,10 +8506,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ТабРолиСДоступом</name>
+    <name>RolesWithAccessTable</name>
     <title>
       <key>ru</key>
       <value>Таб роли с доступом</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Roles with access table</value>
     </title>
     <id>30</id>
     <valueType>
@@ -8282,10 +8526,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -8302,10 +8550,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Синоним</name>
+      <name>Synonym</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Synonym</value>
       </title>
       <id>2</id>
       <valueType>
@@ -8322,10 +8574,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ОграничениеУсловием</name>
+      <name>RestrictionCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Restriction condition</value>
       </title>
       <id>3</id>
       <valueType>
@@ -8340,10 +8596,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ПравоДоступаКОбъекту</name>
+    <name>_AccessRightToObject</name>
     <title>
       <key>ru</key>
       <value>Проверяемое право доступа</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Access right to object</value>
     </title>
     <id>32</id>
     <valueType>
@@ -8358,10 +8618,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ЗависимыеОбъекты</name>
+    <name>_DependentObjects</name>
     <title>
       <key>ru</key>
       <value>Зависимые объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Dependent objects</value>
     </title>
     <id>33</id>
     <valueType>
@@ -8374,10 +8638,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ВидУзла</name>
+      <name>NodeType</name>
       <title>
         <key>ru</key>
         <value>Вид узла</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Node type</value>
       </title>
       <id>1</id>
       <valueType>
@@ -8392,10 +8660,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -8410,10 +8682,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
       </title>
       <id>3</id>
       <valueType>
@@ -8428,10 +8704,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПолноеИмя</name>
+      <name>FullName</name>
       <title>
         <key>ru</key>
         <value>Полное имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Full name</value>
       </title>
       <id>4</id>
       <valueType>
@@ -8446,10 +8726,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ГдеНайдено</name>
+      <name>WhereFound</name>
       <title>
         <key>ru</key>
         <value>Где найдено</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Where found</value>
       </title>
       <id>5</id>
       <valueType>
@@ -8465,10 +8749,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ГдеНайдено</name>
+    <name>_WhereFound</name>
     <title>
       <key>ru</key>
       <value>Где найдено</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Where found</value>
     </title>
     <id>34</id>
     <valueType>
@@ -8483,10 +8771,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ЗначениеКонстанты</name>
+    <name>_ConstantValue</name>
     <title>
       <key>ru</key>
       <value>Значение константы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Constant value</value>
     </title>
     <id>35</id>
     <valueType>
@@ -8515,10 +8807,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ТипЗначенияКонстанты</name>
+    <name>_TypeOfConstantValue</name>
     <title>
       <key>ru</key>
       <value>Тип значения константы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Type of constant value</value>
     </title>
     <id>36</id>
     <valueType>
@@ -8533,10 +8829,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ТекстовоеЗначениеКостанты</name>
+    <name>_TextConstantValue</name>
     <title>
       <key>ru</key>
       <value>Текстовое значение</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Text constant value</value>
     </title>
     <id>37</id>
     <valueType>
@@ -8551,10 +8851,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ИспользоватьТекстПриЗаписиКонстанты</name>
+    <name>_UseTextWhenWritingConstants</name>
     <title>
       <key>ru</key>
       <value>Использовать текстовое значение при записи</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Use text when writing constants</value>
     </title>
     <id>38</id>
     <valueType>
@@ -8568,7 +8872,11 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>кОткрытьФормуСписка</name>
+    <name>kOpemListForm</name>
+    <title>
+      <key>en</key>
+      <value>Opem list form</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Стандартная форма...</value>
@@ -8586,17 +8894,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>кОткрытьФормуСписка</name>
+        <name>kOpemListForm</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>кПоказатьСвойстваОбъекта</name>
+    <name>kShowObjectProperties</name>
     <title>
       <key>ru</key>
       <value>Свойства объекта</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>K show object properties</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -8611,17 +8923,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>кПоказатьСвойстваОбъекта</name>
+        <name>kShowObjectProperties</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>кОткрытьФормуСпискаДоп</name>
+    <name>kOpemListFormAdditional</name>
     <title>
       <key>ru</key>
       <value>Динамический список</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>K opem list form additional</value>
     </title>
     <id>3</id>
     <toolTip>
@@ -8636,17 +8952,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>кОткрытьФормуСпискаДоп</name>
+        <name>kOpemListFormAdditional</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_РазвернутьВсеУзлы</name>
+    <name>_ExpandAllNodes</name>
     <title>
       <key>ru</key>
       <value>Развернуть все группы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Expand all nodes</value>
     </title>
     <id>4</id>
     <toolTip>
@@ -8661,16 +8981,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_РазвернутьВсеУзлы</name>
+        <name>_ExpandAllNodes</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_СвернутьВсеУзлы</name>
+    <name>_CollapseAllNodes</name>
     <title>
       <key>ru</key>
       <value>Свернуть все группы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Collapse all nodes</value>
     </title>
     <id>5</id>
     <toolTip>
@@ -8685,16 +9009,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_СвернутьВсеУзлы</name>
+        <name>_CollapseAllNodes</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОткрытьОбъект</name>
+    <name>_OpenObject</name>
     <title>
       <key>ru</key>
       <value>Редактор объектов...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Open object</value>
     </title>
     <id>6</id>
     <toolTip>
@@ -8709,17 +9037,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОткрытьОбъект</name>
+        <name>_OpenObject</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОбновитьНумерациюОбъектов</name>
+    <name>_UpdateNumberOfObjects</name>
     <title>
       <key>ru</key>
       <value>Обновить нумерацию...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Update number of objects</value>
     </title>
     <id>7</id>
     <toolTip>
@@ -8734,17 +9066,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОбновитьНумерациюОбъектов</name>
+        <name>_UpdateNumberOfObjects</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОбновитьУправлениеИтогами</name>
+    <name>_UpdateTotalsManagement</name>
     <title>
       <key>ru</key>
       <value>Обновить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Update totals management</value>
     </title>
     <id>8</id>
     <toolTip>
@@ -8759,17 +9095,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОбновитьУправлениеИтогами</name>
+        <name>_UpdateTotalsManagement</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПересчитатьИтоги</name>
+    <name>_RecalculateTotals</name>
     <title>
       <key>ru</key>
       <value>Пересчитать итоги...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Recalculate totals</value>
     </title>
     <id>9</id>
     <toolTip>
@@ -8781,16 +9121,20 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПересчитатьИтоги</name>
+        <name>_RecalculateTotals</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПересчитатьТекущиеИтоги</name>
+    <name>_RecalculateCurrentTotals</name>
     <title>
       <key>ru</key>
       <value>Пересчитать текущие итоги...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Recalculate current totals</value>
     </title>
     <id>10</id>
     <toolTip>
@@ -8802,16 +9146,20 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПересчитатьТекущиеИтоги</name>
+        <name>_RecalculateCurrentTotals</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПересчитатьИтогиЗаПериод</name>
+    <name>_RecalculateTotalsForThePeriod</name>
     <title>
       <key>ru</key>
       <value>Пересчитать итоги за период...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Recalculate totals for the period</value>
     </title>
     <id>11</id>
     <toolTip>
@@ -8823,16 +9171,20 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПересчитатьИтогиЗаПериод</name>
+        <name>_RecalculateTotalsForThePeriod</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_УстановитьПериодРассчитанныхИтогов</name>
+    <name>_InstallPriodOfCalculatedTotals</name>
     <title>
       <key>ru</key>
       <value>Установить...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Install priod of calculated totals</value>
     </title>
     <id>12</id>
     <toolTip>
@@ -8844,16 +9196,20 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_УстановитьПериодРассчитанныхИтогов</name>
+        <name>_InstallPriodOfCalculatedTotals</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ЗаполнитьПраваДоступа</name>
+    <name>_FullInAccessRights</name>
     <title>
       <key>ru</key>
       <value>Обновить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Full in access rights</value>
     </title>
     <id>13</id>
     <toolTip>
@@ -8868,17 +9224,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаполнитьПраваДоступа</name>
+        <name>_FullInAccessRights</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОткрытьОбъектПравДоступа</name>
+    <name>_OpenAccessRightsObject</name>
     <title>
       <key>ru</key>
       <value>Свойства объекта...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Open access rights object</value>
     </title>
     <id>14</id>
     <toolTip>
@@ -8893,17 +9253,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОткрытьОбъектПравДоступа</name>
+        <name>_OpenAccessRightsObject</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ЗаполнитьЗависимыеОбъекты</name>
+    <name>_FillInDependentObjects</name>
     <title>
       <key>ru</key>
       <value>Заполнить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Fill in dependent objects</value>
     </title>
     <id>15</id>
     <toolTip>
@@ -8918,17 +9282,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаполнитьЗависимыеОбъекты</name>
+        <name>_FillInDependentObjects</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОткрытьЗависимыйОбъект</name>
+    <name>_OpenSubordinateObject</name>
     <title>
       <key>ru</key>
       <value>Свойства объекта...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Open subordinate object</value>
     </title>
     <id>16</id>
     <toolTip>
@@ -8943,17 +9311,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОткрытьЗависимыйОбъект</name>
+        <name>_OpenSubordinateObject</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПрочитатьКонстанту</name>
+    <name>_ReadConstant</name>
     <title>
       <key>ru</key>
       <value>Прочитать</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Read constant</value>
     </title>
     <id>17</id>
     <toolTip>
@@ -8968,17 +9340,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПрочитатьКонстанту</name>
+        <name>_ReadConstant</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ЗаписатьКонстанту</name>
+    <name>_RecordConstant</name>
     <title>
       <key>ru</key>
       <value>Записать</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Record constant</value>
     </title>
     <id>18</id>
     <toolTip>
@@ -8993,28 +9369,28 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаписатьКонстанту</name>
+        <name>_RecordConstant</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <parameters>
-    <name>ПутьКФормам</name>
+    <name>PathToForms</name>
     <valueType>
       <types>String</types>
       <stringQualifiers/>
     </valueType>
   </parameters>
   <parameters>
-    <name>АдресТаблицыДвижений</name>
+    <name>RegisterRecordsAdress</name>
     <valueType>
       <types>String</types>
       <stringQualifiers/>
     </valueType>
   </parameters>
   <parameters>
-    <name>ПолноеИмя</name>
+    <name>FullName</name>
     <valueType>
       <types>String</types>
       <stringQualifiers/>
