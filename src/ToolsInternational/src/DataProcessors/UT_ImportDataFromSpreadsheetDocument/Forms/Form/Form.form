@@ -103,10 +103,6 @@
     <items xsi:type="form:Decoration">
       <name>BlankDecoration</name>
       <id>125</id>
-      <title>
-        <key>ru</key>
-        <value>Blank decoration</value>
-      </title>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
