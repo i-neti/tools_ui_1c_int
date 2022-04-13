@@ -177,7 +177,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_КонсольСравненияДанных</name>
+		<name>DataProcessor.UT_ConsoleComparisonData</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
