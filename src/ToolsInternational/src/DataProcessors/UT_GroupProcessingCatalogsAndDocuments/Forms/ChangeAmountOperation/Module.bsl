@@ -126,13 +126,12 @@ EndProcedure
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	UT_FormsServer.FillSettingByParametersForm(ThisForm);	
-
-	//If Parameters.Property("ОбъектПоиска") Then
-	//	ОбъектПоиска = Parameters.ОбъектПоиска;
-	//EndIf;
-
-	If Parameters.Property("ProcessTabularParts") Then
-		ProcessTabularParts=Parameters.ProcessTabularParts;
+	UT_FormsServer.FillSettingByParametersForm_ProcessTabularParts(ThisForm);
+	UT_FormsServer.FillSettingByParametersForm_TableAttributes(ThisForm);
+	
+	If Parameters.Property("FoundObjectsTP") Then
+		FoundObjectsValueTable = Parameters.FoundObjectsTP.Unload();
+		FoundObjectsTP.Load(FoundObjectsValueTable);
 	EndIf;
 
 EndProcedure

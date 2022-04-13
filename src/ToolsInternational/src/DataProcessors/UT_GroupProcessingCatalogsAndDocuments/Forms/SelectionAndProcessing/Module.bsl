@@ -60,7 +60,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.SearchObject.ChoiceListHeight = 15;
 
 	For Each Catalog In Metadata.Catalogs Do
-		If AccessRight("Browse", Catalog) Then
+		If AccessRight("View", Catalog) Then
 			CatalogName = Catalog.Synonym;
 			If CatalogName = "" Then
 				CatalogName = Catalog.Name;
@@ -76,7 +76,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndDo;
 
 	For Each Document In Metadata.Documents Do
-		If AccessRight("Browse", Document) Then
+		If AccessRight("View", Document) Then
 			DocumentName = Document.Synonym;
 			If DocumentName = "" Then
 				DocumentName = Document.Name;
@@ -136,7 +136,7 @@ Function GenerateSearchConditionByString()
 				If SearchConditionByString <> "" Then
 					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				SearchConditionByString = SearchConditionByString + " Title LIKE ""%" + StringForSearch + "%""";
+				SearchConditionByString = SearchConditionByString + " Presentation LIKE ""%" + StringForSearch + "%""";
 			EndIf;
 
 			If MetadataObject.CodeLength <> 0 And MetadataObject.CodeType
@@ -176,7 +176,7 @@ Function GetQueryText()
 	Condition = "";
 
 	QueryText = "Select 
-				   |	Reference As Object, 
+				   |	Ref As Object, 
 				   |	Presentation";
 
 	If SearchableObject.Type = "Catalog" Then
@@ -184,7 +184,7 @@ Function GetQueryText()
 			<> Metadata.ObjectProperties.CatalogMainPresentation.AsDescription Then
 			If MetadataObject.DescriptionLength <> 0 Then
 				QueryText = QueryText + ", 
-											  |	Title";
+											  |	Presentation";
 			EndIf;
 			If MetadataObject.CodeLength <> 0 Then
 				Condition = "Code";
@@ -197,7 +197,7 @@ Function GetQueryText()
 											  |	Code";
 			EndIf;
 			If MetadataObject.DescriptionLength <> 0 Then
-				Condition = "Title";
+				Condition = "Presentation";
 			EndIf;
 		EndIf;
 	ElsIf SearchableObject.Type = "Document" Then
@@ -321,9 +321,9 @@ Procedure FindLinksByFilter()
 
 			QueryTextEnding = QueryTextEnding + "
 															|ORDER BY
-															|	Ш_Вид,
+															|	H_Kind,
 															|	Object";
-			FieldsSort = "Ш_Вид,Object";
+			FieldsSort = "H_Kind,Object";
 
 		EndIf;
 
@@ -348,7 +348,7 @@ Procedure FindLinksByFilter()
 	ArrayAttributes = New Array;
 	ArrayAttributes.Add("Object");
 	ArrayAttributes.Add("Picture");
-	ArrayAttributes.Add("StartChoosing");
+	ArrayAttributes.Add("Choose");
 
 	CreateColumns(ValueTable, ArrayAttributes);
 
@@ -367,7 +367,7 @@ EndProcedure
 &AtServer
 Procedure SelectItems(Selection)
 	For Each Row In FoundObjects Do
-		Row.StartChoosing = Selection;
+		Row.Choose = Selection;
 	EndDo;
 EndProcedure
 
@@ -377,7 +377,7 @@ Procedure ExecuteProcessing(Command)
 	For Each String In SelectedDataProcessors Do
 		UserInterruptProcessing();
 
-		If Not String.StartChoosing Then
+		If Not String.Choose Then
 			Continue;
 		EndIf;
 
@@ -426,7 +426,7 @@ Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
 
 	//add attributes
 	ArrayAttributes = New Array;
-	For Each Column In ValueTable.Cols Do
+	For Each Column In ValueTable.Columns Do
 		If ArrayAttributesDefault <> Undefined And ArrayAttributesDefault.Find(Column.Name)
 			<> Undefined Then
 			Continue;
@@ -474,7 +474,7 @@ Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
 		NewRow = РедValueTable.Add();
 		FillPropertyValues(NewRow, Row);
 
-		NewRow.StartChoosing = True;
+		NewRow.Choose = True;
 
 		//If SearchObject = Undefined Then
 		//	Continue;
@@ -579,7 +579,7 @@ Procedure AvailableDataProcessorsSelection(Item, SelectedRow, Field, StandardPro
 
 	StandardProcessing = False;
 
-	RowIndex = Items.AvailableDataProcessors.CurrentLine;
+	RowIndex = Items.AvailableDataProcessors.CurrentRow;
 	CurrentLine = AvailableDataProcessors.FindByID(RowIndex);
 
 	StructureParameters = FormAStructureOfParameters();
@@ -642,7 +642,7 @@ Function FormAStructureOfParameters()
 	StructureParameters.Insert("FoundObjectsTP", FoundObjects);
 
 	StructureSelection = New Structure;
-	StructureSelection.Insert("StartChoosing", True);
+	StructureSelection.Insert("Choose", True);
 	StructureParameters.Insert("FoundObjects", FoundObjects.Unload(StructureSelection,
 		"Object").UnloadColumn("Object"));
 
@@ -810,7 +810,7 @@ EndProcedure
 &AtClient
 Function CheckAvailabilityProcessing()
 	
-	RowIndex = Items.AvailableDataProcessors.CurrentLine;
+	RowIndex = Items.AvailableDataProcessors.CurrentRow;
 	CurrentLine = AvailableDataProcessors.FindByID(RowIndex);
 
 	Parent = CurrentLine.GetParent();
@@ -835,7 +835,7 @@ Procedure SelectedDataProcessorsDrag(Item, DragParameters, StandardProcessing, R
 		NewRow = SelectedDataProcessors.Add();
 		NewRow.ProcessingSetting = RowAvailable.Processing;
 		NewRow.RowAvailableDataProcessor = RowAvailable.GetID();
-		NewRow.StartChoosing = True;
+		NewRow.Choose = True;
 		NewRow.Setting = RowAvailable.Setting;
 	EndDo;
 
@@ -856,7 +856,7 @@ EndProcedure
 &AtServer
 Procedure CheckDataProcessors(Selection)
 	For Each Row In SelectedDataProcessors Do
-		Row.StartChoosing = Selection;
+		Row.Choose = Selection;
 	EndDo;
 EndProcedure
 
@@ -912,7 +912,7 @@ EndProcedure
 &AtClient
 Procedure SetPicturesProcessing()
 	For Each Row In AvailableDataProcessors.GetItems() Do
-		Row.Picture = PictureLib.Processing;
+		Row.Picture = PictureLib.DataProcessor;
 	EndDo;
 EndProcedure
 
@@ -948,7 +948,7 @@ Procedure TableFieldTypesObjectsBeforeDeleteRowEnd(Result, AdditionalParameters)
 	CurrentLine = AdditionalParameters.CurrentLine;
 	TableFieldTypesObjects.Delete(TableFieldTypesObjects.FindByID(CurrentLine));
 
-	Items.TableFieldTypesObjects.Update();
+	Items.TableFieldTypesObjects.Refresh();
 	
 EndProcedure
 
@@ -992,7 +992,7 @@ Procedure QueryInitialization()
 	///============================= INITIALIZING VARIABLES
 	MetadataObjects = Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
 	TableTypeName = ?(Object.ObjectType = 1, "Document", "Catalog");
-	Prefix = ?(Object.ProcessTabularParts, "Reference.", "");
+	Prefix = ?(Object.ProcessTabularParts, "Ref.", "");
 
 	ArrayTypes = New Array;
 	ArrayTypes.Add(Type("ValueStorage"));
@@ -1008,25 +1008,25 @@ Procedure QueryInitialization()
 	//	ArraySettingsFilter     = New Array;
 	TableAttributes.Clear();
 
-	ViewNameSingleType = Undefined;
+	KindNameSingleType = Undefined;
 	PastValue = Undefined;
 	///============================= COUNTING OF NAMED DETAILS
 	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
-			ViewName = String.TableName;
+			KindName = String.TableName;
 			NameTP="";
 		Else
 			PositionTP = Find(String.TableName, ".");
-			ViewName = Left(String.TableName, PositionTP - 1);
+			KindName = Left(String.TableName, PositionTP - 1);
 			NameTP = Mid(String.TableName, PositionTP + 1);
 		EndIf;
 
-		If MetadataObjects.Find(ViewName) = Undefined Then
+		If MetadataObjects.Find(KindName) = Undefined Then
 			Continue;
 		EndIf;
 
-		MetadataRowObjects = MetadataObjects[ViewName];
+		MetadataRowObjects = MetadataObjects[KindName];
 
 		MatadataAttributes = MetadataRowObjects.Attributes;
 
@@ -1129,11 +1129,11 @@ Procedure QueryInitialization()
 			EndIf;
 
 			If MetadataRowObjects.DescriptionLength > 0 Then
-				StructureAttributesHeaders.Insert("Title", ?(StructureAttributesHeaders.Property("Title",
+				StructureAttributesHeaders.Insert("Description", ?(StructureAttributesHeaders.Property("Description",
 					PastValue), PastValue + 1, 1));
 
 				Filter = New Structure;
-				Filter.Insert("Name", "Title");
+				Filter.Insert("Name", "Description");
 				Filter.Insert("ThisTP", False);
 				ArrayString = TableAttributes.FindRows(Filter);
 				CurrentType = UT_FormsServer.TypeDescription("String");
@@ -1142,8 +1142,8 @@ Procedure QueryInitialization()
 					RowAttributes = ArrayString[0];
 				Else
 					RowAttributes = TableAttributes.Add();
-					RowAttributes.Name = "Title";
-					RowAttributes.Presentation = "Title";
+					RowAttributes.Name = "Description";
+					RowAttributes.Presentation = "Description";
 					RowAttributes.Type = CurrentType;
 					RowAttributes.ThisTP = False;
 				EndIf;
@@ -1151,13 +1151,13 @@ Procedure QueryInitialization()
 			EndIf;
 		EndIf;
 
-		If ViewNameSingleType = Undefined Then
-			ViewNameSingleType = ViewName;
-		ElsIf ViewNameSingleType <> ViewName Then
-			ViewNameSingleType = False;
+		If KindNameSingleType = Undefined Then
+			KindNameSingleType = KindName;
+		ElsIf KindNameSingleType <> KindName Then
+			KindNameSingleType = False;
 		EndIf;
 
-		For Each AttributeMetadata In MetadataObjects[ViewName].Attributes Do
+		For Each AttributeMetadata In MetadataObjects[KindName].Attributes Do
 
 			If AttributeMetadata.Type = DescriptionTypeStorage Then
 				Continue;
@@ -1218,19 +1218,19 @@ Procedure QueryInitialization()
 					AttributeMetadata.Type.Types()));
 			EndDo;
 		EndIf;
-		StructureTypesObjects.Insert(MetadataObjects[ViewName].Name, Type(TableTypeName + "Reference." + ViewName));
+		StructureTypesObjects.Insert(MetadataObjects[KindName].Name, Type(TableTypeName + "Ref." + KindName));
 	EndDo;
-	If ViewNameSingleType = False Then
-		ViewNameSingleType = Undefined;
+	If KindNameSingleType = False Then
+		KindNameSingleType = Undefined;
 	EndIf;
 	//ВКонфигурацииЕстьОстаткиНоменклатуры - InConfigurationIsBalanceProducts
 	//GoodsInWarehouses
 	InConfigurationIsBalanceProducts = Not Metadata.AccumulationRegisters.Find("GoodsInWarehouses") = Undefined;
-	ControlBalanceProducts = (Object.ObjectType = 0) And (ViewNameSingleType = "Products")
+	ControlBalanceProducts = (Object.ObjectType = 0) And (KindNameSingleType = "Products")
 		And InConfigurationIsBalanceProducts;
 		//
 	AccessibilityInWebApplicationProducts = InConfigurationYesOrderManagement And (Object.ObjectType = 0)
-		And (ViewNameSingleType = "Products");
+		And (KindNameSingleType = "Products");
 
 		///============================= DEFINITION OF GENERAL PROPERTIES AND CATEGORIES
 	For Each KeyAndValue In StructureTypesObjects Do
@@ -1270,9 +1270,9 @@ Procedure QueryInitialization()
 	EndDo;
 
 	///============================= DETERMINING THE ORDER AND PRESENTING DETAILS
-	ViewList.Add("Type " + TableTypeName + "а", "Ш_Вид");
-	ViewList.Add("Type " + TableTypeName + "а", "Ш_ВидПредставление");
-	ViewList.Add("Reference", "Object");
+	ViewList.Add("Type " + TableTypeName + "а", "H_Kind");
+	ViewList.Add("Type " + TableTypeName + "а", "H_KindRepresentation");
+	ViewList.Add("Ref", "Object");
 
 	If Object.ProcessTabularParts Then
 
@@ -1289,15 +1289,15 @@ Procedure QueryInitialization()
 
 	ViewList.Add(Prefix + "Пометка удаления", "H_DeletionMark");
 
-	If Object.ObjectType = 0 And Not ViewNameSingleType = Undefined Then
+	If Object.ObjectType = 0 And Not KindNameSingleType = Undefined Then
 
-		If MetadataObjects[ViewNameSingleType].Owners.Count() > 0 Then
+		If MetadataObjects[KindNameSingleType].Owners.Count() > 0 Then
 
 			StructureAttributesHeaders.Insert("Owner", "H_Owner");
 
 		EndIf;
 
-		If MetadataObjects[ViewNameSingleType].Hierarchical Then
+		If MetadataObjects[KindNameSingleType].Hierarchical Then
 
 			StructureAttributesHeaders.Insert("Parent", "H_Parent");
 
@@ -1307,8 +1307,8 @@ Procedure QueryInitialization()
 
 	//If ControlBalanceProducts Then
 	//	
-	//	ListPresentations.Add(Prefix+"Balance товара","Р_Остаток");
-	//	ListPresentations.Add(Prefix+"Balance-Резерв товара","Р_Резерв");
+	//	ListPresentations.Add(Prefix+"Balance товара","R_Balance");
+	//	ListPresentations.Add(Prefix+"Balance-Резерв товара","R_Reserve");
 	//	
 	//EndIf;
 
@@ -1357,9 +1357,9 @@ Procedure QueryInitialization()
 	//	
 	//	QueryTextEnding = QueryTextEnding + "
 	//	|ORDER BY
-	//	|	Ш_Вид,
+	//	|	H_Kind,
 	//	|	Object";
-	//	FieldsSort = "Ш_Вид,Object";
+	//	FieldsSort = "H_Kind,Object";
 	//	
 	//EndIf;
 	//
@@ -1374,18 +1374,18 @@ Procedure QueryInitialization()
 	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
-			ViewName = String.TableName;
+			KindName = String.TableName;
 		Else
 			PositionTP = Find(String.TableName, ".");
-			ViewName = Left(String.TableName, PositionTP - 1);
+			KindName = Left(String.TableName, PositionTP - 1);
 			NameTP = Mid(String.TableName, PositionTP + 1);
 		EndIf;
 
-		If MetadataObjects.Find(ViewName) = Undefined Then
+		If MetadataObjects.Find(KindName) = Undefined Then
 			Continue;
 		EndIf;
 
-		MetadataRowObjects=MetadataObjects[ViewName];
+		MetadataRowObjects=MetadataObjects[KindName];
 
 		MatadataAttributes = MetadataRowObjects.Attributes;
 
@@ -1398,11 +1398,11 @@ Procedure QueryInitialization()
 
 		///============================= FORMING THE QUERY TEXT BY ATTRIBUTES
 		QueryTextObject = "";
-		QueryTextObject = QueryTextObject + "" + Chars.LF + "	""" + ViewName + """ AS Ш_Вид";
+		QueryTextObject = QueryTextObject + "" + Chars.LF + "	""" + KindName + """ AS H_Kind";
 		QueryTextObject = QueryTextObject + "," + Chars.LF + "	""" + StrReplace(
-			MetadataObjects[ViewName].Presentation(), """", "") + """ AS Ш_ВидПредставление";
+			MetadataObjects[KindName].Presentation(), """", "") + """ AS H_KindRepresentation";
 		QueryTextObject = QueryTextObject + "," + Chars.LF + "	" + AliasTable + "." + Prefix
-			+ "Reference AS Object";
+			+ "Ref AS Object";
 
 		For Each KeyAndValue In StructureAttributesHeaders Do
 			MatadataAttribute = MatadataAttributes.Find(KeyAndValue.Key);
@@ -1469,8 +1469,8 @@ Procedure QueryInitialization()
 		If ControlBalanceProducts Then
 
 		//QueryTextObject = QueryTextObject + "," + "
-			//|	ЕСТЬNULL(Table_Р_Остаток.QuantityBalance,0) AS Р_Остаток,
-			//|	ЕСТЬNULL(Table_Р_Остаток.QuantityBalance, 0) - ЕСТЬNULL(Table_Р_Резерв.QuantityBalance, 0) AS Р_Резерв";
+			//|	ЕСТЬNULL(Table_R_Balance.QuantityBalance,0) AS R_Balance,
+			//|	ЕСТЬNULL(Table_R_Balance.QuantityBalance, 0) - ЕСТЬNULL(Table_R_Reserve.QuantityBalance, 0) AS R_Reserve";
 		EndIf;
 
 		If AccessibilityInWebApplicationProducts Then
@@ -1491,7 +1491,7 @@ Procedure QueryInitialization()
 			//	
 			//	QueryTextObject = QueryTextObject + "
 			//	|	LEFT JOIN InformationRegister.CategoriesObjects AS Table_"+KeyAndValue.Key+"
-			//	|		ПО " + AliasTable + ".Reference = Table_"+KeyAndValue.Key+".Object
+			//	|		ПО " + AliasTable + ".Ref = Table_"+KeyAndValue.Key+".Object
 			//	|		And (Table_"+KeyAndValue.Key+".Category = &"+KeyAndValue.Key+")";
 			//	
 			//	
@@ -1504,7 +1504,7 @@ Procedure QueryInitialization()
 			//	
 			//	QueryTextObject = QueryTextObject + "
 			//	|	LEFT JOIN InformationRegister.ЗначенияСвойствОбъектов AS Table_"+KeyAndValue.Key+"
-			//	|		ПО " + AliasTable + ".Reference = Table_"+KeyAndValue.Key+".Object
+			//	|		ПО " + AliasTable + ".Ref = Table_"+KeyAndValue.Key+".Object
 			//	|		And (Table_"+KeyAndValue.Key+".Property = &"+KeyAndValue.Key+")";
 			//	
 			//EndDo;
@@ -1513,10 +1513,10 @@ Procedure QueryInitialization()
 		If ControlBalanceProducts Then
 
 		//QueryTextObject = QueryTextObject + "," + "
-			//|	LEFT JOIN AccumulationRegister.GoodsInWarehouses.Balance AS Table_Р_Остаток
-			//|		ПО " + AliasTable + ".Reference = Table_Р_Остаток.Products
-			//|	LEFT JOIN AccumulationRegister.ТоварыВРезервеНаСкладах.Balance AS Table_Р_Резерв
-			//|		ПО " + AliasTable + ".Reference = Table_Р_Резерв.Products";
+			//|	LEFT JOIN AccumulationRegister.GoodsInWarehouses.Balance AS Table_R_Balance
+			//|		ПО " + AliasTable + ".Ref = Table_R_Balance.Products
+			//|	LEFT JOIN AccumulationRegister.ТоварыВРезервеНаСкладах.Balance AS Table_R_Reserve
+			//|		ПО " + AliasTable + ".Ref = Table_R_Reserve.Products";
 			//
 		EndIf;
 
@@ -1525,7 +1525,7 @@ Procedure QueryInitialization()
 		//НоменклатураНеиспользуемаяВВебУправленииЗаказами - ProductsUnusedInWebOrderManagement
 		//QueryTextObject = QueryTextObject + "," + "
 			//|	LEFT JOIN InformationRegister.ProductsUnusedInWebOrderManagement AS Table_П_Веб
-			//|	ПО " + AliasTable + ".Reference = Table_П_Веб.Products";
+			//|	ПО " + AliasTable + ".Ref = Table_П_Веб.Products";
 			//
 		EndIf;
 
@@ -1534,21 +1534,21 @@ Procedure QueryInitialization()
 
 			QueryTextObject = QueryTextObject + "
 													  |WHERE
-													  |	" + AliasTable + ".Reference.IsFolder = FALSE";
+													  |	" + AliasTable + ".Ref.IsFolder = FALSE";
 
 		EndIf;
 
-		QueryText = ?(QueryText = "", "StartChoosing ", QueryText + Chars.LF + Chars.LF + "UNION ALL"
-			+ Chars.LF + Chars.LF + "Select") + QueryTextObject;
+		QueryText = ?(QueryText = "", "SELECT ", QueryText + Chars.LF + Chars.LF + "UNION ALL"
+			+ Chars.LF + Chars.LF + "SELECT") + QueryTextObject;
 
-		QueryTextObject = "StartChoosing " + QueryTextObject + QueryTextEnding;
+		QueryTextObject = "SELECT " + QueryTextObject + QueryTextEnding;
 		ArrayQueriesToObjects.Add(QueryTextObject);
 
 	EndDo;
 
 	QueryText = QueryText + QueryTextEnding;
 
-	NewQueryText = "StartChoosing ALLOWED * FROM (" + QueryText + ") AS _Table";
+	NewQueryText = "SELECT ALLOWED * FROM (" + QueryText + ") AS _Table";
 
 		///============================= SAVING PREVIOUS QUERY SELECT SETTINGS
 	//For IndexOf = 0 To QueryBuilder_Filter.Count() - 1 Do
@@ -1599,9 +1599,9 @@ Procedure QueryInitialization()
 	//EndDo; 
 	//
 	//FilterAvailableFields = QueryBuilder.Filter.GetAvailableFields();
-	//FilterAvailableFields.Delete(FilterAvailableFields.Ш_ВидПредставление);
-	//FilterAvailableFields.Ш_Ссылка.Fields.Clear();
-	////FilterAvailableFields.Delete(FilterAvailableFields.Ш_Ссылка);
+	//FilterAvailableFields.Delete(FilterAvailableFields.H_KindRepresentation);
+	//FilterAvailableFields.H_Ref.Fields.Clear();
+	////FilterAvailableFields.Delete(FilterAvailableFields.H_Ref);
 	//If Object.ProcessTabularParts Then
 	//	FilterAvailableFields.Delete(FilterAvailableFields.T_TPPresentation);
 	//	FilterAvailableFields.Delete(FilterAvailableFields.T_TP);
@@ -1640,14 +1640,14 @@ Procedure QueryInitialization()
 	//		
 	//	EndIf;
 	//	
-	//	If ViewNameSingleType = ObjectType ИЛИ ObjectType = "*" Then
+	//	If KindNameSingleType = ObjectType ИЛИ ObjectType = "*" Then
 	//		
 	//		FullNameAttribute = TrimAll(Template.Region("R"+к+"C2").Text);
 	//		LongDesc = TrimAll(Template.Region("R"+к+"C3").Text);
 	//		ЧерезТочку = False;
 	//		PositionTP = Find(FullNameAttribute,".");
-	//		ЭтоСоставнойРеквизит = Not(PositionTP = 0);
-	//		ИмяКорня = "Ш_"+?(PositionTP = 0,FullNameAttribute,Left(FullNameAttribute,PositionTP-1));
+	//		ItIsCompoundAttribute = Not(PositionTP = 0);
+	//		ИмяКорня = "H_"+?(PositionTP = 0,FullNameAttribute,Left(FullNameAttribute,PositionTP-1));
 	//		//CustomField = QueryBuilder.AvailableFields.Find(ИмяКорня);
 	//		//While Not PositionTP = 0 And Not CustomField = Undefined Do
 	//		//	FullNameAttribute = Mid(FullNameAttribute,PositionTP+1);
@@ -1656,7 +1656,7 @@ Procedure QueryInitialization()
 	//		//	ЧерезТочку = True;
 	//		//EndDo; 
 	//		//If Not CustomField = Undefined Then
-	//			If ЭтоСоставнойРеквизит Then
+	//			If ItIsCompoundAttribute Then
 	//				Counter = Counter+1;
 	//				//QueryBuilder.SelectedFields.Add(CustomField.DataPath,"Д_"+Counter);
 	//				ListPresentations.Add(LongDesc,"Д_"+Counter);
@@ -1673,13 +1673,13 @@ Procedure QueryInitialization()
 	/////============================= 
 	//QueryBuilder_Filter = QueryBuilder.Filter;
 	//QueryBuilder.PresentationAdding = PresentationAdditionType.DontAdd;
-	DisplayedColumns = New Structure("Ш_ВидПредставление,Ш_Ссылка");
+	DisplayedColumns = New Structure("H_KindRepresentation,H_Ref");
 	If Object.ProcessTabularParts Then
 		DisplayedColumns.Insert("T_TPPresentation");
 		DisplayedColumns.Insert("T_LineNumber");
 	EndIf;
-	mShapedMode = New Structure("ViewList,DataSelected,ViewNameSingleType,PredefinedAttributes,DisplayedColumns,StructureProperties,StructureCategories",
-		ViewList, False, ViewNameSingleType, PredefinedAttributes, DisplayedColumns, StructureProperties,
+	mShapedMode = New Structure("ViewList,DataSelected,KindNameSingleType,PredefinedAttributes,DisplayedColumns,StructureProperties,StructureCategories",
+		ViewList, False, KindNameSingleType, PredefinedAttributes, DisplayedColumns, StructureProperties,
 		StructureCategories);
 
 EndProcedure
@@ -1762,8 +1762,8 @@ Procedure OnLoadDataFromSettingsAtServer(Settings)
 	For Each RowTable In TableFieldTypesObjects Do
 		ArrayName = StrSplit(RowTable.TableName, ".");
 
-		ViewName = ArrayName[0];
-		If MetadataObjects.Find(ViewName) = Undefined Then
+		KindName = ArrayName[0];
+		If MetadataObjects.Find(KindName) = Undefined Then
 			ArrayOfStringsToDelete.Add(RowTable);
 		EndIf;
 	EndDo;

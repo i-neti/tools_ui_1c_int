@@ -5,7 +5,7 @@ Procedure FillSettingByParametersForm(Form) Export
 	If Form.Parameters.Property("Setting") Then
 		Form.CurrentSetting = Form.Parameters.Setting;
 	EndIf;
-	If Form.Parameters.Property("FoundObjects") Then
+	If Form.Parameters.Property("FoundObjects") And TypeOf(Form.FoundObjects) = Type("ValueList") Then
 		Form.FoundObjects.LoadValues(Form.Parameters.FoundObjects);
 	EndIf;
 	Form.CurrentLine = -1;
@@ -27,17 +27,27 @@ Procedure FillSettingByParametersForm(Form) Export
 			Form.Items.CurrentSetting.ChoiceList.Add(String, String.Processing);
 		EndDo;
 	EndIf;
+	
+	If Form.Parameters.Property("TableFieldTypesObjects") Then
 
-	If Form.Parameters.Property("FoundObjectsTP") Then
+		Row = Form.Parameters.TableFieldTypesObjects[0];
 
-		FoundObjectsValueTable = Form.Parameters.FoundObjectsTP.Unload();
+		Form.SearchObject = New Structure;
+		Form.SearchObject.Insert("Type", ?(Form.Parameters.ObjectType = 0, "Catalog", "Document"));
+		Form.SearchObject.Insert("Name", Row.TableName);
+		Form.SearchObject.Insert("Presentation", Row.PresentationTable);
 
-		Form.FoundObjectsTP.Load(FoundObjectsValueTable);
 	EndIf;
+	
+EndProcedure
 
+Procedure FillSettingByParametersForm_ProcessTabularParts(Form) Export
 	If Form.Parameters.Property("ProcessTabularParts") Then
 		Form.ProcessTabularParts = Form.Parameters.ProcessTabularParts;
 	EndIf;
+EndProcedure
+	
+Procedure FillSettingByParametersForm_TableAttributes(Form) Export
 	
 	If Form.Parameters.Property("TableAttributes") Then
 		TableAttributes = Form.Parameters.TableAttributes;
@@ -63,18 +73,7 @@ Procedure FillSettingByParametersForm(Form) Export
 		EndIf;
 
 	EndIf;
-	
-	If Form.Parameters.Property("TableFieldTypesObjects") Then
 
-		Row = Form.Parameters.TableFieldTypesObjects[0];
-
-		Form.SearchObject = New Structure;
-		Form.SearchObject.Insert("Type", ?(Form.Parameters.ObjectType = 0, "Catalog", "Document"));
-		Form.SearchObject.Insert("Name", Row.TableName);
-		Form.SearchObject.Insert("Presentation", Row.PresentationTable);
-
-	EndIf;
-	
 EndProcedure
 
 Function TypeDescription(TypeString) Export
