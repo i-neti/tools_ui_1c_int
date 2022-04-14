@@ -1275,7 +1275,7 @@
               <name>Группа4</name>
               <id>1104</id>
               <items xsi:type="form:FormField">
-                <name>ЧислоСтолбцовВКлюче</name>
+                <name>NumberColumnsInKey</name>
                 <id>820</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1284,15 +1284,15 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ЧислоСтолбцовВКлюче</segments>
+                    <segments>Объект.NumberColumnsInKey</segments>
                   </paths>
                 </dataPath>
                 <handlers>
                   <event>OnChange</event>
-                  <name>ЧислоСтолбцовВКлючеПриИзменении</name>
+                  <name>NumberColumnsInKeyOnChange</name>
                 </handlers>
                 <extendedTooltip>
-                  <name>ЧислоСтолбцовВКлючеРасширеннаяПодсказка</name>
+                  <name>NumberColumnsInKeyExtendedTooltip</name>
                   <id>822</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1307,7 +1307,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ЧислоСтолбцовВКлючеКонтекстноеМеню</name>
+                  <name>NumberColumnsInKeyContextMenu</name>
                   <id>821</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1359,7 +1359,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>СоставнойКлюч</name>
+                <name>CompositeKey</name>
                 <id>509</id>
                 <enabled>true</enabled>
                 <userVisible>
@@ -1367,7 +1367,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.СоставнойКлюч</segments>
+                    <segments>Объект.CompositeKey</segments>
                   </paths>
                 </dataPath>
                 <handlers>
@@ -1375,7 +1375,7 @@
                   <name>ПриИзмененииКлючевогоРеквизита</name>
                 </handlers>
                 <extendedTooltip>
-                  <name>СоставнойКлючРасширеннаяПодсказка</name>
+                  <name>CompositeKeyExtendedTooltip</name>
                   <id>511</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1390,7 +1390,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>СоставнойКлючКонтекстноеМеню</name>
+                  <name>CompositeKeyContextMenu</name>
                   <id>510</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1407,7 +1407,7 @@
                 <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
               </items>
               <items xsi:type="form:FormField">
-                <name>ОтображатьТипыСтолбцовКлюча</name>
+                <name>DisplayKeyColumnTypes</name>
                 <id>986</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1416,15 +1416,15 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ОтображатьТипыСтолбцовКлюча</segments>
+                    <segments>Объект.DisplayKeyColumnTypes</segments>
                   </paths>
                 </dataPath>
                 <handlers>
                   <event>OnChange</event>
-                  <name>ОтображатьТипыСтолбцовКлючаПриИзменении</name>
+                  <name>DisplayKeyColumnTypesOnChange</name>
                 </handlers>
                 <extendedTooltip>
-                  <name>ОтображатьТипыСтолбцовКлючаРасширеннаяПодсказка</name>
+                  <name>DisplayKeyColumnTypesExtendedTooltip</name>
                   <id>988</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1439,7 +1439,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ОтображатьТипыСтолбцовКлючаКонтекстноеМеню</name>
+                  <name>DisplayKeyColumnTypesContextMenu</name>
                   <id>987</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1571,7 +1571,7 @@
             <name>Группа2</name>
             <id>993</id>
             <items xsi:type="form:FormField">
-              <name>ЧислоСтрокСПустымиКлючамиДляПрерыванияЧтения</name>
+              <name>NumberOfRowsWithEmptyKeysToBreakReading</name>
               <id>828</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1580,11 +1580,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ЧислоСтрокСПустымиКлючамиДляПрерыванияЧтения</segments>
+                  <segments>Объект.NumberOfRowsWithEmptyKeysToBreakReading</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ЧислоСтрокСПустымиКлючамиДляПрерыванияЧтенияРасширеннаяПодсказка</name>
+                <name>NumberOfRowsWithEmptyKeysToBreakReadingExtendedTooltip</name>
                 <id>830</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1599,7 +1599,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ЧислоСтрокСПустымиКлючамиДляПрерыванияЧтенияКонтекстноеМеню</name>
+                <name>NumberOfRowsWithEmptyKeysToBreakReadingContextMenu</name>
                 <id>829</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6497,7 +6497,7 @@
                     <name>ГруппаПараметрыПодключенияКФайлуXMLА</name>
                     <id>720</id>
                     <items xsi:type="form:FormField">
-                      <name>СпособХраненияДанныхВXMLФайлеА</name>
+                      <name>DataStorageMethodInXMLFileA</name>
                       <id>715</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6506,11 +6506,11 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.СпособХраненияДанныхВXMLФайлеА</segments>
+                          <segments>Объект.DataStorageMethodInXMLFileA</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>СпособХраненияДанныхВXMLФайлеАРасширеннаяПодсказка</name>
+                        <name>DataStorageMethodInXMLFileAExtendedTooltip</name>
                         <id>717</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6525,7 +6525,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>СпособХраненияДанныхВXMLФайлеАКонтекстноеМеню</name>
+                        <name>DataStorageMethodInXMLFileAContextMenu</name>
                         <id>716</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6575,7 +6575,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ИмяРодительскогоУзлаФайлаА</name>
+                      <name>ParentNodeNameFileA</name>
                       <id>733</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6584,11 +6584,11 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ИмяРодительскогоУзлаФайлаА</segments>
+                          <segments>Объект.ParentNodeNameFileA</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ИмяРодительскогоУзлаФайлаАРасширеннаяПодсказка</name>
+                        <name>ParentNodeNameFileAExtendedTooltip</name>
                         <id>735</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6603,7 +6603,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ИмяРодительскогоУзлаФайлаАКонтекстноеМеню</name>
+                        <name>ParentNodeNameFileAContextMenu</name>
                         <id>734</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6670,7 +6670,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяЭлементаСДаннымиФайлаА</name>
+                    <name>ElementNameWithDataFileA</name>
                     <id>730</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6679,11 +6679,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяЭлементаСДаннымиФайлаА</segments>
+                        <segments>Объект.ElementNameWithDataFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяЭлементаСДаннымиФайлаАРасширеннаяПодсказка</name>
+                      <name>ElementNameWithDataFileAExtendedTooltip</name>
                       <id>732</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6698,7 +6698,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяЭлементаСДаннымиФайлаАКонтекстноеМеню</name>
+                      <name>ElementNameWithDataFileAContextMenu</name>
                       <id>731</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7001,10 +7001,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаСворачиватьТаблицуА</name>
+              <name>GroupCollapseTableA</name>
               <id>969</id>
               <items xsi:type="form:FormField">
-                <name>СворачиватьТаблицуА</name>
+                <name>CollapseTableA</name>
                 <id>961</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -7013,12 +7013,12 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.СворачиватьТаблицуА</segments>
+                    <segments>Объект.CollapseTableA</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>Right</titleLocation>
                 <extendedTooltip>
-                  <name>СворачиватьТаблицуАРасширеннаяПодсказка</name>
+                  <name>CollapseTableAExtendedTooltip</name>
                   <id>963</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -7033,7 +7033,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>СворачиватьТаблицуАКонтекстноеМеню</name>
+                  <name>CollapseTableAContextMenu</name>
                   <id>962</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -7111,12 +7111,16 @@
                 <key>ru</key>
                 <value>Сворачивание данных</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group collapse table A</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа сворачивать таблицу А</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаСворачиватьТаблицуАРасширеннаяПодсказка</name>
+                <name>GroupCollapseTableAExtendedTooltip</name>
                 <id>970</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -7210,7 +7214,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючомИзФайлаА</name>
+                    <name>ColumnNameKeyFromFileA</name>
                     <id>706</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7219,11 +7223,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючомИзФайлаА</segments>
+                        <segments>Объект.ColumnNameKeyFromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючомИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNameKeyFromFileAExtendedTooltip</name>
                       <id>708</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7238,7 +7242,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючомИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNameKeyFromFileAContextMenu</name>
                       <id>707</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7269,7 +7273,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторА</name>
+                    <name>UseAsKeyUniqueIdentifierA</name>
                     <id>212</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7278,7 +7282,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлючаУникальныйИдентификаторА</segments>
+                        <segments>Объект.UseAsKeyUniqueIdentifierA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -7286,7 +7290,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторАРасширеннаяПодсказка</name>
+                      <name>UseAsKeyUniqueIdentifierAExtendedTooltip</name>
                       <id>214</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7301,7 +7305,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторАКонтекстноеМеню</name>
+                      <name>UseAsKeyUniqueIdentifierAContextMenu</name>
                       <id>213</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7559,7 +7563,7 @@
                     <name>ГруппаОбработкаКлюча1А3</name>
                     <id>899</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча1А</name>
+                      <name>ExecuteArbitraryKeyCode1A</name>
                       <id>881</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7568,7 +7572,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча1А</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode1A</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -7577,7 +7581,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча1АРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode1AExtendedTooltip</name>
                         <id>883</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -7592,7 +7596,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча1АКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode1AContextMenu</name>
                         <id>882</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -7750,7 +7754,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча1А</name>
+                    <name>ArbitraryKeyCode1A</name>
                     <id>838</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7759,12 +7763,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча1А</segments>
+                        <segments>Объект.ArbitraryKeyCode1A</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча1АРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode1AExtendedTooltip</name>
                       <id>840</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7779,7 +7783,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча1АКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode1AContextMenu</name>
                       <id>839</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7952,7 +7956,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючом2ИзФайлаА</name>
+                    <name>ColumnNameKey2FromFileA</name>
                     <id>709</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7961,11 +7965,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючом2ИзФайлаА</segments>
+                        <segments>Объект.ColumnNameKey2FromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючом2ИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNameKey2FromFileAExtendedTooltip</name>
                       <id>711</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7980,7 +7984,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючом2ИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNameKey2FromFileAContextMenu</name>
                       <id>710</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8011,7 +8015,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторА</name>
+                    <name>UseAsKey2UniqueIdentifierA</name>
                     <id>524</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8020,7 +8024,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлюча2УникальныйИдентификаторА</segments>
+                        <segments>Объект.UseAsKey2UniqueIdentifierA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -8028,7 +8032,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторАРасширеннаяПодсказка</name>
+                      <name>UseAsKey2UniqueIdentifierAExtendedTooltip</name>
                       <id>526</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8043,7 +8047,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторАКонтекстноеМеню</name>
+                      <name>UseAsKey2UniqueIdentifierAContextMenu</name>
                       <id>525</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8302,7 +8306,7 @@
                     <name>ГруппаОбработкаКлюча2А3</name>
                     <id>904</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча2А</name>
+                      <name>ExecuteArbitraryKeyCode2A</name>
                       <id>884</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8311,7 +8315,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча2А</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode2A</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -8320,7 +8324,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча2АРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode2AExtendedTooltip</name>
                         <id>886</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8335,7 +8339,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча2АКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode2AContextMenu</name>
                         <id>885</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8493,7 +8497,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча2А</name>
+                    <name>ArbitraryKeyCode2A</name>
                     <id>850</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8502,12 +8506,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча2А</segments>
+                        <segments>Объект.ArbitraryKeyCode2A</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча2АРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode2AExtendedTooltip</name>
                       <id>852</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8522,7 +8526,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча2АКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode2AContextMenu</name>
                       <id>851</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8691,7 +8695,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючом3ИзФайлаА</name>
+                    <name>ColumnNameKey3FromFileA</name>
                     <id>761</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8700,11 +8704,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючом3ИзФайлаА</segments>
+                        <segments>Объект.ColumnNameKey3FromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючом3ИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNameKey3FromFileAExtendedTooltip</name>
                       <id>763</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8719,7 +8723,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючом3ИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNameKey3FromFileAContextMenu</name>
                       <id>762</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8750,7 +8754,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторА</name>
+                    <name>UseAsKey3UniqueIdentifierA</name>
                     <id>764</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8759,7 +8763,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлюча3УникальныйИдентификаторА</segments>
+                        <segments>Объект.UseAsKey3UniqueIdentifierA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -8767,7 +8771,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторАРасширеннаяПодсказка</name>
+                      <name>UseAsKey3UniqueIdentifierAExtendedTooltip</name>
                       <id>766</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8782,7 +8786,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторАКонтекстноеМеню</name>
+                      <name>UseAsKey3UniqueIdentifierAContextMenu</name>
                       <id>765</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -9040,7 +9044,7 @@
                     <name>ГруппаОбработкаКлюча3А3</name>
                     <id>909</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча3А</name>
+                      <name>ExecuteArbitraryKeyCode3A</name>
                       <id>887</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -9049,7 +9053,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча3А</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode3A</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -9058,7 +9062,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча3АРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode3AExtendedTooltip</name>
                         <id>889</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -9073,7 +9077,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча3АКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode3AContextMenu</name>
                         <id>888</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -9231,7 +9235,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча3А</name>
+                    <name>ArbitraryKeyCode3A</name>
                     <id>857</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -9240,12 +9244,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча3А</segments>
+                        <segments>Объект.ArbitraryKeyCode3A</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча3АРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode3AExtendedTooltip</name>
                       <id>859</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -9260,7 +9264,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча3АКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode3AContextMenu</name>
                       <id>858</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12391,7 +12395,7 @@
                     <name>ГруппаПараметрыПодключенияКФайлуXMLБ</name>
                     <id>728</id>
                     <items xsi:type="form:FormField">
-                      <name>СпособХраненияДанныхВXMLФайлеБ</name>
+                      <name>DataStorageMethodInXMLFileB</name>
                       <id>712</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12400,11 +12404,11 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.СпособХраненияДанныхВXMLФайлеБ</segments>
+                          <segments>Объект.DataStorageMethodInXMLFileB</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>СпособХраненияДанныхВXMLФайлеБРасширеннаяПодсказка</name>
+                        <name>DataStorageMethodInXMLFileBExtendedTooltip</name>
                         <id>714</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12419,7 +12423,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>СпособХраненияДанныхВXMLФайлеБКонтекстноеМеню</name>
+                        <name>DataStorageMethodInXMLFileBContextMenu</name>
                         <id>713</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12469,7 +12473,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ИмяРодительскогоУзлаФайлаБ</name>
+                      <name>ParentNodeNameFileB</name>
                       <id>739</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12478,11 +12482,11 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ИмяРодительскогоУзлаФайлаБ</segments>
+                          <segments>Объект.ParentNodeNameFileB</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ИмяРодительскогоУзлаФайлаБРасширеннаяПодсказка</name>
+                        <name>ParentNodeNameFileBExtendedTooltip</name>
                         <id>741</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12497,7 +12501,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ИмяРодительскогоУзлаФайлаБКонтекстноеМеню</name>
+                        <name>ParentNodeNameFileBContextMenu</name>
                         <id>740</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12564,7 +12568,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяЭлементаСДаннымиФайлаБ</name>
+                    <name>ElementNameWithDataFileB</name>
                     <id>736</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12573,11 +12577,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяЭлементаСДаннымиФайлаБ</segments>
+                        <segments>Объект.ElementNameWithDataFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяЭлементаСДаннымиФайлаБРасширеннаяПодсказка</name>
+                      <name>ElementNameWithDataFileBExtendedTooltip</name>
                       <id>738</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12592,7 +12596,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяЭлементаСДаннымиФайлаБКонтекстноеМеню</name>
+                      <name>ElementNameWithDataFileBContextMenu</name>
                       <id>737</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12895,10 +12899,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаСворачиватьТаблицуБ</name>
+              <name>GroupCollapseTableB</name>
               <id>967</id>
               <items xsi:type="form:FormField">
-                <name>СворачиватьТаблицуБ</name>
+                <name>CollapseTableB</name>
                 <id>964</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -12907,12 +12911,12 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.СворачиватьТаблицуБ</segments>
+                    <segments>Объект.CollapseTableB</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>Right</titleLocation>
                 <extendedTooltip>
-                  <name>СворачиватьТаблицуБРасширеннаяПодсказка</name>
+                  <name>CollapseTableBExtendedTooltip</name>
                   <id>966</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -12927,7 +12931,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>СворачиватьТаблицуБКонтекстноеМеню</name>
+                  <name>CollapseTableBContextMenu</name>
                   <id>965</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -13010,7 +13014,7 @@
                 <value>Группа сворачивать таблицу Б</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаСворачиватьТаблицуБРасширеннаяПодсказка</name>
+                <name>GroupCollapseTableBExtendedTooltip</name>
                 <id>968</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -13104,7 +13108,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючомИзФайлаБ</name>
+                    <name>ColumnNameKeyFromFileB</name>
                     <id>700</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13113,11 +13117,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючомИзФайлаБ</segments>
+                        <segments>Объект.ColumnNameKeyFromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючомИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNameKeyFromFileBExtendedTooltip</name>
                       <id>702</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13132,7 +13136,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючомИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNameKeyFromFileBContextMenu</name>
                       <id>701</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13163,7 +13167,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторБ</name>
+                    <name>UseAsKeyUniqueIdentifierB</name>
                     <id>244</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13172,7 +13176,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлючаУникальныйИдентификаторБ</segments>
+                        <segments>Объект.UseAsKeyUniqueIdentifierB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -13180,7 +13184,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторБРасширеннаяПодсказка</name>
+                      <name>UseAsKeyUniqueIdentifierBExtendedTooltip</name>
                       <id>246</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13195,7 +13199,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторБКонтекстноеМеню</name>
+                      <name>UseAsKeyUniqueIdentifierBContextMenu</name>
                       <id>245</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13453,7 +13457,7 @@
                     <name>ГруппаОбработкаКлюча1Б3</name>
                     <id>914</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча1Б</name>
+                      <name>ExecuteArbitraryKeyCode1B</name>
                       <id>890</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13462,7 +13466,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча1Б</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode1B</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -13471,7 +13475,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча1БРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode1BExtendedTooltip</name>
                         <id>892</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -13486,7 +13490,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча1БКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode1BContextMenu</name>
                         <id>891</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -13644,7 +13648,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча1Б</name>
+                    <name>ArbitraryKeyCode1B</name>
                     <id>866</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13653,12 +13657,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча1Б</segments>
+                        <segments>Объект.ArbitraryKeyCode1B</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча1БРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode1BExtendedTooltip</name>
                       <id>868</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13673,7 +13677,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча1БКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode1BContextMenu</name>
                       <id>867</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13842,7 +13846,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючом2ИзФайлаБ</name>
+                    <name>ColumnNameKey2FromFileB</name>
                     <id>703</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13851,11 +13855,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючом2ИзФайлаБ</segments>
+                        <segments>Объект.ColumnNameKey2FromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючом2ИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNameKey2FromFileBExtendedTooltip</name>
                       <id>705</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13870,7 +13874,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючом2ИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNameKey2FromFileBContextMenu</name>
                       <id>704</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13901,7 +13905,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторБ</name>
+                    <name>UseAsKey2UniqueIdentifierB</name>
                     <id>545</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13910,7 +13914,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлюча2УникальныйИдентификаторБ</segments>
+                        <segments>Объект.UseAsKey2UniqueIdentifierB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -13918,7 +13922,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторБРасширеннаяПодсказка</name>
+                      <name>UseAsKey2UniqueIdentifierBExtendedTooltip</name>
                       <id>547</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13933,7 +13937,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторБКонтекстноеМеню</name>
+                      <name>UseAsKey2UniqueIdentifierBContextMenu</name>
                       <id>546</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14191,7 +14195,7 @@
                     <name>ГруппаОбработкаКлюча2Б3</name>
                     <id>922</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча2Б</name>
+                      <name>ExecuteArbitraryKeyCode2B</name>
                       <id>893</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14200,7 +14204,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча2Б</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode2B</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -14209,7 +14213,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча2БРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode2BExtendedTooltip</name>
                         <id>895</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -14224,7 +14228,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча2БКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode2BContextMenu</name>
                         <id>894</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -14382,7 +14386,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча2Б</name>
+                    <name>ArbitraryKeyCode2B</name>
                     <id>871</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14391,12 +14395,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча2Б</segments>
+                        <segments>Объект.ArbitraryKeyCode2B</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча2БРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode2BExtendedTooltip</name>
                       <id>873</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14411,7 +14415,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча2БКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode2BContextMenu</name>
                       <id>872</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14580,7 +14584,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСтолбцаСКлючом3ИзФайлаБ</name>
+                    <name>ColumnNameKey3FromFileB</name>
                     <id>802</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14589,11 +14593,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИмяСтолбцаСКлючом3ИзФайлаБ</segments>
+                        <segments>Объект.ColumnNameKey3FromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСтолбцаСКлючом3ИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNameKey3FromFileBExtendedTooltip</name>
                       <id>804</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14608,7 +14612,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСтолбцаСКлючом3ИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNameKey3FromFileBContextMenu</name>
                       <id>803</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14639,7 +14643,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторБ</name>
+                    <name>UseAsKey3UniqueIdentifierB</name>
                     <id>805</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14648,7 +14652,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ИспользоватьВКачествеКлюча3УникальныйИдентификаторБ</segments>
+                        <segments>Объект.UseAsKey3UniqueIdentifierB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -14656,7 +14660,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторБРасширеннаяПодсказка</name>
+                      <name>UseAsKey3UniqueIdentifierBExtendedTooltip</name>
                       <id>807</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14671,7 +14675,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторБКонтекстноеМеню</name>
+                      <name>UseAsKey3UniqueIdentifierBContextMenu</name>
                       <id>806</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14929,7 +14933,7 @@
                     <name>ГруппаОбработкаКлюча3Б3</name>
                     <id>930</id>
                     <items xsi:type="form:FormField">
-                      <name>ВыполнятьПроизвольныйКодКлюча3Б</name>
+                      <name>ExecuteArbitraryKeyCode3B</name>
                       <id>896</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14938,7 +14942,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ВыполнятьПроизвольныйКодКлюча3Б</segments>
+                          <segments>Объект.ExecuteArbitraryKeyCode3B</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>Right</titleLocation>
@@ -14947,7 +14951,7 @@
                         <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
                       </handlers>
                       <extendedTooltip>
-                        <name>ВыполнятьПроизвольныйКодКлюча3БРасширеннаяПодсказка</name>
+                        <name>ExecuteArbitraryKeyCode3BExtendedTooltip</name>
                         <id>898</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -14962,7 +14966,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ВыполнятьПроизвольныйКодКлюча3БКонтекстноеМеню</name>
+                        <name>ExecuteArbitraryKeyCode3BContextMenu</name>
                         <id>897</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -15120,7 +15124,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПроизвольныйКодКлюча3Б</name>
+                    <name>ArbitraryKeyCode3B</name>
                     <id>878</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -15129,12 +15133,12 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПроизвольныйКодКлюча3Б</segments>
+                        <segments>Объект.ArbitraryKeyCode3B</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>None</titleLocation>
                     <extendedTooltip>
-                      <name>ПроизвольныйКодКлюча3БРасширеннаяПодсказка</name>
+                      <name>ArbitraryKeyCode3BExtendedTooltip</name>
                       <id>880</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -15149,7 +15153,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПроизвольныйКодКлюча3БКонтекстноеМеню</name>
+                      <name>ArbitraryKeyCode3BContextMenu</name>
                       <id>879</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
