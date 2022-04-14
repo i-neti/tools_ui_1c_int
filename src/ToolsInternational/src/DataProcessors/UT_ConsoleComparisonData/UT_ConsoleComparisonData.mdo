@@ -37,7 +37,11 @@
     <value>Предназначена для сравнения данных, полученных из разных источников данных: информационных баз 1С 8, 1С 7.7, баз данных SQL, файлов формата CSV/TXT/DBF/XLS/DOC/XML, строки JSON, вручную заполненного табличного документа</value>
   </explanation>
   <attributes uuid="0807802a-b3bd-4f42-abd4-3f58c614cc10">
-    <name>ТипБазыА</name>
+    <name>BaseTypeA</name>
+    <synonym>
+      <key>en</key>
+      <value>Type</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Тип</value>
@@ -53,7 +57,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="269a2064-b504-404f-bcde-da6c873c2d1f">
-    <name>ТипБазыБ</name>
+    <name>BaseTypeB</name>
+    <synonym>
+      <key>en</key>
+      <value>Type</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Тип</value>
@@ -69,7 +77,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9629a99c-0b25-4166-98dd-733ddbec6fda">
-    <name>ТекстЗапросаА</name>
+    <name>QueryTextA</name>
+    <synonym>
+      <key>en</key>
+      <value>Query text</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Текст запроса</value>
@@ -82,7 +94,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="795f3a6f-4573-4c99-8a75-8023ac2697da">
-    <name>ТекстЗапросаБ</name>
+    <name>QueryTextB</name>
+    <synonym>
+      <key>en</key>
+      <value>Query text</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Текст запроса</value>
@@ -95,7 +111,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="8b109b60-03ed-4d38-a80f-93124297e834">
-    <name>ПодключениеКВнешнейБазеАПутьКБазе</name>
+    <name>ConnectionToExternalBaseAPathBase</name>
+    <synonym>
+      <key>en</key>
+      <value>Path base</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Путь к базе</value>
@@ -108,7 +128,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e2bdc776-4636-4b50-b2ca-a933556b96d1">
-    <name>ПодключениеКВнешнейБазеБПутьКБазе</name>
+    <name>ConnectionToExternalBaseBPathBase</name>
+    <synonym>
+      <key>en</key>
+      <value>Path base</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Путь к базе</value>
@@ -121,7 +145,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d27a8019-1edc-49c8-9ec7-489878136bb4">
-    <name>ПодключениеКВнешнейБазеАЛогин</name>
+    <name>ConnectionToExternalBaseALogin</name>
+    <synonym>
+      <key>en</key>
+      <value>Login</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Логин</value>
@@ -136,7 +164,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3f4b879b-58bb-44c8-8f07-f77c0773b50c">
-    <name>ПодключениеКВнешнейБазеБЛогин</name>
+    <name>ConnectionToExternalBaseBLogin</name>
+    <synonym>
+      <key>en</key>
+      <value>Login</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Логин</value>
@@ -151,7 +183,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="83beb220-3d0e-4816-beac-17ba277a9f5f">
-    <name>ПодключениеКВнешнейБазеАПароль</name>
+    <name>ConnectionToExternalBaseAPassword</name>
+    <synonym>
+      <key>en</key>
+      <value>Password</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Пароль</value>
@@ -166,7 +202,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="8aa50e04-618d-4cc5-9a45-cb5a4d2ef649">
-    <name>ПодключениеКВнешнейБазеБПароль</name>
+    <name>ConnectionToExternalBaseBPassword</name>
+    <synonym>
+      <key>en</key>
+      <value>Password</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Пароль</value>
@@ -181,7 +221,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="74dc6b4d-df1d-4183-a8c8-c29ff98df6cc">
-    <name>ПодключениеКВнешнейБазеАСервер</name>
+    <name>ConnectionToExternalBaseAServer</name>
+    <synonym>
+      <key>en</key>
+      <value>Server</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Сервер</value>
@@ -194,7 +238,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="edfa7dd7-8317-4823-bc4d-9ccedea3eb88">
-    <name>ПодключениеКВнешнейБазеБСервер</name>
+    <name>ConnectionToExternalBaseBServer</name>
+    <synonym>
+      <key>en</key>
+      <value>Server</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Сервер</value>
@@ -207,7 +255,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="bd4f1276-8171-4de4-b15d-4f891cae0403">
-    <name>ВариантРаботыВнешнейБазыА</name>
+    <name>WorkOptionExternalBaseA</name>
+    <synonym>
+      <key>en</key>
+      <value>Work option</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Вариант работы</value>
@@ -223,7 +275,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="a46a5ae7-79fe-46f0-b2c8-ae447efba9aa">
-    <name>ВариантРаботыВнешнейБазыБ</name>
+    <name>WorkOptionExternalBaseB</name>
+    <synonym>
+      <key>en</key>
+      <value>Work option</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Вариант работы</value>
@@ -239,7 +295,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c16dc4bf-e405-4e42-8752-c7c15c0ecaf2">
-    <name>ВерсияПлатформыВнешнейБазыА</name>
+    <name>VersionPlatformExternalBaseA</name>
+    <synonym>
+      <key>en</key>
+      <value>Version platform</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Версия платформы</value>
@@ -255,7 +315,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="10f5cd1d-5d55-4798-8454-f79dd2426da9">
-    <name>ВерсияПлатформыВнешнейБазыБ</name>
+    <name>VersionPlatformExternalBaseB</name>
+    <synonym>
+      <key>en</key>
+      <value>Version platform</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Версия платформы</value>
@@ -271,7 +335,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="56cf78bc-6bff-4711-bc2d-e5ba10173211">
-    <name>РеляционнаяОперация</name>
+    <name>RelationalOperation</name>
+    <synonym>
+      <key>en</key>
+      <value>Relational operation</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Реляционная операция</value>
@@ -302,7 +370,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="500d63e9-092f-4c88-96b2-b9bea7e8682d">
-    <name>КодДляВыводаСтрок</name>
+    <name>CodeForOutputRows</name>
+    <synonym>
+      <key>en</key>
+      <value>Code for output rows</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Код для вывода строк</value>
@@ -315,7 +387,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="cff2df1c-6bbf-4b15-af20-61c67ae95cae">
-    <name>КодДляЗапретаВыводаСтрок</name>
+    <name>CodeForProhibitingOutputRows</name>
+    <synonym>
+      <key>en</key>
+      <value>Code for prohibiting output rows</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Код для запрета вывода строк</value>
@@ -328,7 +404,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e4fcd57f-33c7-489e-9076-82bda0a60c6f">
-    <name>ЛогическийОператорДляУсловийВыводаСтрок</name>
+    <name>BooleanOperatorForConditionsOutputRows</name>
+    <synonym>
+      <key>en</key>
+      <value>Boolean operator for conditions output rows</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Логический оператор для объединения условий</value>
@@ -343,7 +423,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e9e377ec-cf53-4040-a538-d5dcdd134580">
-    <name>ЛогическийОператорДляУсловийЗапретаВыводаСтрок</name>
+    <name>BooleanOperatorForProhibitingConditionsOutputRows</name>
+    <synonym>
+      <key>en</key>
+      <value>Boolean operatorr for combine conditions</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Логический оператор для объединения условий</value>
@@ -358,7 +442,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="5e6c20aa-cfe6-4d4f-adfd-44e178f99780">
-    <name>КодДляВыводаСтрокРедактируетсяВручную</name>
+    <name>CodeForOutputRowsEditedManually</name>
+    <synonym>
+      <key>en</key>
+      <value>Code edited manually</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Код редактируется вручную</value>
@@ -370,7 +458,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="dc526571-da15-4a6c-bfd0-ee13e91ab67a">
-    <name>КодДляЗапретаВыводаСтрокРедактируетсяВручную</name>
+    <name>CodeForProhibitingOutputRowsEditedManually</name>
+    <synonym>
+      <key>en</key>
+      <value>Code edited manually</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Код редактируется вручную</value>
@@ -382,7 +474,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7740109c-e1f4-48be-93b9-4ac672561245">
-    <name>ВидимостьРеквизитА1</name>
+    <name>VisibilityAttributeA1</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute a1</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит а1</value>
@@ -394,7 +490,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="bacdaea3-8b50-4451-bdd1-047600eb1a90">
-    <name>ВидимостьРеквизитА2</name>
+    <name>VisibilityAttributeA2</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute a2</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит а2</value>
@@ -406,7 +506,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="74bd417e-1318-41cd-a964-f0a2cc20bdc8">
-    <name>ВидимостьРеквизитА3</name>
+    <name>VisibilityAttributeA3</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute a3</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит а3</value>
@@ -418,7 +522,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="82606235-828d-4a18-ae22-7aa21b4a73ec">
-    <name>ВидимостьРеквизитА4</name>
+    <name>VisibilityAttributeA4</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute a4</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит а4</value>
@@ -430,7 +538,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c104a767-92cd-4071-91be-768e934df1dc">
-    <name>ВидимостьРеквизитА5</name>
+    <name>VisibilityAttributeA5</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute a5</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит а5</value>
@@ -442,7 +554,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="bfc11bc0-bb9a-4691-8961-b0c15fdaaac0">
-    <name>ВидимостьРеквизитБ1</name>
+    <name>VisibilityAttributeB1</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute b1</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит б1</value>
@@ -454,7 +570,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="52799da0-d689-4fe7-8584-271a58763ec9">
-    <name>ВидимостьРеквизитБ2</name>
+    <name>VisibilityAttributeB2</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute b2</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит б2</value>
@@ -466,7 +586,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9b0b5c77-5c55-44c4-b6b5-9bdc79c786a4">
-    <name>ВидимостьРеквизитБ3</name>
+    <name>VisibilityAttributeB3</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute b3</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит б3</value>
@@ -478,7 +602,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="639b78fe-a3ba-4684-b323-598d7d5e2256">
-    <name>ВидимостьРеквизитБ4</name>
+    <name>VisibilityAttributeB4</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute b4</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит б4</value>
@@ -490,7 +618,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3fed3442-dbbb-44ad-951c-5c46e5b3c9d8">
-    <name>ВидимостьРеквизитБ5</name>
+    <name>VisibilityAttributeB5</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility attribute b5</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Видимость реквизит б5</value>
@@ -502,7 +634,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="0d1aecce-be5e-4f24-98fb-acfeae372e63">
-    <name>ТипПериодаАбсолютный</name>
+    <name>PeriodTypeAbsolute</name>
+    <synonym>
+      <key>en</key>
+      <value>Period type absolute</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Тип периода абсолютный</value>
@@ -514,7 +650,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="a0cdaba8-9c50-43c9-9d73-766ab503021a">
-    <name>ТипПериода</name>
+    <name>PeriodType</name>
+    <synonym>
+      <key>en</key>
+      <value>Period type</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Тип периода</value>
@@ -530,7 +670,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="2d76b069-f8e5-451e-b3e6-b7c44c15ca5b">
-    <name>ЗначениеАбсолютногоПериода</name>
+    <name>AbsolutePeriodValue</name>
+    <synonym>
+      <key>en</key>
+      <value>Absolute period value</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Значение абсолютного периода</value>
@@ -542,7 +686,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="2f4bdb1b-5325-404e-b3eb-fd2dd3590393">
-    <name>ЗначениеОтносительногоПериода</name>
+    <name>RelativePeriodValue</name>
+    <synonym>
+      <key>en</key>
+      <value>Relative period value</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Значение относительного периода</value>
@@ -558,7 +706,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="740137f8-3831-46a1-9e41-58b7fa5d1361">
-    <name>ЗначениеПодчиненногоОтносительногоПериода</name>
+    <name>ValueOfSlaveRelativePeriod</name>
+    <synonym>
+      <key>en</key>
+      <value>Value of slave relative period</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Значение подчиненного относительного периода</value>
@@ -574,7 +726,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="2d27d89a-2e4e-4144-a6cf-14786e658d02">
-    <name>ДискретностьОтносительногоПериода</name>
+    <name>DiscretenessOfRelativePeriod</name>
+    <synonym>
+      <key>en</key>
+      <value>Discreteness of relative period</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Дискретность относительного периода</value>
@@ -589,7 +745,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="ebc272cf-9fca-429b-8603-019658884de3">
-    <name>ДискретностьПодчиненногоОтносительногоПериода</name>
+    <name>DiscretenessOfSlaveRelativePeriod</name>
+    <synonym>
+      <key>en</key>
+      <value>Discreteness of slave relative period</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Дискретность подчиненного относительного периода</value>
@@ -604,7 +764,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3f029249-7741-4643-8fc3-2add15a072d5">
-    <name>ПодключениеКВнешнейБазеАДрайверSQL</name>
+    <name>ConnectingToExternalBaseADriverSQL</name>
+    <synonym>
+      <key>en</key>
+      <value>Driver</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Драйвер</value>
@@ -619,7 +783,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="fae02335-7206-4c78-8726-b90eb6cc207a">
-    <name>ПодключениеКВнешнейБазеБДрайверSQL</name>
+    <name>ConnectingToExternalBaseBDriverSQL</name>
+    <synonym>
+      <key>en</key>
+      <value>Driver</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Драйвер</value>
@@ -634,7 +802,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e29ed662-582e-4573-bb65-6f4e8d18e91f">
-    <name>ПодключениеКВнешнейБазеАФорматФайла</name>
+    <name>ConnectionToExternalBaseAFileFormat</name>
+    <synonym>
+      <key>en</key>
+      <value>Format</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Формат</value>
@@ -649,7 +821,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="dad7e9b5-b2c9-467d-9ca8-049e9289c6af">
-    <name>ПодключениеКВнешнейБазеБФорматФайла</name>
+    <name>ConnectionToExternalBaseBFileFormat</name>
+    <synonym>
+      <key>en</key>
+      <value>Format</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Формат</value>
@@ -664,7 +840,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="8484107e-fc39-4f7c-a343-e140a2a1e651">
-    <name>ПодключениеКВнешнейБазеАПутьКФайлу</name>
+    <name>ConnectionToExternalBaseAPathToFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Path to file</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Путь к файлу</value>
@@ -679,7 +859,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="1308a306-1614-4b0a-9c48-e9e3bca03ac1">
-    <name>ПодключениеКВнешнейБазеБПутьКФайлу</name>
+    <name>ConnectionToExternalBaseBPathToFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Path to file</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Путь к файлу</value>

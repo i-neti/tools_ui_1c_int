@@ -2047,7 +2047,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ТипПериода</segments>
+                  <segments>Объект.PeriodType</segments>
                 </paths>
               </dataPath>
               <titleLocation>Left</titleLocation>
@@ -2136,7 +2136,7 @@
                 <name>ГруппаПодчиненныйОтносительныйПериод</name>
                 <id>1061</id>
                 <items xsi:type="form:FormField">
-                  <name>ЗначениеПодчиненногоОтносительногоПериода</name>
+                  <name>ValueOfSlaveRelativePeriod</name>
                   <id>1066</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2145,16 +2145,16 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.ЗначениеПодчиненногоОтносительногоПериода</segments>
+                      <segments>Объект.ValueOfSlaveRelativePeriod</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>None</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ЗначениеПодчиненногоОтносительногоПериодаПриИзменении</name>
+                    <name>ValueOfSlaveRelativePeriodOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>ЗначениеПодчиненногоОтносительногоПериодаРасширеннаяПодсказка</name>
+                    <name>ValueOfSlaveRelativePeriodExtendedTooltip</name>
                     <id>1068</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2169,7 +2169,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ЗначениеПодчиненногоОтносительногоПериодаКонтекстноеМеню</name>
+                    <name>ValueOfSlaveRelativePeriodContextMenu</name>
                     <id>1067</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2201,7 +2201,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormField">
-                  <name>ДискретностьПодчиненногоОтносительногоПериода</name>
+                  <name>DiscretenessOfSlaveRelativePeriod</name>
                   <id>1063</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2210,16 +2210,16 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.ДискретностьПодчиненногоОтносительногоПериода</segments>
+                      <segments>Объект.DiscretenessOfSlaveRelativePeriod</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>None</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ДискретностьПодчиненногоОтносительногоПериодаПриИзменении</name>
+                    <name>DiscretenessOfSlaveRelativePeriodOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>ДискретностьПодчиненногоОтносительногоПериодаРасширеннаяПодсказка</name>
+                    <name>DiscretenessOfSlaveRelativePeriodExtendedTooltip</name>
                     <id>1065</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2234,7 +2234,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ДискретностьПодчиненногоОтносительногоПериодаКонтекстноеМеню</name>
+                    <name>DiscretenessOfSlaveRelativePeriodContextMenu</name>
                     <id>1064</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2251,7 +2251,7 @@
                   <extInfo xsi:type="form:InputFieldExtInfo">
                     <handlers>
                       <event>Clearing</event>
-                      <name>ДискретностьПодчиненногоОтносительногоПериодаОчистка</name>
+                      <name>DiscretenessOfSlaveRelativePeriodClearing</name>
                     </handlers>
                     <autoMaxWidth>true</autoMaxWidth>
                     <autoMaxHeight>true</autoMaxHeight>
@@ -2376,7 +2376,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>ЗначениеОтносительногоПериода</name>
+                <name>RelativePeriodValue</name>
                 <id>397</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2385,16 +2385,16 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ЗначениеОтносительногоПериода</segments>
+                    <segments>Объект.RelativePeriodValue</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <handlers>
                   <event>OnChange</event>
-                  <name>ЗначениеОтносительногоПериодаПриИзменении</name>
+                  <name>RelativePeriodValueOnChange</name>
                 </handlers>
                 <extendedTooltip>
-                  <name>ЗначениеОтносительногоПериодаРасширеннаяПодсказка</name>
+                  <name>RelativePeriodValueExtendedTooltip</name>
                   <id>399</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2409,7 +2409,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ЗначениеОтносительногоПериодаКонтекстноеМеню</name>
+                  <name>RelativePeriodValueContextMenu</name>
                   <id>398</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2441,7 +2441,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>ДискретностьОтносительногоПериода</name>
+                <name>DiscretenessOfRelativePeriod</name>
                 <id>400</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2450,16 +2450,16 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ДискретностьОтносительногоПериода</segments>
+                    <segments>Объект.DiscretenessOfRelativePeriod</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <handlers>
                   <event>OnChange</event>
-                  <name>ДискретностьОтносительногоПериодаПриИзменении</name>
+                  <name>DiscretenessOfRelativePeriodOnChange</name>
                 </handlers>
                 <extendedTooltip>
-                  <name>ДискретностьОтносительногоПериодаРасширеннаяПодсказка</name>
+                  <name>DiscretenessOfRelativePeriodExtendedTooltip</name>
                   <id>402</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2474,7 +2474,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ДискретностьОтносительногоПериодаКонтекстноеМеню</name>
+                  <name>DiscretenessOfRelativePeriodContextMenu</name>
                   <id>401</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2491,7 +2491,7 @@
                 <extInfo xsi:type="form:InputFieldExtInfo">
                   <handlers>
                     <event>Clearing</event>
-                    <name>ДискретностьОтносительногоПериодаОчистка</name>
+                    <name>DiscretenessOfRelativePeriodClearing</name>
                   </handlers>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -2572,7 +2572,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ЗначениеАбсолютногоПериода</name>
+              <name>AbsolutePeriodValue</name>
               <id>394</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2581,12 +2581,12 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ЗначениеАбсолютногоПериода</segments>
+                  <segments>Объект.AbsolutePeriodValue</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
               <extendedTooltip>
-                <name>ЗначениеАбсолютногоПериодаРасширеннаяПодсказка</name>
+                <name>AbsolutePeriodValueExtendedTooltip</name>
                 <id>396</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2601,7 +2601,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ЗначениеАбсолютногоПериодаКонтекстноеМеню</name>
+                <name>AbsolutePeriodValueContextMenu</name>
                 <id>395</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2874,7 +2874,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ЛогическийОператорДляУсловийВыводаСтрок</segments>
+                  <segments>Объект.BooleanOperatorForConditionsOutputRows</segments>
                 </paths>
               </dataPath>
               <handlers>
@@ -2948,7 +2948,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.КодДляВыводаСтрокРедактируетсяВручную</segments>
+                  <segments>Объект.CodeForOutputRowsEditedManually</segments>
                 </paths>
               </dataPath>
               <handlers>
@@ -3034,7 +3034,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.КодДляВыводаСтрок</segments>
+                <segments>Объект.CodeForOutputRows</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
@@ -4035,7 +4035,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ЛогическийОператорДляУсловийЗапретаВыводаСтрок</segments>
+                  <segments>Объект.BooleanOperatorForProhibitingConditionsOutputRows</segments>
                 </paths>
               </dataPath>
               <handlers>
@@ -4109,7 +4109,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.КодДляЗапретаВыводаСтрокРедактируетсяВручную</segments>
+                  <segments>Объект.CodeForProhibitingOutputRowsEditedManually</segments>
                 </paths>
               </dataPath>
               <handlers>
@@ -4195,7 +4195,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.КодДляЗапретаВыводаСтрок</segments>
+                <segments>Объект.CodeForProhibitingOutputRows</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
@@ -5386,7 +5386,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТипБазыА</name>
+              <name>BaseTypeA</name>
               <id>4</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5395,7 +5395,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ТипБазыА</segments>
+                  <segments>Объект.BaseTypeA</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
@@ -5404,7 +5404,7 @@
                 <name>ПриИзмененииКлючевогоРеквизита</name>
               </handlers>
               <extendedTooltip>
-                <name>ТипБазыАРасширеннаяПодсказка</name>
+                <name>BaseTypeAExtendedTooltip</name>
                 <id>6</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5419,7 +5419,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТипБазыАКонтекстноеМеню</name>
+                <name>BaseTypeAContextMenu</name>
                 <id>5</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5567,7 +5567,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ВариантРаботыВнешнейБазыА</segments>
+                        <segments>Объект.WorkOptionExternalBaseA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -5626,7 +5626,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ВерсияПлатформыВнешнейБазыА</name>
+                    <name>VersionPlatformExternalBaseA</name>
                     <id>139</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5635,11 +5635,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ВерсияПлатформыВнешнейБазыА</segments>
+                        <segments>Объект.VersionPlatformExternalBaseA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ВерсияПлатформыВнешнейБазыАРасширеннаяПодсказка</name>
+                      <name>VersionPlatformExternalBaseAExtendedTooltip</name>
                       <id>141</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -5654,7 +5654,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ВерсияПлатформыВнешнейБазыАКонтекстноеМеню</name>
+                      <name>VersionPlatformExternalBaseAContextMenu</name>
                       <id>140</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -5760,7 +5760,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеАДрайверSQL</segments>
+                          <segments>Объект.ConnectingToExternalBaseADriverSQL</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -5865,7 +5865,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеАСервер</segments>
+                          <segments>Объект.ConnectionToExternalBaseAServer</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -5924,7 +5924,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеАПутьКБазе</segments>
+                          <segments>Объект.ConnectionToExternalBaseAPathBase</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -5983,7 +5983,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеАЛогин</segments>
+                          <segments>Объект.ConnectionToExternalBaseALogin</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -6042,7 +6042,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеАПароль</segments>
+                          <segments>Объект.ConnectionToExternalBaseAPassword</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -6218,7 +6218,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеАФорматФайла</segments>
+                        <segments>Объект.ConnectionToExternalBaseAFileFormat</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -6335,7 +6335,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеАПутьКФайлу</segments>
+                        <segments>Объект.ConnectionToExternalBaseAPathToFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -10112,7 +10112,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ТекстЗапросаА</segments>
+                    <segments>Объект.QueryTextA</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
@@ -11293,7 +11293,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ТипБазыБ</segments>
+                  <segments>Объект.BaseTypeB</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
@@ -11461,7 +11461,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ВариантРаботыВнешнейБазыБ</segments>
+                        <segments>Объект.WorkOptionExternalBaseB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -11529,7 +11529,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ВерсияПлатформыВнешнейБазыБ</segments>
+                        <segments>Объект.VersionPlatformExternalBaseB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -11654,7 +11654,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеБДрайверSQL</segments>
+                          <segments>Объект.ConnectingToExternalBaseBDriverSQL</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -11759,7 +11759,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеБСервер</segments>
+                          <segments>Объект.ConnectionToExternalBaseBServer</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -11818,7 +11818,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеБПутьКБазе</segments>
+                          <segments>Объект.ConnectionToExternalBaseBPathBase</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -11877,7 +11877,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеБЛогин</segments>
+                          <segments>Объект.ConnectionToExternalBaseBLogin</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -11936,7 +11936,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>Объект.ПодключениеКВнешнейБазеБПароль</segments>
+                          <segments>Объект.ConnectionToExternalBaseBPassword</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -12112,7 +12112,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеБФорматФайла</segments>
+                        <segments>Объект.ConnectionToExternalBaseBFileFormat</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -12220,7 +12220,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеБПутьКФайлу</name>
+                    <name>ConnectionToExternalBaseBPathToFile</name>
                     <id>424</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12229,11 +12229,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеБПутьКФайлу</segments>
+                        <segments>Объект.ConnectionToExternalBaseBPathToFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеБПутьКФайлуРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalBaseBPathToFileExtendedTooltip</name>
                       <id>426</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12248,7 +12248,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеБПутьКФайлуКонтекстноеМеню</name>
+                      <name>ConnectionToExternalBaseBPathToFileContextMenu</name>
                       <id>425</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12265,7 +12265,7 @@
                     <extInfo xsi:type="form:InputFieldExtInfo">
                       <handlers>
                         <event>StartChoice</event>
-                        <name>ПодключениеКВнешнейБазеБПутьКФайлуНачалоВыбора</name>
+                        <name>ConnectionToExternalBaseBPathToFileStartChoice</name>
                       </handlers>
                       <autoMaxWidth>true</autoMaxWidth>
                       <autoMaxHeight>true</autoMaxHeight>
@@ -15997,7 +15997,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ТекстЗапросаБ</segments>
+                    <segments>Объект.QueryTextB</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
