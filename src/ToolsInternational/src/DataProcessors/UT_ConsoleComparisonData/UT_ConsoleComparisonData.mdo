@@ -1522,7 +1522,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d57b365d-82f6-40dc-b0bd-ac2f5a64b2de">
-    <name>ИмяСтолбцаСКлючомИзФайлаА</name>
+    <name>ColumnNameKeyFromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1537,7 +1541,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c0fb10c6-bd46-4aaf-abfc-dabe6e330b12">
-    <name>ИмяСтолбцаСКлючом2ИзФайлаА</name>
+    <name>ColumnNameKey2FromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1552,7 +1560,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="19201fc6-5705-4099-b6f7-20037eccf270">
-    <name>ИмяСтолбцаСКлючом3ИзФайлаА</name>
+    <name>ColumnNameKey3FromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1567,7 +1579,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="385ef693-6d1c-459d-90e6-3cd67239c589">
-    <name>ИмяСтолбцаСКлючомИзФайлаБ</name>
+    <name>ColumnNameKeyFromFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1582,7 +1598,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="a6151a73-52aa-4878-a9c2-41449dc4715c">
-    <name>ИмяСтолбцаСКлючом2ИзФайлаБ</name>
+    <name>ColumnNameKey2FromFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1597,7 +1617,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b6455ea5-f1c8-4606-9865-e55ee023f3e6">
-    <name>ИмяСтолбцаСКлючом3ИзФайлаБ</name>
+    <name>ColumnNameKey3FromFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя столбца источника</value>
@@ -1612,7 +1636,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7ea3471b-99a5-45da-be65-c578f9ecb4dd">
-    <name>ИмяЭлементаСДаннымиФайлаА</name>
+    <name>ElementNameWithDataFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Data element name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя элемента с данными</value>
@@ -1627,7 +1655,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="44f3b813-2ff0-4eaf-9111-a470eaf3ece5">
-    <name>ИмяЭлементаСДаннымиФайлаБ</name>
+    <name>ElementNameWithDataFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Data element name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя элемента с данными</value>
@@ -1642,7 +1674,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b80a3716-7998-4983-a307-ab66cc07fc02">
-    <name>ИмяРодительскогоУзлаФайлаА</name>
+    <name>ParentNodeNameFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Parent node name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя родительского узла</value>
@@ -1657,7 +1693,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="19336d21-50bc-47ba-b203-6a3ea58b45e4">
-    <name>ИмяРодительскогоУзлаФайлаБ</name>
+    <name>ParentNodeNameFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Parent node name</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя родительского узла</value>
@@ -1672,7 +1712,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="2f66c625-7565-494c-95ea-4252a9892a13">
-    <name>СпособХраненияДанныхВXMLФайлеА</name>
+    <name>DataStorageMethodInXMLFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Data storage method</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Способ хранения данных</value>
@@ -1687,7 +1731,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="eb0064b6-f375-4825-a41b-735aba827260">
-    <name>СпособХраненияДанныхВXMLФайлеБ</name>
+    <name>DataStorageMethodInXMLFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Data storage method</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Способ хранения данных</value>
@@ -1702,7 +1750,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="385d82f2-8243-4718-b6de-1626bf864332">
-    <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторА</name>
+    <name>UseAsKeyUniqueIdentifierA</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1714,7 +1766,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="051c0e09-103a-48e8-b371-1836999a8e44">
-    <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторА</name>
+    <name>UseAsKey2UniqueIdentifierA</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1726,7 +1782,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="6bb0e489-0874-4b6e-8a57-d6becfb9d303">
-    <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторА</name>
+    <name>UseAsKey3UniqueIdentifierA</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1738,7 +1798,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="f8ae56f7-5b86-43f6-8366-b1ef764ad59b">
-    <name>ИспользоватьВКачествеКлючаУникальныйИдентификаторБ</name>
+    <name>UseAsKeyUniqueIdentifierB</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1750,7 +1814,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="dcd8c176-70fe-43c7-acce-4bc254ae9406">
-    <name>ИспользоватьВКачествеКлюча2УникальныйИдентификаторБ</name>
+    <name>UseAsKey2UniqueIdentifierB</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1762,7 +1830,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e98ef9b2-de45-4ce5-a729-7ed8b79cb519">
-    <name>ИспользоватьВКачествеКлюча3УникальныйИдентификаторБ</name>
+    <name>UseAsKey3UniqueIdentifierB</name>
+    <synonym>
+      <key>en</key>
+      <value>Use UUID</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать УИД</value>
@@ -1774,7 +1846,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e26aa12d-9b03-431b-844d-a353d311d077">
-    <name>СоставнойКлюч</name>
+    <name>CompositeKey</name>
+    <synonym>
+      <key>en</key>
+      <value>Use 2 column composite key</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Использовать составной ключ из 2 столбцов</value>
@@ -1786,7 +1862,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="fa0b23b5-f5c3-4b5c-821b-dbd6b49e3afc">
-    <name>ЧислоСтрокСПустымиКлючамиДляПрерыванияЧтения</name>
+    <name>NumberOfRowsWithEmptyKeysToBreakReading</name>
+    <synonym>
+      <key>en</key>
+      <value>Number of rows with empty keys to break reading from a spreadsheet document</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Число строк с пустыми ключами для прерывания чтения из табличного документа</value>
@@ -1826,10 +1906,14 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7c7b900a-a688-49b5-ac41-2bc827616f1d">
-    <name>ПользовательскийРежим</name>
+    <name>UserMode</name>
+    <synonym>
+      <key>en</key>
+      <value>User mode</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Пользовательский режим</value>
+      <value>User mode</value>
     </synonym>
     <type>
       <types>Boolean</types>
@@ -1838,7 +1922,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="5e5cfd33-4697-413f-bbe7-620640e5da4a">
-    <name>ЧислоСтолбцовВКлюче</name>
+    <name>NumberColumnsInKey</name>
+    <synonym>
+      <key>en</key>
+      <value>Number columns in key</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Число столбцов в ключе</value>
@@ -1859,7 +1947,11 @@
     <fillChecking>ShowError</fillChecking>
   </attributes>
   <attributes uuid="9dde3e40-52a9-4456-90f8-2a147ba52ab5">
-    <name>ПроизвольныйКодКлюча1А</name>
+    <name>ArbitraryKeyCode1A</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1872,7 +1964,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e9137b5b-6ef1-4abe-94ff-686a9963bf1a">
-    <name>ПроизвольныйКодКлюча2А</name>
+    <name>ArbitraryKeyCode2A</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1885,7 +1981,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="4a042096-b86c-4413-a78c-c0813fb34e69">
-    <name>ПроизвольныйКодКлюча3А</name>
+    <name>ArbitraryKeyCode3A</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1898,7 +1998,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="92571ea1-8def-4952-bdb1-1aa42309442d">
-    <name>ПроизвольныйКодКлюча1Б</name>
+    <name>ArbitraryKeyCode1B</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1911,7 +2015,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b0cb29e3-f053-4767-95ed-ccfa30306f3f">
-    <name>ПроизвольныйКодКлюча2Б</name>
+    <name>ArbitraryKeyCode2B</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1924,7 +2032,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7842e5b6-1204-4006-80ef-309e6f2569b9">
-    <name>ПроизвольныйКодКлюча3Б</name>
+    <name>ArbitraryKeyCode3B</name>
+    <synonym>
+      <key>en</key>
+      <value>Arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Произвольный код</value>
@@ -1937,7 +2049,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3a9da4ff-b1ed-4876-b08b-ae63fc31c73d">
-    <name>ВыполнятьПроизвольныйКодКлюча1А</name>
+    <name>ExecuteArbitraryKeyCode1A</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -1949,7 +2065,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b01ca005-f0fd-402c-8d99-f3c63a95388b">
-    <name>ВыполнятьПроизвольныйКодКлюча2А</name>
+    <name>ExecuteArbitraryKeyCode2A</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -1961,7 +2081,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="451bd497-2532-4246-b28a-52c074a6dff2">
-    <name>ВыполнятьПроизвольныйКодКлюча3А</name>
+    <name>ExecuteArbitraryKeyCode3A</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -1973,7 +2097,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="81a4fde0-dde9-4524-a369-5cb87b90c7cf">
-    <name>ВыполнятьПроизвольныйКодКлюча1Б</name>
+    <name>ExecuteArbitraryKeyCode1B</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -1985,7 +2113,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="08e63b1e-3ee7-48c5-9db0-76fc5b41b8fe">
-    <name>ВыполнятьПроизвольныйКодКлюча2Б</name>
+    <name>ExecuteArbitraryKeyCode2B</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -1997,7 +2129,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9879a158-5a83-40a5-975b-67e8e5e83f81">
-    <name>ВыполнятьПроизвольныйКодКлюча3Б</name>
+    <name>ExecuteArbitraryKeyCode3B</name>
+    <synonym>
+      <key>en</key>
+      <value>Execute arbitrary code</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выполнять произвольный код</value>
@@ -2009,7 +2145,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="6c3aa716-1a49-481a-9cf9-ce93e01cd15a">
-    <name>СворачиватьТаблицуА</name>
+    <name>CollapseTableA</name>
+    <synonym>
+      <key>en</key>
+      <value>Collapse data by key</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Сворачивать данные по ключу</value>
@@ -2021,7 +2161,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e516c190-0937-4444-b683-865d6fdf4142">
-    <name>СворачиватьТаблицуБ</name>
+    <name>CollapseTableB</name>
+    <synonym>
+      <key>en</key>
+      <value>Collapse data by key</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Сворачивать данные по ключу</value>
@@ -2033,7 +2177,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b86b6224-0df8-409e-99ac-bb1639ff8eb8">
-    <name>ОтображатьТипыСтолбцовКлюча</name>
+    <name>DisplayKeyColumnTypes</name>
+    <synonym>
+      <key>en</key>
+      <value>Display key column types</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Отображать типы столбцов ключа</value>
@@ -2045,10 +2193,14 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="4a4dbf5a-5d9e-4682-843d-00428eaa43af">
-    <name>СвязаннаяОперацияСравненияДанных</name>
+    <name>RelatedDataComparisonOperation</name>
+    <synonym>
+      <key>en</key>
+      <value>Related data comparison operation</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Связанная операция сравнения данных</value>
+      <value>Related data comparison operation</value>
     </synonym>
     <type>
       <types>String</types>
