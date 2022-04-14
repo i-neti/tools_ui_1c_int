@@ -6399,7 +6399,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеАУстройствоХраненияФайла</segments>
+                        <segments>Объект.ConnectingToExternalBaseADeviceStorageFile</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>Left</titleLocation>
@@ -6769,7 +6769,7 @@
                   <name>ГруппаПараметрыПодключенияКФайлуНеXMLА</name>
                   <id>722</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерПервойСтрокиФайлаА</name>
+                    <name>NumberFirstRowFileA</name>
                     <id>475</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6778,11 +6778,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерПервойСтрокиФайлаА</segments>
+                        <segments>Объект.NumberFirstRowFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерПервойСтрокиФайлаАРасширеннаяПодсказка</name>
+                      <name>NumberFirstRowFileAExtendedTooltip</name>
                       <id>477</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6797,7 +6797,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерПервойСтрокиФайлаАКонтекстноеМеню</name>
+                      <name>NumberFirstRowFileAContextMenu</name>
                       <id>476</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6838,7 +6838,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеАНомерТаблицыВФайле</segments>
+                        <segments>Объект.ConnectionToExternalDatabaseANumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -7150,7 +7150,7 @@
                   <name>ГруппаОбработкаКлюча1А1</name>
                   <id>834</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючомИзФайлаА</name>
+                    <name>ColumnNumberKeyFromFileA</name>
                     <id>427</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7159,11 +7159,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючомИзФайлаА</segments>
+                        <segments>Объект.ColumnNumberKeyFromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючомИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKeyFromFileAExtendedTooltip</name>
                       <id>429</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7178,7 +7178,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючомИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNumberKeyFromFileAContextMenu</name>
                       <id>428</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7318,7 +7318,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлючаФигурныеСкобкиА</name>
+                    <name>DeleteFromKeyCurlyBracketsA</name>
                     <id>251</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7327,11 +7327,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлючаФигурныеСкобкиА</segments>
+                        <segments>Объект.DeleteFromKeyCurlyBracketsA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлючаФигурныеСкобкиАРасширеннаяПодсказка</name>
+                      <name>DeleteFromKeyCurlyBracketsAExtendedTooltip</name>
                       <id>253</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7346,7 +7346,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлючаФигурныеСкобкиАКонтекстноеМеню</name>
+                      <name>DeleteFromKeyCurlyBracketsAContextMenu</name>
                       <id>252</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7363,7 +7363,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлючКВерхнемуРегиструА</name>
+                    <name>CastKeyToUpperCaseA</name>
                     <id>220</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7372,11 +7372,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлючКВерхнемуРегиструА</segments>
+                        <segments>Объект.CastKeyToUpperCaseA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлючКВерхнемуРегиструАРасширеннаяПодсказка</name>
+                      <name>CastKeyToUpperCaseAExtendedTooltip</name>
                       <id>222</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7391,7 +7391,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлючКВерхнемуРегиструАКонтекстноеМеню</name>
+                      <name>CastKeyToUpperCaseAContextMenu</name>
                       <id>221</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7408,7 +7408,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлючКСтрокеА</name>
+                    <name>CastKeyToStringA</name>
                     <id>499</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7417,7 +7417,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлючКСтрокеА</segments>
+                        <segments>Объект.CastKeyToStringA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -7425,7 +7425,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлючКСтрокеАРасширеннаяПодсказка</name>
+                      <name>CastKeyToStringAExtendedTooltip</name>
                       <id>501</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7440,7 +7440,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлючКСтрокеАКонтекстноеМеню</name>
+                      <name>CastKeyToStringAContextMenu</name>
                       <id>500</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7457,7 +7457,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлючаПриПриведенииКСтрокеА</name>
+                    <name>KeyLengthWhenCastingToStringA</name>
                     <id>502</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7466,11 +7466,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлючаПриПриведенииКСтрокеА</segments>
+                        <segments>Объект.KeyLengthWhenCastingToStringA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлючаПриПриведенииКСтрокеАРасширеннаяПодсказка</name>
+                      <name>KeyLengthWhenCastingToStringAExtendedTooltip</name>
                       <id>504</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7485,7 +7485,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлючаПриПриведенииКСтрокеАКонтекстноеМеню</name>
+                      <name>KeyLengthWhenCastingToStringAContextMenu</name>
                       <id>503</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7892,7 +7892,7 @@
                   <name>ГруппаОбработкаКлюча2А1</name>
                   <id>846</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючом2ИзФайлаА</name>
+                    <name>ColumnNumberKey2FromFileA</name>
                     <id>521</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7901,11 +7901,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючом2ИзФайлаА</segments>
+                        <segments>Объект.ColumnNumberKey2FromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючом2ИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKey2FromFileAExtendedTooltip</name>
                       <id>523</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7920,7 +7920,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючом2ИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNumberKey2FromFileAContextMenu</name>
                       <id>522</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8060,7 +8060,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлюча2ФигурныеСкобкиА</name>
+                    <name>DeleteFromKey2CurlyBracketsA</name>
                     <id>533</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8069,11 +8069,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлюча2ФигурныеСкобкиА</segments>
+                        <segments>Объект.DeleteFromKey2CurlyBracketsA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлюча2ФигурныеСкобкиАРасширеннаяПодсказка</name>
+                      <name>DeleteFromKey2CurlyBracketsAExtendedTooltip</name>
                       <id>535</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8088,7 +8088,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлюча2ФигурныеСкобкиАКонтекстноеМеню</name>
+                      <name>DeleteFromKey2CurlyBracketsAContextMenu</name>
                       <id>534</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8105,7 +8105,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч2КВерхнемуРегиструА</name>
+                    <name>CastKey2ToUpperCaseA</name>
                     <id>530</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8114,11 +8114,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч2КВерхнемуРегиструА</segments>
+                        <segments>Объект.CastKey2ToUpperCaseA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч2КВерхнемуРегиструАРасширеннаяПодсказка</name>
+                      <name>CastKey2ToUpperCaseAExtendedTooltip</name>
                       <id>532</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8133,7 +8133,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч2КВерхнемуРегиструАКонтекстноеМеню</name>
+                      <name>CastKey2ToUpperCaseAContextMenu</name>
                       <id>531</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8150,7 +8150,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч2КСтрокеА</name>
+                    <name>CastKey2ToStringA</name>
                     <id>536</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8159,7 +8159,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч2КСтрокеА</segments>
+                        <segments>Объект.CastKey2ToStringA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -8167,7 +8167,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч2КСтрокеАРасширеннаяПодсказка</name>
+                      <name>CastKey2ToStringAExtendedTooltip</name>
                       <id>538</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8182,7 +8182,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч2КСтрокеАКонтекстноеМеню</name>
+                      <name>CastKey2ToStringAContextMenu</name>
                       <id>537</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8199,7 +8199,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлюча2ПриПриведенииКСтрокеА</name>
+                    <name>KeyLength2WhenCastingToStringA</name>
                     <id>539</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8208,11 +8208,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлюча2ПриПриведенииКСтрокеА</segments>
+                        <segments>Объект.KeyLength2WhenCastingToStringA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлюча2ПриПриведенииКСтрокеАРасширеннаяПодсказка</name>
+                      <name>KeyLength2WhenCastingToStringAExtendedTooltip</name>
                       <id>541</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8227,7 +8227,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлюча2ПриПриведенииКСтрокеАКонтекстноеМеню</name>
+                      <name>KeyLength2WhenCastingToStringAContextMenu</name>
                       <id>540</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8631,7 +8631,7 @@
                   <name>ГруппаОбработкаКлюча3А1</name>
                   <id>853</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючом3ИзФайлаА</name>
+                    <name>ColumnNumberKey3FromFileA</name>
                     <id>758</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8640,11 +8640,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючом3ИзФайлаА</segments>
+                        <segments>Объект.ColumnNumberKey3FromFileA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючом3ИзФайлаАРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKey3FromFileAExtendedTooltip</name>
                       <id>760</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8659,7 +8659,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючом3ИзФайлаАКонтекстноеМеню</name>
+                      <name>ColumnNumberKey3FromFileAContextMenu</name>
                       <id>759</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8799,7 +8799,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлюча3ФигурныеСкобкиА</name>
+                    <name>DeleteFromKey3CurlyBracketsA</name>
                     <id>767</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8808,11 +8808,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлюча3ФигурныеСкобкиА</segments>
+                        <segments>Объект.DeleteFromKey3CurlyBracketsA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлюча3ФигурныеСкобкиАРасширеннаяПодсказка</name>
+                      <name>DeleteFromKey3CurlyBracketsAExtendedTooltip</name>
                       <id>769</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8827,7 +8827,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлюча3ФигурныеСкобкиАКонтекстноеМеню</name>
+                      <name>DeleteFromKey3CurlyBracketsAContextMenu</name>
                       <id>768</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8844,7 +8844,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч3КВерхнемуРегиструА</name>
+                    <name>CastKey3ToUpperCaseA</name>
                     <id>770</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8853,11 +8853,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч3КВерхнемуРегиструА</segments>
+                        <segments>Объект.CastKey3ToUpperCaseA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч3КВерхнемуРегиструАРасширеннаяПодсказка</name>
+                      <name>CastKey3ToUpperCaseAExtendedTooltip</name>
                       <id>772</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8872,7 +8872,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч3КВерхнемуРегиструАКонтекстноеМеню</name>
+                      <name>CastKey3ToUpperCaseAContextMenu</name>
                       <id>771</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8889,7 +8889,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч3КСтрокеА</name>
+                    <name>CastKey3ToStringA</name>
                     <id>773</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8898,7 +8898,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч3КСтрокеА</segments>
+                        <segments>Объект.CastKey3ToStringA</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -8906,7 +8906,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч3КСтрокеАРасширеннаяПодсказка</name>
+                      <name>CastKey3ToStringAExtendedTooltip</name>
                       <id>775</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8921,7 +8921,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч3КСтрокеАКонтекстноеМеню</name>
+                      <name>CastKey3ToStringAContextMenu</name>
                       <id>774</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8938,7 +8938,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлюча3ПриПриведенииКСтрокеА</name>
+                    <name>KeyLength3WhenCastingToStringA</name>
                     <id>776</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8947,11 +8947,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлюча3ПриПриведенииКСтрокеА</segments>
+                        <segments>Объект.KeyLength3WhenCastingToStringA</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлюча3ПриПриведенииКСтрокеАРасширеннаяПодсказка</name>
+                      <name>KeyLength3WhenCastingToStringAExtendedTooltip</name>
                       <id>778</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8966,7 +8966,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлюча3ПриПриведенииКСтрокеАКонтекстноеМеню</name>
+                      <name>KeyLength3WhenCastingToStringAContextMenu</name>
                       <id>777</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12293,7 +12293,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеБУстройствоХраненияФайла</segments>
+                        <segments>Объект.ConnectingToExternalBaseBDeviceStorageFile</segments>
                       </paths>
                     </dataPath>
                     <titleLocation>Left</titleLocation>
@@ -12663,7 +12663,7 @@
                   <name>ГруппаПараметрыПодключенияКФайлуНеXMLБ</name>
                   <id>726</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерПервойСтрокиФайлаБ</name>
+                    <name>NumberFirstRowFileB</name>
                     <id>478</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12672,11 +12672,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерПервойСтрокиФайлаБ</segments>
+                        <segments>Объект.NumberFirstRowFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерПервойСтрокиФайлаБРасширеннаяПодсказка</name>
+                      <name>NumberFirstRowFileBExtendedTooltip</name>
                       <id>480</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12691,7 +12691,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерПервойСтрокиФайлаБКонтекстноеМеню</name>
+                      <name>NumberFirstRowFileBContextMenu</name>
                       <id>479</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12732,7 +12732,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПодключениеКВнешнейБазеБНомерТаблицыВФайле</segments>
+                        <segments>Объект.ConnectionToExternalDatabaseBNumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -13044,7 +13044,7 @@
                   <name>ГруппаОбработкаКлюча1Б1</name>
                   <id>862</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючомИзФайлаБ</name>
+                    <name>ColumnNumberKeyFromFileB</name>
                     <id>430</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13053,11 +13053,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючомИзФайлаБ</segments>
+                        <segments>Объект.ColumnNumberKeyFromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючомИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKeyFromFileBExtendedTooltip</name>
                       <id>432</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13072,7 +13072,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючомИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNumberKeyFromFileBContextMenu</name>
                       <id>431</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13212,7 +13212,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлючаФигурныеСкобкиБ</name>
+                    <name>DeleteFromKeyCurlyBracketsB</name>
                     <id>254</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13221,11 +13221,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлючаФигурныеСкобкиБ</segments>
+                        <segments>Объект.DeleteFromKeyCurlyBracketsB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлючаФигурныеСкобкиБРасширеннаяПодсказка</name>
+                      <name>DeleteFromKeyCurlyBracketsBExtendedTooltip</name>
                       <id>256</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13240,7 +13240,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлючаФигурныеСкобкиБКонтекстноеМеню</name>
+                      <name>DeleteFromKeyCurlyBracketsBContextMenu</name>
                       <id>255</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13257,7 +13257,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлючКВерхнемуРегиструБ</name>
+                    <name>CastKeyToUpperCaseB</name>
                     <id>241</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13266,11 +13266,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлючКВерхнемуРегиструБ</segments>
+                        <segments>Объект.CastKeyToUpperCaseB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлючКВерхнемуРегиструБРасширеннаяПодсказка</name>
+                      <name>CastKeyToUpperCaseBExtendedTooltip</name>
                       <id>243</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13285,7 +13285,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлючКВерхнемуРегиструБКонтекстноеМеню</name>
+                      <name>CastKeyToUpperCaseBContextMenu</name>
                       <id>242</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13302,7 +13302,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлючКСтрокеБ</name>
+                    <name>CastKeyToStringB</name>
                     <id>481</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13311,7 +13311,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлючКСтрокеБ</segments>
+                        <segments>Объект.CastKeyToStringB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -13319,7 +13319,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлючКСтрокеБРасширеннаяПодсказка</name>
+                      <name>CastKeyToStringBExtendedTooltip</name>
                       <id>483</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13334,7 +13334,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлючКСтрокеБКонтекстноеМеню</name>
+                      <name>CastKeyToStringBContextMenu</name>
                       <id>482</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13351,7 +13351,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлючаПриПриведенииКСтрокеБ</name>
+                    <name>KeyLengthWhenCastingToStringB</name>
                     <id>484</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13360,11 +13360,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлючаПриПриведенииКСтрокеБ</segments>
+                        <segments>Объект.KeyLengthWhenCastingToStringB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлючаПриПриведенииКСтрокеБРасширеннаяПодсказка</name>
+                      <name>KeyLengthWhenCastingToStringBExtendedTooltip</name>
                       <id>486</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13379,7 +13379,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлючаПриПриведенииКСтрокеБКонтекстноеМеню</name>
+                      <name>KeyLengthWhenCastingToStringBContextMenu</name>
                       <id>485</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13782,7 +13782,7 @@
                   <name>ГруппаОбработкаКлюча2Б1</name>
                   <id>860</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючом2ИзФайлаБ</name>
+                    <name>ColumnNumberKey2FromFileB</name>
                     <id>542</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13791,11 +13791,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючом2ИзФайлаБ</segments>
+                        <segments>Объект.ColumnNumberKey2FromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючом2ИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKey2FromFileBExtendedTooltip</name>
                       <id>544</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13810,7 +13810,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючом2ИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNumberKey2FromFileBContextMenu</name>
                       <id>543</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13950,7 +13950,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлюча2ФигурныеСкобкиБ</name>
+                    <name>DeleteFromKey2CurlyBracketsB</name>
                     <id>548</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13959,11 +13959,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлюча2ФигурныеСкобкиБ</segments>
+                        <segments>Объект.DeleteFromKey2CurlyBracketsB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлюча2ФигурныеСкобкиБРасширеннаяПодсказка</name>
+                      <name>DeleteFromKey2CurlyBracketsBExtendedTooltip</name>
                       <id>550</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13978,7 +13978,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлюча2ФигурныеСкобкиБКонтекстноеМеню</name>
+                      <name>DeleteFromKey2CurlyBracketsBContextMenu</name>
                       <id>549</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13995,7 +13995,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч2КВерхнемуРегиструБ</name>
+                    <name>CastKey2ToUpperCaseB</name>
                     <id>551</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14004,11 +14004,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч2КВерхнемуРегиструБ</segments>
+                        <segments>Объект.CastKey2ToUpperCaseB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч2КВерхнемуРегиструБРасширеннаяПодсказка</name>
+                      <name>CastKey2ToUpperCaseBExtendedTooltip</name>
                       <id>553</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14023,7 +14023,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч2КВерхнемуРегиструБКонтекстноеМеню</name>
+                      <name>CastKey2ToUpperCaseBContextMenu</name>
                       <id>552</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14040,7 +14040,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч2КСтрокеБ</name>
+                    <name>CastKey2ToStringB</name>
                     <id>554</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14049,7 +14049,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч2КСтрокеБ</segments>
+                        <segments>Объект.CastKey2ToStringB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -14057,7 +14057,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч2КСтрокеБРасширеннаяПодсказка</name>
+                      <name>CastKey2ToStringBExtendedTooltip</name>
                       <id>556</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14072,7 +14072,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч2КСтрокеБКонтекстноеМеню</name>
+                      <name>CastKey2ToStringBContextMenu</name>
                       <id>555</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14089,7 +14089,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлюча2ПриПриведенииКСтрокеБ</name>
+                    <name>KeyLength2WhenCastingToStringB</name>
                     <id>557</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14098,11 +14098,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлюча2ПриПриведенииКСтрокеБ</segments>
+                        <segments>Объект.KeyLength2WhenCastingToStringB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлюча2ПриПриведенииКСтрокеБРасширеннаяПодсказка</name>
+                      <name>KeyLength2WhenCastingToStringBExtendedTooltip</name>
                       <id>559</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14117,7 +14117,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлюча2ПриПриведенииКСтрокеБКонтекстноеМеню</name>
+                      <name>KeyLength2WhenCastingToStringBContextMenu</name>
                       <id>558</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14520,7 +14520,7 @@
                   <name>ГруппаОбработкаКлюча3Б1</name>
                   <id>874</id>
                   <items xsi:type="form:FormField">
-                    <name>НомерСтолбцаСКлючом3ИзФайлаБ</name>
+                    <name>ColumnNumberKey3FromFileB</name>
                     <id>799</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14529,11 +14529,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.НомерСтолбцаСКлючом3ИзФайлаБ</segments>
+                        <segments>Объект.ColumnNumberKey3FromFileB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>НомерСтолбцаСКлючом3ИзФайлаБРасширеннаяПодсказка</name>
+                      <name>ColumnNumberKey3FromFileBExtendedTooltip</name>
                       <id>801</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14548,7 +14548,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>НомерСтолбцаСКлючом3ИзФайлаБКонтекстноеМеню</name>
+                      <name>ColumnNumberKey3FromFileBContextMenu</name>
                       <id>800</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14688,7 +14688,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УдалятьИзКлюча3ФигурныеСкобкиБ</name>
+                    <name>DeleteFromKey3CurlyBracketsB</name>
                     <id>808</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14697,11 +14697,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.УдалятьИзКлюча3ФигурныеСкобкиБ</segments>
+                        <segments>Объект.DeleteFromKey3CurlyBracketsB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>УдалятьИзКлюча3ФигурныеСкобкиБРасширеннаяПодсказка</name>
+                      <name>DeleteFromKey3CurlyBracketsBExtendedTooltip</name>
                       <id>810</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14716,7 +14716,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УдалятьИзКлюча3ФигурныеСкобкиБКонтекстноеМеню</name>
+                      <name>DeleteFromKey3CurlyBracketsBContextMenu</name>
                       <id>809</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14733,7 +14733,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч3КВерхнемуРегиструБ</name>
+                    <name>CastKey3ToUpperCaseB</name>
                     <id>811</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14742,11 +14742,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч3КВерхнемуРегиструБ</segments>
+                        <segments>Объект.CastKey3ToUpperCaseB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч3КВерхнемуРегиструБРасширеннаяПодсказка</name>
+                      <name>CastKey3ToUpperCaseBExtendedTooltip</name>
                       <id>813</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14761,7 +14761,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч3КВерхнемуРегиструБКонтекстноеМеню</name>
+                      <name>CastKey3ToUpperCaseBContextMenu</name>
                       <id>812</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14778,7 +14778,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПриводитьКлюч3КСтрокеБ</name>
+                    <name>CastKey3ToStringB</name>
                     <id>814</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14787,7 +14787,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ПриводитьКлюч3КСтрокеБ</segments>
+                        <segments>Объект.CastKey3ToStringB</segments>
                       </paths>
                     </dataPath>
                     <handlers>
@@ -14795,7 +14795,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПриводитьКлюч3КСтрокеБРасширеннаяПодсказка</name>
+                      <name>CastKey3ToStringBExtendedTooltip</name>
                       <id>816</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14810,7 +14810,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПриводитьКлюч3КСтрокеБКонтекстноеМеню</name>
+                      <name>CastKey3ToStringBContextMenu</name>
                       <id>815</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14827,7 +14827,7 @@
                     <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ДлинаКлюча3ПриПриведенииКСтрокеБ</name>
+                    <name>KeyLength3WhenCastingToStringB</name>
                     <id>817</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14836,11 +14836,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.ДлинаКлюча3ПриПриведенииКСтрокеБ</segments>
+                        <segments>Объект.KeyLength3WhenCastingToStringB</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ДлинаКлюча3ПриПриведенииКСтрокеБРасширеннаяПодсказка</name>
+                      <name>KeyLength3WhenCastingToStringBExtendedTooltip</name>
                       <id>819</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14855,7 +14855,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ДлинаКлюча3ПриПриведенииКСтрокеБКонтекстноеМеню</name>
+                      <name>KeyLength3WhenCastingToStringBContextMenu</name>
                       <id>818</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
