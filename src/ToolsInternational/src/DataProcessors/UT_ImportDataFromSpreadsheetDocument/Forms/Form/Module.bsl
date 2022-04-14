@@ -776,140 +776,144 @@ Function ImportDataServer()
 
 EndFunction
 
-// Function определяет возможность создания группы для переданного метаданного
+// Checks if folders are available for metadata type.
 //
-// Параметры:
-//  МетаданныеИсточника - Метаданные - Метаданные загружаемого объекта
+// Parameters:
+//  SourceMetadata - Metadata - object metadata.
 //
-// Возвращаемое значение:
-//  Булево - признак возможности создания группы
+// Return value:
+//  Boolean - True, if folders are available.
 //
 &AtServer
-Function FolderCreationEnabled(Знач МетаданныеИсточника)
+Function FolderCreationEnabled(Val SourceMetadata)
 	
-	Return МетаданныеИсточника.Иерархический 
-			И МетаданныеИсточника.ВидИерархии = Метаданные.СвойстваОбъектов.ВидИерархии.ИерархияГруппИЭлементов;
+	Return SourceMetadata.Hierarchical 
+			And SourceMetadata.HierarchyType = Metadata.ObjectProperties.HierarchyType.HierarchyFoldersAndItems;
 
 EndFunction // ()
 
-// Function вычисляет значение ячейки для режима "Вычислять"
+// Evaluates cell value for Evaluate mode.
 //
-// Параметры:
-//  Expression - програмный код, который необходимо выполнить
-//  ТекущиеДанные  - структура загруженных значений
-//  ТекстЯчейки    - текст текущей ячейки
-//  ТекстыЯчеек    - массив текстов ячеек строки
-//  Результат      - результат вычисления
+// Parameters:
+//  Expression - String - a code to execute.
+//  CurrentData  - Structure - imported values.
+//  CellText    - String - a text of a current cell.
+//  CellsTexts    - Array - a texts of a current row cells.
+//  Result      - Arbitrary - a result of a code execution.
 //
-// Возвращаемое значение:
-//  Структура, сордержащая Результат и ОписаниеОшибки
-&AtServerБезКонтекста
-Function ВычислитьЗначениеЯчейки(Знач Выражение, Знач ТекущиеДанные, Знач ТекстЯчейки, Знач ТекстыЯчеек, Знач Результат)
-
-	ТекстЯчейки = СокрЛП(ТекстЯчейки);
-	ОписаниеОшибки = "";
-	Try
-		Выполнить (Выражение);
-	Except
-		mErrorMessage(ОписаниеОшибки());
-	EndTry;
-
-	Return Новый Структура("Результат,ОписаниеОшибки", Результат, ОписаниеОшибки);
-
-EndFunction // ВычислитьЗначениеЯчейки(ТекущаяСтрока,Представление)()
-
-// Function записывает объект в информационную базу данных, используя
-// события определенные пользователем в форме редактирования событий
-//
-// Параметры:
-//  Объект      - записываемый объект
-//  ТекстыЯчеек - массив текстов ячеек, загружаемой строки
-//
-// Возвращаемое значение:
-//  True, If объект записан, False - Else
+// Return value:
+//  Structure - Result and ErrorDescription.
 //
 &AtServerNoContext
-Function WriteObject(Объект, ТекстыЯчеек = Undefined, ПередЗаписьюОбъекта, ПриЗаписиОбъекта)
+Function EvaluateCellValue(Val Expression, Val CurrentData, Val CellText, Val CellsTexts, Val Result)
 
-	Отказ = False;
-	НачатьТранзакцию();
-	If Не IsBlankString(ПередЗаписьюОбъекта) Then
+	CellText = TrimAll(CellText);
+	ErrorDescription = "";
+	Try
+		Execute (Expression);
+	Except
+		mErrorMessage(ErrorDescription());
+	EndTry;
+
+	Return New Structure("Result,ErrorDescription", Result, ErrorDescription);
+
+EndFunction
+
+// Writes an object to the infodatabase
+// using events defined by the user in the event edit form.
+//
+// Parameters:
+//  Object - CatalogObject, DocumentObject, etc - an object to write.
+//  CellsTexts - Array - a texts of a imported row cells.
+//  BeforeWriteObject - String - before write event handler.
+//  OnWriteObject - String - on write event handler.
+//
+// Return value:
+//  Boolean - True, If object successfully written, False - if there was an error.
+//
+&AtServerNoContext
+Function WriteObject(Object, CellsTexts = Undefined, BeforeWriteObject, OnWriteObject)
+
+	Cancel = False;
+	BeginTransaction();
+	If Not IsBlankString(BeforeWriteObject) Then
 		Try
-			Выполнить (ПередЗаписьюОбъекта);
-			If Отказ Then
-				ОписаниеОшибки = "";//Установлен отказ перед записью объекта
+			Execute (BeforeWriteObject);
+			If Cancel Then
+				ErrorDescription = "";//Cancel was set to True in the BeforeWriteObject event handler
 			EndIf;
 		Except
-			Отказ = True;
-			ОписаниеОшибки = ОписаниеОшибки();
+			Cancel = True;
+			ErrorDescription = ErrorDescription();
 		EndTry;
 	EndIf;
 
-	If Не Отказ Then
+	If Not Cancel Then
 		Try
-			Объект.Записать();
+			Object.Write();
 		Except
-			Отказ = True;
-			ОписаниеОшибки = ОписаниеОшибки();
+			Cancel = True;
+			ErrorDescription = ErrorDescription();
 		EndTry;
 	EndIf;
 
-	If Не Отказ И Не IsBlankString(ПриЗаписиОбъекта) Then
+	If Not Cancel And Not IsBlankString(OnWriteObject) Then
 
 		Try
-			Выполнить (ПриЗаписиОбъекта);
-			If Отказ Then
-				ОписаниеОшибки = "";//Установлен отказ при записи объекта
+			Execute (OnWriteObject);
+			If Cancel Then
+				ErrorDescription = "";//Cancel was set to True in the OnWriteObject event handler
 			EndIf;
 
 		Except
-			Отказ = True;
-			ОписаниеОшибки = ОписаниеОшибки();
+			Cancel = True;
+			ErrorDescription = ErrorDescription();
 		EndTry;
 
-		If Не Отказ Then
+		If Not Cancel Then
 			Try
-				Объект.Записать();
+				Object.Write();
 			Except
-				Отказ = True;
-				ОписаниеОшибки = ОписаниеОшибки();
+				Cancel = True;
+				ErrorDescription = ErrorDescription();
 			EndTry;
 		EndIf;
 
 	EndIf;
 
-	If Не Отказ Then
-		ЗафиксироватьТранзакцию();
+	If Not Cancel Then
+		CommitTransaction();
 	Else
-		mErrorMessage(ОписаниеОшибки);
-		ОтменитьТранзакцию();
+		mErrorMessage(ErrorDescription);
+		RollbackTransaction();
 	EndIf;
 
-	Return Не Отказ;
+	Return Not Cancel;
 
 EndFunction // ()
 
-// Function обрабатывает событие "После добавления строки",
-// определенное пользователем в форме редактирования событий
+// Executes the AfterAddRow event handler
+// defined by the user in the event edit form.
 //
-// Параметры:
-//  Объект      - записываемый объект
-//  ТекущиеДанные  - структура загруженных значений
-//  ТекстыЯчеек    - массив текстов ячеек строки
+// Parameters:
+//  Object - CatalogObject, DocumentObject, etc - an object to write.
+//  CurrentData  - Structure - imported values.
+//  CellsTexts    - Array - a texts of a current row cells.
+//  AfterAddRow - String - after add row event handler.
 //
-// Возвращаемое значение:
-//  True, If в событие "После добавления строки" не был установлен Отказ, False - Else
+// Return value:
+//  True, If Cancel was not set in the AfterAddRow event handler.
 //
 &AtServerNoContext
-Function AfterAddRowEventHandler(Объект, ТекущиеДанные, ТекстыЯчеек, ПослеДобавленияСтроки)
+Function AfterAddRowEventHandler(Object, CurrentData, CellsTexts, AfterAddRow)
 
 	Try
 
-		Выполнить (ПослеДобавленияСтроки);
+		Execute (AfterAddRow);
 
 	Except
 
-		mErrorMessage(ОписаниеОшибки());
+		mErrorMessage(ErrorDescription());
 		Return False;
 
 	EndTry;
@@ -921,92 +925,97 @@ EndFunction // ()
 ////////////////////////////////////////////////////////////////////////////////
 //
 
-// Procedure выполняет контроль заполнения данных табличного документа
-// сообщает об ошибках и устанавливает коментарии к ошибочным ячейкам
+// Controls a spreadsheet document data filling.
+// Messages an errors and sets an error cells comments.
 //
-// Параметры:
-//  SpreadsheetDocument - SpreadsheetDocument, у которого необходимо сформировать шапку
-//  Индикатор         - Элемент управления индикатор, в котором необходимо отображать процент выполнения операции
+// Parameters:
+//  SpreadsheetDocument - spreadsheet document to generate the header.
 //
 &AtServer
-Procedure КонтрольЗаполнения(ТабличныйДокумент) Export
+Procedure FillControl(SpreadsheetDocument) Export
 
-	КоличествоЭлементов = ТабличныйДокумент.ВысотаТаблицы - Object.SpreadsheetDocumentFirstDataRow + 1;
+	ItemCount = SpreadsheetDocument.TableHeight - Object.SpreadsheetDocumentFirstDataRow + 1;
 
-	КоличествоОшибок = 0;
-	Для К = 0 По КоличествоЭлементов - 1 Do
-		//Состояние("Выполняется контроль заполнения строки № " + (К + 1));
-		RowFillControl(ТабличныйДокумент, К + Object.SpreadsheetDocumentFirstDataRow, ,
-			КоличествоОшибок);
+	ErrorCount = 0;
+	For K = 0 To ItemCount - 1 Do
+		//Status(UT_StringFunctionsClientServer.SubstituteParametersToString(
+		//NStr("ru = 'Выполняется контроль заполнения строки № %1'; en = 'Row no. %1 fill control is in progress.'"), (К + 1)));
+		RowFillControl(SpreadsheetDocument, K + Object.SpreadsheetDocumentFirstDataRow, ,
+			ErrorCount);
 	EndDo;
 
-	Сообщить("Контроль заполнения завершен. Проверено строк: " + КоличествоЭлементов);
-	If КоличествоОшибок Then
-		Сообщить("Выявлено ячеек, содержащих ошибки/неоднозначное представление: " + КоличествоОшибок);
+	Message(UT_StringFunctionsClientServer.SubstituteParametersToString(
+		NStr("ru = 'Контроль заполнения завершен. Проверено строк: %1'; en = 'Fill control completed. %1 rows was checked.'"), ItemCount));
+	If ErrorCount Then
+		Message(UT_StringFunctionsClientServer.SubstituteParametersToString(
+			NStr("ru = 'Выявлено ячеек, содержащих ошибки/неоднозначное представление: %1'; en = '%1 cells with errors/ambiguous presentation was found.'"), ErrorCount));
 	Else
-		Сообщить("Ячеек, содержащих ошибки не выявлено");
+		Message(NStr("ru = 'Ячеек, содержащих ошибки не выявлено'; en = 'No error cell was found.'"));
 	EndIf;
 
 EndProcedure // FillControl()
 
-// Function выполняет контроль заполнения строки данных табличного документа
-// сообщает об ошибках и устанавливает коментарии к ошибочным ячейкам
+// Controls a spreadsheet document row data filling.
+// Messages an errors and writes an error cells comments.
 //
 // Параметры:
-//  SpreadsheetDocument - SpreadsheetDocument, у которого необходимо сформировать шапку
-//  НомерСтроки       - Число, номер строки табличного документа
-//  ТекстыЯчеек    - возвращает массив текстов ячеек строки,
+//  SpreadsheetDocument - spreadsheet document to generate the header.
+//  RowNumber       - Number - spreadsheet document row number.
+//  CellsTexts    - Array - a texts of a row cells.
+//  ErrorCount 	- Number - a count of errors.
 //
-// Возвращаемое значение:
-//  структура, ключ - Имя загружаемого реквизита, Значение - Значение загружаемого реквизита
+// Return value:
+//  Structure - 
+//  	Key - imported attrubure name.
+//  	Value - imported attribute value.
 //
 &AtServer
-Function RowFillControl(ТабличныйДокумент, НомерСтроки, ТекстыЯчеек = Undefined, КоличествоОшибок = 0)
+Function RowFillControl(SpreadsheetDocument, RowNumber, CellsTexts = Undefined, ErrorCount = 0)
 
-	ТекстыЯчеек = Новый Массив;
-	ТекстыЯчеек.Добавить(Undefined);
-	Для к = 1 По ТабличныйДокумент.ШиринаТаблицы Do
-		ТекстыЯчеек.Добавить(СокрЛП(ТабличныйДокумент.Область("R" + Формат(НомерСтроки, "ЧГ=") + "C" + Формат(К,
-			"ЧГ=")).Текст));
+	CellsTexts = New Array;
+	CellsTexts.Add(Undefined);
+	For K = 1 To SpreadsheetDocument.TableWidth Do
+		CellsTexts.Add(TrimAll(SpreadsheetDocument.Area("R" + Format(RowNumber, "NG=") + "C" + Format(K,
+			"NG=")).Text));
 	EndDo;
 
-	Колонки = Object.AdditionalProperties.Колонки;
+	Columns = Object.AdditionalProperties.Columns;
 
-	ТекущаяСтрока     = Новый Структура;
-	For Each КлючИЗначение Из Колонки Do
+	CurrentRow     = New Structure;
+	For Each KeyValue In Columns Do
 
-		Колонка = КлючИЗначение.Значение;
+		Column = KeyValue.Value;
 
-		If Колонка.Check Then
+		If Column.Check Then
 
-			If Колонка.ImportMode = "Устанавливать" Then
+			If Column.ImportMode = "Set" Then
 
-				Результат = Колонка.DefaultValue;
-				ТекущаяСтрока.Вставить(Колонка.ИмяРеквизита, Результат);
+				Result = Column.DefaultValue;
+				CurrentRow.Insert(Column.AttributeName, Result);
 
-			ElsIf Не Колонка.ColumnNumber = 0 Then
+			ElsIf Not Column.ColumnNumber = 0 Then
 
-				If Не ОбработатьОбласть(ТабличныйДокумент.Область("R" + Формат(НомерСтроки, "ЧГ=") + "C" + Формат(
-					Колонка.НомерКолонки, "ЧГ=")), Колонка, ТекущаяСтрока, ТекстыЯчеек) Then
-					КоличествоОшибок = КоличествоОшибок + 1;
+				If Not ProcessArea(SpreadsheetDocument.Area("R" + Format(RowNumber, "NG=") + "C" + Format(
+					Column.ColumnNumber, "NG=")), Column, CurrentRow, CellsTexts) Then
+					ErrorCount = ErrorCount + 1;
 				EndIf;
 
-			ElsIf Колонка.ImportMode = "Вычислять" Then
+			ElsIf Column.ImportMode = "Evaluate" Then
 
-				Вычисление  = ВычислитьЗначениеЯчейки(Колонка.Выражение, ТекущаяСтрока, "", ТекстыЯчеек,
-					Колонка.ЗначениеПоУмолчанию);
-				Результат   = Вычисление.Результат;
-				Примечание  = Вычисление.ОписаниеОшибки;
+				Evaluation  = EvaluateCellValue(Column.Expression, CurrentRow, "", CellsTexts,
+					Column.DefaultValue);
+				Result   = Evaluation.Result;
+				Note  = Evaluation.ErrorDescription;
 
-				If Не ValueIsFilled(Результат) Then
-					Результат = Колонка.DefaultValue;
+				If Not ValueIsFilled(Result) Then
+					Result = Column.DefaultValue;
 				EndIf;
 
-				ТекущаяСтрока.Вставить(Колонка.ИмяРеквизита, Результат);
+				CurrentRow.Insert(Column.AttributeName, Result);
 
-				If Не IsBlankString(Примечание) Then
-					Сообщить("Строка [" + НомерСтроки + "](" + Колонка.AttributePresentation + "): " + Примечание);
-					КоличествоОшибок = КоличествоОшибок + 1;
+				If Not IsBlankString(Note) Then
+					Message(NStr("ru = 'Строка ['; en = 'Row ['") + RowNumber + "](" + Column.AttributePresentation + "): " + Note);
+					ErrorCount = ErrorCount + 1;
 				EndIf;
 
 			EndIf;
@@ -1014,194 +1023,195 @@ Function RowFillControl(ТабличныйДокумент, НомерСтрок
 		EndIf;
 
 	EndDo;
-	Return ТекущаяСтрока;
+	Return CurrentRow;
 
 EndFunction
 
-// Procedure выполняет обработку области табличного документа:
-// заполняет расшифровку по представлению ячейки в соответствии со структурой загружаемых реквизитов
-// сообщает об ошибке и устанавливает коментарий, If ячейка содержит ошибку
+// Processes a spreadsheet document area:
+// fills the details by the cell presentation according to imported attributes structure.
+// If the cell contains an error, messages an error and writes a comment.
 //
-// Параметры:
-//  Область - область табличного документа
-//  Колонка - Структура, свойства, в соответствии с которыми необходимо выполнить обработку области
-//  ТекущиеДанные  - структура загруженных значений
-//  ТекстыЯчеек    - массив текстов ячеек строки
+// Parameters:
+//  Area - SpreadsheetDocumentRange - spreadsheet document cells range.
+//  Column - Structure - properties, according to which the processing will be executed.
+//  CurrentData  - Structure - imported values.
+//  CellsTexts    - Array - a texts of a row cells.
 //
 &AtServer
-Function ОбработатьОбласть(Область, Колонка, ТекущиеДанные, ТекстыЯчеек)
+Function ProcessArea(Area, Column, CurrentData, CellsTexts)
 
-	Представление = Область.Текст;
-	Примечание = "";
+	Presentation = Area.Text;
+	Note = "";
 
-	If Колонка.ImportMode = "Вычислять" Then
+	If Column.ImportMode = "Evaluate" Then
 
-		Вычисление = ВычислитьЗначениеЯчейки(Колонка.Выражение, ТекущиеДанные, Представление, ТекстыЯчеек,
-			Колонка.ЗначениеПоУмолчанию);
-		If Не IsBlankString(Вычисление.ОписаниеОшибки) Then
-			Результат   = Undefined;
-			Примечание = "" + Вычисление.ОписаниеОшибки;
+		Evaluation = EvaluateCellValue(Column.Expression, CurrentData, Presentation, CellsTexts,
+			Column.DefaultValue);
+		If Not IsBlankString(Evaluation.ErrorDescription) Then
+			Result   = Undefined;
+			Note = "" + Evaluation.ErrorDescription;
 		Else
-			Результат = Вычисление.Результат;
+			Result = Evaluation.Result;
 		EndIf;
 
-	ElsIf IsBlankString(Представление) Then
-		Результат = Undefined;
+	ElsIf IsBlankString(Presentation) Then
+		Result = Undefined;
 	Else
-		НайденныеЗначения = ПолучитьВозможныеЗначения(Колонка, Представление, Примечание, ТекущиеДанные);
+		FoundValues = GetPossibleValues(Column, Presentation, Note, CurrentData);
 
-		If НайденныеЗначения.Количество() = 0 Then
+		If FoundValues.Count() = 0 Then
 
-			Примечание = "Не найден" + ?(Примечание = "", "", Символы.ПС + Примечание);
-			Результат = Undefined;
+			Note = NStr("ru = 'Не найден'; en = 'Not found'") + ?(Note = "", "", Chars.LF + Note);
+			Result = Undefined;
 
-		ElsIf НайденныеЗначения.Количество() = 1 Then
+		ElsIf FoundValues.Count() = 1 Then
 
-			Результат = НайденныеЗначения[0];
+			Result = FoundValues[0];
 		Else
 
-			Примечание = "Не однозначное представление. Вариантов: " + НайденныеЗначения.Количество() + ?(Примечание
-				= "", "", Символы.ПС + Примечание);
+			Note = UT_StringFunctionsClientServer.SubstituteParametersToString(
+				NStr("ru = 'Не однозначное представление. Вариантов: %1'; en = 'Ambiguous presentation. %1 options.'"), FoundValues.Количество()) + 
+				?(Note = "", "", Chars.LF + Note);
 
-			Нашли = False;
-			НашлиЗначениеПоУмолчанию = False;
-			For Each НайденноеЗначение Из НайденныеЗначения Do
-				If НайденноеЗначение = Область.Расшифровка Then
-					Нашли = True;
-					Прервать;
+			Found = False;
+			FoundDefaultValue = False;
+			For Each FoundValue In FoundValues Do
+				If FoundValue = Area.Details Then
+					Found = True;
+					Break;
 				EndIf;
-				If НайденноеЗначение = Колонка.DefaultValue Then
-					НашлиЗначениеПоУмолчанию = True;
+				If FoundValue = Column.DefaultValue Then
+					FoundDefaultValue = True;
 				EndIf;
 			EndDo;
 
-			If Не Нашли Then
+			If Not Found Then
 
-				If НашлиЗначениеПоУмолчанию Then
-					НайденноеЗначение = Колонка.DefaultValue;
+				If FoundDefaultValue Then
+					FoundValue = Column.DefaultValue;
 				Else
-					НайденноеЗначение = НайденныеЗначения[0];
+					FoundValue = FoundValues[0];
 				EndIf;
 			EndIf;
-			Результат = НайденноеЗначение;
+			Result = FoundValue;
 		EndIf;
 	EndIf;
 
-	If Не ValueIsFilled(Результат) Then
-		Результат = Колонка.DefaultValue;
+	If Not ValueIsFilled(Result) Then
+		Result = Column.DefaultValue;
 	EndIf;
 
-	ТекущиеДанные.Вставить(Колонка.ИмяРеквизита, Результат);
+	CurrentData.Insert(Column.AttributeName, Result);
 
-	Область.Расшифровка = Результат;
-	Область.Примечание.Текст = Примечание;
+	Area.Details = Result;
+	Area.Note.Text = Note;
 
-	If Не IsBlankString(Примечание) Then
-		Сообщить("Ячейка[" + Область.Имя + "](" + Колонка.AttributePresentation + "): " + Примечание);
+	If Не IsBlankString(Note) Then
+		Message(NStr("ru = 'Ячейка['; en = 'Cell['") + Area.Name + "](" + Column.AttributePresentation + "): " + Note);
 	EndIf;
 
-	Return IsBlankString(Примечание);
+	Return IsBlankString(Note);
 
 EndFunction
 
-// Function возвращает массив возможных значений для текущей колонки по представлению
+// Returns an array of current row possible values by presentation.
 //
-// Параметры:
-//  Колонка - Структура, свойства, в соответствии с которыми необходимо получить возможные значения
-//  Представление - Строка, по которой необходимо вернуть массив значений
-//  Примечание    - массив текстов ячеек строки
-//  ТекущиеДанные  - структура загруженных значений
+// Parameters:
+//  Column - Structure - properties, according to which the possible values will be getting.
+//  Presentation - String - string, by which the possible values will be getting.
+//  Note    - Array - a texts of a row cells.
+//  CurrentData  - Structure - imported values.
 //
-// Возвращаемое значение:
-//  массив возможных значений
+// Return value:
+//  Array of possible values.
 //
 &AtServer
-Function ПолучитьВозможныеЗначения(Колонка, Представление, Примечание, ТекущиеДанные)
-	Примечание = "";
+Function GetPossibleValues(Column, Presentation, Note, CurrentData)
+	Note = "";
 
-	НайденныеЗначения = Новый Массив;
+	FoundValues = New Array;
 
-	If IsBlankString(Представление) Then
+	If IsBlankString(Presentation) Then
 
-		Return НайденныеЗначения;
+		Return FoundValues;
 
 	Else
-		СвязьПоТипу = Undefined;
-		If Не IsBlankString(Колонка.СвязьПоТипу) Then
+		LinkByType = Undefined;
+		If Not IsBlankString(Column.LinkByType) Then
 
-			If ТипЗНЧ(Колонка.СвязьПоТипу) = Тип("Строка") Then
-				ТекущиеДанные.Свойство(Колонка.СвязьПоТипу, СвязьПоТипу);
+			If TypeOf(Column.LinkByType) = Type("String") Then
+				CurrentData.Property(Column.LinkByType, LinkByType);
 			Else
-				СвязьПоТипу = Колонка.LinkByType;
+				LinkByType = Column.LinkByType;
 			EndIf;
-			If Не СвязьПоТипу = Undefined Then
+			If Not LinkByType = Undefined Then
 
-				ЭлементСвязиПоТипу = Колонка.LinkByTypeItem;
-				If ЭлементСвязиПоТипу = 0 Then
-					ЭлементСвязиПоТипу = 1;
+				LinkByTypeItem = Column.LinkByTypeItem;
+				If LinkByTypeItem = 0 Then
+					LinkByTypeItem = 1;
 				EndIf;
-				ВидыСубконто = СвязьПоТипу.ВидыСубконто;
-				If ЭлементСвязиПоТипу > ВидыСубконто.Количество() Then
-					Return НайденныеЗначения;
+				ExtDimensionTypes = LinkByType.ExtDimensionTypes;
+				If LinkByTypeItem > ExtDimensionTypes.Count() Then
+					Return FoundValues;
 				EndIf;
-				Тип = СвязьПоТипу.ВидыСубконто[ЭлементСвязиПоТипу - 1].ВидСубконто.ТипЗначения;
+				Type = LinkByType.ExtDimensionTypes[LinkByTypeItem - 1].ExtDimensionType.ValueType;
 			Else
-				Тип = Колонка.TypeDescription;
+				Type = Column.TypeDescription;
 			EndIf;
 
 		Else
-			Тип = Колонка.TypeDescription;
+			Type = Column.TypeDescription;
 		EndIf;
 	EndIf;
-	ПримитивныеТипы = Новый Структура("Число, Строка, Дата, Булево", Тип("Число"), Тип("Строка"), Тип("Дата"), Тип(
-		"Булево"));
-	For Each ТипРеквизита Из Тип.Типы() Do
+	PrimitiveTypes = New Structure("Number, String, Date, Boolean", Type("Number"), Type("String"), Type("Date"), Type(
+		"Boolean"));
+	For Each AttributeType In Type.Types() Do
 
-		If ТипРеквизита = ПримитивныеТипы.Число Или ТипРеквизита = ПримитивныеТипы.Булево Then
-			НайденныеЗначения.Добавить(mAdjustToNumber(Представление, Колонка.ОписаниеТипов, Примечание));
-		ElsIf ТипРеквизита = ПримитивныеТипы.Строка Или ТипРеквизита = ПримитивныеТипы.Дата Then
-			НайденныеЗначения.Добавить(mAdjustToDate(Представление, Колонка.ОписаниеТипов, Примечание));
+		If AttributeType = PrimitiveTypes.Number Or AttributeType = PrimitiveTypes.Boolean Then
+			FoundValues.Add(mAdjustToNumber(Presentation, Column.TypeDescription, Note));
+		ElsIf AttributeType = PrimitiveTypes.String Или AttributeType = PrimitiveTypes.Date Then
+			FoundValues.Add(mAdjustToDate(Presentation, Column.TypeDescription, Note));
 
 		Else
 
-			МетаданныеТипа = Метаданные.НайтиПоТипу(ТипРеквизита);
+			TypeMetadata = Metadata.FindByType(AttributeType);
 
-			If Перечисления.ТипВсеСсылки().СодержитТип(ТипРеквизита) Then
+			If Enums.AllRefsType().ContainsType(AttributeType) Then
 				
-				//Это Перечисление
-				For Each Перечисление Из GetManagerByType(ТипРеквизита) Do
-					If Строка(Перечисление) = Представление Then
-						НайденныеЗначения.Добавить(Перечисление);
+				//Enumeration
+				For Each Enum In GetManagerByType(AttributeType) Do
+					If String(Enum) = Presentation Then
+						FoundValues.Add(Enum);
 					EndIf;
 				EndDo;
 
-			ElsIf Документы.ТипВсеСсылки().СодержитТип(ТипРеквизита) Then
+			ElsIf Documents.AllRefsType().ContainsType(AttributeType) Then
 				
-				//Это документ
+				//Document
 
-				Менеджер = GetManagerByType(ТипРеквизита);
-				If Колонка.SearchBy = "Номер" Then
-					//НайденноеЗначение = Менеджер.НайтиПоКоду(Представление);
-				ElsIf Колонка.SearchBy = "Дата" Then
-					//НайденноеЗначение = Менеджер.Найти
+				Manager = GetManagerByType(AttributeType);
+				If Column.SearchBy = "Number" Then
+					//FoundValue = Manager.FindByCode(Presentation);
+				ElsIf Column.SearchBy = "Date" Then
+					//FoundValue = Manager.Find
 				Else
 
-					ДлиннаСинонима = StrLen("" + МетаданныеТипа);
+					SynonymLength = StrLen("" + TypeMetadata);
 
-					If Лев(Представление, ДлиннаСинонима) = "" + МетаданныеТипа Then
-						НомерИДата = СокрЛП(Сред(Представление, ДлиннаСинонима + 1));
-						ПозицияОт = Найти(НомерИДата, " от ");
-						If Не ПозицияОт = 0 Then
-							НомерДок = Лев(НомерИДата, ПозицияОт - 1);
+					If Left(Presentation, SynonymLength) = "" + TypeMetadata Then
+						NumberAndDate = TrimAll(Mid(Presentation, SynonymLength + 1));
+						PositionFrom = Find(NumberAndDate, NStr("ru = ' от '; en = ' from '"));
+						If Not PositionFrom = 0 Then
+							DocNumber = Left(NumberAndDate, PositionFrom - 1);
 							Try
-								ДатаДок  = Дата(Сред(НомерИДата, ПозицияОт + 4));
+								DocDate  = Date(Mid(NumberAndDate, PositionFrom + 4));
 							Except
-								ДатаДок = Undefined;
+								DocDate = Undefined;
 							EndTry;
-							If Не ДатаДок = Undefined Then
-								НайденноеЗначение = Менеджер.НайтиПоНомеру(НомерДок, ДатаДок);
-								If Не НайденноеЗначение.Пустая() Then
-									НайденныеЗначения.Добавить(НайденноеЗначение);
+							If Not DocDate = Undefined Then
+								FoundValue = Manager.FindByNumber(DocNumber, DocDate);
+								If Not FoundValue.IsEmpty() Then
+									FoundValues.Add(FoundValue);
 								EndIf;
 							EndIf;
 						EndIf;
@@ -1209,124 +1219,124 @@ Function ПолучитьВозможныеЗначения(Колонка, Пр
 
 				EndIf;
 
-			ElsIf Не МетаданныеТипа = Undefined Then
+			ElsIf Not TypeMetadata = Undefined Then
 
-				ИскатьПо = Колонка.SearchBy;
-				ЭтоСправочник = Справочники.ТипВсеСсылки().СодержитТип(ТипРеквизита);
-				If IsBlankString(ИскатьПо) Then
-					СтрокаОсновногоПредставления = Строка(МетаданныеТипа.ОсновноеПредставление);
+				SearchBy = Column.SearchBy;
+				IsCatalog = Catalogs.AllRefsType().ContainsType(AttributeType);
+				If IsBlankString(SearchBy) Then
+					DefaultPresentationString = String(TypeMetadata.DefaultPresentation);
 
-					If СтрокаОсновногоПредставления = "ВВидеКода" Then
-						ИскатьПо = "Код";
-					ElsIf СтрокаОсновногоПредставления = "ВВидеНаименования" Then
-						ИскатьПо = "Наименование";
-					ElsIf СтрокаОсновногоПредставления = "ВВидеНомера" Then
-						ИскатьПо = "Номер";
+					If DefaultPresentationString = "AsCode" Then
+						SearchBy = "Code";
+					ElsIf DefaultPresentationString = "AsDescription" Then
+						SearchBy = "Description";
+					ElsIf DefaultPresentationString = "AsNumber" Then
+						SearchBy = "Number";
 					EndIf;
 				EndIf;
-				Запрос = Новый Запрос;
-				Запрос.Текст = "ВЫБРАТЬ
-							   |	_Таблица.Ссылка
-							   |ИЗ
-							   |	" + МетаданныеТипа.ПолноеИмя() + " КАК _Таблица
-																	 |ГДЕ";
+				Query = New Query;
+				Query.Text = "SELECT
+							 |	_Table.Ref
+							 |FROM
+							 |	" + TypeMetadata.FullName() + " AS _Table
+															  |WHERE";
 
-				Запрос.Текст = Запрос.Текст + "
-											  |	_Таблица." + ИскатьПо + " = &Представление";
-				Запрос.УстановитьПараметр("Представление", Представление);
+				Query.Text = Query.Text + "
+											  |	Table." + SearchBy + " = &Presentation";
+				Query.SetParameter("Presentation", Presentation);
 
-				If ЭтоСправочник И Не IsBlankString(Колонка.СвязьПоВладельцу) И МетаданныеТипа.Владельцы.Количество() Then
+				If IsCatalog And Not IsBlankString(Column.LinkByOwner) And TypeMetadata.Owners.Count() Then
 
-					СвязьПоВладельцу = Undefined;
-					If ТипЗНЧ(Колонка.СвязьПоВладельцу) = Тип("Строка") Then
-						ТекущиеДанные.Свойство(Колонка.СвязьПоВладельцу, СвязьПоВладельцу);
+					LinkByOwner = Undefined;
+					If TypeOf(Column.LinkByOwner) = Type("String") Then
+						CurrentData.Property(Column.LinkByOwner, LinkByOwner);
 					Else
-						СвязьПоВладельцу = Колонка.LinkByOwner;
+						LinkByOwner = Column.LinkByOwner;
 					EndIf;
 
-					If Не СвязьПоВладельцу = Undefined Then
-						Запрос.Текст = Запрос.Текст + "
-													  |	И _Таблица.Владелец = &LinkByOwner";
-						Запрос.УстановитьПараметр("LinkByOwner", СвязьПоВладельцу);
+					If Not LinkByOwner = Undefined Then
+						Query.Text = Query.Text + "
+													  |	AND _Table.Owner = &LinkByOwner";
+						Query.SetParameter("LinkByOwner", LinkByOwner);
 					EndIf;
 
 				EndIf;
 
-				Выборка =  Запрос.Выполнить().Выбрать();
+				Selection =  Query.Execute().Select();
 
-				Пока Выборка.Следующий() Do
-					НайденныеЗначения.Добавить(Выборка.Ссылка);
+				While Selection.Next() Do
+					FoundValues.Add(Selection.Ref);
 				EndDo;
 			Else
-				Примечание = "Не описан способ поиска";
-				Примечание = "Для Колонки не определен тип значения";
+				Note = NStr("ru = 'Не описан способ поиска'; en = 'Search type is not defined.'");
+				Note = NStr("ru = 'Для Колонки не определен тип значения'; en = 'Column value type is not defined.'");
 			EndIf;
 		EndIf;
 
 	EndDo;
-	Return НайденныеЗначения;
+	Return FoundValues;
 EndFunction // ()
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 
-// Function возвращает массив, элементами которого выступают возможные имена представления загружаемого реквизита
+// Returns an array of imported attribute possible presentations.
 //
-// Параметры:
-//  ЗагружаемыйРеквизит - Строка таблицы значений загружаемого реквизита
+// Parameters:
+//  TypeDescription - Type description.
 //
-// Возвращаемое значение:
-//  список значений; значение списка - строка имя представления
+// Return value:
+//  Value list - presentations.
 //
 &AtServer
-Function ПолучитьСписокИменПредставлений(ОписаниеТипов)
+Function GetNamePresentationList(TypeDescription)
 
-	СписокВыбора = Новый СписокЗначений;
-	If ОписаниеТипов.Типы().Количество() = 1 Then
+	ChioceList = New ValueList;
+	If TypeDescription.Types().Count() = 1 Then
 
-		Тип = ОписаниеТипов.Типы()[0];
+		Type = TypeDescription.Types()[0];
 
-		МетаданныеТипа      = Метаданные.НайтиПоТипу(Тип);
-		ЭтоСправочник       = Справочники.ТипВсеСсылки().СодержитТип(Тип);
-		ЭтоСчет             = ПланыСчетов.ТипВсеСсылки().СодержитТип(Тип);
-		ЭтоВидХарактеристик = ПланыВидовХарактеристик.ТипВсеСсылки().СодержитТип(Тип);
-		If ЭтоСправочник Или ЭтоСчет Или ЭтоВидХарактеристик Then
+		TypeMetadata      = Метаданные.НайтиПоТипу(Type);
+		IsCatalog       = Catalogs.AllRefsType().ContainsType(Type);
+		IsAccount             = ChartsOfAccounts.AllRefsType().ContainsType(Type);
+		IsCharacteristicType = ChartsOfCharacteristicTypes.AllRefsType().ContainsType(Type);
+		If IsCatalog Or IsAccount Or IsCharacteristicType Then
 
-			ЕстьКод = МетаданныеТипа.ДлинаКода > 0;
-			ЕстьИмя = МетаданныеТипа.ДлинаНаименования > 0;
+			CodeExists = TypeMetadata.CodeLength > 0;
+			NameExists = TypeMetadata.DescriptionLength > 0;
 
-			ВидОсновногоПредставление = ?(ЭтоСправочник, Метаданные.СвойстваОбъектов.ОсновноеПредставлениеСправочника,
-				?(ЭтоСчет, Метаданные.СвойстваОбъектов.ОсновноеПредставлениеСчета,
-				Метаданные.СвойстваОбъектов.ОсновноеПредставлениеВидаХарактеристики));
+			DefaultPresentationType = ?(IsCatalog, Metadata.ObjectProperties.CatalogMainPresentation,
+				?(IsAccount, Metadata.ObjectProperties.AccountMainPresentation,
+				Metadata.ObjectProperties.CharacteristicTypeMainPresentation));
 
-			If МетаданныеТипа.ОсновноеПредставление = ВидОсновногоПредставление.ВВидеКода Then
+			If TypeMetadata.DefaultPresentation = DefaultPresentationType.AsCode Then
 
-				If ЕстьКод Then
-					СписокВыбора.Добавить("Код", "Код");
+				If CodeExists Then
+					ChioceList.Add("Code", "Code");
 				EndIf;
 
-				If ЕстьИмя Then
-					СписокВыбора.Добавить("Наименование", "Наименование");
+				If NameExists Then
+					ChioceList.Add("Description", "Description");
 				EndIf;
 
 			Else
 
-				If ЕстьИмя Then
-					СписокВыбора.Добавить("Наименование", "Наименование");
+				If NameExists Then
+					ChioceList.Add("Description", "Description");
 				EndIf;
 
-				If ЕстьКод Then
-					СписокВыбора.Добавить("Код", "Код");
+				If CodeExists Then
+					ChioceList.Add("Code", "Code");
 				EndIf;
 
 			EndIf;
 
-			For Each Реквизит Из МетаданныеТипа.Реквизиты Do
+			For Each Attribute In TypeMetadata.Attributes Do
 
-				If Не Реквизит.Индексирование = Метаданные.СвойстваОбъектов.Индексирование.НеИндексировать
-					И Реквизит.Тип.Типы().Количество() = 1 И Реквизит.Тип.Типы()[0] = Тип("Строка") Then
+				If Not Attribute.Indexing = Metadata.ObjectProperties.Indexing.DontIndex
+					And Attribute.Type.Types().Count() = 1 And Attribute.Type.Types()[0] = Type("String") Then
 
-					СписокВыбора.Добавить(Реквизит.Имя, Реквизит.Представление());
+					ChioceList.Add(Attribute.Name, Attribute.Presentation());
 
 				EndIf;
 
@@ -1336,28 +1346,29 @@ Function ПолучитьСписокИменПредставлений(Опис
 		EndIf;
 
 	EndIf;
-	Return СписокВыбора;
+	Return ChioceList;
 EndFunction // ()
 
-// Function возвращает список, элементами которого выступают возможные связи по типу для загружаемого реквизита
+// Returns a list of imported attribute links by type.
 //
-// Параметры:
-//  ЗагружаемыйРеквизит - Строка таблицы значений загружаемого реквизита
+// Parameters:
+//  ImportedAttribute - ValueTableRow - imported attribute.
+//  VT - ValueTable - imported attributes table.
 //
-// Возвращаемое значение:
-//  список значений; значение списка - строка имя колонки связи или ссылка на элемент связи
+// Return value:
+//  ValueList - list of link column names or link item references.
 //
 &AtServer
-Function ПолучитьСписокСвязейПоТипу(ЗагружаемыйРеквизит, ТЗ)
+Function GetLinkByTypeList(ImportedAttribute, VT)
 
-	СписокВыбора = Новый СписокЗначений;
+	ChoiceList = New ValueList;
 
-	ВозможныеПланыСчетов = Новый Структура;
-	For Each ПланСчетов Из Метаданные.ПланыСчетов Do
+	PossibleChartsOfAccounts = New Structure;
+	For Each ChartOfAccounts In Metadata.ChartsOfAccounts Do
 		Try
-			If ПланСчетов.ВидыСубконто.Тип = ЗагружаемыйРеквизит.TypeDescription Then
+			If ChartOfAccounts.ExtDimensionTypes.Type = ImportedAttribute.TypeDescription Then
 
-				ВозможныеПланыСчетов.Вставить(ПланСчетов.Имя, ПланыСчетов[ПланСчетов.Имя]);
+				PossibleChartsOfAccounts.Insert(ChartOfAccounts.Name, ChartsOfAccounts[ChartOfAccounts.Name]);
 
 			EndIf;
 		Except
@@ -1365,66 +1376,66 @@ Function ПолучитьСписокСвязейПоТипу(Загружаем
 		EndTry;
 	EndDo;
 
-	For Each ПланСчетов Из ВозможныеПланыСчетов Do
-		ТипЗНЧПланСчетов = ТипЗНЧ(ПланСчетов.Значение.ПустаяСсылка());
-		For Each КолонкаСвязиПоТипу Из ТЗ Do
-			If КолонкаСвязиПоТипу.TypeDescription.Типы()[0] = ТипЗНЧПланСчетов Then
-				СписокВыбора.Добавить(КолонкаСвязиПоТипу.ИмяРеквизита, КолонкаСвязиПоТипу.ИмяРеквизита);
+	For Each ChartOfAccounts In PossibleChartsOfAccounts Do
+		TypeOfChartOfAccounts = TypeOf(ChartOfAccounts.Value.EmptyRef());
+		For Each LinkByTypeColumn In VT Do
+			If LinkByTypeColumn.TypeDescription.Types()[0] = TypeOfChartOfAccounts Then
+				ChoiceList.Add(LinkByTypeColumn.AttributeName, LinkByTypeColumn.AttributeName);
 			EndIf;
 		EndDo;
 	EndDo;
 
-	If Не ВозможныеПланыСчетов.Количество() = 0 Then
-		СписокВыбора.Добавить(Undefined, "< пустое значение >");
+	If Not PossibleChartsOfAccounts.Count() = 0 Then
+		ChoiceList.Add(Undefined, NStr("ru = '< пустое значение >' en = '< empty value >'"));
 	EndIf;
 
-	For Each ПланСчетов Из ВозможныеПланыСчетов Do
-		СписокВыбора.Добавить("ПланСчетовСсылка." + ПланСчетов.Ключ, "<" + ПланСчетов.Ключ + ">");
+	For Each ChartOfAccounts In PossibleChartsOfAccounts Do
+		ChoiceList.Add("ChartOfAccountsRef." + ChartOfAccounts.Key, "<" + ChartOfAccounts.Key + ">");
 	EndDo;
 
-	Return СписокВыбора;
+	Return ChoiceList;
 EndFunction // ()
 
-// Function возвращает список, элементами которого выступают возможные связи по владельцу для загружаемого реквизита
+// Returns a list of imported attribute links by owner.
 //
-// Параметры:
-//  ЗагружаемыйРеквизит - Строка таблицы значений загружаемого реквизита
+// Parameters:
+//  TypeDescription - type description.
+//  ColumnTable - ValueTable - a table of link by owner columns.
 //
-// Возвращаемое значение:
-//  список значений; значение списка - строка имя колонки связи или ссылка на элемент связи
+// Return value:
+//  ValueList - list of link column names or link item references.
 //
 &AtServer
-Function ПолучитьСписокСвязейПоВладельцу(ОписаниеТипов, ТаблицаКолонок)
+Function GetLinkByOwnerList(TypeDescription, ColumnTable)
 
-	ЕстьТипСамогоОбъекта = False;
-	МетаданныеИсточника = GetSourceMetadata();
+	ThisObjectTypeExists = False;
+	SourceMetadata = GetSourceMetadata();
 	If Object.ImportMode = 0 Then
-		ОписаниеТиповСправочника = Тип(СтрЗаменить(МетаданныеИсточника.ПолноеИмя(), ".", "Ссылка."));
+		CatalogTypeDescription = Type(StrReplace(SourceMetadata.FullName(), ".", "Ref."));
 	Else
-		ОписаниеТиповСправочника = Undefined;
+		CatalogTypeDescription = Undefined;
 	EndIf;
 
-	СписокВыбора = Новый СписокЗначений;
-	ТипыВладельцев = Новый Соответствие;
-	For Each ТипКолонки Из ОписаниеТипов.Типы() Do
-		If Справочники.ТипВсеСсылки().СодержитТип(ТипКолонки) Then
-			For Each Владелец Из Метаданные.НайтиПоТипу(ТипКолонки).Владельцы Do
-				ТипВладельца   = Тип(СтрЗаменить(Владелец.ПолноеИмя(), ".", "Ссылка."));
-				If ТипыВладельцев[ТипВладельца] = Undefined Then
+	ChoiceList = New ValueList;
+	OwnerTypes = New Map;
+	For Each ColumnType In TypeDescription.Types() Do
+		If Catalogs.AllRefsType().ContainsType(ColumnType) Then
+			For Each Owner In Metadata.FindByType(ColumnType).Owners Do
+				OwnerType   = Type(StrReplace(Owner.FullName(), ".", "Ref."));
+				If OwnerTypes[OwnerType] = Undefined Then
 
-					If ТипВладельца = ОписаниеТиповСправочника Then
+					If OwnerType = CatalogTypeDescription Then
 
-						ЕстьТипСамогоОбъекта = True;
+						ThisObjectTypeExists = True;
 
 					EndIf;
 
-					ТипыВладельцев.Вставить(Владелец.ПолноеИмя(), Владелец.ПолноеИмя());
-					For Each КолонкаСвязиПоВладельцу Из ТаблицаКолонок Do
-						If КолонкаСвязиПоВладельцу.TypeDescription.Типы()[0] = ТипВладельца
-							И СписокВыбора.FindByValue(КолонкаСвязиПоВладельцу.ИмяРеквизита) = Undefined Then
-							// Возможно надо будет по всем типам проходить
-							СписокВыбора.Добавить(КолонкаСвязиПоВладельцу.ИмяРеквизита,
-								КолонкаСвязиПоВладельцу.ИмяРеквизита);
+					OwnerTypes.Insert(Owner.FullName(), Owner.FullName());
+					For Each LinkByOwnerColumn In ColumnTable Do
+						If LinkByOwnerColumn.TypeDescription.Types()[0] = OwnerType
+							And ChoiceList.FindByValue(LinkByOwnerColumn.AttributeName) = Undefined Then
+							ChoiceList.Add(LinkByOwnerColumn.AttributeName,
+								LinkByOwnerColumn.AttributeName);
 						EndIf;
 					EndDo;
 				EndIf;
@@ -1432,303 +1443,303 @@ Function ПолучитьСписокСвязейПоВладельцу(Опис
 		EndIf;
 	EndDo;
 
-	If Не ТипыВладельцев.Количество() = 0 Then
-		СписокВыбора.Добавить(Undefined, "< пустое значение >");
+	If Not OwnerTypes.Count() = 0 Then
+		ChoiceList.Add(Undefined, NStr("ru = '< пустое значение >'; en = '< empty value >'"));
 	EndIf;
-	For Each КлючИЗначение Из ТипыВладельцев Do
-		СписокВыбора.Добавить(КлючИЗначение.Значение, "<" + КлючИЗначение.Значение + ">");
+	For Each KeyValue In OwnerTypes Do
+		ChoiceList.Add(KeyValue.Value, "<" + KeyValue.Value + ">");
 	EndDo;
 
-	If ЕстьТипСамогоОбъекта Then
+	If ThisObjectTypeExists Then
 
-		СписокВыбора.Вставить(0, "<Создаваемый объект>", "<Создаваемый объект>");
+		ChoiceList.Insert(0, NStr("ru = '<Создаваемый объект>'; en = '<This object>'"), NStr("ru = '<Создаваемый объект>'; en = '<This object>'"));
 
 	EndIf;
 
-	Return СписокВыбора;
+	Return ChoiceList;
 
 EndFunction // ()
 
-// Возвращает список выбора, закэшированный в таблице значений для реквизита
+// Returns a choice list cached in the attribute value table.
 //
-// Параметры
-//  AttributeName  - Строка - Имя реквизита, для которого нужно
-//		получить связанный список выбора
+// Parameters:
+//  AttributeName  - String - name of an attribute to get a related choice list.
 //
-// Возвращаемое значение:
-//   СписокЗначений - список значений для выбора для этого реквизита
-//
-&AtServer
-Function ПолучитьСписокВыбораСвязиПоВладельцу(ИмяРеквизита)
-
-	ТЗ = FormAttributeToValue("СпискиВыбораСвязиПоВладельцу");
-	Стр = ТЗ.Найти(ИмяРеквизита, "AttributeName");
-
-	Return Стр.СписокВыбора;
-
-EndFunction // ПолучитьСписокВыбораСвязиПоВладельцу()
-
-// Сохраняет в кэше список выбора для реквизита
-//
-// Параметры
-//  AttributeName  - Строка - Имя реквизита, для которого нужно
-//		сохранить связанный список выбора
-//  НовыйСписокВыбора  - СписокЗначений - сохраняемый список значений
+// Return value:
+//   ValueList - list of values to choice.
 //
 &AtServer
-Procedure СохранитьСписокВыбораСвязиПоВладельцу(ИмяРеквизита, Знач НовыйСписокВыбора)
+Function GetLinkByOwnerChoiceList(AttributeName)
 
-	ТЗ = FormAttributeToValue("СпискиВыбораСвязиПоВладельцу");
-	Стр = ТЗ.Найти(ИмяРеквизита, "AttributeName");
-	Стр.СписокВыбора = НовыйСписокВыбора;
-	ЗначениеВРеквизитФормы(ТЗ, "СпискиВыбораСвязиПоВладельцу");
+	VT = FormAttributeToValue("LinkByOwnerChoiceLists");
+	Str = VT.Find(AttributeName, "AttributeName");
 
-EndProcedure // СохранитьСписокВыбораСвязиПоВладельцу()
+	Return Str.ChioceList;
+
+EndFunction // GetLinkByOwnerChoiceList()
+
+// Saves an attribute chioce list to cache.
+//
+// Parameters:
+//  AttributeName  - String - name of an attribute to save a related choice list.
+//  NewChoiceList  - ValueList - list of values to save.
+//
+&AtServer
+Procedure SaveLinkByOwnerChoiceList(AttributeName, Val NewChoiceList)
+
+	VT = FormAttributeToValue("LinkByOwnerChoiceLists");
+	Str = VT.Find(AttributeName, "AttributeName");
+	Str.ChoiceList = NewChoiceList;
+	ValueToFormAttribute(VT, "LinkByOwnerChoiceLists");
+
+EndProcedure // SaveLinkByOwnerChoiceList()
 
 &AtServer
-Procedure КонтрольЗаполненияСервер()
+Procedure FillControlServer()
 
 	GenerateColumnsStructure();
-	КоличествоЭлементов = SpreadsheetDocument.ВысотаТаблицы - Object.SpreadsheetDocumentFirstDataRow + 1;
+	ItemCount = SpreadsheetDocument.TableHeight - Object.SpreadsheetDocumentFirstDataRow + 1;
 
-	КоличествоОшибок = 0;
-	Для К = 0 По КоличествоЭлементов - 1 Do
-		//Состояние("Выполняется контроль заполнения строки № " + (К + 1));
-		RowFillControl(SpreadsheetDocument, К + Object.SpreadsheetDocumentFirstDataRow, ,
-			КоличествоОшибок);
+	ErrorCount = 0;
+	For K = 0 To ItemCount - 1 Do
+		//Status(UT_StringFunctionsClientServer.SubstituteParametersToString(
+		//NStr("ru = 'Выполняется контроль заполнения строки № %1'; en = 'Row no. %1 fill control is in progress.'"), (К + 1)));
+		RowFillControl(SpreadsheetDocument, K + Object.SpreadsheetDocumentFirstDataRow, ,
+			ErrorCount);
 	EndDo;
 
-	Сообщить("Контроль заполнения завершен. Проверено строк: " + КоличествоЭлементов);
-	If КоличествоОшибок Then
-		Сообщить("Выявлено ячеек, содержащих ошибки/неоднозначное представление: " + КоличествоОшибок);
+	Message(UT_StringFunctionsClientServer.SubstituteParametersToString(
+		NStr("ru = 'Контроль заполнения завершен. Проверено строк: %1'; en = 'Fill control completed. %1 rows was checked.'"), ItemCount));
+	If ErrorCount Then
+		Message(UT_StringFunctionsClientServer.SubstituteParametersToString(
+			NStr("ru = 'Выявлено ячеек, содержащих ошибки/неоднозначное представление: %1'; en = '%1 cells with errors/ambiguous presentation was found.'"), ErrorCount));
 	Else
-		Сообщить("Ячеек, содержащих ошибки не выявлено");
+		Message(NStr("ru = 'Ячеек, содержащих ошибки не выявлено'; en = 'No error cell was found.'"));
 	EndIf;
 
-EndProcedure // КонтрольЗаполненияСервер()
+EndProcedure // FillControlServer()
 
 ////////////////////////////////////////////////////////////////////////////////
 //
 
-// Заполняет настройки колонок по умолчанию или по переданным настройкам
+// Fills column settings by default or by passed settings.
 //
-// Параметры:
-//  Настройки - табличный документ или Undefined
+// Parameters:
+//  Settings - SpreadsheetDocument or Undefined.
 //
 &AtServer
-Procedure ЗаполнитьНастройкиКолонок(Настройки)
+Procedure FillColumnSettings(Settings)
 
-	ПередЗаписьюОбъекта   = "";
-	ПриЗаписиОбъекта      = "";
-	ПослеДобавленияСтроки = "";
+	BeforeWriteObject   = "";
+	OnWriteObject      = "";
+	AfterAddRow = "";
 
-	If ТипЗнч(Настройки) = Тип("SpreadsheetDocument") Then
+	If TypeOf(Settings) = Type("SpreadsheetDocument") Then
 
-		ВерсияОбработки = СокрЛП(Настройки.Область("R1C5").Текст);
-		If ВерсияОбработки = "1.2" Then
-			ТекущаяСтрока = 11; //Строка с которой начинается таблица реквизитов
-		ElsIf ВерсияОбработки = "1.3" Then
-			ТекущаяСтрока = 11; //Строка с которой начинается таблица реквизитов			
+		DataProcessorVersion = TrimAll(Settings.Area("R1C5").Text);
+		If DataProcessorVersion = "1.2" Then
+			CurrentRow = 11; //Attribute table start row
+		ElsIf DataProcessorVersion = "1.3" Then
+			CurrentRow = 11; //Attribute table start row			
 		Else
-			ВерсияОбработки = "1.1";
-			ТекущаяСтрока = 9; //Строка с которой начинается таблица реквизитов
+			DataProcessorVersion = "1.1";
+			CurrentRow = 9; //Attribute table start row
 		EndIf;
 		Try
 
-			ТекстВосстановленногоРежимаЗагрузки = СокрЛП(Настройки.Область(?(ВерсияОбработки = "1.1", "R1", "R2")
-				+ "C5").Текст);
-			If ТекстВосстановленногоРежимаЗагрузки = "в справочник" Или ТекстВосстановленногоРежимаЗагрузки = "" Then
-				ВосстановленныйРежимЗагрузки = 0;
-			ElsIf ТекстВосстановленногоРежимаЗагрузки = "в табличную часть" Или ТекстВосстановленногоРежимаЗагрузки
-				= "Х" Then
-				ВосстановленныйРежимЗагрузки = 1;
-			ElsIf ТекстВосстановленногоРежимаЗагрузки = "в регистр сведений" Then
-				ВосстановленныйРежимЗагрузки = 2;
+			RestoredImportModeText = TrimAll(Settings.Area(?(DataProcessorVersion = "1.1", "R1", "R2")
+				+ "C5").Text);
+			If RestoredImportModeText = NStr("ru = 'в справочник'; en = 'to catalog'") Or RestoredImportModeText = "" Then
+				RestoredImportMode = 0;
+			ElsIf RestoredImportModeText = NStr("ru = 'в табличную часть'; en = 'to tabular section'") Or RestoredImportModeText = "Х" Then
+				RestoredImportMode = 1;
+			ElsIf RestoredImportModeText = NStr("ru = 'в регистр сведений'; en = 'to information register'") Then
+				RestoredImportMode = 2;
 			EndIf;
 
-			МетаданныеОбъекта = Метаданные.НайтиПоПолномуИмени(Настройки.Область(?(ВерсияОбработки = "1.1", "R2", "R3")
-				+ "C5").Текст);
-			If МетаданныеОбъекта = Undefined Then
-				ВызватьExcept "Неправильный формат файла";
+			ObjectMetadata = Metadata.FindByFullName(Settings.Area(?(DataProcessorVersion = "1.1", "R2", "R3")
+				+ "C5").Text);
+			If ObjectMetadata = Undefined Then
+				Raise NStr("ru = 'Неправильный формат файла'; en = 'Invalid file format'");
 			EndIf;
 
-			If ВосстановленныйРежимЗагрузки = 0 Then
-				ВосстановленныйСсылкаИсточника = Новый (СтрЗаменить(МетаданныеОбъекта.ПолноеИмя(), ".", "Ссылка."));
-			ElsIf ВосстановленныйРежимЗагрузки = 1 Then
-				ВосстановленныйСсылкаИсточника = Новый (СтрЗаменить(МетаданныеОбъекта.Родитель().ПолноеИмя(), ".",
-					"Ссылка."));
+			If RestoredImportMode = 0 Then
+				RestoredSourceRef = New (StrReplace(ObjectMetadata.FullName(), ".", "Ref."));
+			ElsIf RestoredImportMode = 1 Then
+				RestoredSourceRef = New (StrReplace(ObjectMetadata.Parent().FullName(), ".",
+					"Ref."));
 			Else
-				ВосстановленныйСсылкаИсточника = Undefined;
+				RestoredSourceRef = Undefined;
 			EndIf;
 			
-			//SourceRef = ПустаяСсылка();
-			СтруктураУмолчаний = Новый Структура;
-			ТекущаяСтрокаОбласти = "R" + Формат(ТекущаяСтрока, "ЧГ=");
-			ИмяРеквизита = Настройки.Область(ТекущаяСтрокаОбласти + "C2").Текст;
-			Пока Не IsBlankString(ИмяРеквизита) Do
-				СтруктураУмолчанияРеквизита = Новый Структура;
-				СтруктураУмолчанияРеквизита.Вставить("AttributeName", ИмяРеквизита);
-				СтруктураУмолчанияРеквизита.Вставить("Check", Не IsBlankString(Настройки.Область(ТекущаяСтрокаОбласти
-					+ "C1").Текст));
-				СтруктураУмолчанияРеквизита.Вставить("SearchField", Не IsBlankString(Настройки.Область(
-					ТекущаяСтрокаОбласти + "C3").Текст));
+			//SourceRef = EmptyRef();
+			DefaultsStructure = New Structure;
+			CurrentAreaRow = "R" + Format(CurrentRow, "NG=");
+			AttributeName = Settings.Area(CurrentAreaRow + "C2").Text;
+			While Not IsBlankString(AttributeName) Do
+				AttributeDefaultStructure = New Structure;
+				AttributeDefaultStructure.Insert("AttributeName", AttributeName);
+				AttributeDefaultStructure.Insert("Check", Not IsBlankString(Settings.Area(CurrentAreaRow
+					+ "C1").Text));
+				AttributeDefaultStructure.Insert("SearchField", Not IsBlankString(Settings.Area(
+					CurrentAreaRow + "C3").Text));
 
-				Типы = Новый Массив;
-				ОписаниеТиповСтрокой = Настройки.Область(ТекущаяСтрокаОбласти + "C4").Текст;
-				Для к = 1 По СтрЧислоСтрок(ОписаниеТиповСтрокой) Do
+				Types = New Array;
+				TypeDescriptionString = Settings.Area(CurrentAreaRow + "C4").Text;
+				For k = 1 To StrLineCount(TypeDescriptionString) Do
 
-					кс = Undefined;
-					кч = Undefined;
-					кд = Undefined;
-					МассивЧастейТипа = mSplitStringIntoSubstringsArray(НРег(СокрЛП(СтрПолучитьСтроку(
-						ОписаниеТиповСтрокой, к))), ",");
-					If МассивЧастейТипа.Количество() = 0 Then
-						Продолжить;
-					ElsIf Найти(МассивЧастейТипа[0], ".") Then
-						Тип = Тип(СтрЗаменить(МассивЧастейТипа[0], ".", "Ссылка."));
-					ElsIf МассивЧастейТипа[0] = "строка" Then
-						Тип = Тип("Строка");
-						If МассивЧастейТипа.Количество() = 2 Then
-							кс = Новый КвалификаторыСтроки(mAdjustToNumber(МассивЧастейТипа[1]),
-								ДопустимаяДлина.Переменная);
-						ElsIf МассивЧастейТипа.Количество() = 3 Then
-							кс = Новый КвалификаторыСтроки(mAdjustToNumber(МассивЧастейТипа[1]),
-								ДопустимаяДлина.Фиксированная);
+					sq = Undefined;
+					nq = Undefined;
+					dq = Undefined;
+					TypeFractionsArray = mSplitStringIntoSubstringsArray(Lower(TrimAll(StrGetLine(
+						TypeDescriptionString, k))), ",");
+					If TypeFractionsArray.Count() = 0 Then
+						Continue;
+					ElsIf Find(TypeFractionsArray[0], ".") Then
+						Type = Type(StrReplace(TypeFractionsArray[0], ".", "Ref."));
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'строка'; en = 'string'") Then
+						Type = Type("String");
+						If TypeFractionsArray.Count() = 2 Then
+							sq = New StringQualifiers(mAdjustToNumber(TypeFractionsArray[1]),
+								AllowedLength.Variable);
+						ElsIf TypeFractionsArray.Count() = 3 Then
+							sq = New StringQualifiers(mAdjustToNumber(TypeFractionsArray[1]),
+								AllowedLength.Fixed);
 						Else
-							кс = Новый КвалификаторыСтроки;
+							sq = New StringQualifiers;
 						EndIf;
-					ElsIf МассивЧастейТипа[0] = "число" Then
-						Тип = Тип("Число");
-						кч = Новый КвалификаторыЧисла(mAdjustToNumber(МассивЧастейТипа[1]), mAdjustToNumber(
-							МассивЧастейТипа[2]), ?(МассивЧастейТипа.Количество() = 4, ДопустимыйЗнак.Неотрицательный,
-							ДопустимыйЗнак.Любой));
-					ElsIf МассивЧастейТипа[0] = "булево" Then
-						Тип = Тип("Булево");
-					ElsIf МассивЧастейТипа[0] = "дата" Then
-						Тип = Тип("Дата");
-						кд = Новый КвалификаторыДаты(ЧастиДаты.Дата);
-					ElsIf МассивЧастейТипа[0] = "время" Then
-						Тип = Тип("Дата");
-						кд = Новый КвалификаторыДаты(ЧастиДаты.Время);
-					ElsIf МассивЧастейТипа[0] = "дата и время" Then
-						Тип = Тип("Дата");
-						кд = Новый КвалификаторыДаты(ЧастиДаты.ДатаВремя);
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'число'; en = 'number'") Then
+						Type = Type("Number");
+						nq = New NumberQualifiers(mAdjustToNumber(TypeFractionsArray[1]), mAdjustToNumber(
+							TypeFractionsArray[2]), ?(TypeFractionsArray.Count() = 4, AllowedSign.Nonnegative,
+							AllowedSign.Any));
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'булево'; en = 'boolean'") Then
+						Type = Type("Boolean");
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'дата'; en = 'date'") Then
+						Type = Type("Date");
+						dq = New DateQualifiers(DateFractions.Date);
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'время'; en = 'time'") Then
+						Type = Type("Date");
+						dq = New DateQualifiers(DateFractions.Time);
+					ElsIf TypeFractionsArray[0] = NStr("ru = 'дата и время'; en = 'date and time'") Then
+						Type = Type("Date");
+						dq = New DateQualifiers(DateFractions.DateTime);
 					Else
-						Продолжить;
+						Continue;
 					EndIf;
-					Типы.Добавить(Тип);
+					Types.Add(Type);
 				EndDo;
-				ОписаниеТипов = Новый ОписаниеТипов(Типы, кч, кс, кд);
-				СтруктураУмолчанияРеквизита.Вставить("TypeDescription", ОписаниеТипов);
+				TypeDescription = New TypeDescription(Types, nq, sq, dq);
+				AttributeDefaultStructure.Insert("TypeDescription", TypeDescription);
 
-				РежимЗагрузкиРеквизита = Настройки.Область(ТекущаяСтрокаОбласти + "C5").Текст;
+				AttributeImportMode = Settings.Area(CurrentAreaRow + "C5").Text;
 
-				СтруктураУмолчанияРеквизита.Вставить("ImportMode", РежимЗагрузкиРеквизита);
+				AttributeDefaultStructure.Insert("ImportMode", AttributeImportMode);
 
-				ЗначениеПоУмолчанию = Настройки.Область(ТекущаяСтрокаОбласти + "C6").Текст;
-				СтруктураУмолчанияРеквизита.Вставить("DefaultValue", ?(IsBlankString(ЗначениеПоУмолчанию),
-					ОписаниеТипов.ПривестиЗначение(Undefined), ЗначениеИзСтрокиВнутр(ЗначениеПоУмолчанию)));
+				DefaultValue = Settings.Area(CurrentAreaRow + "C6").Text;
+				AttributeDefaultStructure.Insert("DefaultValue", ?(IsBlankString(DefaultValue),
+					TypeDescription.AdjustValue(Undefined), ValueFromStringInternal(DefaultValue)));
 
-				If РежимЗагрузкиРеквизита = "Вычислять" Then
-					СтруктураУмолчанияРеквизита.Вставить("Expression", Настройки.Область(ТекущаяСтрокаОбласти
-						+ "C7").Текст);
+				If AttributeImportMode = "Evaluate" Then
+					AttributeDefaultStructure.Insert("Expression", Settings.Area(CurrentAreaRow
+						+ "C7").Text);
 				Else
-					СтруктураУмолчанияРеквизита.Вставить("SearchBy", Настройки.Область(ТекущаяСтрокаОбласти
-						+ "C7").Текст);
+					AttributeDefaultStructure.Insert("SearchBy", Settings.Area(CurrentAreaRow
+						+ "C7").Text);
 
-					СвязьПоВладельцу   = Настройки.Область(ТекущаяСтрокаОбласти + "C8").Текст;
-					СтруктураУмолчанияРеквизита.Вставить("LinkByOwner", ?(Лев(СвязьПоВладельцу, 1) = "{",
-						ЗначениеИзСтрокиВнутр(СвязьПоВладельцу), СвязьПоВладельцу));
+					LinkByOwner   = Settings.Area(CurrentAreaRow + "C8").Text;
+					AttributeDefaultStructure.Insert("LinkByOwner", ?(Left(LinkByOwner, 1) = "{",
+						ValueFromStringInternal(LinkByOwner), LinkByOwner));
 
-					СвязьПоТипу        = Настройки.Область(ТекущаяСтрокаОбласти + "C9").Текст;
-					СтруктураУмолчанияРеквизита.Вставить("LinkByType", ?(Лев(СвязьПоТипу, 1) = "{",
-						ЗначениеИзСтрокиВнутр(СвязьПоТипу), СвязьПоТипу));
+					LinkByType        = Settings.Area(CurrentAreaRow + "C9").Text;
+					AttributeDefaultStructure.Insert("LinkByType", ?(Left(LinkByType, 1) = "{",
+						ValueFromStringInternal(LinkByType), LinkByType));
 
-					СтруктураУмолчанияРеквизита.Вставить("LinkByTypeItem", mAdjustToNumber(Настройки.Область(
-						ТекущаяСтрокаОбласти + "C10").Текст));
+					AttributeDefaultStructure.Insert("LinkByTypeItem", mAdjustToNumber(Settings.Area(
+						CurrentAreaRow + "C10").Text));
 				EndIf;
-				If ВерсияОбработки = "1.3" Then
-					СтруктураУмолчанияРеквизита.Вставить("ColumnNumber", mAdjustToNumber(Настройки.Область(
-						ТекущаяСтрокаОбласти + "C11").Текст));
+				If DataProcessorVersion = "1.3" Then
+					AttributeDefaultStructure.Insert("ColumnNumber", mAdjustToNumber(Settings.Area(
+						CurrentAreaRow + "C11").Text));
 				EndIf;
 
-				СтруктураУмолчаний.Вставить(ИмяРеквизита, СтруктураУмолчанияРеквизита);
-				ТекущаяСтрока = ТекущаяСтрока + 1;
-				ТекущаяСтрокаОбласти = "R" + Формат(ТекущаяСтрока, "ЧГ=");
-				ИмяРеквизита = Настройки.Область(ТекущаяСтрокаОбласти + "C2").Текст;
+				DefaultsStructure.Insert(AttributeName, AttributeDefaultStructure);
+				CurrentRow = CurrentRow + 1;
+				CurrentAreaRow = "R" + Format(CurrentRow, "NG=");
+				AttributeName = Settings.Area(CurrentAreaRow + "C2").Text;
 
 			EndDo;
 
 		Except
-			mErrorMessage(ОписаниеОшибки());
+			mErrorMessage(ErrorDescription());
 		EndTry;
 		
-		//МетаданныеИсточника = GetSourceMetadata();
-		//If МетаданныеИсточника = Undefined Then
+		//SourceMetadata = GetSourceMetadata();
+		//If SourceMetadata = Undefined Then
 		//	Return;
 		//EndIf;
 
-		Object.ImportMode   = ВосстановленныйРежимЗагрузки;
-		If ВосстановленныйРежимЗагрузки = 0 Then
-			Object.CatalogObjectType = МетаданныеОбъекта.Имя;
-		ElsIf ВосстановленныйРежимЗагрузки = 1 Then
-			//Объект.SourceRef = ВосстановленныйСсылкаИсточника;
-			Object.SourceTabularSection = ?(ВосстановленныйРежимЗагрузки, МетаданныеОбъекта.Имя, Undefined);
-		ElsIf ВосстановленныйРежимЗагрузки = 2 Then
-			Object.RegisterTypeName = МетаданныеОбъекта.Имя;
+		Object.ImportMode   = RestoredImportMode;
+		If RestoredImportMode = 0 Then
+			Object.CatalogObjectType = ObjectMetadata.Name;
+		ElsIf RestoredImportMode = 1 Then
+			//Object.SourceRef = RestoredSourceRef;
+			Object.SourceTabularSection = ?(RestoredImportMode, ObjectMetadata.Name, Undefined);
+		ElsIf RestoredImportMode = 2 Then
+			Object.RegisterTypeName = ObjectMetadata.Name;
 		EndIf;
-		Object.DontCreateNewItems                 = Не IsBlankString(Настройки.Область(?(ВерсияОбработки = "1.1",
-			"R3", "R4") + "C5").Текст);
-		Object.ReplaceExistingRecords = ?(ВерсияОбработки = "1.1", False, Не IsBlankString(Настройки.Область(
-			"R5C5").Текст));
-		Object.ManualSpreadsheetDocumentColumnsNumeration = Не IsBlankString(Настройки.Область(?(ВерсияОбработки = "1.1",
-			"R4", "R6") + "C5").Текст);
-		Object.SpreadsheetDocumentFirstDataRow     = mAdjustToNumber(Настройки.Область(?(ВерсияОбработки = "1.1",
-			"R5", "R7") + "C5").Текст);
+		Object.DontCreateNewItems                 = Not IsBlankString(Settings.Area(?(DataProcessorVersion = "1.1",
+			"R3", "R4") + "C5").Text);
+		Object.ReplaceExistingRecords = ?(DataProcessorVersion = "1.1", False, Not IsBlankString(Settings.Area(
+			"R5C5").Text));
+		Object.ManualSpreadsheetDocumentColumnsNumeration = Not IsBlankString(Settings.Area(?(DataProcessorVersion = "1.1",
+			"R4", "R6") + "C5").Text);
+		Object.SpreadsheetDocumentFirstDataRow     = mAdjustToNumber(Settings.Area(?(DataProcessorVersion = "1.1",
+			"R5", "R7") + "C5").Text);
 
-		Object.BeforeWriteObject = Настройки.Область("R" + Формат(ТекущаяСтрока + 2, "ЧГ=") + "C3").Текст;
-		Object.OnWriteObject    = Настройки.Область("R" + Формат(ТекущаяСтрока + 3, "ЧГ=") + "C3").Текст;
+		Object.BeforeWriteObject = Settings.Area("R" + Format(CurrentRow + 2, "NG=") + "C3").Text;
+		Object.OnWriteObject    = Settings.Area("R" + Format(CurrentRow + 3, "NG=") + "C3").Text;
 
 		If Object.ImportMode Then
-			Object.AfterAddRow = Настройки.Область("R" + Формат(ТекущаяСтрока + 4, "ЧГ=") + "C3").Текст;
+			Object.AfterAddRow = Settings.Area("R" + Format(CurrentRow + 4, "NG=") + "C3").Text;
 		EndIf;
 
-		ТекущаяСтрока = ТекущаяСтрока + 1;
+		CurrentRow = CurrentRow + 1;
 
 	EndIf;
-	Оформление = Undefined;
-	//МетаданныеИсточника = GetSourceMetadata();
+	Appearance = Undefined;
+	//SourceMetadata = GetSourceMetadata();
 
-	ТЗ = FormAttributeToValue("ImportedAttributesTable");
+	VT = FormAttributeToValue("ImportedAttributesTable");
 
-	ТЗ.Очистить();
+	VT.Clear();
 
 	If Object.ImportMode = 0 Then
-		ЗаполнитьНастройкиКолонокСправочника(ТЗ);
+		FillCatalogColumnSettings(VT);
 	ElsIf Object.ImportMode = 1 Then
-		ЗаполнитьНастройкиКолонокТабличнойЧасти(ТЗ);
+		FillTabularSectionColumnSettings(VT);
 	ElsIf Object.ImportMode = 2 Then
-		ЗаполнитьНастройкиКолонокРегистраСведений(ТЗ);
+		FillInformationRegisterColumnSettings(VT);
 	EndIf;
 
-	If Не СтруктураУмолчаний = Undefined Then
+	If Not DefaultsStructure = Undefined Then
 
-		НомерКолонкиОформления = 0;
-		НомерКолонки = 1;
-		For Each КлючИЗначение Из СтруктураУмолчаний Do
-			Колонка = КлючИЗначение.Значение;
-			ЗагружаемыйРеквизит = ТЗ.Найти(Колонка.ИмяРеквизита, "AttributeName");
-			If Не ЗагружаемыйРеквизит = Undefined Then
-				Индекс = ТЗ.Индекс(ЗагружаемыйРеквизит);
-				If Индекс >= НомерКолонкиОформления Then
-					ЗаполнитьЗначенияСвойств(ЗагружаемыйРеквизит, Колонка);
+		AppearanceColumnNumber = 0;
+		ColumnNumber = 1;
+		For Each KeyValue In DefaultsStructure Do
+			Column = KeyValue.Value;
+			ImportedAttribute = VT.Find(Column.AttributeName, "AttributeName");
+			If Not ImportedAttribute = Undefined Then
+				Index = VT.Index(ImportedAttribute);
+				If Index >= AppearanceColumnNumber Then
+					FillPropertyValues(ImportedAttribute, Column);
 
-					ТЗ.Сдвинуть(ЗагружаемыйРеквизит, НомерКолонкиОформления - Индекс);
-					If Колонка.Check И Не ВерсияОбработки = "1.3" Then
-						ЗагружаемыйРеквизит.ColumnNumber = НомерКолонки;
-						НомерКолонки = НомерКолонки + 1;
+					VT.Move(ImportedAttribute, AppearanceColumnNumber - Index);
+					If Column.Check And Not DataProcessorVersion = "1.3" Then
+						ImportedAttribute.ColumnNumber = ColumnNumber;
+						ColumnNumber = ColumnNumber + 1;
 					EndIf;
-					НомерКолонкиОформления = НомерКолонкиОформления + 1;
+					AppearanceColumnNumber = AppearanceColumnNumber + 1;
 
 				EndIf;
 			EndIf;
@@ -1736,35 +1747,35 @@ Procedure ЗаполнитьНастройкиКолонок(Настройки)
 		EndDo;
 
 	Else
-		НомерКолонки = 1;
-		For Each ЗагружаемыйРеквизит Из ТЗ Do
+		ColumnNumber = 1;
+		For Each ImportedAttribute In VT Do
 
-			ЗагружаемыйРеквизит.Check      = True;
-			ЗагружаемыйРеквизит.ColumnNumber = НомерКолонки;
-			НомерКолонки = НомерКолонки + 1;
+			ImportedAttribute.Check      = True;
+			ImportedAttribute.ColumnNumber = ColumnNumber;
+			ColumnNumber = ColumnNumber + 1;
 
 		EndDo;
 
 	EndIf;
 
-	For Each ЗагружаемыйРеквизит Из ТЗ Do
-		If ЗагружаемыйРеквизит.ImportMode = "Вычислять" Then
-			ЗагружаемыйРеквизит.AdditionalConditionsPresentation = ЗагружаемыйРеквизит.Expression;
+	For Each ImportedAttribute In VT Do
+		If ImportedAttribute.ImportMode = "Evaluate" Then
+			ImportedAttribute.AdditionalConditionsPresentation = ImportedAttribute.Expression;
 		Else
-			ЗагружаемыйРеквизит.AdditionalConditionsPresentation = ?(IsBlankString(ЗагружаемыйРеквизит.ИскатьПо), "", "Искать по "
-				+ ЗагружаемыйРеквизит.SearchBy) + ?(IsBlankString(ЗагружаемыйРеквизит.СвязьПоВладельцу), "",
-				" по владельцу " + ЗагружаемыйРеквизит.LinkByOwner);
+			ImportedAttribute.AdditionalConditionsPresentation = ?(IsBlankString(ImportedAttribute.SearchBy), "", NStr("ru = 'Искать по '; en = 'Search by '")
+				+ ImportedAttribute.SearchBy) + ?(IsBlankString(ImportedAttribute.LinkByOwner), "",
+				NStr("ru = ' по владельцу '; en = ' by owner '") + ImportedAttribute.LinkByOwner);
 		EndIf;
 	EndDo;
 
-	ЗначениеВРеквизитФормы(ТЗ, "ImportedAttributesTable");
+	ValueToFormAttribute(VT, "ImportedAttributesTable");
 
 EndProcedure // ()
 
 // Заполняет настройки колонок по умолчанию для табличной части
 //
 &AtServer
-Procedure ЗаполнитьНастройкиКолонокТабличнойЧасти(ТЗ)
+Procedure FillTabularSectionColumnSettings(ТЗ)
 
 	МетаданныеИсточника = GetSourceMetadata();
 
@@ -1781,13 +1792,13 @@ Procedure ЗаполнитьНастройкиКолонокТабличнойЧ
 
 	For Each ЗагружаемыйРеквизит Из ТЗ Do
 
-		СписокВыбора = ПолучитьСписокИменПредставлений(ЗагружаемыйРеквизит.ОписаниеТипов);
+		СписокВыбора = GetNamePresentationList(ЗагружаемыйРеквизит.ОписаниеТипов);
 		ЗагружаемыйРеквизит.SearchBy = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоВладельцу(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
+		СписокВыбора = GetLinkByOwnerList(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
 		ЗагружаемыйРеквизит.LinkByOwner = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоТипу(ЗагружаемыйРеквизит, ТЗ);
+		СписокВыбора = GetLinkByTypeList(ЗагружаемыйРеквизит, ТЗ);
 		If СписокВыбора.Количество() = 0 Then
 			ЗагружаемыйРеквизит.LinkByType = "";
 			ЗагружаемыйРеквизит.LinkByTypeItem = 0;
@@ -1819,7 +1830,7 @@ EndProcedure // ()
 // Заполняет настройки колонок по умолчанию для справочника
 //
 &AtServer
-Procedure ЗаполнитьНастройкиКолонокСправочника(ТЗ)
+Procedure FillCatalogColumnSettings(ТЗ)
 
 	МетаданныеИсточника = GetSourceMetadata();
 
@@ -1906,13 +1917,13 @@ Procedure ЗаполнитьНастройкиКолонокСправочник
 
 	For Each ЗагружаемыйРеквизит Из ТЗ Do
 
-		СписокВыбора = ПолучитьСписокИменПредставлений(ЗагружаемыйРеквизит.ОписаниеТипов);
+		СписокВыбора = GetNamePresentationList(ЗагружаемыйРеквизит.ОписаниеТипов);
 		ЗагружаемыйРеквизит.SearchBy = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоВладельцу(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
+		СписокВыбора = GetLinkByOwnerList(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
 		ЗагружаемыйРеквизит.LinkByOwner = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоТипу(ЗагружаемыйРеквизит, ТЗ);
+		СписокВыбора = GetLinkByTypeList(ЗагружаемыйРеквизит, ТЗ);
 		If СписокВыбора.Количество() = 0 Then
 			ЗагружаемыйРеквизит.LinkByType = "";
 			ЗагружаемыйРеквизит.LinkByTypeItem = 0;
@@ -1942,7 +1953,7 @@ EndProcedure // ()
 // Заполняет настройки колонок по умолчанию для регистра сведений
 //
 &AtServer
-Procedure ЗаполнитьНастройкиКолонокРегистраСведений(ТЗ)
+Procedure FillInformationRegisterColumnSettings(ТЗ)
 
 	МетаданныеИсточника = GetSourceMetadata();
 
@@ -1988,13 +1999,13 @@ Procedure ЗаполнитьНастройкиКолонокРегистраСв
 
 	For Each ЗагружаемыйРеквизит Из ТЗ Do
 
-		СписокВыбора = ПолучитьСписокИменПредставлений(ЗагружаемыйРеквизит.ОписаниеТипов);
+		СписокВыбора = GetNamePresentationList(ЗагружаемыйРеквизит.ОписаниеТипов);
 		ЗагружаемыйРеквизит.SearchBy = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоВладельцу(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
+		СписокВыбора = GetLinkByOwnerList(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
 		ЗагружаемыйРеквизит.LinkByOwner = ?(СписокВыбора.Количество() = 0, "", СписокВыбора[0].Значение);
 
-		СписокВыбора = ПолучитьСписокСвязейПоТипу(ЗагружаемыйРеквизит, ТЗ);
+		СписокВыбора = GetLinkByTypeList(ЗагружаемыйРеквизит, ТЗ);
 		If СписокВыбора.Количество() = 0 Then
 			ЗагружаемыйРеквизит.LinkByType = "";
 			ЗагружаемыйРеквизит.LinkByTypeItem = 0;
@@ -2152,7 +2163,7 @@ Procedure СкопироватьНастройки(Знач Источник, П
 
 	For Each Стр Из Источник Do
 		НовСтр = Приемник.Добавить();
-		ЗаполнитьЗначенияСвойств(НовСтр, Стр);
+		FillPropertyValues(НовСтр, Стр);
 	EndDo;
 
 EndProcedure
@@ -2541,7 +2552,7 @@ Procedure УстановитьИсточник(СписокНастроек = Un
 		//	ВосстановитьНастройкиИзСписка(Настройка);
 		//Else
 		//	ВосстановитьНастройкиИзСписка(Undefined);
-		ЗаполнитьНастройкиКолонок(Undefined);
+		FillColumnSettings(Undefined);
 		//EndIf;
 	EndIf;
 
@@ -2555,7 +2566,7 @@ Procedure УстановитьИсточник(СписокНастроек = Un
 
 		СтрокаСписка = СпискиВыбораСвязиПоВладельцу.Добавить();
 		СтрокаСписка.AttributeName = ЗагружаемыйРеквизит.AttributeName;
-		СтрокаСписка.СписокВыбора = ПолучитьСписокСвязейПоВладельцу(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
+		СтрокаСписка.СписокВыбора = GetLinkByOwnerList(ЗагружаемыйРеквизит.ОписаниеТипов, ТЗ);
 	EndDo;
 
 EndProcedure
@@ -2680,7 +2691,7 @@ EndProcedure
 
 &НаКлиенте
 Procedure FillControlCommand(Команда)
-	КонтрольЗаполненияСервер();
+	FillControlServer();
 EndProcedure
 
 &НаКлиенте
@@ -2763,7 +2774,7 @@ Procedure КомандаВосстановитьЗначенияИзФайлаЗ
 	ДиалогВыбораФайла = ДополнительныеПараметры.ДиалогВыбораФайла;
 	If (ВыбранныеФайлы <> Undefined) Then
 		Настройки = мПрочитатьНастройкиИзФайла(ДиалогВыбораФайла.ПолноеИмяФайла);
-		ЗаполнитьНастройкиКолонок(Настройки);
+		FillColumnSettings(Настройки);
 		SetTabularSectionsList();
 		ОбновитьДанныеТабличногоДокумента(Новый ОписаниеОповещения("КомандаВосстановитьЗначенияИзФайлаЗавершение",
 			ЭтаФорма), True);
@@ -2824,7 +2835,7 @@ Procedure RestoreValuesCommand(Команда)
 	ФормаВыбораНастройки.СписокНастроек = СписокСохраненныхНастроек;
 	ТекущиеДанные = ФормаВыбораНастройки.Открыть();
 	If Не ТекущиеДанные = Undefined Then
-		ЗаполнитьНастройкиКолонок(ТекущиеДанные.Значение);
+		FillColumnSettings(ТекущиеДанные.Значение);
 	EndIf;
 
 	mSaveValue(DataProcessorID(), ФормаВыбораНастройки.СписокНастроек);
@@ -2861,7 +2872,7 @@ EndProcedure
 
 &НаКлиенте
 Procedure RereadCommand(Команда)
-	ЗаполнитьНастройкиКолонок(Undefined);
+	FillColumnSettings(Undefined);
 EndProcedure
 
 &НаКлиенте
@@ -3089,7 +3100,7 @@ Procedure ImportedAttributesTableAdditionalConditionsPresentationStartChoice(Э�
 		//EndIf;
 	Else
 		ДоступныеТипы	= ТекДанные.TypeDescription;
-		СписокВыбораВладельца	= ПолучитьСписокВыбораСвязиПоВладельцу(ТекДанные.AttributeName);
+		СписокВыбораВладельца	= GetLinkByOwnerChoiceList(ТекДанные.AttributeName);
 		ФормаРедактированияСвязи = ПолучитьФорму(DataProcessorID() + ".Форма.ФормаРедактированияСвязи", ,
 			ЭтаФорма);
 		ФормаРедактированияСвязи.ИспользуемыеТипы = ДоступныеТипы;
@@ -3097,7 +3108,7 @@ Procedure ImportedAttributesTableAdditionalConditionsPresentationStartChoice(Э�
 		ФормаРедактированияСвязи.ИспользоватьВладельца = (СписокВыбораВладельца.Количество() > 0);
 		ФормаРедактированияСвязи.LinkByOwner = ТекДанные.LinkByOwner;
 
-		СписокВыбораИскатьПо = ПолучитьСписокИменПредставлений(ТекДанные.ОписаниеТипов);
+		СписокВыбораИскатьПо = GetNamePresentationList(ТекДанные.ОписаниеТипов);
 		Сп = ФормаРедактированияСвязи.Элементы.SearchBy.СписокВыбора;
 		Сп.Очистить();
 		For Each ЭлСписка Из СписокВыбораИскатьПо Do
