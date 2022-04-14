@@ -878,7 +878,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="5890c36f-d67a-4405-bbd3-2eb0cfbd5c1b">
-    <name>ПодключениеКВнешнейБазеАУстройствоХраненияФайла</name>
+    <name>ConnectingToExternalBaseADeviceStorageFile</name>
+    <synonym>
+      <key>en</key>
+      <value>The file is located at</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Файл находится на</value>
@@ -894,7 +898,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="32f1e50e-8561-4b83-8934-5608fba89e7c">
-    <name>ПодключениеКВнешнейБазеБУстройствоХраненияФайла</name>
+    <name>ConnectingToExternalBaseBDeviceStorageFile</name>
+    <synonym>
+      <key>en</key>
+      <value>The file is located at</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Файл находится на</value>
@@ -910,7 +918,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9b866b27-744b-4f68-ba25-52a65bd9523b">
-    <name>ПодключениеКВнешнейБазеАНомерТаблицыВФайле</name>
+    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Table number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Номер таблицы</value>
@@ -926,7 +938,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c5df2846-b28b-45a7-958b-ed382319459c">
-    <name>ПодключениеКВнешнейБазеБНомерТаблицыВФайле</name>
+    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Table number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Номер таблицы</value>
@@ -942,7 +958,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b52c9632-035d-4a38-a9ca-57f506675c4c">
-    <name>НомерПервойСтрокиФайлаА</name>
+    <name>NumberFirstRowFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>№ 1st row</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ 1-й строки</value>
@@ -958,7 +978,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="67b18a4d-70df-4c1b-ab28-e536e8a5a49b">
-    <name>НомерПервойСтрокиФайлаБ</name>
+    <name>NumberFirstRowFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>№ 1st row</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ 1-й строки</value>
@@ -974,7 +998,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="ea6a5c0e-c8bc-4f61-9cd9-3441ddad3307">
-    <name>ПриводитьКлючКСтрокеА</name>
+    <name>CastKeyToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -986,7 +1014,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b18265f0-19bc-4e77-b72e-603b36929f6c">
-    <name>ПриводитьКлюч2КСтрокеА</name>
+    <name>CastKey2ToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -998,7 +1030,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="8cde0c05-ec5f-4a71-b437-4a889bb77648">
-    <name>ПриводитьКлюч3КСтрокеА</name>
+    <name>CastKey3ToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -1010,7 +1046,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="ca3b811d-8431-4eff-8508-4a1551a1803a">
-    <name>ПриводитьКлючКСтрокеБ</name>
+    <name>CastKeyToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -1022,7 +1062,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3fdd09e0-d547-4a53-810e-4648ea79e042">
-    <name>ПриводитьКлюч2КСтрокеБ</name>
+    <name>CastKey2ToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -1034,7 +1078,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="f520b5ac-73e5-4054-942a-63e79686c87e">
-    <name>ПриводитьКлюч3КСтрокеБ</name>
+    <name>CastKey3ToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>String()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Строка()</value>
@@ -1046,7 +1094,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d30e355c-6fba-49a2-88bc-584e92a53dda">
-    <name>ДлинаКлючаПриПриведенииКСтрокеА</name>
+    <name>KeyLengthWhenCastingToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1062,7 +1114,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7ddb1476-8fc3-402b-b3e3-8d52eabd2fc2">
-    <name>ДлинаКлюча2ПриПриведенииКСтрокеА</name>
+    <name>KeyLength2WhenCastingToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1078,7 +1134,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="54ca7a46-5830-4bd1-89d1-17ebf0c30cab">
-    <name>ДлинаКлюча3ПриПриведенииКСтрокеА</name>
+    <name>KeyLength3WhenCastingToStringA</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1094,7 +1154,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="047a10fe-30f6-4bbf-a089-a093cd037253">
-    <name>ДлинаКлючаПриПриведенииКСтрокеБ</name>
+    <name>KeyLengthWhenCastingToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1110,7 +1174,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c9d4ad52-eb9d-4fda-93ee-d05a946444f7">
-    <name>ДлинаКлюча2ПриПриведенииКСтрокеБ</name>
+    <name>KeyLength2WhenCastingToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1126,7 +1194,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="0f4ee2a7-b8d3-4145-8de8-feeb509cac91">
-    <name>ДлинаКлюча3ПриПриведенииКСтрокеБ</name>
+    <name>KeyLength3WhenCastingToStringB</name>
+    <synonym>
+      <key>en</key>
+      <value>length</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>длина</value>
@@ -1142,7 +1214,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="a55d4c4c-bfe3-43bf-be1e-df477045eb4a">
-    <name>УдалятьИзКлючаФигурныеСкобкиА</name>
+    <name>DeleteFromKeyCurlyBracketsA</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1154,7 +1230,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="1e19f80a-a701-4ea6-8f87-e1fdd024cdf5">
-    <name>УдалятьИзКлюча2ФигурныеСкобкиА</name>
+    <name>DeleteFromKey2CurlyBracketsA</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1166,7 +1246,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="1f99a7a0-45d8-4c93-a2d5-889b88f0778a">
-    <name>УдалятьИзКлюча3ФигурныеСкобкиА</name>
+    <name>DeleteFromKey3CurlyBracketsA</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1178,7 +1262,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="5e46d28f-ca50-4fbc-bbc9-fb2286345093">
-    <name>УдалятьИзКлючаФигурныеСкобкиБ</name>
+    <name>DeleteFromKeyCurlyBracketsB</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1190,7 +1278,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9654369c-9401-420e-8b77-4f1122be1dc2">
-    <name>УдалятьИзКлюча2ФигурныеСкобкиБ</name>
+    <name>DeleteFromKey2CurlyBracketsB</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1202,7 +1294,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="82452e1a-72af-461f-9cd0-65dfdffdb6b4">
-    <name>УдалятьИзКлюча3ФигурныеСкобкиБ</name>
+    <name>DeleteFromKey3CurlyBracketsB</name>
+    <synonym>
+      <key>en</key>
+      <value>Delete characters { }</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Удалять символы { }</value>
@@ -1214,7 +1310,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d39e4ac9-f86b-4dd4-aeda-f145cfaacfcb">
-    <name>ПриводитьКлючКВерхнемуРегиструА</name>
+    <name>CastKeyToUpperCaseA</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1226,7 +1326,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b93d7e6d-3f62-42d5-9da0-9124a254fafc">
-    <name>ПриводитьКлюч2КВерхнемуРегиструА</name>
+    <name>CastKey2ToUpperCaseA</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1238,7 +1342,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d751ebc3-c480-4d4a-83fc-db44bcdd11c8">
-    <name>ПриводитьКлюч3КВерхнемуРегиструА</name>
+    <name>CastKey3ToUpperCaseA</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1250,7 +1358,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b54bea02-7e4c-43de-923c-fde4e81928ee">
-    <name>ПриводитьКлючКВерхнемуРегиструБ</name>
+    <name>CastKeyToUpperCaseB</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1262,7 +1374,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d24d5988-5c9a-472d-af1d-c41803705acb">
-    <name>ПриводитьКлюч2КВерхнемуРегиструБ</name>
+    <name>CastKey2ToUpperCaseB</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1274,7 +1390,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="6c3962bc-2c90-4111-a300-251d9c320802">
-    <name>ПриводитьКлюч3КВерхнемуРегиструБ</name>
+    <name>CastKey3ToUpperCaseB</name>
+    <synonym>
+      <key>en</key>
+      <value>Upper()</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>ВРег()</value>
@@ -1286,7 +1406,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="85a6e3d1-d28b-46e2-b97d-b0e37c1179ab">
-    <name>НомерСтолбцаСКлючомИзФайлаА</name>
+    <name>ColumnNumberKeyFromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
@@ -1302,7 +1426,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="565992f0-a883-4ca2-ba6e-7e8bd96e52a0">
-    <name>НомерСтолбцаСКлючом2ИзФайлаА</name>
+    <name>ColumnNumberKey2FromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
@@ -1318,7 +1446,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="716204e6-f07b-47d7-bb39-5773c1901935">
-    <name>НомерСтолбцаСКлючом3ИзФайлаА</name>
+    <name>ColumnNumberKey3FromFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
@@ -1334,7 +1466,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7dba727e-db0b-454b-ab0c-9ba35d80d5a0">
-    <name>НомерСтолбцаСКлючомИзФайлаБ</name>
+    <name>ColumnNumberKeyFromFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
@@ -1350,7 +1486,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="ec6f215e-5445-408a-b1ca-704a6830e036">
-    <name>НомерСтолбцаСКлючом2ИзФайлаБ</name>
+    <name>ColumnNumberKey2FromFileB</name>
+    <synonym>
+      <key>en</key>
+      <value>Source column number</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
@@ -1366,7 +1506,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="90c54854-e3d2-4443-9b00-c1c74bd53c03">
-    <name>НомерСтолбцаСКлючом3ИзФайлаБ</name>
+    <name>ColumnNumberKey3FromFileB</name>
     <synonym>
       <key>ru</key>
       <value>№ столбца источника</value>
