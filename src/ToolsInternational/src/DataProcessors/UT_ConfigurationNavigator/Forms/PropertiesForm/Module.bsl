@@ -565,7 +565,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.ObjectPage.Visible = False;
 		Items.StorageStructurePage.Visible = False;
 
-		пСписокПрав =  "Read, Create, Update, Delete, Browse, Edit, Use, УправлениеИтогами, Posting, UndoPosting, Receive, Установка, Start, Выполнение";
+		пСписокПрав =  "Read, Insert, Update, Delete, View, Edit, Use, TotalControl, Posting, UndoPosting, Get, Set, Start, Execute";
 		For Each Элем In New Structure(пСписокПрав) Do
 			Items._AccessRightToObject.ChoiceList.Add(Элем.Key);
 		EndDo;
@@ -577,7 +577,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Return;
 	EndIf;
 
-	Items.PropertyTreeGroup_OpenObject.Visible = (_ПустаяСсылкаНаОбъект <> Undefined);
+	Items.PropertyTreeGroup_OpenObject.Visible = (_EmptyRef <> Undefined);
 
 	ОбъектМД = Metadata.FindByFullName(Parameters.FullName);
 	If ОбъектМД <> Undefined Then
@@ -594,14 +594,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	;
 
 	~End: For Each УзелДЗ In PropertyTree.GetItems() Do
-		УзелДЗ.ВидУзла = 1;
+		УзелДЗ.NodeType = 1;
 		
 		//If StrFind(УзелДЗ.StringType, "Enum.") <> 0 Then
 		//	Break;
 		//EndIf;
 
 		For Each РазделДЗ In УзелДЗ.GetItems() Do
-			РазделДЗ.ВидУзла = 2;
+			РазделДЗ.NodeType = 2;
 		EndDo;
 	EndDo;
 
@@ -614,7 +614,7 @@ Procedure вУстановитьУсловноеОформление()
 
 	ЭлементУО = ThisForm.ConditionalAppearance.Items.Add();
 	FilterItem = ЭлементУО.Filter.Items.Add(Type("DataCompositionFilterItem"));
-	FilterItem.LeftValue = New DataCompositionField("PropertyTree.ВидУзла");
+	FilterItem.LeftValue = New DataCompositionField("PropertyTree.NodeType");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = 1;
 	ЭлементУО.Appearance.SetParameterValue("Font", New Font(Items.PropertyTree.Font, , , True));
@@ -622,7 +622,7 @@ Procedure вУстановитьУсловноеОформление()
 
 	ЭлементУО = ThisForm.ConditionalAppearance.Items.Add();
 	FilterItem = ЭлементУО.Filter.Items.Add(Type("DataCompositionFilterItem"));
-	FilterItem.LeftValue = New DataCompositionField("PropertyTree.ВидУзла");
+	FilterItem.LeftValue = New DataCompositionField("PropertyTree.NodeType");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = 2;
 	ЭлементУО.Appearance.SetParameterValue("TextColor", WebColors.DarkBlue);
@@ -639,7 +639,7 @@ Procedure вУстановитьУсловноеОформление()
 
 	ЭлементУО = ThisForm.ConditionalAppearance.Items.Add();
 	FilterItem = ЭлементУО.Filter.Items.Add(Type("DataCompositionFilterItem"));
-	FilterItem.LeftValue = New DataCompositionField("_DependentObjects.ВидУзла");
+	FilterItem.LeftValue = New DataCompositionField("_DependentObjects.NodeType");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = 1;
 	ЭлементУО.Appearance.SetParameterValue("Font", New Font(Items._DependentObjects.Font, , , True));
@@ -647,7 +647,7 @@ Procedure вУстановитьУсловноеОформление()
 
 	ЭлементУО = ThisForm.ConditionalAppearance.Items.Add();
 	FilterItem = ЭлементУО.Filter.Items.Add(Type("DataCompositionFilterItem"));
-	FilterItem.LeftValue = New DataCompositionField("_DependentObjects.ВидУзла");
+	FilterItem.LeftValue = New DataCompositionField("_DependentObjects.NodeType");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = 2;
 	ЭлементУО.Appearance.SetParameterValue("TextColor", WebColors.DarkBlue);
@@ -724,8 +724,8 @@ EndProcedure
 &AtClient
 Procedure kShowObjectProperties(Command)
 	ТекДанные = Items.PropertyTree.CurrentData;
-	If ТекДанные <> Undefined And Not IsBlankString(ТекДанные.ТипСтрокой) Then
-		Array = вСтрокуТипаВМассив(ТекДанные.ТипСтрокой);
+	If ТекДанные <> Undefined And Not IsBlankString(ТекДанные.StringType) Then
+		Array = вСтрокуТипаВМассив(ТекДанные.StringType);
 		If Array.Count() = 1 Then
 			вПоказатьСвойстваОбъекта(Array[0]);
 		ElsIf Array.Count() > 1 Then
@@ -765,16 +765,16 @@ EndProcedure
 &AtClient
 Procedure _OpenObject(Command)
 	СтрукПарам = New Structure;
-	СтрукПарам.Insert("мОбъектСсылка", _ПустаяСсылкаНаОбъект);
-	OpenForm(PathToForms + "ФормаОбъекта", СтрукПарам, , CurrentDate());
+	СтрукПарам.Insert("мОбъектСсылка", _EmptyRef);
+	OpenForm(PathToForms + "Form", СтрукПарам, , CurrentDate());
 EndProcedure
 &AtClient
 Procedure ДеревоСвойствВыбор(Item, SelectedRow, Field, StandardProcessing)
 	СтрДЗ = PropertyTree.FindByID(SelectedRow);
-	If СтрДЗ.Reference <> Undefined Then
-		ShowValue( , СтрДЗ.Reference);
+	If СтрДЗ.Ref <> Undefined Then
+		ShowValue( , СтрДЗ.Ref);
 	ElsIf Not IsBlankString(СтрДЗ.StringType) Then
-		кПоказатьСвойстваОбъекта(Undefined);
+		kShowObjectProperties(Undefined);
 	EndIf;
 EndProcedure
 
@@ -796,11 +796,11 @@ Procedure вПоказатьСвойстваОбъекта(FullName)
 EndProcedure
 
 &AtClient
-Function вСтрокуТипаВМассив(ТипСтрокой)
+Function вСтрокуТипаВМассив(StringType)
 	ПростыеТипы = "/Boolean/Date/DateTime/String/Number/ValueStorage/UUID/";
 	Result = New Array;
 
-	For Each Элем In вСтрРазделить(ТипСтрокой, ",", False) Do
+	For Each Элем In вСтрРазделить(StringType, ",", False) Do
 		If Find(ПростыеТипы, Элем) = 0 Then
 			If Find(Элем, "String(") = 0 And Find(Элем, "Number(") = 0 Then
 				Result.Add(Элем);
@@ -1154,7 +1154,7 @@ Procedure вЗаполнитьПредопределенныеЭлементыО
 	Менеджер = Менеджер[ОбъектМД.Name];
 
 	Query = New Query;
-	Query.Text = "ВЫБРАТЬ Reference, Presentation КАК Title ИЗ " + ОбъектМД.FullName() + " ГДЕ Predefined";
+	Query.Text = "ВЫБРАТЬ Ref, Presentation КАК Title ИЗ " + ОбъектМД.FullName() + " ГДЕ Predefined";
 
 	Try
 		ValueTable = Query.Execute().Unload();
@@ -1169,11 +1169,11 @@ Procedure вЗаполнитьПредопределенныеЭлементыО
 
 		For Each Элем In ValueTable Do
 			СтрДЗ = РазделДЗ.GetItems().Add();
-			СтрДЗ.Name = Менеджер.ПолучитьИмяПредопределенного(Элем.Reference);
+			СтрДЗ.Name = Менеджер.ПолучитьИмяПредопределенного(Элем.Ref);
 			СтрДЗ.Synonym = Элем.Title;
 			СтрДЗ.Comment = "";
-			СтрДЗ.StringType = "Reference";
-			СтрДЗ.Reference = Элем.Reference;
+			СтрДЗ.StringType = "Ref";
+			СтрДЗ.Ref = Элем.Ref;
 		EndDo;
 	EndIf;
 EndProcedure
@@ -1434,7 +1434,7 @@ Procedure вЗаполнитьСвойстваСправочника(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = Catalogs[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = Catalogs[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1463,7 +1463,7 @@ Procedure вЗаполнитьСвойстваДокумента(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = Documents[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = Documents[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1512,7 +1512,7 @@ Procedure вЗаполнитьСвойстваПВХ(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = ChartsOfCharacteristicTypes[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = ChartsOfCharacteristicTypes[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1541,7 +1541,7 @@ Procedure вЗаполнитьСвойстваПВР(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = ChartsOfCalculationTypes[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = ChartsOfCalculationTypes[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1569,7 +1569,7 @@ Procedure вЗаполнитьСвойстваПланаСчетов(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = ChartsOfAccounts[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = ChartsOfAccounts[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1699,7 +1699,7 @@ Procedure вЗаполнитьСвойстваБизнесПроцесса(FullN
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = BusinessProcesses[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = BusinessProcesses[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1724,7 +1724,7 @@ Procedure вЗаполнитьСвойстваЗадачи(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = Tasks[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = Tasks[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -1749,7 +1749,7 @@ Procedure вЗаполнитьСвойстваПланаОбмена(FullName)
 		Return;
 	EndIf;
 
-	_ПустаяСсылкаНаОбъект = ExchangePlans[ОбъектМД.Name].EmptyRef();
+	_EmptyRef = ExchangePlans[ОбъектМД.Name].EmptyRef();
 
 	УзелДЗ = PropertyTree.GetItems().Add();
 	УзелДЗ.Name = ОбъектМД.Name;
@@ -2212,18 +2212,18 @@ Procedure вЗаполнитьРазделСтруктураХранения(Val
 		EndDo;
 		For Each СтрХ In Стр.Indexes Do
 			НомерХХ = НомерХХ + 1;
-			НомерИндекса = "(" + НомерХХ + ")";
+			IndexNumber = "(" + НомерХХ + ")";
 
 			НС = _SXIndexes.Add();
 			FillPropertyValues(НС, СтрХ);
 			НС.StorageTableName = Стр.StorageTableName;
 			НС.TableNumber = TableNumber;
-			НС.НомерИндекса = НомерИндекса;
+			НС.IndexNumber = IndexNumber;
 
 			For Each СтрХХ In СтрХ.Fields Do
 				НС = _SXIndexFields.Add();
 				FillPropertyValues(НС, СтрХХ);
-				НС.НомерИндекса = НомерИндекса;
+				НС.IndexNumber = IndexNumber;
 			EndDo;
 		EndDo;
 
@@ -2243,7 +2243,7 @@ EndProcedure
 Procedure _СХИндексыПриАктивизацииСтроки(Item)
 	ТекДанные = Item.CurrentData;
 	If ТекДанные <> Undefined Then
-		Items._SXIndexFields.RowFilter = New FixedStructure("НомерИндекса", ТекДанные.НомерИндекса);
+		Items._SXIndexFields.RowFilter = New FixedStructure("IndexNumber", ТекДанные.IndexNumber);
 	EndIf;
 EndProcedure
 &AtClient
@@ -2336,7 +2336,7 @@ Procedure вОбработатьКомандуУправленияИтогами
 		пСтрук.Insert("CommandName", CommandName);
 
 		пРезультат = вВыполнитКомандуУправленияИтогами(_FullName, CommandName, пСтрук);
-		_ОбновитьУправлениеИтогами(Undefined);
+		_UpdateTotalsManagement(Undefined);
 	EndIf;
 EndProcedure
 
@@ -2360,7 +2360,7 @@ EndProcedure
 Procedure вОбработатьИзменениеСвойстваРегистра(РезультатВопроса, PropertyName) Export
 	If РезультатВопроса = DialogReturnCode.Yes Then
 		вИзменитьСвойствоРегистра(_FullName, Mid(PropertyName, 2), ThisForm[PropertyName]);
-		_ОбновитьУправлениеИтогами(Undefined);
+		_UpdateTotalsManagement(Undefined);
 	Else
 		ThisForm[PropertyName] = Not ThisForm[PropertyName];
 	EndIf;
@@ -2454,7 +2454,7 @@ EndFunction
 &AtClient
 Procedure _ДоступныеОбъектыВыбор(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
-	_ОткрытьОбъектПравДоступа(Undefined);
+	_OpenAccessRightsObject(Undefined);
 EndProcedure
 
 &AtClient
@@ -2506,19 +2506,19 @@ EndProcedure
 
 &AtClient
 Procedure _ПравоДоступаКОбъектуПриИзменении(Item)
-	_ЗаполнитьПраваДоступа(Undefined);
+	_FullInAccessRights(Undefined);
 EndProcedure
 
 &AtClient
 Procedure ТабРолиСДоступомВыбор(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
-	_ОткрытьОбъектПравДоступа(Undefined);
+	_OpenAccessRightsObject(Undefined);
 EndProcedure
 
 &AtClient
 Procedure ТабПользователиСДоступомВыбор(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
-	_ОткрытьОбъектПравДоступа(Undefined);
+	_OpenAccessRightsObject(Undefined);
 EndProcedure
 
 &AtClient
@@ -2561,19 +2561,19 @@ EndFunction
 &AtServerNoContext
 Function вПолучитьОписаниеОграниченийДляПараметровДоступа()
 	пОбъектыСОгрничением = New Map;
-	пОбъектыСОгрничением.Insert("ExchangePlan", "Reference");
-	пОбъектыСОгрничением.Insert("Catalog", "Reference");
-	пОбъектыСОгрничением.Insert("Document", "Reference");
-	пОбъектыСОгрничением.Insert("DocumentJournal", "Reference");
-	пОбъектыСОгрничением.Insert("ChartOfCharacteristicTypes", "Reference");
-	пОбъектыСОгрничением.Insert("ChartOfAccounts", "Reference");
-	пОбъектыСОгрничением.Insert("ChartOfCalculationTypes", "Reference");
+	пОбъектыСОгрничением.Insert("ExchangePlan", "Ref");
+	пОбъектыСОгрничением.Insert("Catalog", "Ref");
+	пОбъектыСОгрничением.Insert("Document", "Ref");
+	пОбъектыСОгрничением.Insert("DocumentJournal", "Ref");
+	пОбъектыСОгрничением.Insert("ChartOfCharacteristicTypes", "Ref");
+	пОбъектыСОгрничением.Insert("ChartOfAccounts", "Ref");
+	пОбъектыСОгрничением.Insert("ChartOfCalculationTypes", "Ref");
 	пОбъектыСОгрничением.Insert("InformationRegister", Undefined);
 	пОбъектыСОгрничением.Insert("AccumulationRegister", "Recorder");
 	пОбъектыСОгрничением.Insert("AccountingRegister", "Recorder");
 	пОбъектыСОгрничением.Insert("CalculationRegister", "Recorder");
-	пОбъектыСОгрничением.Insert("BusinessProcess", "Reference");
-	пОбъектыСОгрничением.Insert("Task", "Reference");
+	пОбъектыСОгрничением.Insert("BusinessProcess", "Ref");
+	пОбъектыСОгрничением.Insert("Task", "Ref");
 
 	Return пОбъектыСОгрничением;
 EndFunction
@@ -2629,7 +2629,7 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 
 	пОбъектыСОгрничением = вПолучитьОписаниеОграниченийДляПараметровДоступа();
 
-	пПоляРезультата = "RestrictionCondition, Kind, Name, Presentation, FullName";
+	пПоляРезультата = "RestrictionByCondition, Kind, Name, Presentation, FullName";
 
 	ТабПользователи = New ValueTable;
 	ТабПользователи.Columns.Add("Name", New TypeDescription("String"));
@@ -2702,10 +2702,10 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 
 			пПоле = пОбъектыСОгрничением[пСтрук.Kind];
 			If пПоле <> Undefined Then
-				пСтрук.RestrictionCondition = AccessParameters(пПраво, Стр.ОбъектМД, пПоле, пРольМД).RestrictionCondition;
+				пСтрук.RestrictionByCondition = AccessParameters(пПраво, Стр.ОбъектМД, пПоле, пРольМД).RestrictionByCondition;
 			ElsIf пСтрук.Kind = "InformationRegister" And Стр.ОбъектМД.Dimensions.Count() <> 0 Then
 				пПоле = Стр.ОбъектМД.Dimensions[0].Name;
-				пСтрук.RestrictionCondition = AccessParameters(пПраво, Стр.ОбъектМД, пПоле, пРольМД).RestrictionCondition;
+				пСтрук.RestrictionByCondition = AccessParameters(пПраво, Стр.ОбъектМД, пПоле, пРольМД).RestrictionByCondition;
 			EndIf;
 
 			пРезультат.AvailableObjects.Add(пСтрук);
@@ -2726,7 +2726,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 	пОбъектыСОгрничением = вПолучитьОписаниеОграниченийДляПараметровДоступа();
 
 	ТабРоли = New ValueTable;
-	ТабРоли.Columns.Add("RestrictionCondition", New TypeDescription("Boolean"));
+	ТабРоли.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
 	ТабРоли.Columns.Add("Name", New TypeDescription("String"));
 	ТабРоли.Columns.Add("Synonym", New TypeDescription("String"));
 
@@ -2766,7 +2766,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 
 				пПоле = пОбъектыСОгрничением[ТипМД];
 				If пПоле <> Undefined Then
-					НС.RestrictionCondition = AccessParameters(ИмяПрава, ОбъектМД, пПоле, Элем).RestrictionCondition;
+					НС.RestrictionByCondition = AccessParameters(ИмяПрава, ОбъектМД, пПоле, Элем).RestrictionByCondition;
 				EndIf;
 			EndIf;
 		EndDo;
@@ -2800,7 +2800,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 	СтрукРезультат.Users = New Array;
 
 	For Each Стр In ТабРоли Do
-		Струк = New Structure("Name, Synonym, RestrictionCondition");
+		Струк = New Structure("Name, Synonym, RestrictionByCondition");
 		FillPropertyValues(Струк, Стр);
 		СтрукРезультат.Roles.Add(Струк);
 	EndDo;
@@ -2833,13 +2833,13 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 		Return;
 	EndIf;
 	пКорневойУзел = _DependentObjects.GetItems().Add();
-	пКорневойУзел.ВидУзла = 1;
+	пКорневойУзел.NodeType = 1;
 	пКорневойУзел.Name = пОбъектМД.Name;
 	пКорневойУзел.Presentation = пОбъектМД.Presentation();
 	пКорневойУзел.FullName = _FullName;
 
 	Поз = StrFind(_FullName, ".");
-	пТипДляПоиска = Type(Left(_FullName, Поз - 1) + "Reference" + Mid(_FullName, Поз));
+	пТипДляПоиска = Type(Left(_FullName, Поз - 1) + "Ref" + Mid(_FullName, Поз));
 
 	пНадоСмотретьВидыСубконтоПС = (Left(_FullName, Поз - 1) = "ChartOfCharacteristicTypes");
 
@@ -2892,7 +2892,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 
 			пУзелРаздела = пКорневойУзел.GetItems().Add();
 			пУзелРаздела.Name = пЭлем.Key + " (" + пКоличество + ")";
-			пУзелРаздела.ВидУзла = 2;
+			пУзелРаздела.NodeType = 2;
 			пКоллекцияЭлементов = пУзелРаздела.GetItems();
 
 			For Each Стр In пТабРезультат Do
@@ -3021,7 +3021,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 
 			пУзелРаздела = пКорневойУзел.GetItems().Add();
 			пУзелРаздела.Name = пЭлем.Key + " (" + пКоличество + ")";
-			пУзелРаздела.ВидУзла = 2;
+			пУзелРаздела.NodeType = 2;
 			пКоллекцияЭлементов = пУзелРаздела.GetItems();
 
 			For Each Стр In пТабРезультат Do
@@ -3041,14 +3041,14 @@ EndProcedure
 Procedure вОбработкаАктивизацииСтрокиЗависимых()
 	ТекДанные = Items._DependentObjects.CurrentData;
 	If ТекДанные <> Undefined Then
-		_WhereFound = StrReplace(ТекДанные.ГдеНайдено, ",", Chars.LF);
+		_WhereFound = StrReplace(ТекДанные.NodeType, ",", Chars.LF);
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure _ЗависимыеОбъектыВыбор(Item, SelectedRow, Field, StandardProcessing)
 	ТекДанные = Items._DependentObjects.CurrentData;
-	If ТекДанные <> Undefined And ТекДанные.ВидУзла = 0 Then
+	If ТекДанные <> Undefined And ТекДанные.NodeType = 0 Then
 		StandardProcessing = False;
 		вПоказатьСвойстваОбъекта(ТекДанные.FullName);
 	EndIf;
@@ -3057,7 +3057,7 @@ EndProcedure
 &AtClient
 Procedure _OpenSubordinateObject(Command)
 	ТекДанные = Items._DependentObjects.CurrentData;
-	If ТекДанные <> Undefined And ТекДанные.ВидУзла = 0 Then
+	If ТекДанные <> Undefined And ТекДанные.NodeType = 0 Then
 		вПоказатьСвойстваОбъекта(ТекДанные.FullName);
 	EndIf;
 EndProcedure
@@ -3087,7 +3087,7 @@ Procedure _RecordConstant(Command)
 			ShowMessageBox( , "Value параметра сеанса изменено!", 20);
 		EndIf;
 
-		_ПрочитатьКонстанту(Undefined);
+		_ReadConstant(Undefined);
 	EndIf;
 EndProcedure
 

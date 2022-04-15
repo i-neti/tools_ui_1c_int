@@ -1528,7 +1528,7 @@
             <excludedCommands>MoveUp</excludedCommands>
             <excludedCommands>ShowRowRearrangement</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>RolesWithAccessTableRestrictionCondition</name>
+              <name>RolesWithAccessTableRestrictionByCondition</name>
               <id>406</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1537,11 +1537,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>RolesWithAccessTable.RestrictionCondition</segments>
+                  <segments>RolesWithAccessTable.RestrictionByCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>RolesWithAccessTableRestrictionConditionExtendedTooltip</name>
+                <name>RolesWithAccessTableRestrictionByConditionExtendedTooltip</name>
                 <id>408</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1556,7 +1556,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>RolesWithAccessTableRestrictionConditionContextMenu</name>
+                <name>RolesWithAccessTableRestrictionByConditionContextMenu</name>
                 <id>407</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2129,7 +2129,7 @@
             <excludedCommands>MoveDown</excludedCommands>
             <excludedCommands>MoveUp</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>_AvailableObjectsRestrictionCondition</name>
+              <name>_AvailableObjectsRestrictionByCondition</name>
               <id>296</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2138,11 +2138,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_AvailableObjects.RestrictionCondition</segments>
+                  <segments>_AvailableObjects.RestrictionByCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_AvailableObjectsRestrictionConditionExtendedTooltip</name>
+                <name>_AvailableObjectsRestrictionByConditionExtendedTooltip</name>
                 <id>298</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2157,7 +2157,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_AvailableObjectsRestrictionConditionContextMenu</name>
+                <name>_AvailableObjectsRestrictionByConditionContextMenu</name>
                 <id>297</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4125,7 +4125,7 @@
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИмяПоля</name>
+                <name>_SXFielsdFieldName</name>
                 <id>108</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4138,7 +4138,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИмяПоляРасширеннаяПодсказка</name>
+                  <name>_SXFielsdFieldNameExtendedTooltip</name>
                   <id>110</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4153,7 +4153,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИмяПоляКонтекстноеМеню</name>
+                  <name>_SXFielsdFieldNameContextMenu</name>
                   <id>109</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4178,7 +4178,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИмяПоляХранения</name>
+                <name>_SXFielsdStorageFieldName</name>
                 <id>111</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4191,7 +4191,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИмяПоляХраненияРасширеннаяПодсказка</name>
+                  <name>_SXFielsdStorageFieldNameExtendedTooltip</name>
                   <id>113</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4206,7 +4206,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИмяПоляХраненияКонтекстноеМеню</name>
+                  <name>_SXFielsdStorageFieldNameContextMenu</name>
                   <id>112</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4234,7 +4234,7 @@
                 <name>_SXFielsdCommandBar</name>
                 <id>94</id>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляСортироватьСписокПоВозрастанию</name>
+                  <name>_SXFielsdSortListAsc</name>
                   <id>175</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4242,7 +4242,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                    <name>_SXFielsdSortListAscExtendedTooltip</name>
                     <id>176</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4265,7 +4265,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляСортироватьСписокПоУбыванию</name>
+                  <name>_SXFielsdSortListDesc</name>
                   <id>177</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4273,7 +4273,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                    <name>_SXFielsdSortListDescExtendedTooltip</name>
                     <id>178</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4296,7 +4296,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляНайти</name>
+                  <name>_SXFielsdFind</name>
                   <id>179</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4304,7 +4304,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляНайтиРасширеннаяПодсказка</name>
+                    <name>_SXFielsdFindExtendedTooltip</name>
                     <id>180</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4326,7 +4326,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляОтменитьПоиск</name>
+                  <name>_SXFielsdCancelSearch</name>
                   <id>181</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4334,7 +4334,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляОтменитьПоискРасширеннаяПодсказка</name>
+                    <name>_SXFielsdCancelSearchExtendedTooltip</name>
                     <id>182</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4356,7 +4356,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляВывестиСписок</name>
+                  <name>_SXFielsdOutputList</name>
                   <id>183</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4364,7 +4364,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляВывестиСписокРасширеннаяПодсказка</name>
+                    <name>_SXFielsdOutputListExtendedTooltip</name>
                     <id>184</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4591,10 +4591,10 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>СтраницыСХИндексы</name>
+            <name>_SXIndexesPages</name>
             <id>90</id>
             <items xsi:type="form:Table">
-              <name>_СХИндексы</name>
+              <name>_SXIndexes</name>
               <id>114</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4659,10 +4659,10 @@
                 </extInfo>
               </items>
               <autoCommandBar>
-                <name>_СХИндексыКоманднаяПанель</name>
+                <name>_SXIndexesCommandBar</name>
                 <id>116</id>
                 <items xsi:type="form:Button">
-                  <name>_SXFielsdSortListAsc</name>
+                  <name>_SXIndexesSortListAsc</name>
                   <id>185</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4670,7 +4670,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_SXFielsdSortListAscExtendedTooltip</name>
+                    <name>_SXIndexesSortListAscExtendedTooltip</name>
                     <id>186</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4684,7 +4684,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.SortListAsc</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.SortListAsc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4693,7 +4693,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_SXFielsdSortListDesc</name>
+                  <name>_SXIndexesSortListDesc</name>
                   <id>187</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4701,7 +4701,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_SXFielsdSortListDescExtendedTooltip</name>
+                    <name>_SXIndexesSortListDescExtendedTooltip</name>
                     <id>188</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4715,7 +4715,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.SortListDesc</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.SortListDesc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4724,7 +4724,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_SXFielsdFind</name>
+                  <name>_SXIndexesFind</name>
                   <id>189</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4732,7 +4732,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_SXFielsdFindExtendedTooltip</name>
+                    <name>_SXIndexesFindExtendedTooltip</name>
                     <id>190</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4746,7 +4746,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.Find</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.Find</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4754,7 +4754,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_SXFielsdCancelSearch</name>
+                  <name>__SXIndexesCancelSearch</name>
                   <id>191</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4762,7 +4762,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_SXFielsdCancelSearchExtendedTooltip</name>
+                    <name>__SXIndexesCancelSearchExtendedTooltip</name>
                     <id>192</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4776,7 +4776,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.CancelSearch</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.CancelSearch</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4784,7 +4784,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_SXFielsdOutputList</name>
+                  <name>_SXIndexesOutputList</name>
                   <id>193</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4792,7 +4792,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_SXFielsdOutputListExtendedTooltip</name>
+                    <name>_SXIndexesOutputListExtendedTooltip</name>
                     <id>194</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4806,7 +4806,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.OutputList</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.OutputList</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4830,10 +4830,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыСтрокаПоиска</name>
+                <name>_SXIndexesSearchString</name>
                 <id>118</id>
                 <extendedTooltip>
-                  <name>_СХИндексыСтрокаПоискаРасширеннаяПодсказка</name>
+                  <name>_SXIndexesSearchStringExtendedTooltip</name>
                   <id>120</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4848,7 +4848,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыСтрокаПоискаКонтекстноеМеню</name>
+                  <name>_SXIndexesSearchStringContextMenu</name>
                   <id>119</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4867,10 +4867,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыСостояниеПросмотра</name>
+                <name>_SXIndexesViewStatus</name>
                 <id>121</id>
                 <extendedTooltip>
-                  <name>_СХИндексыСостояниеПросмотраРасширеннаяПодсказка</name>
+                  <name>_SXIndexesViewStatusExtendedTooltip</name>
                   <id>123</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4885,7 +4885,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыСостояниеПросмотраКонтекстноеМеню</name>
+                  <name>_SXIndexesViewStatusContextMenu</name>
                   <id>122</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4906,10 +4906,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыУправлениеПоиском</name>
+                <name>_SXIndexesSearchControl</name>
                 <id>124</id>
                 <extendedTooltip>
-                  <name>_СХИндексыУправлениеПоискомРасширеннаяПодсказка</name>
+                  <name>_SXIndexesSearchControlExtendedTooltip</name>
                   <id>126</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4924,7 +4924,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыУправлениеПоискомКонтекстноеМеню</name>
+                  <name>_SXIndexesSearchControlContextMenu</name>
                   <id>125</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4939,7 +4939,7 @@
                 </extInfo>
               </searchControlAddition>
               <extendedTooltip>
-                <name>_СХИндексыРасширеннаяПодсказка</name>
+                <name>_SXIndexesExtendedTooltip</name>
                 <id>117</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4954,7 +4954,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_СХИндексыКонтекстноеМеню</name>
+                <name>_SXIndexesContextMenu</name>
                 <id>115</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5433,12 +5433,16 @@
               <key>ru</key>
               <value>Индексы</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>SXIndexes pages</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Индексы</value>
             </toolTip>
             <extendedTooltip>
-              <name>СтраницыСХИндексыРасширеннаяПодсказка</name>
+              <name>_SXIndexesPagesExtendedTooltip</name>
               <id>91</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -7327,11 +7331,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -8500,14 +8504,14 @@
       </edit>
     </columns>
     <columns>
-      <name>RestrictionCondition</name>
+      <name>RestrictionByCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
       </title>
       <title>
         <key>en</key>
-        <value>Restriction condition</value>
+        <value>Restriction by condition</value>
       </title>
       <id>5</id>
       <valueType>
@@ -8678,14 +8682,14 @@
       </edit>
     </columns>
     <columns>
-      <name>RestrictionCondition</name>
+      <name>RestrictionByCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
       </title>
       <title>
         <key>en</key>
-        <value>Restriction condition</value>
+        <value>Restriction by condition</value>
       </title>
       <id>3</id>
       <valueType>
