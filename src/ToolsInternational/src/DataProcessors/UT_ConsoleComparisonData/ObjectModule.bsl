@@ -224,7 +224,7 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 						
 			УсловияВыводаСтрокиВыполнены = True;
 			
-			If Not УсловияВыводаСтрокОтключены Then 
+			If Not RowOutputConditionsDisabled Then 
 				Try
 					Execute CodeForOutputRows;
 				Except
@@ -242,7 +242,7 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 				
 				УсловияЗапретаВыводаСтрокиВыполнены = False;
 				
-				If Not УсловияЗапретаВыводаСтрокОтключены Then 
+				If Not ConditionsProhibitOutputRowsDisabled Then 
 					Try
 						Execute CodeForProhibitingOutputRows; 
 					Except
@@ -371,7 +371,7 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 				
 				УсловияВыводаСтрокиВыполнены = True;
 				
-				If Not УсловияВыводаСтрокОтключены Then
+				If Not RowOutputConditionsDisabled Then
 					Try
 						Execute CodeForOutputRows; 
 					Except
@@ -385,7 +385,7 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 				
 				УсловияЗапретаВыводаСтрокиВыполнены = False;
 				
-				If Not УсловияЗапретаВыводаСтрокОтключены Then
+				If Not ConditionsProhibitOutputRowsDisabled Then
 					Try
 						Execute CodeForProhibitingOutputRows; 
 					Except
@@ -2000,7 +2000,7 @@ Function ПрочитатьДанныеИзФайлаИПолучитьТЗ(Ид
 						РТек = СтрокаПриемник[ИмяРеквизита];
 
 						Try
-							Execute СтрокаНастроекФайла.ПроизвольныйКод;
+							Execute СтрокаНастроекФайла.ArbitraryCode;
 						Except
 							ТекстОшибки = ErrorDescription();
 							Message("Error при выполнении произвольного кода (реквизит " + СтрокаНастроекФайла.LineNumber + "):" + ТекстОшибки);
@@ -3408,13 +3408,13 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 					EndIf;			
 				EndIf; 
 				
-				For Each СтрокаТЧ In НастройкиФайлаА Do
+				For Each СтрокаТЧ In SettingsFileA Do
 					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
 						РеквизитыЗаполненыКорректно = False;
 						ТекстОшибки = "Not заполнен номер колонки файла/таблицы А, соответствующий реквизиту А" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
 						UserMessage.Text = ТекстОшибки;
-						UserMessage.Field = "Object.НастройкиФайлаА[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
+						UserMessage.Field = "Object.SettingsFileA[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
 						UserMessage.Message();
 						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
 					EndIf;
@@ -3557,13 +3557,13 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 				
 				EndIf;
 				
-				For Each СтрокаТЧ In НастройкиФайлаБ Do
+				For Each СтрокаТЧ In SettingsFileB Do
 					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
 						РеквизитыЗаполненыКорректно = False;
 						ТекстОшибки = "Not заполнен номер колонки файла/таблицы Б, соответствующий реквизиту Б" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
 						UserMessage.Text = ТекстОшибки;
-						UserMessage.Field = "Object.НастройкиФайлаБ[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
+						UserMessage.Field = "Object.SettingsFileB[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
 						UserMessage.Message();
 						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
 					EndIf;
@@ -3709,7 +3709,7 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
  	If IsBlankString(ИсточникДляПредварительногоПросмотра) Then
 	 
 		//If код формируется автоматически, поля таблиц условий д.б. заполнены правильно
-		If Not CodeForOutputRowsEditedManually And Not УсловияВыводаСтрокОтключены Then
+		If Not CodeForOutputRowsEditedManually And Not RowOutputConditionsDisabled Then
 			
 			If УсловияВыводаСтрок.Count() > 1 And Not ValueIsFilled(BooleanOperatorForConditionsOutputRows) Then
 				РеквизитыЗаполненыКорректно = False;
@@ -3771,7 +3771,7 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 			
 		EndIf;     
 			
-		If Not CodeForProhibitingOutputRowsEditedManually And Not УсловияЗапретаВыводаСтрокОтключены Then
+		If Not CodeForProhibitingOutputRowsEditedManually And Not ConditionsProhibitOutputRowsDisabled Then
 			
 			If УсловияЗапретаВыводаСтрок.Count() > 1 And Not ValueIsFilled(BooleanOperatorForProhibitingConditionsOutputRows) Then
 				РеквизитыЗаполненыКорректно = False;
@@ -3897,41 +3897,41 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 			УсловияЗапретаВыводаСтрок.Clear();
 		EndIf;
 		
-		If Data.Property("ТЗНастройкиФайлаА") Then
-			НастройкиФайлаА.Load(Data.ТЗНастройкиФайлаА);
+		If Data.Property("ValueTableSettingsFileA") Then
+			SettingsFileA.Load(Data.ValueTableSettingsFileA);
 		Else
-			НастройкиФайлаА.Clear();
+			SettingsFileA.Clear();
 		EndIf;
 		
-		If Data.Property("ТЗНастройкиФайлаБ") Then
-			НастройкиФайлаБ.Load(Data.ТЗНастройкиФайлаБ);
+		If Data.Property("ValueTableSettingsFileB") Then
+			SettingsFileB.Load(Data.ValueTableSettingsFileB);
 		Else
-			НастройкиФайлаБ.Clear();
+			SettingsFileB.Clear();
 		EndIf;
 		
-		If Data.Property("ТЗСписокПараметровА") Then
-			СписокПараметровА.Load(Data.ТЗСписокПараметровА);
+		If Data.Property("ValueTableParameterListA") Then
+			ParameterListA.Load(Data.ValueTableParameterListA);
 		Else
-			СписокПараметровА.Clear();
+			ParameterListA.Clear();
 		EndIf;
 		
-		If Data.Property("ТЗСписокПараметровБ") Then
-			СписокПараметровБ.Load(Data.ТЗСписокПараметровБ);
+		If Data.Property("ValueTableParameterListB") Then
+			ParameterListB.Load(Data.ValueTableParameterListB);
 		Else
-			СписокПараметровБ.Clear();
+			ParameterListB.Clear();
 		EndIf;
 		
-		If Data.Property("ТЗСписокПараметровБ") Then
-			СписокПараметровБ.Load(Data.ТЗСписокПараметровБ);
+		If Data.Property("ValueTableParameterListB") Then
+			ParameterListB.Load(Data.ValueTableParameterListB);
 		Else
-			СписокПараметровБ.Clear();
+			ParameterListB.Clear();
 		EndIf;
 		
 		If ЗагружатьТабличныеДокументы Then
 			If Data.BaseTypeA = 4 Then
 				Try
-					If Data.Property("ТаблицаАХранилище") Then
-						ТаблицаА = Data.ТаблицаАХранилище.Get();
+					If Data.Property("TableAValueStorage") Then
+						ТаблицаА = Data.TableAValueStorage.Get();
 					EndIf;
 				Except
 				EndTry; 
@@ -3939,8 +3939,8 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 			
 			If Data.BaseTypeB = 4 Then
 				Try
-					If Data.Property("ТаблицаБХранилище") Then
-						ТаблицаБ = Data.ТаблицаБХранилище.Get();
+					If Data.Property("TableBValueStorage") Then
+						ТаблицаБ = Data.TableBValueStorage.Get();
 					EndIf;
 				Except
 				EndTry; 
@@ -4003,8 +4003,8 @@ Function ПолучитьДанныеВВидеСтруктурыНаСерве�
 	ДанныеСтруктура.Insert("BooleanOperatorForProhibitingConditionsOutputRows", 			BooleanOperatorForProhibitingConditionsOutputRows);
 	ДанныеСтруктура.Insert("CodeForOutputRowsEditedManually", 					CodeForOutputRowsEditedManually);
 	ДанныеСтруктура.Insert("CodeForProhibitingOutputRowsEditedManually", 			CodeForProhibitingOutputRowsEditedManually);
-	ДанныеСтруктура.Insert("УсловияВыводаСтрокОтключены", 							УсловияВыводаСтрокОтключены);
-	ДанныеСтруктура.Insert("УсловияЗапретаВыводаСтрокОтключены", 						УсловияЗапретаВыводаСтрокОтключены);
+	ДанныеСтруктура.Insert("RowOutputConditionsDisabled", 							RowOutputConditionsDisabled);
+	ДанныеСтруктура.Insert("ConditionsProhibitOutputRowsDisabled", 						ConditionsProhibitOutputRowsDisabled);
 	
 	ДанныеСтруктура.Insert("RelationalOperation",   									RelationalOperation);
 	ДанныеСтруктура.Insert("VisibilityAttributeA1",										VisibilityAttributeA1);
@@ -4029,8 +4029,8 @@ Function ПолучитьДанныеВВидеСтруктурыНаСерве�
 	ДанныеСтруктура.Insert("ЧислоСтолбцовВКлюче",										ЧислоСтолбцовВКлюче);
 	ДанныеСтруктура.Insert("NumberOfRowsWithEmptyKeysToBreakReading",			NumberOfRowsWithEmptyKeysToBreakReading);
 	ДанныеСтруктура.Insert("ОтображатьТипыСтолбцовКлюча",								ОтображатьТипыСтолбцовКлюча);
-	ДанныеСтруктура.Insert("ПутьКФайлуВыгрузки",										ПутьКФайлуВыгрузки);
-	ДанныеСтруктура.Insert("ФорматФайлаВыгрузки",										ФорматФайлаВыгрузки);
+	ДанныеСтруктура.Insert("PathToDownloadFile",										PathToDownloadFile);
+	ДанныеСтруктура.Insert("UploadFileFormat",										UploadFileFormat);
 			
 	ДанныеСтруктура.Insert("NumberFirstRowFileA",									NumberFirstRowFileA);
 	ДанныеСтруктура.Insert("NumberFirstRowFileB",									NumberFirstRowFileB);
@@ -4099,30 +4099,30 @@ Function ПолучитьДанныеВВидеСтруктурыНаСерве�
 
 	ДанныеСтруктура.Insert("ТЗУсловияВыводаСтрок", 									УсловияВыводаСтрок.Unload());
 	ДанныеСтруктура.Insert("ТЗУсловияЗапретаВыводаСтрок", 							УсловияЗапретаВыводаСтрок.Unload());
-	ДанныеСтруктура.Insert("ТЗНастройкиФайлаА", 										НастройкиФайлаА.Unload());
-	ДанныеСтруктура.Insert("ТЗНастройкиФайлаБ", 										НастройкиФайлаБ.Unload());
-	ДанныеСтруктура.Insert("ТЗСписокПараметровА", 									СписокПараметровА.Unload());
-	ДанныеСтруктура.Insert("ТЗСписокПараметровБ", 									СписокПараметровБ.Unload());	
+	ДанныеСтруктура.Insert("ValueTableSettingsFileA", 										SettingsFileA.Unload());
+	ДанныеСтруктура.Insert("ValueTableSettingsFileB", 										SettingsFileB.Unload());
+	ДанныеСтруктура.Insert("ValueTableParameterListA", 									ParameterListA.Unload());
+	ДанныеСтруктура.Insert("ValueTableParameterListB", 									ParameterListB.Unload());	
 	
 	If СохранятьТабличныеДокументы Then
 		
 		If BaseTypeA = 4 Then
-			ТаблицаАХранилище = New ValueStorage(ТаблицаА);
+			TableAValueStorage = New ValueStorage(ТаблицаА);
 			
-			If ДанныеСтруктура.Property("ТаблицаАХранилище") Then
-				ДанныеСтруктура.ТаблицаАХранилище = ТаблицаАХранилище;
+			If ДанныеСтруктура.Property("TableAValueStorage") Then
+				ДанныеСтруктура.TableAValueStorage = TableAValueStorage;
 			Else
-				ДанныеСтруктура.Insert("ТаблицаАХранилище", ТаблицаАХранилище);
+				ДанныеСтруктура.Insert("TableAValueStorage", TableAValueStorage);
 			EndIf;
 		EndIf;
 		
 		If BaseTypeB = 4 Then
-			ТаблицаБХранилище = New ValueStorage(ТаблицаБ);
+			TableBValueStorage = New ValueStorage(ТаблицаБ);
 			
-			If ДанныеСтруктура.Property("ТаблицаБХранилище") Then
-				ДанныеСтруктура.ТаблицаБХранилище = ТаблицаБХранилище;
+			If ДанныеСтруктура.Property("TableBValueStorage") Then
+				ДанныеСтруктура.TableBValueStorage = TableBValueStorage;
 			Else
-				ДанныеСтруктура.Insert("ТаблицаБХранилище", ТаблицаБХранилище);
+				ДанныеСтруктура.Insert("TableBValueStorage", TableBValueStorage);
 			EndIf;
 		EndIf;
 		
@@ -4133,7 +4133,7 @@ Function ПолучитьДанныеВВидеСтруктурыНаСерве�
 EndFunction
 
 Procedure УстановитьПараметры(Query, ИдентификаторБазы)
-	For Each Parameter In ThisObject["СписокПараметров" + ИдентификаторБазы] Do
+	For Each Parameter In ThisObject["ParameterList" + ИдентификаторБазы] Do
 		If TypeOf(Parameter.ЗначениеПараметра) <> Type("Undefined") Then
 			If Parameter.ИмяПараметра = "ValidFrom" Or Parameter.ИмяПараметра = "ValidTo" Then
 				Continue;
@@ -4155,30 +4155,30 @@ EndProcedure
 
 Function ВыгрузитьРезультатВФайлНаСервере(ДляКлиента = False) Export
 	
-	ФорматФайлаВыгрузки = Upper(ФорматФайлаВыгрузки);
+	UploadFileFormat = Upper(UploadFileFormat);
 	
-	If IsBlankString(ФорматФайлаВыгрузки) Then
+	If IsBlankString(UploadFileFormat) Then
 		ТекстОшибки = "Not указан формат файла выгрузки";
 		UserMessage = New UserMessage;
 		UserMessage.Text = ТекстОшибки;
-		UserMessage.Field = "Object.ФорматФайлаВыгрузки";
+		UserMessage.Field = "Object.UploadFileFormat";
 		UserMessage.Message();
 		Return Undefined;
 	EndIf;
 	
 	If ДляКлиента Then
-		ПутьКВременномуФайлу = GetTempFileName(ФорматФайлаВыгрузки);
+		ПутьКВременномуФайлу = GetTempFileName(UploadFileFormat);
 	Else
-		If IsBlankString(ПутьКФайлуВыгрузки) Then
+		If IsBlankString(PathToDownloadFile) Then
 			ТекстОшибки = "Not заполнен путь к файлу выгрузки (на сервере)";
 			UserMessage = New UserMessage;
 			UserMessage.Text = ТекстОшибки;
-			UserMessage.Field = "Object.ПутьКФайлуВыгрузки";
+			UserMessage.Field = "Object.PathToDownloadFile";
 			UserMessage.Message();
 			Return Undefined;
 		EndIf;
 		
-		ПутьКВременномуФайлу = ПутьКФайлуВыгрузки;
+		ПутьКВременномуФайлу = PathToDownloadFile;
 	EndIf;
 	
 	If Result.Count() = 0 Then
@@ -4194,9 +4194,9 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		DeleteFiles(ПутьКВременномуФайлу);	
 	Except EndTry;
 	
-	Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + ФорматФайлаВыгрузки + """ начата");
+	Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ начата");
 	
-	If ФорматФайлаВыгрузки = "CSV" Then
+	If UploadFileFormat = "CSV" Then
 		
 		РазделительКолонок = ";";
 		TextWriter = New TextWriter(ПутьКВременномуФайлу, TextEncoding.UTF8);
@@ -4236,14 +4236,14 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		
 		TextWriter.Close();
 		
-	ElsIf ФорматФайлаВыгрузки = "XLS" Or
-		ФорматФайлаВыгрузки = "DOCX" Or
-		ФорматФайлаВыгрузки = "HTML" Or
-		ФорматФайлаВыгрузки = "MXL" Or
-		ФорматФайлаВыгрузки = "ODS" Or
-		ФорматФайлаВыгрузки = "PDF" Or
-		ФорматФайлаВыгрузки = "TXT" Or
-		ФорматФайлаВыгрузки = "XLSX" Then
+	ElsIf UploadFileFormat = "XLS" Or
+		UploadFileFormat = "DOCX" Or
+		UploadFileFormat = "HTML" Or
+		UploadFileFormat = "MXL" Or
+		UploadFileFormat = "ODS" Or
+		UploadFileFormat = "PDF" Or
+		UploadFileFormat = "TXT" Or
+		UploadFileFormat = "XLSX" Then
 		
 		НомерКолонкиЧислоЗаписейА = ?(ЧислоСтолбцовВКлюче > 1, ?(ЧислоСтолбцовВКлюче > 2, 5, 4), 3);
 		
@@ -4348,14 +4348,14 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		
 		EndDo; 
 		
-		SpreadsheetDocument.Write(ПутьКВременномуФайлу, SpreadsheetDocumentFileType[ФорматФайлаВыгрузки]);
+		SpreadsheetDocument.Write(ПутьКВременномуФайлу, SpreadsheetDocumentFileType[UploadFileFormat]);
 		
 	Else
 		
-		ТекстОшибки = "Format файла выгрузки """ + ФорматФайлаВыгрузки + """ не предусмотрен";
+		ТекстОшибки = "Format файла выгрузки """ + UploadFileFormat + """ не предусмотрен";
 		UserMessage = New UserMessage;
 		UserMessage.Text = ТекстОшибки;
-		UserMessage.Field = "Object.ФорматФайлаВыгрузки";
+		UserMessage.Field = "Object.UploadFileFormat";
 		UserMessage.Message();
 		Return Undefined;
 		
@@ -4374,7 +4374,7 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		
 	Else
 		
-		Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + ФорматФайлаВыгрузки + """ завершена (число строк: " + СчетчикСтрок + ")");
+		Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ завершена (число строк: " + СчетчикСтрок + ")");
 		Return Undefined;
 		
 	EndIf;

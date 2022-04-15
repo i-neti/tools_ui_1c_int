@@ -355,10 +355,10 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e4a4288e-f568-4697-a9c0-6dc1a3f03238">
-    <name>Заголовок</name>
+    <name>Title</name>
     <synonym>
       <key>ru</key>
-      <value>Заголовок</value>
+      <value>Title</value>
     </synonym>
     <type>
       <types>String</types>
@@ -1882,7 +1882,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="688b236f-c86f-4669-be3d-35bee52d7080">
-    <name>ТаблицаА</name>
+    <name>TableA</name>
+    <synonym>
+      <key>en</key>
+      <value>Table A</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Таблица А</value>
@@ -1894,7 +1898,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="f327434b-4d6c-4041-84fa-a3fbef6a87ac">
-    <name>ТаблицаБ</name>
+    <name>TableB</name>
+    <synonym>
+      <key>en</key>
+      <value>Table B</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Таблица Б</value>
@@ -2212,11 +2220,16 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="562cbd2f-1c79-46e6-afc9-2affbfe2dd63">
-    <name>УсловияВыводаСтрокОтключены</name>
+    <name>RowOutputConditionsDisabled</name>
+    <synonym>
+      <key>en</key>
+      <value>Disabled</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Отключены</value>
     </synonym>
+    <comment>УсловияВыводаСтрокОтключены</comment>
     <type>
       <types>Boolean</types>
     </type>
@@ -2224,11 +2237,16 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e549ad9d-c350-4de6-a2fc-9525f6682de5">
-    <name>УсловияЗапретаВыводаСтрокОтключены</name>
+    <name>ConditionsProhibitOutputRowsDisabled</name>
+    <synonym>
+      <key>en</key>
+      <value>Disabled</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Отключены</value>
     </synonym>
+    <comment>УсловияЗапретаВыводаСтрокОтключены</comment>
     <type>
       <types>Boolean</types>
     </type>
@@ -2236,7 +2254,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="b635af4b-c6f3-4aaf-915a-2c6ebd940912">
-    <name>ИмяМассиваJSONА</name>
+    <name>ArrayNameJSONA</name>
+    <synonym>
+      <key>en</key>
+      <value>The name of the data array</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя массива с данными</value>
@@ -2251,7 +2273,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="1df04ce0-2dd2-4c88-9152-89a22b671d9d">
-    <name>ИмяМассиваJSONБ</name>
+    <name>ArrayNameJSONB</name>
+    <synonym>
+      <key>en</key>
+      <value>The name of the data array</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Имя массива с данными</value>
@@ -2266,7 +2292,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9245a5f5-7666-4c84-8f7d-575d9e3c7788">
-    <name>ПутьКФайлуВыгрузки</name>
+    <name>PathToDownloadFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Path to the download file (on the server)</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Путь к файлу выгрузки (на сервере)</value>
@@ -2279,7 +2309,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="6b31ca3a-eff6-4162-8950-86e4ce6b38b7">
-    <name>ФорматФайлаВыгрузки</name>
+    <name>UploadFileFormat</name>
+    <synonym>
+      <key>en</key>
+      <value>Upload file format</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Формат файла выгрузки</value>
@@ -2294,10 +2328,14 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="f2e23b9f-b037-4e4b-afab-5f3daeb589a0">
-    <name>ТабличныйДокументАХранилище</name>
+    <name>SpreadsheetDocumentAStorage</name>
+    <synonym>
+      <key>en</key>
+      <value>Spreadsheet document A storage</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Табличный документ а хранилище</value>
+      <value>Табличный документ А хранилище</value>
     </synonym>
     <type>
       <types>String</types>
@@ -2307,10 +2345,14 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="239893ed-182f-40b3-bb6e-1989a42639be">
-    <name>ТабличныйДокументБХранилище</name>
+    <name>SpreadsheetDocumentBStorage</name>
+    <synonym>
+      <key>en</key>
+      <value>Spreadsheet document B storage</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Табличный документ б хранилище</value>
+      <value>Табличный документ Б хранилище</value>
     </synonym>
     <type>
       <types>String</types>
@@ -3033,7 +3075,11 @@
       <objectType typeId="d3cab39b-1071-42e1-81ca-65e9d98c9222" valueTypeId="4945590c-7603-446d-8831-fe57d66b585c"/>
       <rowType typeId="562af035-f567-475b-b69c-1cb40f8cbf2f" valueTypeId="7f897376-dc33-4453-8b4c-dd174e301df0"/>
     </producedTypes>
-    <name>НастройкиФайлаА</name>
+    <name>SettingsFileA</name>
+    <synonym>
+      <key>en</key>
+      <value>Settings file A</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Настройки файла А</value>
@@ -3047,7 +3093,11 @@
       <maxValue xsi:type="core:UndefinedValue"/>
     </standardAttributes>
     <attributes uuid="9f19fdd0-6b6e-462a-a2c8-4ceb6f71eb3d">
-      <name>НомерКолонки</name>
+      <name>NumberColumn</name>
+      <synonym>
+        <key>en</key>
+        <value>Source column number</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Номер столбца источника</value>
@@ -3064,7 +3114,11 @@
       <fillValue xsi:type="core:UndefinedValue"/>
     </attributes>
     <attributes uuid="2a8c9428-9b6b-4540-9eb2-511b1b063ce2">
-      <name>ИмяКолонки</name>
+      <name>ColumnName</name>
+      <synonym>
+        <key>en</key>
+        <value>Source column name</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Имя столбца источника</value>
@@ -3082,7 +3136,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="d5ffff8f-b821-49cf-b2e0-e1ba3bf49a02">
-      <name>ПроизвольныйКод</name>
+      <name>ArbitraryCode</name>
+      <synonym>
+        <key>en</key>
+        <value>Arbitrary code (example: RCurrent = Mid(RCurrent , 5);)</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Произвольный код (пример: РТек = Лев(РТек, 5);)</value>
@@ -3098,7 +3156,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="f20dff1a-b120-4897-bfcc-35f84d040cc9">
-      <name>ЗаголовокРеквизитаДляПользователя</name>
+      <name>HeaderPropsForUser</name>
+      <synonym>
+        <key>en</key>
+        <value>The heading of the attribute of the discrepancy table for the user</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Заголовок реквизита таблицы расхождений для пользователя</value>
@@ -3121,10 +3183,10 @@
       <objectType typeId="183316b0-1226-4799-8fcc-56a522b8eb14" valueTypeId="7c387f3e-e797-4e74-b26f-b225aca20bf5"/>
       <rowType typeId="fcf3c464-5a78-4234-8f88-fd59379996ef" valueTypeId="9b529c1d-1221-4538-97d3-936759a0c4c8"/>
     </producedTypes>
-    <name>НастройкиФайлаБ</name>
+    <name>SettingsFileB</name>
     <synonym>
       <key>ru</key>
-      <value>Настройки файла Б</value>
+      <value>Settings file B</value>
     </synonym>
     <standardAttributes>
       <dataHistory>Use</dataHistory>
@@ -3135,7 +3197,11 @@
       <maxValue xsi:type="core:UndefinedValue"/>
     </standardAttributes>
     <attributes uuid="fce52db9-ecec-4faf-8daf-d7a3861d3c22">
-      <name>НомерКолонки</name>
+      <name>NumberColumn</name>
+      <synonym>
+        <key>en</key>
+        <value>Source column number</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Номер столбца источника</value>
@@ -3152,7 +3218,11 @@
       <fillValue xsi:type="core:UndefinedValue"/>
     </attributes>
     <attributes uuid="8d8cf5e2-a5a5-44d3-b94d-f4fe0779d47b">
-      <name>ИмяКолонки</name>
+      <name>ColumnName</name>
+      <synonym>
+        <key>en</key>
+        <value>Source column name</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Имя столбца источника</value>
@@ -3170,7 +3240,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="328ebfd3-d953-401b-93da-1151960976b9">
-      <name>ПроизвольныйКод</name>
+      <name>ArbitraryCode</name>
+      <synonym>
+        <key>en</key>
+        <value>Arbitrary code (example: RCurrent = Mid(RCurrent , 3, 10);)</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Произвольный код (пример: РТек = Сред(РТек, 3, 10);)</value>
@@ -3186,7 +3260,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="0d479cce-ba51-411a-a2a0-7d9ecf36d4c3">
-      <name>ЗаголовокРеквизитаДляПользователя</name>
+      <name>HeaderPropsForUser</name>
+      <synonym>
+        <key>en</key>
+        <value>The heading of the attribute of the discrepancy table for the user</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Заголовок реквизита таблицы расхождений для пользователя</value>
@@ -3209,7 +3287,11 @@
       <objectType typeId="410a30de-aeef-4a29-8d70-7ed1278c5656" valueTypeId="58044a44-15ac-41fb-85f6-25d6e4fb02bd"/>
       <rowType typeId="db259730-21ac-4fc3-9c00-6ebe66626aa9" valueTypeId="63b291eb-9ea6-4f7a-8419-446b7f91687b"/>
     </producedTypes>
-    <name>СписокПараметровА</name>
+    <name>ParameterListA</name>
+    <synonym>
+      <key>en</key>
+      <value>Parameter list A</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Список параметров А</value>
@@ -3223,7 +3305,11 @@
       <maxValue xsi:type="core:UndefinedValue"/>
     </standardAttributes>
     <attributes uuid="feab345b-2c5e-41bc-8e1a-1c0a4021ae1a">
-      <name>ИмяПараметра</name>
+      <name>ParameterName</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter name</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Имя параметра</value>
@@ -3241,7 +3327,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="661ef1ba-e446-4004-94d4-500c666a257f">
-      <name>ТипПараметра</name>
+      <name>ParameterType</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter type</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Тип параметра</value>
@@ -3257,7 +3347,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="0aa07114-1b56-483d-a59e-0fa8c4cbb4ac">
-      <name>ЗначениеПараметра</name>
+      <name>ParameterValue</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter value</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Значение параметра</value>
@@ -3289,7 +3383,11 @@
       <objectType typeId="507c5b03-9d34-413e-9480-7bbd4bbd5a60" valueTypeId="e30966ae-dba1-4e14-a48b-501aa6025b57"/>
       <rowType typeId="7546a2a5-8796-4b6a-b131-a24f75293ccb" valueTypeId="bf67e5d7-074f-457f-b687-c4e1169556f8"/>
     </producedTypes>
-    <name>СписокПараметровБ</name>
+    <name>ParameterListB</name>
+    <synonym>
+      <key>en</key>
+      <value>Parameter list B</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Список параметров Б</value>
@@ -3303,7 +3401,11 @@
       <maxValue xsi:type="core:UndefinedValue"/>
     </standardAttributes>
     <attributes uuid="f384604c-61a3-4370-b79b-697d1623b8b4">
-      <name>ИмяПараметра</name>
+      <name>ParameterName</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter name</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Имя параметра</value>
@@ -3321,7 +3423,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="b0f3dd9e-38c3-44c2-aff6-8bc0b609c9fa">
-      <name>ТипПараметра</name>
+      <name>ParameterType</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter type</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Тип параметра</value>
@@ -3337,7 +3443,11 @@
       </fillValue>
     </attributes>
     <attributes uuid="e613c136-c0b0-4754-95b2-794681b7395b">
-      <name>ЗначениеПараметра</name>
+      <name>ParameterValue</name>
+      <synonym>
+        <key>en</key>
+        <value>Parameter value</value>
+      </synonym>
       <synonym>
         <key>ru</key>
         <value>Значение параметра</value>
