@@ -2704,10 +2704,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаУсловияВыводаСтрок</name>
+          <name>GroupConditionsOutputRows</name>
           <id>345</id>
           <items xsi:type="form:FormField">
-            <name>RowOutputConditionsDisabled</name>
+            <name>ConditionsOutputRowsDisabled</name>
             <id>1106</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2716,7 +2716,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.RowOutputConditionsDisabled</segments>
+                <segments>Объект.ConditionsOutputRowsDisabled</segments>
               </paths>
             </dataPath>
             <handlers>
@@ -2724,7 +2724,7 @@
               <name>RowOutputConditionsDisabledOnChange</name>
             </handlers>
             <extendedTooltip>
-              <name>RowOutputConditionsDisabledExtendedTooltip</name>
+              <name>ConditionsOutputRowsDisabledExtendedTooltip</name>
               <id>1108</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2739,7 +2739,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>RowOutputConditionsDisabledContextMenu</name>
+              <name>ConditionsOutputRowsDisabledContextMenu</name>
               <id>1107</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3078,7 +3078,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:Table">
-            <name>УсловияВыводаСтрок</name>
+            <name>ConditionsOutputRows</name>
             <id>259</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3086,11 +3086,11 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>Объект.УсловияВыводаСтрок</segments>
+              <segments>Объект.ConditionsOutputRows</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокНомерСтроки</name>
+              <name>ConditionsOutputRowsLineNumber</name>
               <id>272</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3098,7 +3098,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокНомерСтрокиРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsLineNumberExtendedTooltip</name>
                 <id>274</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3113,7 +3113,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокНомерСтрокиКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsLineNumberContextMenu</name>
                 <id>273</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3122,18 +3122,13 @@
                 </userVisible>
                 <autoFill>true</autoFill>
               </contextMenu>
-              <type>LabelField</type>
               <editMode>EnterOnInput</editMode>
               <showInHeader>true</showInHeader>
               <headerHorizontalAlign>Left</headerHorizontalAlign>
               <showInFooter>true</showInFooter>
-              <extInfo xsi:type="form:LabelFieldExtInfo">
-                <autoMaxWidth>true</autoMaxWidth>
-                <autoMaxHeight>true</autoMaxHeight>
-              </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокИмяСравниваемогоРеквизита</name>
+              <name>ConditionsOutputRowsNameComparedAttribute</name>
               <id>275</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3142,11 +3137,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияВыводаСтрок.ИмяСравниваемогоРеквизита</segments>
+                  <segments>Объект.ConditionsOutputRows.NameComparedAttribute</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокИмяСравниваемогоРеквизитаРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsNameComparedAttributeExtendedTooltip</name>
                 <id>277</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3161,7 +3156,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокИмяСравниваемогоРеквизитаКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsNameComparedAttributeContextMenu</name>
                 <id>276</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3275,7 +3270,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокУсловие</name>
+              <name>ConditionsOutputRowsCondition</name>
               <id>278</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3284,11 +3279,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияВыводаСтрок.Условие</segments>
+                  <segments>Объект.ConditionsOutputRows.Condition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокУсловиеРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsConditionExtendedTooltip</name>
                 <id>280</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3303,7 +3298,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокУсловиеКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsConditionContextMenu</name>
                 <id>279</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3390,7 +3385,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокТипСравнения</name>
+              <name>ConditionsOutputRowsComparisonType</name>
               <id>325</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3399,11 +3394,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияВыводаСтрок.ТипСравнения</segments>
+                  <segments>Объект.ConditionsOutputRows.ComparisonType</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокТипСравненияРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsComparisonTypeExtendedTooltip</name>
                 <id>327</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3418,7 +3413,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокТипСравненияКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsComparisonTypeContextMenu</name>
                 <id>326</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3461,7 +3456,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокСравниваемоеЗначение</name>
+              <name>ConditionsOutputRowsComparedValue</name>
               <id>281</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3470,11 +3465,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияВыводаСтрок.СравниваемоеЗначение</segments>
+                  <segments>Объект.ConditionsOutputRows.ComparedValue</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокСравниваемоеЗначениеРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsComparedValueExtendedTooltip</name>
                 <id>283</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3489,7 +3484,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокСравниваемоеЗначениеКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsComparedValueContextMenu</name>
                 <id>282</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3513,7 +3508,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияВыводаСтрокИмяСравниваемогоРеквизита2</name>
+              <name>ConditionsOutputRowsNameComparedAttribute2</name>
               <id>284</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3522,11 +3517,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияВыводаСтрок.ИмяСравниваемогоРеквизита2</segments>
+                  <segments>Объект.ConditionsOutputRows.NameComparedAttribute2</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокИмяСравниваемогоРеквизита2РасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsNameComparedAttribute2ExtendedTooltip</name>
                 <id>286</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3541,7 +3536,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокИмяСравниваемогоРеквизита2КонтекстноеМеню</name>
+                <name>ConditionsOutputRowsNameComparedAttribute2ContextMenu</name>
                 <id>285</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3655,7 +3650,7 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>УсловияВыводаСтрокКоманднаяПанель</name>
+              <name>ConditionsOutputRowsCommandBar</name>
               <id>261</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3667,7 +3662,7 @@
             </autoCommandBar>
             <handlers>
               <event>OnChange</event>
-              <name>УсловияВыводаСтрокПриИзменении</name>
+              <name>ConditionsOutputRowsOnChange</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -3675,10 +3670,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияВыводаСтрокСтрокаПоиска</name>
+              <name>ConditionsOutputRowsSearchString</name>
               <id>263</id>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsSearchStringExtendedTooltip</name>
                 <id>265</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3693,7 +3688,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокСтрокаПоискаКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsSearchStringContextMenu</name>
                 <id>264</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3712,10 +3707,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияВыводаСтрокСостояниеПросмотра</name>
+              <name>ConditionsOutputRowsViewStatus</name>
               <id>266</id>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsViewStatusExtendedTooltip</name>
                 <id>268</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3730,7 +3725,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокСостояниеПросмотраКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsViewStatusContextMenu</name>
                 <id>267</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3750,10 +3745,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияВыводаСтрокУправлениеПоиском</name>
+              <name>ConditionsOutputRowsSearchControl</name>
               <id>269</id>
               <extendedTooltip>
-                <name>УсловияВыводаСтрокУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>ConditionsOutputRowsSearchControlExtendedTooltip</name>
                 <id>271</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3768,7 +3763,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияВыводаСтрокУправлениеПоискомКонтекстноеМеню</name>
+                <name>ConditionsOutputRowsSearchControlContextMenu</name>
                 <id>270</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3783,7 +3778,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>УсловияВыводаСтрокРасширеннаяПодсказка</name>
+              <name>ConditionsOutputRowsExtendedTooltip</name>
               <id>262</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3798,7 +3793,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>УсловияВыводаСтрокКонтекстноеМеню</name>
+              <name>ConditionsOutputRowsContextMenu</name>
               <id>260</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3839,12 +3834,16 @@
             <key>ru</key>
             <value>Условия вывода строк</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group conditions output rows</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа условия вывода строк</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаУсловияВыводаСтрокРасширеннаяПодсказка</name>
+            <name>GroupConditionsOutputRowsExtendedTooltip</name>
             <id>346</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3865,7 +3864,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаУсловияЗапретаВыводаСтрок</name>
+          <name>GroupConditionsProhibitOutputRows</name>
           <id>349</id>
           <items xsi:type="form:FormField">
             <name>ConditionsProhibitOutputRowsDisabled</name>
@@ -4023,10 +4022,10 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаУсловияЗапретаВыводаСтрок2</name>
+            <name>GroupConditionsProhibitOutputRows2</name>
             <id>351</id>
             <items xsi:type="form:FormField">
-              <name>ЛогическийОператорДляУсловийЗапретаВыводаСтрок</name>
+              <name>BooleanOperatorForProhibitingConditionsOutputRows</name>
               <id>340</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4040,10 +4039,10 @@
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>ЛогическийОператорДляУсловийЗапретаВыводаСтрокПриИзменении</name>
+                <name>BooleanOperatorForProhibitingConditionsOutputRowsOnChange</name>
               </handlers>
               <extendedTooltip>
-                <name>ЛогическийОператорДляУсловийЗапретаВыводаСтрокРасширеннаяПодсказка</name>
+                <name>BooleanOperatorForProhibitingConditionsOutputRowsExtendedTooltip</name>
                 <id>342</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4058,7 +4057,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ЛогическийОператорДляУсловийЗапретаВыводаСтрокКонтекстноеМеню</name>
+                <name>BooleanOperatorForProhibitingConditionsOutputRowsContextMenu</name>
                 <id>341</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4100,7 +4099,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>КодДляЗапретаВыводаСтрокРедактируетсяВручную</name>
+              <name>CodeForProhibitingOutputRowsEditedManually</name>
               <id>334</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4114,10 +4113,10 @@
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзменении</name>
+                <name>CodeForProhibitingOutputRowsEditedManuallyOnChange</name>
               </handlers>
               <extendedTooltip>
-                <name>КодДляЗапретаВыводаСтрокРедактируетсяВручнуюРасширеннаяПодсказка</name>
+                <name>CodeForProhibitingOutputRowsEditedManuallyExtendedTooltip</name>
                 <id>336</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4132,7 +4131,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>КодДляЗапретаВыводаСтрокРедактируетсяВручнуюКонтекстноеМеню</name>
+                <name>CodeForProhibitingOutputRowsEditedManuallyContextMenu</name>
                 <id>335</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4157,12 +4156,16 @@
               <key>ru</key>
               <value>Группа условия запрета вывода строк2</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group conditions prohibit output rows2</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа условия запрета вывода строк2</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаУсловияЗапретаВыводаСтрок2РасширеннаяПодсказка</name>
+              <name>GroupConditionsProhibitOutputRows2ExtendedTooltip</name>
               <id>352</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4186,7 +4189,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>КодДляЗапретаВыводаСтрок</name>
+            <name>CodeForProhibitingOutputRows</name>
             <id>331</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4200,7 +4203,7 @@
             </dataPath>
             <titleLocation>None</titleLocation>
             <extendedTooltip>
-              <name>КодДляЗапретаВыводаСтрокРасширеннаяПодсказка</name>
+              <name>CodeForProhibitingOutputRowsExtendedTooltip</name>
               <id>333</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4215,7 +4218,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>КодДляЗапретаВыводаСтрокКонтекстноеМеню</name>
+              <name>CodeForProhibitingOutputRowsContextMenu</name>
               <id>332</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4239,7 +4242,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:Table">
-            <name>УсловияЗапретаВыводаСтрок</name>
+            <name>ConditionsProhibitOutputRows</name>
             <id>287</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4247,11 +4250,11 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>Объект.УсловияЗапретаВыводаСтрок</segments>
+              <segments>Объект.ConditionsProhibitOutputRows</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокНомерСтроки</name>
+              <name>ConditionsProhibitOutputRowsLineNumber</name>
               <id>300</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4259,7 +4262,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокНомерСтрокиРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsLineNumberExtendedTooltip</name>
                 <id>302</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4274,7 +4277,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокНомерСтрокиКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsLineNumberContextMenu</name>
                 <id>301</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4283,18 +4286,13 @@
                 </userVisible>
                 <autoFill>true</autoFill>
               </contextMenu>
-              <type>LabelField</type>
               <editMode>EnterOnInput</editMode>
               <showInHeader>true</showInHeader>
               <headerHorizontalAlign>Left</headerHorizontalAlign>
               <showInFooter>true</showInFooter>
-              <extInfo xsi:type="form:LabelFieldExtInfo">
-                <autoMaxWidth>true</autoMaxWidth>
-                <autoMaxHeight>true</autoMaxHeight>
-              </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизита</name>
+              <name>ConditionsProhibitOutputRowsNameComparedAttribute</name>
               <id>303</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4303,11 +4301,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияЗапретаВыводаСтрок.ИмяСравниваемогоРеквизита</segments>
+                  <segments>Объект.ConditionsProhibitOutputRows.NameComparedAttribute</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизитаРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsNameComparedAttributeExtendedTooltip</name>
                 <id>305</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4322,7 +4320,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизитаКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsNameComparedAttributeContextMenu</name>
                 <id>304</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4436,7 +4434,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокУсловие</name>
+              <name>ConditionsProhibitOutputRowsCondition</name>
               <id>306</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4445,11 +4443,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияЗапретаВыводаСтрок.Условие</segments>
+                  <segments>Объект.ConditionsProhibitOutputRows.Condition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокУсловиеРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsConditionExtendedTooltip</name>
                 <id>308</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4464,7 +4462,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокУсловиеКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsConditionContextMenu</name>
                 <id>307</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4551,7 +4549,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокТипСравнения</name>
+              <name>ConditionsProhibitOutputRowsComparisonType</name>
               <id>328</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4560,11 +4558,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияЗапретаВыводаСтрок.ТипСравнения</segments>
+                  <segments>Объект.ConditionsProhibitOutputRows.ComparisonType</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокТипСравненияРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsComparisonTypeExtendedTooltip</name>
                 <id>330</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4579,7 +4577,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокТипСравненияКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsComparisonTypeContextMenu</name>
                 <id>329</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4621,7 +4619,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокСравниваемоеЗначение</name>
+              <name>ConditionsProhibitOutputRowsComparedValue</name>
               <id>309</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4630,11 +4628,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияЗапретаВыводаСтрок.СравниваемоеЗначение</segments>
+                  <segments>Объект.ConditionsProhibitOutputRows.ComparedValue</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокСравниваемоеЗначениеРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsComparedValueExtendedTooltip</name>
                 <id>311</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4649,7 +4647,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокСравниваемоеЗначениеКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsComparedValueContextMenu</name>
                 <id>310</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4673,7 +4671,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизита2</name>
+              <name>ConditionsProhibitOutputRowsNameComparedAttribute2</name>
               <id>312</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4682,11 +4680,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.УсловияЗапретаВыводаСтрок.ИмяСравниваемогоРеквизита2</segments>
+                  <segments>Объект.ConditionsProhibitOutputRows.NameComparedAttribute2</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизита2РасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsNameComparedAttribute2ExtendedTooltip</name>
                 <id>314</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4701,7 +4699,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокИмяСравниваемогоРеквизита2КонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsNameComparedAttribute2ContextMenu</name>
                 <id>313</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4815,7 +4813,7 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>УсловияЗапретаВыводаСтрокКоманднаяПанель</name>
+              <name>ConditionsProhibitOutputRowsCommandBar</name>
               <id>289</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4827,7 +4825,7 @@
             </autoCommandBar>
             <handlers>
               <event>OnChange</event>
-              <name>УсловияЗапретаВыводаСтрокПриИзменении</name>
+              <name>ConditionsProhibitOutputRowsOnChange</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -4835,10 +4833,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияЗапретаВыводаСтрокСтрокаПоиска</name>
+              <name>ConditionsProhibitOutputRowsSearchString</name>
               <id>291</id>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsSearchStringExtendedTooltip</name>
                 <id>293</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4853,7 +4851,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокСтрокаПоискаКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsSearchStringContextMenu</name>
                 <id>292</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4872,10 +4870,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияЗапретаВыводаСтрокСостояниеПросмотра</name>
+              <name>ConditionsProhibitOutputRowsViewStatus</name>
               <id>294</id>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsViewStatusExtendedTooltip</name>
                 <id>296</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4890,7 +4888,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокСостояниеПросмотраКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsViewStatusContextMenu</name>
                 <id>295</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4910,10 +4908,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>УсловияЗапретаВыводаСтрокУправлениеПоиском</name>
+              <name>ConditionsProhibitOutputRowsSearchControl</name>
               <id>297</id>
               <extendedTooltip>
-                <name>УсловияЗапретаВыводаСтрокУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>ConditionsProhibitOutputRowsSearchControlExtendedTooltip</name>
                 <id>299</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4928,7 +4926,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УсловияЗапретаВыводаСтрокУправлениеПоискомКонтекстноеМеню</name>
+                <name>ConditionsProhibitOutputRowsSearchControlContextMenu</name>
                 <id>298</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4943,7 +4941,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>УсловияЗапретаВыводаСтрокРасширеннаяПодсказка</name>
+              <name>ConditionsProhibitOutputRowsExtendedTooltip</name>
               <id>290</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4958,7 +4956,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>УсловияЗапретаВыводаСтрокКонтекстноеМеню</name>
+              <name>ConditionsProhibitOutputRowsContextMenu</name>
               <id>288</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4999,12 +4997,16 @@
             <key>ru</key>
             <value>Условия запрета вывода строк</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group conditions prohibit output rows</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа условия запрета вывода строк</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаУсловияЗапретаВыводаСтрокРасширеннаяПодсказка</name>
+            <name>GroupConditionsProhibitOutputRowsExtendedTooltip</name>
             <id>350</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -16887,7 +16889,7 @@
       <name>ГруппаРезультатСравнения</name>
       <id>97</id>
       <items xsi:type="form:Table">
-        <name>Результат</name>
+        <name>Result</name>
         <id>22</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -16895,7 +16897,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>Объект.Результат</segments>
+          <segments>Объект.Result</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <excludedCommands>Add</excludedCommands>
@@ -16904,7 +16906,7 @@
         <excludedCommands>Delete</excludedCommands>
         <excludedCommands>EndEdit</excludedCommands>
         <items xsi:type="form:FormField">
-          <name>РезультатНомерСтроки</name>
+          <name>ResultLineNumber</name>
           <id>35</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -16912,7 +16914,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>РезультатНомерСтрокиРасширеннаяПодсказка</name>
+            <name>ResultLineNumberExtendedTooltip</name>
             <id>37</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -16927,7 +16929,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатНомерСтрокиКонтекстноеМеню</name>
+            <name>ResultLineNumberContextMenu</name>
             <id>36</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -16936,21 +16938,16 @@
             </userVisible>
             <autoFill>true</autoFill>
           </contextMenu>
-          <type>LabelField</type>
           <editMode>EnterOnInput</editMode>
           <showInHeader>true</showInHeader>
           <headerHorizontalAlign>Left</headerHorizontalAlign>
           <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:LabelFieldExtInfo">
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-          </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>РезультатГруппаКлюч</name>
+          <name>ResultGroupKey</name>
           <id>515</id>
           <items xsi:type="form:FormField">
-            <name>РезультатКлюч</name>
+            <name>ResultKey</name>
             <id>38</id>
             <title>
               <key>ru</key>
@@ -16963,11 +16960,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.Ключ</segments>
+                <segments>Объект.Result.Key</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатКлючРасширеннаяПодсказка</name>
+              <name>ResultKeyExtendedTooltip</name>
               <id>40</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -16982,7 +16979,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатКлючКонтекстноеМеню</name>
+              <name>ResultKeyContextMenu</name>
               <id>39</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -16999,11 +16996,11 @@
             <extInfo xsi:type="form:InputFieldExtInfo">
               <handlers>
                 <event>StartChoice</event>
-                <name>РезультатКлючНачалоВыбора</name>
+                <name>ResultKeyStartChoice</name>
               </handlers>
               <handlers>
                 <event>Clearing</event>
-                <name>РезультатКлючОчистка</name>
+                <name>ResultKeyClearing</name>
               </handlers>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -17018,7 +17015,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>РезультатТипСтолбца1Ключа</name>
+            <name>ResultColumnType1Key</name>
             <id>977</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17027,11 +17024,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.ТипСтолбца1Ключа</segments>
+                <segments>Объект.Result.ColumnType1Key</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатТипСтолбца1КлючаРасширеннаяПодсказка</name>
+              <name>ResultColumnType1KeyExtendedTooltip</name>
               <id>979</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17046,7 +17043,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатТипСтолбца1КлючаКонтекстноеМеню</name>
+              <name>ResultColumnType1KeyContextMenu</name>
               <id>978</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17072,7 +17069,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>РезультатКлюч2</name>
+            <name>ResultKey2</name>
             <id>512</id>
             <title>
               <key>ru</key>
@@ -17085,11 +17082,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.Ключ2</segments>
+                <segments>Объект.Result.Key2</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатКлюч2РасширеннаяПодсказка</name>
+              <name>ResultKey2ExtendedTooltip</name>
               <id>514</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17104,7 +17101,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатКлюч2КонтекстноеМеню</name>
+              <name>ResultKey2ContextMenu</name>
               <id>513</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17121,11 +17118,11 @@
             <extInfo xsi:type="form:InputFieldExtInfo">
               <handlers>
                 <event>StartChoice</event>
-                <name>РезультатКлюч2НачалоВыбора</name>
+                <name>ResultKey2StartChoice</name>
               </handlers>
               <handlers>
                 <event>Clearing</event>
-                <name>РезультатКлюч2Очистка</name>
+                <name>ResultKey2Clearing</name>
               </handlers>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -17139,7 +17136,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>РезультатТипСтолбца2Ключа</name>
+            <name>ResultColumnType2Key</name>
             <id>980</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17148,11 +17145,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.ТипСтолбца2Ключа</segments>
+                <segments>Объект.Result.ColumnType2Key</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатТипСтолбца2КлючаРасширеннаяПодсказка</name>
+              <name>ResultColumnType2KeyExtendedTooltip</name>
               <id>982</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17167,7 +17164,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатТипСтолбца2КлючаКонтекстноеМеню</name>
+              <name>ResultColumnType2KeyContextMenu</name>
               <id>981</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17193,7 +17190,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>РезультатКлюч3</name>
+            <name>ResultKey3</name>
             <id>825</id>
             <title>
               <key>ru</key>
@@ -17206,11 +17203,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.Ключ3</segments>
+                <segments>Объект.Result.Key3</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатКлюч3РасширеннаяПодсказка</name>
+              <name>ResultKey3ExtendedTooltip</name>
               <id>827</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17225,7 +17222,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатКлюч3КонтекстноеМеню</name>
+              <name>ResultKey3ContextMenu</name>
               <id>826</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17242,11 +17239,11 @@
             <extInfo xsi:type="form:InputFieldExtInfo">
               <handlers>
                 <event>StartChoice</event>
-                <name>РезультатКлюч3НачалоВыбора</name>
+                <name>ResultKey3StartChoice</name>
               </handlers>
               <handlers>
                 <event>Clearing</event>
-                <name>РезультатКлюч3Очистка</name>
+                <name>ResultKey3Clearing</name>
               </handlers>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -17260,7 +17257,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>РезультатТипСтолбца3Ключа</name>
+            <name>ResultColumnType3Key</name>
             <id>983</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17269,11 +17266,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Результат.ТипСтолбца3Ключа</segments>
+                <segments>Объект.Result.ColumnType3Key</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>РезультатТипСтолбца3КлючаРасширеннаяПодсказка</name>
+              <name>ResultColumnType3KeyExtendedTooltip</name>
               <id>985</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17288,7 +17285,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>РезультатТипСтолбца3КлючаКонтекстноеМеню</name>
+              <name>ResultColumnType3KeyContextMenu</name>
               <id>984</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17322,12 +17319,16 @@
             <key>ru</key>
             <value>Ключ</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Result group key</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Результат группа ключ</value>
           </toolTip>
           <extendedTooltip>
-            <name>РезультатГруппаКлючРасширеннаяПодсказка</name>
+            <name>ResultGroupKeyExtendedTooltip</name>
             <id>516</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17349,7 +17350,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатЧислоЗаписейА</name>
+          <name>ResultNumberOfRecordsA</name>
           <id>87</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17358,11 +17359,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.ЧислоЗаписейА</segments>
+              <segments>Объект.Result.NumberOfRecordsA</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатЧислоЗаписейАРасширеннаяПодсказка</name>
+            <name>ResultNumberOfRecordsAExtendedTooltip</name>
             <id>89</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17377,7 +17378,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатЧислоЗаписейАКонтекстноеМеню</name>
+            <name>ResultNumberOfRecordsAContextMenu</name>
             <id>88</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17394,7 +17395,7 @@
           <showInFooter>true</showInFooter>
           <footerDataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.ЧислоЗаписейА</segments>
+              <segments>Объект.Result.NumberOfRecordsA</segments>
             </paths>
           </footerDataPath>
           <extInfo xsi:type="form:InputFieldExtInfo">
@@ -17411,7 +17412,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатЧислоЗаписейБ</name>
+          <name>ResultNumberOfRecordsB</name>
           <id>90</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17420,11 +17421,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.ЧислоЗаписейБ</segments>
+              <segments>Объект.Result.NumberOfRecordsB</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатЧислоЗаписейБРасширеннаяПодсказка</name>
+            <name>ResultNumberOfRecordsBExtendedTooltip</name>
             <id>92</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17439,7 +17440,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатЧислоЗаписейБКонтекстноеМеню</name>
+            <name>ResultNumberOfRecordsBContextMenu</name>
             <id>91</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17456,7 +17457,7 @@
           <showInFooter>true</showInFooter>
           <footerDataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.ЧислоЗаписейБ</segments>
+              <segments>Объект.Result.NumberOfRecordsB</segments>
             </paths>
           </footerDataPath>
           <extInfo xsi:type="form:InputFieldExtInfo">
@@ -17472,7 +17473,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитА1</name>
+          <name>ResultAttributeA1</name>
           <id>41</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17481,11 +17482,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитА1</segments>
+              <segments>Объект.Result.AttributeA1</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитА1РасширеннаяПодсказка</name>
+            <name>ResultAttributeA1ExtendedTooltip</name>
             <id>43</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17500,7 +17501,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитА1КонтекстноеМеню</name>
+            <name>ResultAttributeA1ContextMenu</name>
             <id>42</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17527,7 +17528,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитА2</name>
+          <name>ResultAttributeA2</name>
           <id>44</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17536,11 +17537,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитА2</segments>
+              <segments>Объект.Result.AttributeA2</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитА2РасширеннаяПодсказка</name>
+            <name>ResultAttributeA2ExtendedTooltip</name>
             <id>46</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17555,7 +17556,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитА2КонтекстноеМеню</name>
+            <name>ResultAttributeA2ContextMenu</name>
             <id>45</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17582,7 +17583,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитА3</name>
+          <name>ResultAttributeA3</name>
           <id>47</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17591,11 +17592,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитА3</segments>
+              <segments>Объект.Result.AttributeA3</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитА3РасширеннаяПодсказка</name>
+            <name>ResultAttributeA3ExtendedTooltip</name>
             <id>49</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17610,7 +17611,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитА3КонтекстноеМеню</name>
+            <name>ResultAttributeA3ContextMenu</name>
             <id>48</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17637,7 +17638,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитА4</name>
+          <name>ResultAttributeA4</name>
           <id>369</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17646,11 +17647,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитА4</segments>
+              <segments>Объект.Result.AttributeA4</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитА4РасширеннаяПодсказка</name>
+            <name>ResultAttributeA4ExtendedTooltip</name>
             <id>371</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17665,7 +17666,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитА4КонтекстноеМеню</name>
+            <name>ResultAttributeA4ContextMenu</name>
             <id>370</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17692,7 +17693,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитА5</name>
+          <name>ResultAttributeA5</name>
           <id>372</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17701,11 +17702,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитА5</segments>
+              <segments>Объект.Result.AttributeA5</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитА5РасширеннаяПодсказка</name>
+            <name>ResultAttributeA5ExtendedTooltip</name>
             <id>374</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17720,7 +17721,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитА5КонтекстноеМеню</name>
+            <name>ResultAttributeA5ContextMenu</name>
             <id>373</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17747,7 +17748,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитБ1</name>
+          <name>ResultAttributeB1</name>
           <id>50</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17756,11 +17757,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитБ1</segments>
+              <segments>Объект.Result.AttributeB1</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитБ1РасширеннаяПодсказка</name>
+            <name>ResultAttributeB1ExtendedTooltip</name>
             <id>52</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17775,7 +17776,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитБ1КонтекстноеМеню</name>
+            <name>ResultAttributeB1ContextMenu</name>
             <id>51</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17802,7 +17803,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитБ2</name>
+          <name>ResultAttributeB2</name>
           <id>53</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17811,11 +17812,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитБ2</segments>
+              <segments>Объект.Result.AttributeB2</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитБ2РасширеннаяПодсказка</name>
+            <name>ResultAttributeB2ExtendedTooltip</name>
             <id>55</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17830,7 +17831,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитБ2КонтекстноеМеню</name>
+            <name>ResultAttributeB2ContextMenu</name>
             <id>54</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17857,7 +17858,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитБ3</name>
+          <name>ResultAttributeB3</name>
           <id>56</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17866,11 +17867,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитБ3</segments>
+              <segments>Объект.Result.AttributeB3</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитБ3РасширеннаяПодсказка</name>
+            <name>ResultAttributeB3ExtendedTooltip</name>
             <id>58</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17885,7 +17886,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитБ3КонтекстноеМеню</name>
+            <name>ResultAttributeB3ContextMenu</name>
             <id>57</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17912,7 +17913,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитБ4</name>
+          <name>ResultAttributeB4</name>
           <id>375</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17921,11 +17922,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитБ4</segments>
+              <segments>Объект.Result.AttributeB4</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитБ4РасширеннаяПодсказка</name>
+            <name>ResultAttributeB4ExtendedTooltip</name>
             <id>377</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17940,7 +17941,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитБ4КонтекстноеМеню</name>
+            <name>ResultAttributeB4ContextMenu</name>
             <id>376</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17967,7 +17968,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РезультатРеквизитБ5</name>
+          <name>ResultAttributeB5</name>
           <id>378</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17976,11 +17977,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Результат.РеквизитБ5</segments>
+              <segments>Объект.Result.AttributeB5</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РезультатРеквизитБ5РасширеннаяПодсказка</name>
+            <name>ResultAttributeB5ExtendedTooltip</name>
             <id>380</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17995,7 +17996,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатРеквизитБ5КонтекстноеМеню</name>
+            <name>ResultAttributeB5ContextMenu</name>
             <id>379</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18022,7 +18023,7 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>РезультатКоманднаяПанель</name>
+          <name>ResultCommandBar</name>
           <id>24</id>
           <items xsi:type="form:Button">
             <name>РезультатКомандаВидимостьРеквизитА1</name>
@@ -18510,10 +18511,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РезультатСтрокаПоиска</name>
+          <name>ResultSearchString</name>
           <id>26</id>
           <extendedTooltip>
-            <name>РезультатСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>ResultSearchStringExtendedTooltip</name>
             <id>28</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18528,7 +18529,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатСтрокаПоискаКонтекстноеМеню</name>
+            <name>ResultSearchStringContextMenu</name>
             <id>27</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18547,10 +18548,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РезультатСостояниеПросмотра</name>
+          <name>ResultViewStatus</name>
           <id>29</id>
           <extendedTooltip>
-            <name>РезультатСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>ResultViewStatusExtendedTooltip</name>
             <id>31</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18565,7 +18566,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатСостояниеПросмотраКонтекстноеМеню</name>
+            <name>ResultViewStatusContextMenu</name>
             <id>30</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18585,10 +18586,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РезультатУправлениеПоиском</name>
+          <name>ResultSearchControl</name>
           <id>32</id>
           <extendedTooltip>
-            <name>РезультатУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>ResultSearchControlExtendedTooltip</name>
             <id>34</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18603,7 +18604,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РезультатУправлениеПоискомКонтекстноеМеню</name>
+            <name>ResultSearchControlContextMenu</name>
             <id>33</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -18618,7 +18619,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>РезультатРасширеннаяПодсказка</name>
+          <name>ResultExtendedTooltip</name>
           <id>25</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -18633,7 +18634,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>РезультатКонтекстноеМеню</name>
+          <name>ResultContextMenu</name>
           <id>23</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -18877,7 +18878,7 @@
     <main>true</main>
     <additionalColumns>
       <tablePath xsi:type="form:DataPath">
-        <segments>Объект.Результат</segments>
+        <segments>Объект.Result</segments>
       </tablePath>
     </additionalColumns>
   </attributes>
