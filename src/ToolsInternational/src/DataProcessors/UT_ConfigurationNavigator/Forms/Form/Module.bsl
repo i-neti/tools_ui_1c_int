@@ -1573,36 +1573,36 @@ EndProcedure
 
 &AtClient
 Procedure vFormDescriptionOfAccessRights()
-	ListA = "Read, Create, Update, Delete, Browse, Edit";
-	ListB = "Read, Update, Browse, Edit, TotalsManagement";
+	ListA = "Read, Insert, Update, Delete, View, Edit";
+	ListB = "Read, Update, View, Edit, TotalsManagement";
 
 	mDescriptionAccessRights = New Map;
-	mDescriptionAccessRights.Insert("Subsystems", "Browse");
-	mDescriptionAccessRights.Insert("SessionParameter", "Receive, Установка");
-	mDescriptionAccessRights.Insert("CommonAttribute", "Browse, Edit");
+	mDescriptionAccessRights.Insert("Subsystems", "View");
+	mDescriptionAccessRights.Insert("SessionParameter", "Receive, Set");
+	mDescriptionAccessRights.Insert("CommonAttribute", "View, Edit");
 	mDescriptionAccessRights.Insert("ExchangePlan", ListA);
-	mDescriptionAccessRights.Insert("FilterCriterion", "Browse");
-	mDescriptionAccessRights.Insert("CommonForm", "Browse");
-	mDescriptionAccessRights.Insert("CommonCommand", "Browse");
-	mDescriptionAccessRights.Insert("OtherCommand", "Browse");
+	mDescriptionAccessRights.Insert("FilterCriterion", "View");
+	mDescriptionAccessRights.Insert("CommonForm", "View");
+	mDescriptionAccessRights.Insert("CommonCommand", "View");
+	mDescriptionAccessRights.Insert("OtherCommand", "View");
 	mDescriptionAccessRights.Insert("WebServise.Property", "Use");
 	mDescriptionAccessRights.Insert("HTTPServise.Property", "Use");
-	mDescriptionAccessRights.Insert("Constant", "Read, Update, Browse, Edit");
+	mDescriptionAccessRights.Insert("Constant", "Read, Update, View, Edit");
 	mDescriptionAccessRights.Insert("Catalog", ListA);
 	mDescriptionAccessRights.Insert("Document", ListA + ", Posting, UndoPosting");
 	mDescriptionAccessRights.Insert("Sequence", "Read, Update");
-	mDescriptionAccessRights.Insert("DocumentJournal", "Read, Browse");
-	mDescriptionAccessRights.Insert("Report", "Use, Browse");
-	mDescriptionAccessRights.Insert("Processing", "Use, Browse");
+	mDescriptionAccessRights.Insert("DocumentJournal", "Read, View");
+	mDescriptionAccessRights.Insert("Report", "Use, View");
+	mDescriptionAccessRights.Insert("Processing", "Use, View");
 	mDescriptionAccessRights.Insert("ChartOfCharacteristicTypes", ListA);
 	mDescriptionAccessRights.Insert("ChartOfCalculationTypes", ListA);
 	mDescriptionAccessRights.Insert("ChartOfAccounts", ListA);
 	mDescriptionAccessRights.Insert("InformationRegister", ListB);
 	mDescriptionAccessRights.Insert("AccumulationRegister", ListB);
 	mDescriptionAccessRights.Insert("AccountingRegister", ListB);
-	mDescriptionAccessRights.Insert("CalculationRegister", "Read, Update, Browse, Edit");
+	mDescriptionAccessRights.Insert("CalculationRegister", "Read, Update, View, Edit");
 	mDescriptionAccessRights.Insert("BusinessProcess", ListA + ", Start");
-	mDescriptionAccessRights.Insert("Task", ListA + ", Running");
+	mDescriptionAccessRights.Insert("Task", ListA + ", Execute");
 
 EndProcedure
 

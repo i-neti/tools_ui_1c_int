@@ -922,10 +922,10 @@
       <name>ValuePage</name>
       <id>484</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаЗначение</name>
+        <name>ValueGroup</name>
         <id>489</id>
         <items xsi:type="form:Button">
-          <name>_ПрочитатьКонстанту</name>
+          <name>_ReadConstant</name>
           <id>491</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -933,7 +933,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ПрочитатьКонстантуРасширеннаяПодсказка</name>
+            <name>_ReadConstantExtendedTooltip</name>
             <id>492</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -955,7 +955,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ЗаписатьКонстанту</name>
+          <name>_RecordConstant</name>
           <id>493</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -963,7 +963,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ЗаписатьКонстантуРасширеннаяПодсказка</name>
+            <name>_RecordConstantExtendedTooltip</name>
             <id>494</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -993,12 +993,16 @@
           <key>ru</key>
           <value>Группа значение</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Value group</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа значение</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаЗначениеРасширеннаяПодсказка</name>
+          <name>ValueGroupExtendedTooltip</name>
           <id>490</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1018,11 +1022,15 @@
         </extInfo>
       </items>
       <items xsi:type="form:Decoration">
-        <name>ДекорацияКонстанта</name>
+        <name>ConstantDecoration</name>
         <id>495</id>
         <title>
           <key>ru</key>
           <value>ВАЖНО: в этой версии реализована поддержка только простых и ссылочных типов!</value>
+        </title>
+        <title>
+          <key>en</key>
+          <value>Constant decoration</value>
         </title>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1030,7 +1038,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ДекорацияКонстантаРасширеннаяПодсказка</name>
+          <name>ConstantDecorationExtendedTooltip</name>
           <id>497</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1045,7 +1053,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ДекорацияКонстантаКонтекстноеМеню</name>
+          <name>ConstantDecorationContextMenu</name>
           <id>496</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1071,10 +1079,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаКонстанта</name>
+        <name>ConstantGroup</name>
         <id>498</id>
         <items xsi:type="form:FormField">
-          <name>_ЗначениеКонстанты</name>
+          <name>_ConstantValue</name>
           <id>486</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1087,7 +1095,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ЗначениеКонстантыРасширеннаяПодсказка</name>
+            <name>_ConstantValueExtendedTooltip</name>
             <id>488</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1102,7 +1110,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗначениеКонстантыКонтекстноеМеню</name>
+            <name>_ConstantValueContextMenu</name>
             <id>487</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1128,7 +1136,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ТипЗначенияКонстанты</name>
+          <name>_TypeOfConstantValue</name>
           <id>500</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1142,7 +1150,7 @@
           </dataPath>
           <titleLocation>None</titleLocation>
           <extendedTooltip>
-            <name>_ТипЗначенияКонстантыРасширеннаяПодсказка</name>
+            <name>_TypeOfConstantValueExtendedTooltip</name>
             <id>502</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1157,7 +1165,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ТипЗначенияКонстантыКонтекстноеМеню</name>
+            <name>_TypeOfConstantValueContextMenu</name>
             <id>501</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1190,12 +1198,16 @@
           <key>ru</key>
           <value>Группа константа</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Constant group</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа константа</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаКонстантаРасширеннаяПодсказка</name>
+          <name>ConstantGroupExtendedTooltip</name>
           <id>499</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1220,7 +1232,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ИспользоватьТекстПриЗаписиКонстанты</name>
+        <name>_UseTextWhenWritingConstants</name>
         <id>506</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1234,7 +1246,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>_ИспользоватьТекстПриЗаписиКонстантыРасширеннаяПодсказка</name>
+          <name>_UseTextWhenWritingConstantsExtendedTooltip</name>
           <id>508</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1249,7 +1261,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ИспользоватьТекстПриЗаписиКонстантыКонтекстноеМеню</name>
+          <name>_UseTextWhenWritingConstantsContextMenu</name>
           <id>507</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1266,7 +1278,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТекстовоеЗначениеКостанты</name>
+        <name>_TextConstantValue</name>
         <id>503</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1279,7 +1291,7 @@
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТекстовоеЗначениеКостантыРасширеннаяПодсказка</name>
+          <name>_TextConstantValueExtendedTooltip</name>
           <id>505</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1294,7 +1306,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТекстовоеЗначениеКостантыКонтекстноеМеню</name>
+          <name>_TextConstantValueContextMenu</name>
           <id>504</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1356,13 +1368,13 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаПраваДоступа</name>
+      <name>AccessRightPage</name>
       <id>299</id>
       <items xsi:type="form:FormGroup">
-        <name>Группа4</name>
+        <name>Group4</name>
         <id>404</id>
         <items xsi:type="form:FormField">
-          <name>_ПравоДоступаКОбъекту</name>
+          <name>_AccessRightToObject</name>
           <id>399</id>
           <titleTextColor xsi:type="core:ColorRef">
             <color>Style.FieldSelectionBackColor</color>
@@ -1382,7 +1394,7 @@
             <name>_ПравоДоступаКОбъектуПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_ПравоДоступаКОбъектуРасширеннаяПодсказка</name>
+            <name>_AccessRightToObjectExtendedTooltip</name>
             <id>401</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1397,7 +1409,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ПравоДоступаКОбъектуКонтекстноеМеню</name>
+            <name>_AccessRightToObjectContextMenu</name>
             <id>400</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1426,7 +1438,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:Button">
-          <name>_ЗаполнитьПраваДоступа</name>
+          <name>_FullInAccessRights</name>
           <id>402</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1434,7 +1446,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ЗаполнитьПраваДоступаРасширеннаяПодсказка</name>
+            <name>_FullInAccessRightsExtendedTooltip</name>
             <id>403</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1461,8 +1473,12 @@
         <userVisible>
           <common>true</common>
         </userVisible>
+        <title>
+          <key>en</key>
+          <value>Group4</value>
+        </title>
         <extendedTooltip>
-          <name>Группа4РасширеннаяПодсказка</name>
+          <name>Group4ExtendedTooltip</name>
           <id>405</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1486,13 +1502,13 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ПраваДоступаКОбъеткту</name>
+        <name>AccessRightToObject</name>
         <id>301</id>
         <items xsi:type="form:FormGroup">
-          <name>ПраваДоступаКОбъекту_Роли</name>
+          <name>AccessRightToObject_Role</name>
           <id>303</id>
           <items xsi:type="form:Table">
-            <name>ТабРолиСДоступом</name>
+            <name>RolesWithAccessTable</name>
             <id>309</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1512,7 +1528,7 @@
             <excludedCommands>MoveUp</excludedCommands>
             <excludedCommands>ShowRowRearrangement</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>ТабРолиСДоступомОграничениеУсловием</name>
+              <name>RolesWithAccessTableRestrictionByCondition</name>
               <id>406</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1521,11 +1537,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>RolesWithAccessTable.RestrictionCondition</segments>
+                  <segments>RolesWithAccessTable.RestrictionByCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТабРолиСДоступомОграничениеУсловиемРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableRestrictionByConditionExtendedTooltip</name>
                 <id>408</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1540,7 +1556,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомОграничениеУсловиемКонтекстноеМеню</name>
+                <name>RolesWithAccessTableRestrictionByConditionContextMenu</name>
                 <id>407</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1558,7 +1574,7 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТабРолиСДоступомИмя</name>
+              <name>RolesWithAccessTableName</name>
               <id>322</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1571,7 +1587,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТабРолиСДоступомИмяРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableNameExtendedTooltip</name>
                 <id>324</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1586,7 +1602,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомИмяКонтекстноеМеню</name>
+                <name>RolesWithAccessTableNameContextMenu</name>
                 <id>323</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1611,7 +1627,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТабРолиСДоступомСиноним</name>
+              <name>RolesWithAccessTableSynonym</name>
               <id>325</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1624,7 +1640,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТабРолиСДоступомСинонимРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableSynonymExtendedTooltip</name>
                 <id>327</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1639,7 +1655,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомСинонимКонтекстноеМеню</name>
+                <name>RolesWithAccessTableSynonymContextMenu</name>
                 <id>326</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1664,10 +1680,10 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>ТабРолиСДоступомКоманднаяПанель</name>
+              <name>RolesWithAccessTableCommandBar</name>
               <id>311</id>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомСортироватьСписокПоВозрастанию</name>
+                <name>RolesWithAccessTableSortListAsc</name>
                 <id>369</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1675,7 +1691,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableSortListAscExtendedTooltip</name>
                   <id>370</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1689,7 +1705,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабРолиСДоступом.StandardCommand.SortListAsc</commandName>
+                <commandName>Form.Item.RolesWithAccessTable.StandardCommand.SortListAsc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -1698,7 +1714,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомСортироватьСписокПоУбыванию</name>
+                <name>RolesWithAccessTableSortListDesc</name>
                 <id>371</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1706,7 +1722,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableSortListDescExtendedTooltip</name>
                   <id>372</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1720,7 +1736,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабРолиСДоступом.StandardCommand.SortListDesc</commandName>
+                <commandName>Form.Item.RolesWithAccessTable.StandardCommand.SortListDesc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -1729,7 +1745,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомНайти</name>
+                <name>RolesWithAccessTableFind</name>
                 <id>373</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1737,7 +1753,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомНайтиРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableFindExtendedTooltip</name>
                   <id>374</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1751,7 +1767,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабРолиСДоступом.StandardCommand.Find</commandName>
+                <commandName>Form.Item.RolesWithAccessTable.StandardCommand.Find</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -1760,7 +1776,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомОтменитьПоиск</name>
+                <name>RolesWithAccessTableCancelSearch</name>
                 <id>375</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1768,7 +1784,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомОтменитьПоискРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableCancelSearchExtendedTooltip</name>
                   <id>376</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1782,7 +1798,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабРолиСДоступом.StandardCommand.CancelSearch</commandName>
+                <commandName>Form.Item.RolesWithAccessTable.StandardCommand.CancelSearch</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -1791,7 +1807,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомВывестиСписок</name>
+                <name>RolesWithAccessTableOutputList</name>
                 <id>377</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1799,7 +1815,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомВывестиСписокРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableOutputListExtendedTooltip</name>
                   <id>378</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1813,7 +1829,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабРолиСДоступом.StandardCommand.OutputList</commandName>
+                <commandName>Form.Item.RolesWithAccessTable.StandardCommand.OutputList</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -1822,7 +1838,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступом_ОткрытьОбъектПравДоступа</name>
+                <name>RolesWithAccessTable_OpenAccessRightsObject</name>
                 <id>411</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1830,7 +1846,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступом_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTable_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>412</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1868,10 +1884,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабРолиСДоступомСтрокаПоиска</name>
+              <name>RolesWithAccessTableSearchString</name>
               <id>313</id>
               <extendedTooltip>
-                <name>ТабРолиСДоступомСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableSearchStringExtendedTooltip</name>
                 <id>315</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1886,7 +1902,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомСтрокаПоискаКонтекстноеМеню</name>
+                <name>RolesWithAccessTableSearchStringContextMenu</name>
                 <id>314</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1905,10 +1921,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабРолиСДоступомСостояниеПросмотра</name>
+              <name>RolesWithAccessTableViewStatus</name>
               <id>316</id>
               <extendedTooltip>
-                <name>ТабРолиСДоступомСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableViewStatusExtendedTooltip</name>
                 <id>318</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1923,7 +1939,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомСостояниеПросмотраКонтекстноеМеню</name>
+                <name>RolesWithAccessTableViewStatusContextMenu</name>
                 <id>317</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1944,10 +1960,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабРолиСДоступомУправлениеПоиском</name>
+              <name>RolesWithAccessTableSearchControl</name>
               <id>319</id>
               <extendedTooltip>
-                <name>ТабРолиСДоступомУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>RolesWithAccessTableSearchControlExtendedTooltip</name>
                 <id>321</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1962,7 +1978,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабРолиСДоступомУправлениеПоискомКонтекстноеМеню</name>
+                <name>RolesWithAccessTableSearchControlContextMenu</name>
                 <id>320</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1977,7 +1993,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>ТабРолиСДоступомРасширеннаяПодсказка</name>
+              <name>RolesWithAccessTableExtendedTooltip</name>
               <id>312</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1992,10 +2008,10 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ТабРолиСДоступомКонтекстноеМеню</name>
+              <name>RolesWithAccessTableContextMenu</name>
               <id>310</id>
               <items xsi:type="form:Button">
-                <name>ТабРолиСДоступомКонтекстноеМеню_ОткрытьОбъектПравДоступа</name>
+                <name>RolesWithAccessTableContextMenu_OpenAccessRightsObject</name>
                 <id>417</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2003,7 +2019,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабРолиСДоступомКонтекстноеМеню_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>RolesWithAccessTableContextMenu_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>418</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2061,12 +2077,16 @@
             <key>ru</key>
             <value>Роли</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Access right to object role</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Роли</value>
           </toolTip>
           <extendedTooltip>
-            <name>ПраваДоступаКОбъекту_РолиРасширеннаяПодсказка</name>
+            <name>AccessRightToObject_RoleExtendedTooltip</name>
             <id>304</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2087,10 +2107,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ПраваДоступаДляРоли</name>
+          <name>_AccessRightForRole</name>
           <id>409</id>
           <items xsi:type="form:Table">
-            <name>_ДоступныеОбъекты</name>
+            <name>_AvailableObjects</name>
             <id>263</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2109,7 +2129,7 @@
             <excludedCommands>MoveDown</excludedCommands>
             <excludedCommands>MoveUp</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>_ДоступныеОбъектыОграничениеУсловием</name>
+              <name>_AvailableObjectsRestrictionByCondition</name>
               <id>296</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2118,11 +2138,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>_AvailableObjects.RestrictionCondition</segments>
+                  <segments>_AvailableObjects.RestrictionByCondition</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыОграничениеУсловиемРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsRestrictionByConditionExtendedTooltip</name>
                 <id>298</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2137,7 +2157,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыОграничениеУсловиемКонтекстноеМеню</name>
+                <name>_AvailableObjectsRestrictionByConditionContextMenu</name>
                 <id>297</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2155,7 +2175,7 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:FormField">
-              <name>_ДоступныеОбъектыВид</name>
+              <name>_AvailableObjectsKind</name>
               <id>276</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2168,7 +2188,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыВидРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsKindExtendedTooltip</name>
                 <id>278</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2183,7 +2203,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыВидКонтекстноеМеню</name>
+                <name>_AvailableObjectsKindContextMenu</name>
                 <id>277</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2209,7 +2229,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>_ДоступныеОбъектыИмя</name>
+              <name>_AvailableObjectsName</name>
               <id>279</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2222,7 +2242,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыИмяРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsNameExtendedTooltip</name>
                 <id>281</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2237,7 +2257,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыИмяКонтекстноеМеню</name>
+                <name>_AvailableObjectsNameContextMenu</name>
                 <id>280</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2263,7 +2283,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>_ДоступныеОбъектыПредставление</name>
+              <name>_AvailableObjectsPresentation</name>
               <id>282</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2276,7 +2296,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыПредставлениеРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsPresentationExtendedTooltip</name>
                 <id>284</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2291,7 +2311,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыПредставлениеКонтекстноеМеню</name>
+                <name>_AvailableObjectsPresentationContextMenu</name>
                 <id>283</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2317,7 +2337,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>_ДоступныеОбъектыПолноеИмя</name>
+              <name>_AvailableObjectsFullName</name>
               <id>285</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2330,7 +2350,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыПолноеИмяРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsFullNameExtendedTooltip</name>
                 <id>287</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2345,7 +2365,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыПолноеИмяКонтекстноеМеню</name>
+                <name>_AvailableObjectsFullNameContextMenu</name>
                 <id>286</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2371,10 +2391,10 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>_ДоступныеОбъектыКоманднаяПанель</name>
+              <name>_AvailableObjectsCommandBar</name>
               <id>265</id>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъектыСортироватьСписокПоВозрастанию</name>
+                <name>_AvailableObjectsSortListAsc</name>
                 <id>288</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2382,7 +2402,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъектыСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                  <name>_AvailableObjectsSortListAscExtendedTooltip</name>
                   <id>289</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2396,7 +2416,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item._ДоступныеОбъекты.StandardCommand.SortListAsc</commandName>
+                <commandName>Form.Item._AvailableObjects.StandardCommand.SortListAsc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2405,7 +2425,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъектыСортироватьСписокПоУбыванию</name>
+                <name>_AvailableObjectsSortListDesc</name>
                 <id>290</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2413,7 +2433,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъектыСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                  <name>_AvailableObjectsSortListDescExtendedTooltip</name>
                   <id>291</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2427,7 +2447,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item._ДоступныеОбъекты.StandardCommand.SortListDesc</commandName>
+                <commandName>Form.Item._AvailableObjects.StandardCommand.SortListDesc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2436,7 +2456,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъектыНайти</name>
+                <name>_AvailableObjectsFind</name>
                 <id>292</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2444,7 +2464,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъектыНайтиРасширеннаяПодсказка</name>
+                  <name>_AvailableObjectsFindExtendedTooltip</name>
                   <id>293</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2458,7 +2478,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item._ДоступныеОбъекты.StandardCommand.Find</commandName>
+                <commandName>Form.Item._AvailableObjects.StandardCommand.Find</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2467,7 +2487,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъектыОтменитьПоиск</name>
+                <name>_AvailableObjectsCancelSearch</name>
                 <id>294</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2475,7 +2495,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъектыОтменитьПоискРасширеннаяПодсказка</name>
+                  <name>_AvailableObjectsCancelSearchExtendedTooltip</name>
                   <id>295</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2489,7 +2509,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item._ДоступныеОбъекты.StandardCommand.CancelSearch</commandName>
+                <commandName>Form.Item._AvailableObjects.StandardCommand.CancelSearch</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2498,7 +2518,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъекты_ОткрытьОбъектПравДоступа</name>
+                <name>_AvailableObjects_OpenAccessRightsObject</name>
                 <id>413</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2506,7 +2526,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъекты_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>_AvailableObjects_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>414</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2545,10 +2565,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>_ДоступныеОбъектыСтрокаПоиска</name>
+              <name>_AvailableObjectsSearchString</name>
               <id>267</id>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsSearchStringExtendedTooltip</name>
                 <id>269</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2563,7 +2583,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыСтрокаПоискаКонтекстноеМеню</name>
+                <name>_AvailableObjectsSearchStringContextMenu</name>
                 <id>268</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2582,10 +2602,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>_ДоступныеОбъектыСостояниеПросмотра</name>
+              <name>_AvailableObjectsViewStatus</name>
               <id>270</id>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsViewStatusExtendedTooltip</name>
                 <id>272</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2600,7 +2620,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыСостояниеПросмотраКонтекстноеМеню</name>
+                <name>_AvailableObjectsViewStatusContextMenu</name>
                 <id>271</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2621,10 +2641,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>_ДоступныеОбъектыУправлениеПоиском</name>
+              <name>_AvailableObjectsSearchControl</name>
               <id>273</id>
               <extendedTooltip>
-                <name>_ДоступныеОбъектыУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>_AvailableObjectsSearchControlExtendedTooltip</name>
                 <id>275</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2639,7 +2659,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_ДоступныеОбъектыУправлениеПоискомКонтекстноеМеню</name>
+                <name>_AvailableObjectsSearchControlContextMenu</name>
                 <id>274</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2654,7 +2674,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>_ДоступныеОбъектыРасширеннаяПодсказка</name>
+              <name>_AvailableObjectsExtendedTooltip</name>
               <id>266</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2669,10 +2689,10 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_ДоступныеОбъектыКонтекстноеМеню</name>
+              <name>_AvailableObjectsContextMenu</name>
               <id>264</id>
               <items xsi:type="form:Button">
-                <name>_ДоступныеОбъектыКонтекстноеМеню_ОткрытьОбъектПравДоступа</name>
+                <name>_AvailableObjectsContextMenu_OpenAccessRightsObject</name>
                 <id>419</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2680,7 +2700,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>_ДоступныеОбъектыКонтекстноеМеню_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>_AvailableObjectsContextMenu_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>420</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2738,12 +2758,16 @@
             <key>ru</key>
             <value>Доступные объекты</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Access right for role</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Доступные объекты</value>
           </toolTip>
           <extendedTooltip>
-            <name>ПраваДоступаДляРолиРасширеннаяПодсказка</name>
+            <name>_AccessRightForRoleExtendedTooltip</name>
             <id>410</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2764,10 +2788,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ПраваДоступаКОбъеткту_Пользователи</name>
+          <name>AccessRightToObject_Users</name>
           <id>305</id>
           <items xsi:type="form:Table">
-            <name>ТабПользователиСДоступом</name>
+            <name>UsersWithAccessTable</name>
             <id>328</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2787,7 +2811,7 @@
             <excludedCommands>MoveUp</excludedCommands>
             <excludedCommands>ShowRowRearrangement</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>ТабПользователиСДоступомИмя</name>
+              <name>UsersWithAccessTableName</name>
               <id>341</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2800,7 +2824,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТабПользователиСДоступомИмяРасширеннаяПодсказка</name>
+                <name>UsersWithAccessTableNameExtendedTooltip</name>
                 <id>343</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2815,7 +2839,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабПользователиСДоступомИмяКонтекстноеМеню</name>
+                <name>UsersWithAccessTableNameContextMenu</name>
                 <id>342</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2840,7 +2864,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТабПользователиСДоступомПолноеИмя</name>
+              <name>UsersWithAccessTableFullName</name>
               <id>344</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2853,7 +2877,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТабПользователиСДоступомПолноеИмяРасширеннаяПодсказка</name>
+                <name>UsersWithAccessTableFullNameExtendedTooltip</name>
                 <id>346</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2868,7 +2892,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабПользователиСДоступомПолноеИмяКонтекстноеМеню</name>
+                <name>UsersWithAccessTableFullNameContextMenu</name>
                 <id>345</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2893,10 +2917,10 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>ТабПользователиСДоступомКоманднаяПанель</name>
+              <name>UsersWithAccessTableCommandBar</name>
               <id>330</id>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомСортироватьСписокПоВозрастанию</name>
+                <name>UsersWithAccessTableSortListAsc</name>
                 <id>379</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2904,7 +2928,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableSortListAscExtendedTooltip</name>
                   <id>380</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2918,7 +2942,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабПользователиСДоступом.StandardCommand.SortListAsc</commandName>
+                <commandName>Form.Item.UsersWithAccessTable.StandardCommand.SortListAsc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2927,7 +2951,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомСортироватьСписокПоУбыванию</name>
+                <name>UsersWithAccessTableSortListDesc</name>
                 <id>381</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2935,7 +2959,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableSortListDescExtendedTooltip</name>
                   <id>382</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2949,7 +2973,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабПользователиСДоступом.StandardCommand.SortListDesc</commandName>
+                <commandName>Form.Item.UsersWithAccessTable.StandardCommand.SortListDesc</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2958,7 +2982,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомНайти</name>
+                <name>UsersWithAccessTableFind</name>
                 <id>383</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2966,7 +2990,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомНайтиРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableFindExtendedTooltip</name>
                   <id>384</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2980,7 +3004,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабПользователиСДоступом.StandardCommand.Find</commandName>
+                <commandName>Form.Item.UsersWithAccessTable.StandardCommand.Find</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -2989,7 +3013,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомОтменитьПоиск</name>
+                <name>UsersWithAccessTableCancelSearch</name>
                 <id>385</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2997,7 +3021,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомОтменитьПоискРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableCancelSearchExtendedTooltip</name>
                   <id>386</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -3011,7 +3035,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабПользователиСДоступом.StandardCommand.CancelSearch</commandName>
+                <commandName>Form.Item.UsersWithAccessTable.StandardCommand.CancelSearch</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -3020,7 +3044,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомВывестиСписок</name>
+                <name>UsersWithAccessTableOutputList</name>
                 <id>387</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3028,7 +3052,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомВывестиСписокРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableOutputListExtendedTooltip</name>
                   <id>388</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -3042,7 +3066,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Item.ТабПользователиСДоступом.StandardCommand.OutputList</commandName>
+                <commandName>Form.Item.UsersWithAccessTable.StandardCommand.OutputList</commandName>
                 <representation>Auto</representation>
                 <onlyInAllActions>false</onlyInAllActions>
                 <autoMaxWidth>true</autoMaxWidth>
@@ -3051,7 +3075,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступом_ОткрытьОбъектПравДоступа</name>
+                <name>UsersWithAccessTable_OpenAccessRightsObject</name>
                 <id>415</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3059,7 +3083,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступом_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTable_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>416</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -3097,10 +3121,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабПользователиСДоступомСтрокаПоиска</name>
+              <name>UsersWithAccessTableSearchString</name>
               <id>332</id>
               <extendedTooltip>
-                <name>ТабПользователиСДоступомСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>UsersWithAccessTableSearchStringExtendedTooltip</name>
                 <id>334</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3115,7 +3139,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабПользователиСДоступомСтрокаПоискаКонтекстноеМеню</name>
+                <name>UsersWithAccessTableSearchStringContextMenu</name>
                 <id>333</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3134,10 +3158,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабПользователиСДоступомСостояниеПросмотра</name>
+              <name>UsersWithAccessTableViewStatus</name>
               <id>335</id>
               <extendedTooltip>
-                <name>ТабПользователиСДоступомСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>UsersWithAccessTableViewStatusExtendedTooltip</name>
                 <id>337</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3152,7 +3176,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабПользователиСДоступомСостояниеПросмотраКонтекстноеМеню</name>
+                <name>UsersWithAccessTableViewStatusContextMenu</name>
                 <id>336</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3173,10 +3197,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТабПользователиСДоступомУправлениеПоиском</name>
+              <name>UsersWithAccessTableSearchControl</name>
               <id>338</id>
               <extendedTooltip>
-                <name>ТабПользователиСДоступомУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>UsersWithAccessTableSearchControlExtendedTooltip</name>
                 <id>340</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3191,7 +3215,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТабПользователиСДоступомУправлениеПоискомКонтекстноеМеню</name>
+                <name>UsersWithAccessTableSearchControlContextMenu</name>
                 <id>339</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3206,7 +3230,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>ТабПользователиСДоступомРасширеннаяПодсказка</name>
+              <name>UsersWithAccessTableExtendedTooltip</name>
               <id>331</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3221,10 +3245,10 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ТабПользователиСДоступомКонтекстноеМеню</name>
+              <name>UsersWithAccessTableContextMenu</name>
               <id>329</id>
               <items xsi:type="form:Button">
-                <name>ТабПользователиСДоступомКонтекстноеМеню_ОткрытьОбъектПравДоступа</name>
+                <name>UsersWithAccessTableContextMenu_OpenAccessRightsObject</name>
                 <id>421</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3232,7 +3256,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТабПользователиСДоступомКонтекстноеМеню_ОткрытьОбъектПравДоступаРасширеннаяПодсказка</name>
+                  <name>UsersWithAccessTableContextMenu_OpenAccessRightsObjectExtendedTooltip</name>
                   <id>422</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -3290,12 +3314,16 @@
             <key>ru</key>
             <value>Пользователи</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Access right to object users</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Пользователи</value>
           </toolTip>
           <extendedTooltip>
-            <name>ПраваДоступаКОбъеткту_ПользователиРасширеннаяПодсказка</name>
+            <name>AccessRightToObject_UsersExtendedTooltip</name>
             <id>306</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3324,12 +3352,16 @@
           <key>ru</key>
           <value>Права доступа к объеткту</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Access right to object</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Права доступа к объеткту</value>
         </toolTip>
         <extendedTooltip>
-          <name>ПраваДоступаКОбъетктуРасширеннаяПодсказка</name>
+          <name>AccessRightToObjectExtendedTooltip</name>
           <id>302</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3358,12 +3390,16 @@
         <key>ru</key>
         <value>Права доступа</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Access right page</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Права доступа</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницаПраваДоступаРасширеннаяПодсказка</name>
+        <name>AccessRightPageExtendedTooltip</name>
         <id>300</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3384,13 +3420,13 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаСтруктураХранения</name>
+      <name>StorageStructurePage</name>
       <id>61</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаСХ</name>
+        <name>SXGroup</name>
         <id>82</id>
         <items xsi:type="form:Table">
-          <name>_СХТаблицы</name>
+          <name>_SXTable</name>
           <id>63</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3402,7 +3438,7 @@
           </dataPath>
           <titleLocation>None</titleLocation>
           <items xsi:type="form:FormField">
-            <name>_СХТаблицыИмяТаблицы</name>
+            <name>_SXTableTableName</name>
             <id>76</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3415,7 +3451,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>_СХТаблицыИмяТаблицыРасширеннаяПодсказка</name>
+              <name>_SXTableTableNameExtendedTooltip</name>
               <id>78</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3430,7 +3466,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_СХТаблицыИмяТаблицыКонтекстноеМеню</name>
+              <name>_SXTableTableNameContextMenu</name>
               <id>77</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3455,7 +3491,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>_СХТаблицыНазначение</name>
+            <name>_SXTablePurpose</name>
             <id>79</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3468,7 +3504,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>_СХТаблицыНазначениеРасширеннаяПодсказка</name>
+              <name>_SXTablePurposeExtendedTooltip</name>
               <id>81</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3483,7 +3519,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_СХТаблицыНазначениеКонтекстноеМеню</name>
+              <name>_SXTablePurposeContextMenu</name>
               <id>80</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3508,10 +3544,10 @@
             </extInfo>
           </items>
           <autoCommandBar>
-            <name>_СХТаблицыКоманднаяПанель</name>
+            <name>_SXTableCommandBar</name>
             <id>65</id>
             <items xsi:type="form:Button">
-              <name>_СХТаблицыСортироватьСписокПоВозрастанию</name>
+              <name>_SXTableSortListAsc</name>
               <id>165</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3519,7 +3555,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_СХТаблицыСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                <name>_SXTableSortListAscExtendedTooltip</name>
                 <id>166</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3533,7 +3569,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Item._СХТаблицы.StandardCommand.SortListAsc</commandName>
+              <commandName>Form.Item._SXTable.StandardCommand.SortListAsc</commandName>
               <representation>Auto</representation>
               <onlyInAllActions>false</onlyInAllActions>
               <autoMaxWidth>true</autoMaxWidth>
@@ -3542,7 +3578,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_СХТаблицыСортироватьСписокПоУбыванию</name>
+              <name>_SXTableSortListDesc</name>
               <id>167</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3550,7 +3586,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_СХТаблицыСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                <name>_SXTableSortListDescExtendedTooltip</name>
                 <id>168</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3564,7 +3600,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Item._СХТаблицы.StandardCommand.SortListDesc</commandName>
+              <commandName>Form.Item._SXTable.StandardCommand.SortListDesc</commandName>
               <representation>Auto</representation>
               <onlyInAllActions>false</onlyInAllActions>
               <autoMaxWidth>true</autoMaxWidth>
@@ -3573,7 +3609,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_СХТаблицыНайти</name>
+              <name>_SXTableFind</name>
               <id>169</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3581,7 +3617,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_СХТаблицыНайтиРасширеннаяПодсказка</name>
+                <name>_SXTableFindExtendedTooltip</name>
                 <id>170</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3595,7 +3631,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Item._СХТаблицы.StandardCommand.Find</commandName>
+              <commandName>Form.Item._SXTable.StandardCommand.Find</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -3603,7 +3639,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_СХТаблицыОтменитьПоиск</name>
+              <name>_SXTableCancelSearch</name>
               <id>171</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3611,7 +3647,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_СХТаблицыОтменитьПоискРасширеннаяПодсказка</name>
+                <name>_SXTableCancelSearchExtendedTooltip</name>
                 <id>172</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3625,7 +3661,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Item._СХТаблицы.StandardCommand.CancelSearch</commandName>
+              <commandName>Form.Item._SXTable.StandardCommand.CancelSearch</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -3633,7 +3669,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_СХТаблицыВывестиСписок</name>
+              <name>_SXTableOutputList</name>
               <id>173</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3641,7 +3677,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_СХТаблицыВывестиСписокРасширеннаяПодсказка</name>
+                <name>_SXTableOutputListExtendedTooltip</name>
                 <id>174</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3655,7 +3691,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Item._СХТаблицы.StandardCommand.OutputList</commandName>
+              <commandName>Form.Item._SXTable.StandardCommand.OutputList</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -3679,10 +3715,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_СХТаблицыСтрокаПоиска</name>
+            <name>_SXTableSearchString</name>
             <id>67</id>
             <extendedTooltip>
-              <name>_СХТаблицыСтрокаПоискаРасширеннаяПодсказка</name>
+              <name>_SXTableSearchStringExtendedTooltip</name>
               <id>69</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3697,7 +3733,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_СХТаблицыСтрокаПоискаКонтекстноеМеню</name>
+              <name>_SXTableSearchStringContextMenu</name>
               <id>68</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3716,10 +3752,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_СХТаблицыСостояниеПросмотра</name>
+            <name>_SXTableViewStatus</name>
             <id>70</id>
             <extendedTooltip>
-              <name>_СХТаблицыСостояниеПросмотраРасширеннаяПодсказка</name>
+              <name>_SXTableViewStatusExtendedTooltip</name>
               <id>72</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3734,7 +3770,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_СХТаблицыСостояниеПросмотраКонтекстноеМеню</name>
+              <name>_SXTableViewStatusContextMenu</name>
               <id>71</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3755,10 +3791,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_СХТаблицыУправлениеПоиском</name>
+            <name>_SXTableSearchControl</name>
             <id>73</id>
             <extendedTooltip>
-              <name>_СХТаблицыУправлениеПоискомРасширеннаяПодсказка</name>
+              <name>_SXTableSearchControlExtendedTooltip</name>
               <id>75</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3773,7 +3809,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_СХТаблицыУправлениеПоискомКонтекстноеМеню</name>
+              <name>_SXTableSearchControlContextMenu</name>
               <id>74</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3788,7 +3824,7 @@
             </extInfo>
           </searchControlAddition>
           <extendedTooltip>
-            <name>_СХТаблицыРасширеннаяПодсказка</name>
+            <name>_SXTableExtendedTooltip</name>
             <id>66</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3803,7 +3839,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_СХТаблицыКонтекстноеМеню</name>
+            <name>_SXTableContextMenu</name>
             <id>64</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3842,12 +3878,16 @@
           <key>ru</key>
           <value>Группа СХ</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>SXGroup</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа СХ</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаСХРасширеннаяПодсказка</name>
+          <name>SXGroupExtendedTooltip</name>
           <id>83</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3871,13 +3911,13 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаСХПодробно</name>
+        <name>DetailSXGroup</name>
         <id>84</id>
         <items xsi:type="form:FormGroup">
-          <name>Группа1</name>
+          <name>Group1</name>
           <id>161</id>
           <items xsi:type="form:FormField">
-            <name>__ТаблицаБД</name>
+            <name>__DBTable</name>
             <id>155</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3886,11 +3926,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Items._СХТаблицы.CurrentData.StorageTableName</segments>
+                <segments>Items._SXTable.CurrentData.StorageTableName</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>__ТаблицаБДРасширеннаяПодсказка</name>
+              <name>__DBTableExtendedTooltip</name>
               <id>157</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3905,7 +3945,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>__ТаблицаБДКонтекстноеМеню</name>
+              <name>__DBTableContextMenu</name>
               <id>156</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3930,7 +3970,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>__Назначение</name>
+            <name>__Purpose</name>
             <id>158</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3939,12 +3979,12 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Items._СХТаблицы.CurrentData.Purpose</segments>
+                <segments>Items._SXTable.CurrentData.Purpose</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
             <extendedTooltip>
-              <name>__НазначениеРасширеннаяПодсказка</name>
+              <name>__PurposeExtendedTooltip</name>
               <id>160</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3959,7 +3999,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>__НазначениеКонтекстноеМеню</name>
+              <name>__PurposeContextMenu</name>
               <id>159</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3988,8 +4028,12 @@
           <userVisible>
             <common>true</common>
           </userVisible>
+          <title>
+            <key>en</key>
+            <value>Group1</value>
+          </title>
           <extendedTooltip>
-            <name>Группа1РасширеннаяПодсказка</name>
+            <name>Group1ExtendedTooltip</name>
             <id>162</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4013,7 +4057,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ПоказыватьСтруктуруХраненияВТерминах1С</name>
+          <name>_ShowStorageStructureIn1CTerms</name>
           <id>481</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4031,7 +4075,7 @@
             <name>_ПоказыватьСтруктуруХраненияВТерминах1СПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_ПоказыватьСтруктуруХраненияВТерминах1СРасширеннаяПодсказка</name>
+            <name>_ShowStorageStructureIn1CTermsExtendedTooltip</name>
             <id>483</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4046,7 +4090,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ПоказыватьСтруктуруХраненияВТерминах1СКонтекстноеМеню</name>
+            <name>_ShowStorageStructureIn1CTermsContextMenu</name>
             <id>482</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4063,13 +4107,13 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаСХСтраницы</name>
+          <name>SXPagesGroup</name>
           <id>86</id>
           <items xsi:type="form:FormGroup">
-            <name>СтраницаСХПоля</name>
+            <name>SXPageFields</name>
             <id>88</id>
             <items xsi:type="form:Table">
-              <name>_СХПоля</name>
+              <name>_SXFielsd</name>
               <id>92</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4081,7 +4125,7 @@
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИмяПоля</name>
+                <name>_SXFielsdFieldName</name>
                 <id>108</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4094,7 +4138,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИмяПоляРасширеннаяПодсказка</name>
+                  <name>_SXFielsdFieldNameExtendedTooltip</name>
                   <id>110</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4109,7 +4153,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИмяПоляКонтекстноеМеню</name>
+                  <name>_SXFielsdFieldNameContextMenu</name>
                   <id>109</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4134,7 +4178,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИмяПоляХранения</name>
+                <name>_SXFielsdStorageFieldName</name>
                 <id>111</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4147,7 +4191,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИмяПоляХраненияРасширеннаяПодсказка</name>
+                  <name>_SXFielsdStorageFieldNameExtendedTooltip</name>
                   <id>113</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4162,7 +4206,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИмяПоляХраненияКонтекстноеМеню</name>
+                  <name>_SXFielsdStorageFieldNameContextMenu</name>
                   <id>112</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4187,10 +4231,10 @@
                 </extInfo>
               </items>
               <autoCommandBar>
-                <name>_СХПоляКоманднаяПанель</name>
+                <name>_SXFielsdCommandBar</name>
                 <id>94</id>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляСортироватьСписокПоВозрастанию</name>
+                  <name>_SXFielsdSortListAsc</name>
                   <id>175</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4198,7 +4242,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                    <name>_SXFielsdSortListAscExtendedTooltip</name>
                     <id>176</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4212,7 +4256,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоля.StandardCommand.SortListAsc</commandName>
+                  <commandName>Form.Item._SXFielsd.StandardCommand.SortListAsc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4221,7 +4265,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляСортироватьСписокПоУбыванию</name>
+                  <name>_SXFielsdSortListDesc</name>
                   <id>177</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4229,7 +4273,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                    <name>_SXFielsdSortListDescExtendedTooltip</name>
                     <id>178</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4243,7 +4287,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоля.StandardCommand.SortListDesc</commandName>
+                  <commandName>Form.Item._SXFielsd.StandardCommand.SortListDesc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4252,7 +4296,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляНайти</name>
+                  <name>_SXFielsdFind</name>
                   <id>179</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4260,7 +4304,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляНайтиРасширеннаяПодсказка</name>
+                    <name>_SXFielsdFindExtendedTooltip</name>
                     <id>180</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4274,7 +4318,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоля.StandardCommand.Find</commandName>
+                  <commandName>Form.Item._SXFielsd.StandardCommand.Find</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4282,7 +4326,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляОтменитьПоиск</name>
+                  <name>_SXFielsdCancelSearch</name>
                   <id>181</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4290,7 +4334,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляОтменитьПоискРасширеннаяПодсказка</name>
+                    <name>_SXFielsdCancelSearchExtendedTooltip</name>
                     <id>182</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4304,7 +4348,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоля.StandardCommand.CancelSearch</commandName>
+                  <commandName>Form.Item._SXFielsd.StandardCommand.CancelSearch</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4312,7 +4356,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляВывестиСписок</name>
+                  <name>_SXFielsdOutputList</name>
                   <id>183</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4320,7 +4364,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляВывестиСписокРасширеннаяПодсказка</name>
+                    <name>_SXFielsdOutputListExtendedTooltip</name>
                     <id>184</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4334,7 +4378,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоля.StandardCommand.OutputList</commandName>
+                  <commandName>Form.Item._SXFielsd.StandardCommand.OutputList</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4354,10 +4398,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляСтрокаПоиска</name>
+                <name>_SXFielsdSearchString</name>
                 <id>96</id>
                 <extendedTooltip>
-                  <name>_СХПоляСтрокаПоискаРасширеннаяПодсказка</name>
+                  <name>_SXFielsdSearchStringExtendedTooltip</name>
                   <id>98</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4372,7 +4416,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляСтрокаПоискаКонтекстноеМеню</name>
+                  <name>_SXFielsdSearchStringContextMenu</name>
                   <id>97</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4391,10 +4435,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляСостояниеПросмотра</name>
+                <name>_SXFielsdViewStatus</name>
                 <id>99</id>
                 <extendedTooltip>
-                  <name>_СХПоляСостояниеПросмотраРасширеннаяПодсказка</name>
+                  <name>_SXFielsdViewStatusExtendedTooltip</name>
                   <id>101</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4409,7 +4453,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляСостояниеПросмотраКонтекстноеМеню</name>
+                  <name>_SXFielsdViewStatusContextMenu</name>
                   <id>100</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4430,10 +4474,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляУправлениеПоиском</name>
+                <name>_SXFielsdSearchControl</name>
                 <id>102</id>
                 <extendedTooltip>
-                  <name>_СХПоляУправлениеПоискомРасширеннаяПодсказка</name>
+                  <name>_SXFielsdSearchControlExtendedTooltip</name>
                   <id>104</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4448,7 +4492,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляУправлениеПоискомКонтекстноеМеню</name>
+                  <name>_SXFielsdSearchControlContextMenu</name>
                   <id>103</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4463,7 +4507,7 @@
                 </extInfo>
               </searchControlAddition>
               <extendedTooltip>
-                <name>_СХПоляРасширеннаяПодсказка</name>
+                <name>_SXFielsdExtendedTooltip</name>
                 <id>95</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4478,7 +4522,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_СХПоляКонтекстноеМеню</name>
+                <name>_SXFielsdContextMenu</name>
                 <id>93</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4517,12 +4561,16 @@
               <key>ru</key>
               <value>Поля</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>SXPage fields</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Поля</value>
             </toolTip>
             <extendedTooltip>
-              <name>СтраницаСХПоляРасширеннаяПодсказка</name>
+              <name>SXPageFieldsExtendedTooltip</name>
               <id>89</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4543,10 +4591,10 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>СтраницыСХИндексы</name>
+            <name>_SXIndexesPages</name>
             <id>90</id>
             <items xsi:type="form:Table">
-              <name>_СХИндексы</name>
+              <name>_SXIndexes</name>
               <id>114</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4558,7 +4606,7 @@
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
-                <name>_СХИндексыИмяИндексаХранения</name>
+                <name>_SXIndexesStorageIndexName</name>
                 <id>130</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4571,7 +4619,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХИндексыИмяИндексаХраненияРасширеннаяПодсказка</name>
+                  <name>_SXIndexesStorageIndexNameExtendedTooltip</name>
                   <id>132</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4586,7 +4634,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыИмяИндексаХраненияКонтекстноеМеню</name>
+                  <name>_SXIndexesStorageIndexNameContextMenu</name>
                   <id>131</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4611,10 +4659,10 @@
                 </extInfo>
               </items>
               <autoCommandBar>
-                <name>_СХИндексыКоманднаяПанель</name>
+                <name>_SXIndexesCommandBar</name>
                 <id>116</id>
                 <items xsi:type="form:Button">
-                  <name>_СХИндексыСортироватьСписокПоВозрастанию</name>
+                  <name>_SXIndexesSortListAsc</name>
                   <id>185</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4622,7 +4670,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХИндексыСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                    <name>_SXIndexesSortListAscExtendedTooltip</name>
                     <id>186</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4636,7 +4684,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.SortListAsc</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.SortListAsc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4645,7 +4693,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХИндексыСортироватьСписокПоУбыванию</name>
+                  <name>_SXIndexesSortListDesc</name>
                   <id>187</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4653,7 +4701,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХИндексыСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                    <name>_SXIndexesSortListDescExtendedTooltip</name>
                     <id>188</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4667,7 +4715,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.SortListDesc</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.SortListDesc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -4676,7 +4724,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХИндексыНайти</name>
+                  <name>_SXIndexesFind</name>
                   <id>189</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4684,7 +4732,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХИндексыНайтиРасширеннаяПодсказка</name>
+                    <name>_SXIndexesFindExtendedTooltip</name>
                     <id>190</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4698,7 +4746,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.Find</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.Find</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4706,7 +4754,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХИндексыОтменитьПоиск</name>
+                  <name>__SXIndexesCancelSearch</name>
                   <id>191</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4714,7 +4762,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХИндексыОтменитьПоискРасширеннаяПодсказка</name>
+                    <name>__SXIndexesCancelSearchExtendedTooltip</name>
                     <id>192</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4728,7 +4776,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.CancelSearch</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.CancelSearch</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4736,7 +4784,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХИндексыВывестиСписок</name>
+                  <name>_SXIndexesOutputList</name>
                   <id>193</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4744,7 +4792,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХИндексыВывестиСписокРасширеннаяПодсказка</name>
+                    <name>_SXIndexesOutputListExtendedTooltip</name>
                     <id>194</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -4758,7 +4806,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХИндексы.StandardCommand.OutputList</commandName>
+                  <commandName>Form.Item._SXIndexes.StandardCommand.OutputList</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -4782,10 +4830,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыСтрокаПоиска</name>
+                <name>_SXIndexesSearchString</name>
                 <id>118</id>
                 <extendedTooltip>
-                  <name>_СХИндексыСтрокаПоискаРасширеннаяПодсказка</name>
+                  <name>_SXIndexesSearchStringExtendedTooltip</name>
                   <id>120</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4800,7 +4848,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыСтрокаПоискаКонтекстноеМеню</name>
+                  <name>_SXIndexesSearchStringContextMenu</name>
                   <id>119</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4819,10 +4867,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыСостояниеПросмотра</name>
+                <name>_SXIndexesViewStatus</name>
                 <id>121</id>
                 <extendedTooltip>
-                  <name>_СХИндексыСостояниеПросмотраРасширеннаяПодсказка</name>
+                  <name>_SXIndexesViewStatusExtendedTooltip</name>
                   <id>123</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4837,7 +4885,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыСостояниеПросмотраКонтекстноеМеню</name>
+                  <name>_SXIndexesViewStatusContextMenu</name>
                   <id>122</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4858,10 +4906,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХИндексыУправлениеПоиском</name>
+                <name>_SXIndexesSearchControl</name>
                 <id>124</id>
                 <extendedTooltip>
-                  <name>_СХИндексыУправлениеПоискомРасширеннаяПодсказка</name>
+                  <name>_SXIndexesSearchControlExtendedTooltip</name>
                   <id>126</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4876,7 +4924,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХИндексыУправлениеПоискомКонтекстноеМеню</name>
+                  <name>_SXIndexesSearchControlContextMenu</name>
                   <id>125</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4891,7 +4939,7 @@
                 </extInfo>
               </searchControlAddition>
               <extendedTooltip>
-                <name>_СХИндексыРасширеннаяПодсказка</name>
+                <name>_SXIndexesExtendedTooltip</name>
                 <id>117</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4906,7 +4954,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_СХИндексыКонтекстноеМеню</name>
+                <name>_SXIndexesContextMenu</name>
                 <id>115</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4937,7 +4985,7 @@
               <rowFilter xsi:type="core:UndefinedValue"/>
             </items>
             <items xsi:type="form:Table">
-              <name>_СХПоляИндексов</name>
+              <name>_SXIndexFields</name>
               <id>133</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4949,7 +4997,7 @@
               </dataPath>
               <titleLocation>None</titleLocation>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИндексовИмяПоля</name>
+                <name>_SXIndexFieldsFieldName</name>
                 <id>149</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -4962,7 +5010,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИндексовИмяПоляРасширеннаяПодсказка</name>
+                  <name>_SXIndexFieldsFieldNameExtendedTooltip</name>
                   <id>151</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -4977,7 +5025,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИндексовИмяПоляКонтекстноеМеню</name>
+                  <name>_SXIndexFieldsFieldNameContextMenu</name>
                   <id>150</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5002,7 +5050,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>_СХПоляИндексовИмяПоляХранения</name>
+                <name>_SXIndexFieldsStorageFieldName</name>
                 <id>152</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5015,7 +5063,7 @@
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>_СХПоляИндексовИмяПоляХраненияРасширеннаяПодсказка</name>
+                  <name>_SXIndexFieldsStorageFieldNameExtendedTooltip</name>
                   <id>154</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5030,7 +5078,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИндексовИмяПоляХраненияКонтекстноеМеню</name>
+                  <name>_SXIndexFieldsStorageFieldNameContextMenu</name>
                   <id>153</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5055,10 +5103,10 @@
                 </extInfo>
               </items>
               <autoCommandBar>
-                <name>_СХПоляИндексовКоманднаяПанель</name>
+                <name>_SXIndexFieldsCommandBar</name>
                 <id>135</id>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляИндексовСортироватьСписокПоВозрастанию</name>
+                  <name>_SXIndexFieldsSortListAsc</name>
                   <id>195</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5066,7 +5114,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляИндексовСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+                    <name>_SXIndexFieldsSortListAscExtendedTooltip</name>
                     <id>196</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5080,7 +5128,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоляИндексов.StandardCommand.SortListAsc</commandName>
+                  <commandName>Form.Item._SXIndexFields.StandardCommand.SortListAsc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -5089,7 +5137,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляИндексовСортироватьСписокПоУбыванию</name>
+                  <name>_SXIndexFieldsSortListDesc</name>
                   <id>197</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5097,7 +5145,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляИндексовСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+                    <name>_SXIndexFieldsSortListDescExtendedTooltip</name>
                     <id>198</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5111,7 +5159,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоляИндексов.StandardCommand.SortListDesc</commandName>
+                  <commandName>Form.Item._SXIndexFields.StandardCommand.SortListDesc</commandName>
                   <representation>Auto</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -5120,7 +5168,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляИндексовНайти</name>
+                  <name>_SXIndexFieldsFind</name>
                   <id>199</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5128,7 +5176,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляИндексовНайтиРасширеннаяПодсказка</name>
+                    <name>_SXIndexFieldsFindExtendedTooltip</name>
                     <id>200</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5142,7 +5190,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоляИндексов.StandardCommand.Find</commandName>
+                  <commandName>Form.Item._SXIndexFields.StandardCommand.Find</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -5150,7 +5198,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляИндексовОтменитьПоиск</name>
+                  <name>_SXIndexFieldsCancelSearch</name>
                   <id>201</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5158,7 +5206,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляИндексовОтменитьПоискРасширеннаяПодсказка</name>
+                    <name>_SXIndexFieldsCancelSearchExtendedTooltip</name>
                     <id>202</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5172,7 +5220,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоляИндексов.StandardCommand.CancelSearch</commandName>
+                  <commandName>Form.Item._SXIndexFields.StandardCommand.CancelSearch</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -5180,7 +5228,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>_СХПоляИндексовВывестиСписок</name>
+                  <name>_SXIndexFieldsOutputList</name>
                   <id>203</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5188,7 +5236,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>_СХПоляИндексовВывестиСписокРасширеннаяПодсказка</name>
+                    <name>_SXIndexFieldsOutputListExtendedTooltip</name>
                     <id>204</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5202,7 +5250,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item._СХПоляИндексов.StandardCommand.OutputList</commandName>
+                  <commandName>Form.Item._SXIndexFields.StandardCommand.OutputList</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -5222,10 +5270,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляИндексовСтрокаПоиска</name>
+                <name>_SXIndexFieldsSearchString</name>
                 <id>137</id>
                 <extendedTooltip>
-                  <name>_СХПоляИндексовСтрокаПоискаРасширеннаяПодсказка</name>
+                  <name>_SXIndexFieldsSearchStringExtendedTooltip</name>
                   <id>139</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5240,7 +5288,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИндексовСтрокаПоискаКонтекстноеМеню</name>
+                  <name>_SXIndexFieldsSearchStringContextMenu</name>
                   <id>138</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5259,10 +5307,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляИндексовСостояниеПросмотра</name>
+                <name>_SXIndexFieldsViewStatus</name>
                 <id>140</id>
                 <extendedTooltip>
-                  <name>_СХПоляИндексовСостояниеПросмотраРасширеннаяПодсказка</name>
+                  <name>_SXIndexFieldsViewStatusExtendedTooltip</name>
                   <id>142</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5277,7 +5325,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИндексовСостояниеПросмотраКонтекстноеМеню</name>
+                  <name>_SXIndexFieldsViewStatusContextMenu</name>
                   <id>141</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5298,10 +5346,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>_СХПоляИндексовУправлениеПоиском</name>
+                <name>_SXIndexFieldsSearchControl</name>
                 <id>143</id>
                 <extendedTooltip>
-                  <name>_СХПоляИндексовУправлениеПоискомРасширеннаяПодсказка</name>
+                  <name>_SXIndexFieldsSearchControlExtendedTooltip</name>
                   <id>145</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5316,7 +5364,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>_СХПоляИндексовУправлениеПоискомКонтекстноеМеню</name>
+                  <name>_SXIndexFieldsSearchControlContextMenu</name>
                   <id>144</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -5331,7 +5379,7 @@
                 </extInfo>
               </searchControlAddition>
               <extendedTooltip>
-                <name>_СХПоляИндексовРасширеннаяПодсказка</name>
+                <name>_SXIndexFieldsExtendedTooltip</name>
                 <id>136</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5346,7 +5394,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>_СХПоляИндексовКонтекстноеМеню</name>
+                <name>_SXIndexFieldsContextMenu</name>
                 <id>134</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5385,12 +5433,16 @@
               <key>ru</key>
               <value>Индексы</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>SXIndexes pages</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Индексы</value>
             </toolTip>
             <extendedTooltip>
-              <name>СтраницыСХИндексыРасширеннаяПодсказка</name>
+              <name>_SXIndexesPagesExtendedTooltip</name>
               <id>91</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5419,12 +5471,16 @@
             <key>ru</key>
             <value>Группа СХСтраницы</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>SXPages group</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа СХСтраницы</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаСХСтраницыРасширеннаяПодсказка</name>
+            <name>SXPagesGroupExtendedTooltip</name>
             <id>87</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5453,12 +5509,16 @@
           <key>ru</key>
           <value>Группа СХПодробно</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Detail SXGroup</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа СХПодробно</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаСХПодробноРасширеннаяПодсказка</name>
+          <name>DetailSXGroupExtendedTooltip</name>
           <id>85</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5490,8 +5550,12 @@
         <key>ru</key>
         <value>Структура хранения</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Storage structure page</value>
+      </title>
       <extendedTooltip>
-        <name>СтраницаСтруктураХраненияРасширеннаяПодсказка</name>
+        <name>StorageStructurePageExtendedTooltip</name>
         <id>62</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5512,14 +5576,18 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаУправлениеИтогами</name>
+      <name>ManagingTotalsPage</name>
       <id>205</id>
       <items xsi:type="form:Decoration">
-        <name>_НадписьУправлениеИтогами</name>
+        <name>_ManagingTotalsLabel</name>
         <id>257</id>
         <title>
           <key>ru</key>
           <value>Операции доступны только администратору системы!</value>
+        </title>
+        <title>
+          <key>en</key>
+          <value>Managing totals label</value>
         </title>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5527,7 +5595,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>_НадписьУправлениеИтогамиРасширеннаяПодсказка</name>
+          <name>_ManagingTotalsLabelExtendedTooltip</name>
           <id>259</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5542,7 +5610,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_НадписьУправлениеИтогамиКонтекстноеМеню</name>
+          <name>_ManagingTotalsLabelContextMenu</name>
           <id>258</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5568,10 +5636,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>КоманданаяПанельУправленияИтогами</name>
+        <name>CommandBarManagingTotals</name>
         <id>207</id>
         <items xsi:type="form:Button">
-          <name>_ОбновитьУправлениеИтогами</name>
+          <name>_UpdateTotalsManagement</name>
           <id>209</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5579,7 +5647,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ОбновитьУправлениеИтогамиРасширеннаяПодсказка</name>
+            <name>_UpdateTotalsManagementExtendedTooltip</name>
             <id>210</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5601,7 +5669,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ПересчитатьИтоги</name>
+          <name>_RecalculateTotals</name>
           <id>211</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5609,7 +5677,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ПересчитатьИтогиРасширеннаяПодсказка</name>
+            <name>_RecalculateTotalsExtendedTooltip</name>
             <id>212</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5631,7 +5699,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ПересчитатьТекущиеИтоги</name>
+          <name>_RecalculateCurrentTotals</name>
           <id>213</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5639,7 +5707,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ПересчитатьТекущиеИтогиРасширеннаяПодсказка</name>
+            <name>_RecalculateCurrentTotalsExtendedTooltip</name>
             <id>214</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5669,12 +5737,16 @@
           <key>ru</key>
           <value>Команданая панель управления итогами</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Command bar managing totals</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Команданая панель управления итогами</value>
         </toolTip>
         <extendedTooltip>
-          <name>КоманданаяПанельУправленияИтогамиРасширеннаяПодсказка</name>
+          <name>CommandBarManagingTotalsExtendedTooltip</name>
           <id>208</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5694,10 +5766,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаИспользованиеИтогов</name>
+        <name>UsingTotalsGroup</name>
         <id>215</id>
         <items xsi:type="form:FormField">
-          <name>_РежимАгрегатов</name>
+          <name>_AggregateMode</name>
           <id>228</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5715,7 +5787,7 @@
             <name>СвойствоРегистраПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_РежимАгрегатовРасширеннаяПодсказка</name>
+            <name>_AggregateModeExtendedTooltip</name>
             <id>230</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5730,7 +5802,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_РежимАгрегатовКонтекстноеМеню</name>
+            <name>_AggregateModeContextMenu</name>
             <id>229</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5747,7 +5819,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ИспользованиеАгрегатов</name>
+          <name>_UseAggregates</name>
           <id>231</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5765,7 +5837,7 @@
             <name>СвойствоРегистраПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_ИспользованиеАгрегатовРасширеннаяПодсказка</name>
+            <name>_UseAggregatesExtendedTooltip</name>
             <id>233</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5780,7 +5852,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ИспользованиеАгрегатовКонтекстноеМеню</name>
+            <name>_UseAggregatesContextMenu</name>
             <id>232</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5797,7 +5869,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ИспользованиеТекущихИтогов</name>
+          <name>_UseCurrentTotals</name>
           <id>217</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5815,7 +5887,7 @@
             <name>СвойствоРегистраПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_ИспользованиеТекущихИтоговРасширеннаяПодсказка</name>
+            <name>_UseCurrentTotalsExtendedTooltip</name>
             <id>219</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5830,7 +5902,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ИспользованиеТекущихИтоговКонтекстноеМеню</name>
+            <name>_UseCurrentTotalsContextMenu</name>
             <id>218</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5847,7 +5919,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ИспользованиеИтогов</name>
+          <name>_UseTotals</name>
           <id>220</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5865,7 +5937,7 @@
             <name>СвойствоРегистраПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_ИспользованиеИтоговРасширеннаяПодсказка</name>
+            <name>_UseTotalsExtendedTooltip</name>
             <id>222</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5880,7 +5952,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ИспользованиеИтоговКонтекстноеМеню</name>
+            <name>_UseTotalsContextMenu</name>
             <id>221</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5897,7 +5969,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_РежимРазделенияИтогов</name>
+          <name>_DividingTotalsMode</name>
           <id>223</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5915,7 +5987,7 @@
             <name>СвойствоРегистраПриИзменении</name>
           </handlers>
           <extendedTooltip>
-            <name>_РежимРазделенияИтоговРасширеннаяПодсказка</name>
+            <name>_DividingTotalsModeExtendedTooltip</name>
             <id>225</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5930,7 +6002,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_РежимРазделенияИтоговКонтекстноеМеню</name>
+            <name>_DividingTotalsModeContextMenu</name>
             <id>224</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5955,8 +6027,12 @@
           <key>ru</key>
           <value>Основные свойства регистра</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Using totals group</value>
+        </title>
         <extendedTooltip>
-          <name>ГруппаИспользованиеИтоговРасширеннаяПодсказка</name>
+          <name>UsingTotalsGroupExtendedTooltip</name>
           <id>216</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5982,10 +6058,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаПересчетИтоговЗаПериод</name>
+        <name>RecalculateTotalsForPeriodGroup</name>
         <id>234</id>
         <items xsi:type="form:FormField">
-          <name>_ПериодПересчетаИтогов</name>
+          <name>_PeriodRecalculationTotals</name>
           <id>238</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5998,7 +6074,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ПериодПересчетаИтоговРасширеннаяПодсказка</name>
+            <name>_PeriodRecalculationTotalsExtendedTooltip</name>
             <id>240</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6013,7 +6089,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ПериодПересчетаИтоговКонтекстноеМеню</name>
+            <name>_PeriodRecalculationTotalsContextMenu</name>
             <id>239</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6037,7 +6113,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:Button">
-          <name>_ПересчитатьИтогиЗаПериод</name>
+          <name>_RecalculateTotalsForThePeriod</name>
           <id>236</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6045,7 +6121,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ПересчитатьИтогиЗаПериодРасширеннаяПодсказка</name>
+            <name>_RecalculateTotalsForThePeriodExtendedTooltip</name>
             <id>237</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6076,12 +6152,16 @@
           <key>ru</key>
           <value>Пересчет итогов за период</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Recalculate totals for period group</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа пересчет итогов за период</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаПересчетИтоговЗаПериодРасширеннаяПодсказка</name>
+          <name>RecalculateTotalsForPeriodGroupExtendedTooltip</name>
           <id>235</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6107,13 +6187,13 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаПериодРассчитанныхИтогов</name>
+        <name>CalculatedTotalsGroup</name>
         <id>241</id>
         <items xsi:type="form:FormGroup">
-          <name>Группа2</name>
+          <name>Group2</name>
           <id>249</id>
           <items xsi:type="form:FormField">
-            <name>_МинимальныйПериодРассчитанныхИтогов</name>
+            <name>_MinimumPeriodOfCalculatedTotals</name>
             <id>243</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6126,7 +6206,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>_МинимальныйПериодРассчитанныхИтоговРасширеннаяПодсказка</name>
+              <name>_MinimumPeriodOfCalculatedTotalsExtendedTooltip</name>
               <id>245</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6141,7 +6221,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_МинимальныйПериодРассчитанныхИтоговКонтекстноеМеню</name>
+              <name>_MinimumPeriodOfCalculatedTotalsContextMenu</name>
               <id>244</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6165,7 +6245,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>_МаксимальныйПериодРассчитанныхИтогов</name>
+            <name>_MaximumPeriodOfCalculatedTotals</name>
             <id>246</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6178,7 +6258,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>_МаксимальныйПериодРассчитанныхИтоговРасширеннаяПодсказка</name>
+              <name>_MaximumPeriodOfCalculatedTotalsExtendedTooltip</name>
               <id>248</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6193,7 +6273,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_МаксимальныйПериодРассчитанныхИтоговКонтекстноеМеню</name>
+              <name>_MaximumPeriodOfCalculatedTotalsContextMenu</name>
               <id>247</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6221,8 +6301,12 @@
           <userVisible>
             <common>true</common>
           </userVisible>
+          <title>
+            <key>en</key>
+            <value>Group2</value>
+          </title>
           <extendedTooltip>
-            <name>Группа2РасширеннаяПодсказка</name>
+            <name>Group2ExtendedTooltip</name>
             <id>250</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6247,10 +6331,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>Группа3</name>
+          <name>Group3</name>
           <id>251</id>
           <items xsi:type="form:Button">
-            <name>_УстановитьПериодРассчитанныхИтогов1</name>
+            <name>_InstallPriodOfCalculatedTotals1</name>
             <id>253</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6258,7 +6342,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_УстановитьПериодРассчитанныхИтогов1РасширеннаяПодсказка</name>
+              <name>_InstallPriodOfCalculatedTotals1ExtendedTooltip</name>
               <id>254</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6281,7 +6365,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_УстановитьПериодРассчитанныхИтогов2</name>
+            <name>_InstallPriodOfCalculatedTotals2</name>
             <id>255</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6289,7 +6373,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_УстановитьПериодРассчитанныхИтогов2РасширеннаяПодсказка</name>
+              <name>_InstallPriodOfCalculatedTotals2ExtendedTooltip</name>
               <id>256</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6316,8 +6400,12 @@
           <userVisible>
             <common>true</common>
           </userVisible>
+          <title>
+            <key>en</key>
+            <value>Group3</value>
+          </title>
           <extendedTooltip>
-            <name>Группа3РасширеннаяПодсказка</name>
+            <name>Group3ExtendedTooltip</name>
             <id>252</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6350,12 +6438,16 @@
           <key>ru</key>
           <value>Период рассчитанных итогов</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Calculated totals group</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа период рассчитанных итогов</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаПериодРассчитанныхИтоговРасширеннаяПодсказка</name>
+          <name>CalculatedTotalsGroupExtendedTooltip</name>
           <id>242</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6389,8 +6481,12 @@
         <key>ru</key>
         <value>Управление итогами</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Managing totals page</value>
+      </title>
       <extendedTooltip>
-        <name>СтраницаУправлениеИтогамиРасширеннаяПодсказка</name>
+        <name>ManagingTotalsPageExtendedTooltip</name>
         <id>206</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6411,10 +6507,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаЗависимыеОбъекты</name>
+      <name>DependentObjectsPage</name>
       <id>423</id>
       <items xsi:type="form:Table">
-        <name>_ЗависимыеОбъекты</name>
+        <name>_DependentObjects</name>
         <id>425</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6434,7 +6530,7 @@
         <excludedCommands>MoveUp</excludedCommands>
         <excludedCommands>ShowRowRearrangement</excludedCommands>
         <items xsi:type="form:FormField">
-          <name>_ЗависимыеОбъектыИмя</name>
+          <name>_DependentObjectsName</name>
           <id>441</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6447,7 +6543,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыИмяРасширеннаяПодсказка</name>
+            <name>_DependentObjectsNameExtendedTooltip</name>
             <id>443</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6462,7 +6558,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыИмяКонтекстноеМеню</name>
+            <name>_DependentObjectsNameContextMenu</name>
             <id>442</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6487,7 +6583,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ЗависимыеОбъектыПредставление</name>
+          <name>_DependentObjectsPresentation</name>
           <id>444</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6500,7 +6596,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыПредставлениеРасширеннаяПодсказка</name>
+            <name>_DependentObjectsPresentationExtendedTooltip</name>
             <id>446</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6515,7 +6611,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыПредставлениеКонтекстноеМеню</name>
+            <name>_DependentObjectsPresentationContextMenu</name>
             <id>445</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6540,7 +6636,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ЗависимыеОбъектыПолноеИмя</name>
+          <name>_DependentObjectsFullName</name>
           <id>447</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6553,7 +6649,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыПолноеИмяРасширеннаяПодсказка</name>
+            <name>_DependentObjectsFullNameExtendedTooltip</name>
             <id>449</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6568,7 +6664,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыПолноеИмяКонтекстноеМеню</name>
+            <name>_DependentObjectsFullNameContextMenu</name>
             <id>448</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6593,7 +6689,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_ЗависимыеОбъектыГдеНайдено</name>
+          <name>_DependentObjectsWhereFound</name>
           <id>467</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6606,7 +6702,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыГдеНайденоРасширеннаяПодсказка</name>
+            <name>_DependentObjectsWhereFoundExtendedTooltip</name>
             <id>469</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6621,7 +6717,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыГдеНайденоКонтекстноеМеню</name>
+            <name>_DependentObjectsWhereFoundContextMenu</name>
             <id>468</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6646,10 +6742,10 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>_ЗависимыеОбъектыКоманднаяПанель</name>
+          <name>_DependentObjectsCommandBar</name>
           <id>427</id>
           <items xsi:type="form:Button">
-            <name>_ЗависимыеОбъектыСортироватьСписокПоВозрастанию</name>
+            <name>_DependentObjectsSortListAsc</name>
             <id>453</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6657,7 +6753,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ЗависимыеОбъектыСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+              <name>_DependentObjectsSortListAscExtendedTooltip</name>
               <id>454</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6671,7 +6767,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item._ЗависимыеОбъекты.StandardCommand.SortListAsc</commandName>
+            <commandName>Form.Item._DependentObjects.StandardCommand.SortListAsc</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -6680,7 +6776,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ЗависимыеОбъектыСортироватьСписокПоУбыванию</name>
+            <name>_DependentObjectsSortListDesc</name>
             <id>455</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6688,7 +6784,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ЗависимыеОбъектыСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+              <name>_DependentObjectsSortListDescExtendedTooltip</name>
               <id>456</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6702,7 +6798,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item._ЗависимыеОбъекты.StandardCommand.SortListDesc</commandName>
+            <commandName>Form.Item._DependentObjects.StandardCommand.SortListDesc</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -6711,10 +6807,10 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>_ЗависимыеОбъектыГруппа2</name>
+            <name>DependentObjectsGroup2</name>
             <id>475</id>
             <items xsi:type="form:Button">
-              <name>_ЗависимыеОбъекты_СвернутьВсеУзлы</name>
+              <name>_DependentObjects_CollapseAllNodes</name>
               <id>477</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6722,7 +6818,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_ЗависимыеОбъекты_СвернутьВсеУзлыРасширеннаяПодсказка</name>
+                <name>_DependentObjects_CollapseAllNodesExtendedTooltip</name>
                 <id>478</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6744,7 +6840,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_ЗависимыеОбъекты_РазвернутьВсеУзлы</name>
+              <name>_DependentObjects_ExpandAllNodes</name>
               <id>479</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6752,7 +6848,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_ЗависимыеОбъекты_РазвернутьВсеУзлыРасширеннаяПодсказка</name>
+                <name>_DependentObjects_ExpandAllNodesExtendedTooltip</name>
                 <id>480</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6778,8 +6874,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Dependent objects group2</value>
+            </title>
             <extendedTooltip>
-              <name>_ЗависимыеОбъектыГруппа2РасширеннаяПодсказка</name>
+              <name>DependentObjectsGroup2ExtendedTooltip</name>
               <id>476</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6818,7 +6918,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item._ЗависимыеОбъекты.StandardCommand.OutputList</commandName>
+            <commandName>Form.Item._DependentObjects.StandardCommand.OutputList</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -6827,10 +6927,10 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>_ЗависимыеОбъектыГруппа1</name>
+            <name>DependentObjectsGroup1</name>
             <id>465</id>
             <items xsi:type="form:Button">
-              <name>_ЗависимыеОбъекты_ЗаполнитьЗависимыеОбъекты</name>
+              <name>_DependentObjects_FillInDependentObjects</name>
               <id>463</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6838,7 +6938,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_ЗависимыеОбъекты_ЗаполнитьЗависимыеОбъектыРасширеннаяПодсказка</name>
+                <name>_DependentObjects_FillInDependentObjectsExtendedTooltip</name>
                 <id>464</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6860,7 +6960,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>_ЗависимыеОбъекты_ОткрытьЗависимыйОбъект</name>
+              <name>_DependentObjects_OpenSubordinateObject</name>
               <id>473</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6868,7 +6968,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_ЗависимыеОбъекты_ОткрытьЗависимыйОбъектРасширеннаяПодсказка</name>
+                <name>_DependentObjects_OpenSubordinateObjectExtendedTooltip</name>
                 <id>474</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6894,8 +6994,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Dependent objects group1</value>
+            </title>
             <extendedTooltip>
-              <name>_ЗависимыеОбъектыГруппа1РасширеннаяПодсказка</name>
+              <name>DependentObjectsGroup1ExtendedTooltip</name>
               <id>466</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6932,10 +7036,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>_ЗависимыеОбъектыСтрокаПоиска</name>
+          <name>_DependentObjectsSearchString</name>
           <id>429</id>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>_DependentObjectsSearchStringExtendedTooltip</name>
             <id>431</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6950,7 +7054,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыСтрокаПоискаКонтекстноеМеню</name>
+            <name>_DependentObjectsSearchStringContextMenu</name>
             <id>430</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6969,10 +7073,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>_ЗависимыеОбъектыСостояниеПросмотра</name>
+          <name>_DependentObjectsViewStatus</name>
           <id>432</id>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>_DependentObjectsViewStatusExtendedTooltip</name>
             <id>434</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6987,7 +7091,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыСостояниеПросмотраКонтекстноеМеню</name>
+            <name>_DependentObjectsViewStatusContextMenu</name>
             <id>433</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -7008,10 +7112,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>_ЗависимыеОбъектыУправлениеПоиском</name>
+          <name>_DependentObjectsSearchControl</name>
           <id>435</id>
           <extendedTooltip>
-            <name>_ЗависимыеОбъектыУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>_DependentObjectsSearchControlExtendedTooltip</name>
             <id>437</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -7026,7 +7130,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ЗависимыеОбъектыУправлениеПоискомКонтекстноеМеню</name>
+            <name>_DependentObjectsSearchControlContextMenu</name>
             <id>436</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -7041,7 +7145,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>_ЗависимыеОбъектыРасширеннаяПодсказка</name>
+          <name>_DependentObjectsExtendedTooltip</name>
           <id>428</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -7056,7 +7160,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ЗависимыеОбъектыКонтекстноеМеню</name>
+          <name>_DependentObjectsContextMenu</name>
           <id>426</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -7086,7 +7190,7 @@
         <enableDrag>true</enableDrag>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ГдеНайдено</name>
+        <name>_WhereFound</name>
         <id>470</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -7100,7 +7204,7 @@
         </dataPath>
         <titleLocation>Top</titleLocation>
         <extendedTooltip>
-          <name>_ГдеНайденоРасширеннаяПодсказка</name>
+          <name>_WhereFoundExtendedTooltip</name>
           <id>472</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -7115,7 +7219,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ГдеНайденоКонтекстноеМеню</name>
+          <name>_WhereFoundContextMenu</name>
           <id>471</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -7148,12 +7252,16 @@
         <key>ru</key>
         <value>Ссылки на объект</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Dependent objects page</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Ссылки на объект (зависимые объекты)</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницаЗависимыеОбъектыРасширеннаяПодсказка</name>
+        <name>DependentObjectsPageExtendedTooltip</name>
         <id>424</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -7223,11 +7331,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -8396,14 +8504,14 @@
       </edit>
     </columns>
     <columns>
-      <name>RestrictionCondition</name>
+      <name>RestrictionByCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
       </title>
       <title>
         <key>en</key>
-        <value>Restriction condition</value>
+        <value>Restriction by condition</value>
       </title>
       <id>5</id>
       <valueType>
@@ -8574,14 +8682,14 @@
       </edit>
     </columns>
     <columns>
-      <name>RestrictionCondition</name>
+      <name>RestrictionByCondition</name>
       <title>
         <key>ru</key>
         <value>Ограничение условием</value>
       </title>
       <title>
         <key>en</key>
-        <value>Restriction condition</value>
+        <value>Restriction by condition</value>
       </title>
       <id>3</id>
       <valueType>
