@@ -795,7 +795,6 @@
       <picture xsi:type="core:PictureRef">
         <picture>StdPicture.GenerateReport</picture>
       </picture>
-      <toolTipRepresentation>Auto</toolTipRepresentation>
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <visible>true</visible>
