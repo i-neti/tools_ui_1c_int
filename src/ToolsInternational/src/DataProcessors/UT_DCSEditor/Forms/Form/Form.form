@@ -2808,6 +2808,10 @@
                       <segments>FieldQueryText</segments>
                     </dataPath>
                     <titleLocation>None</titleLocation>
+                    <handlers>
+                      <event>OnChange</event>
+                      <name>DataSetsQueryOnChange</name>
+                    </handlers>
                     <extendedTooltip>
                       <name>DataSetsQueryExtendedTooltip</name>
                       <id>112</id>
