@@ -16960,7 +16960,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Result.Key</segments>
+                <segments>Объект.Result.Key1</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
