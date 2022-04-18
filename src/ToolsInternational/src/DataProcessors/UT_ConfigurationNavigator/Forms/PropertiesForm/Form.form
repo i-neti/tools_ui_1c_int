@@ -603,7 +603,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>ДеревоСвойствВыбор</name>
+          <name>PropertyTreeSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -1391,7 +1391,7 @@
           </dataPath>
           <handlers>
             <event>OnChange</event>
-            <name>_ПравоДоступаКОбъектуПриИзменении</name>
+            <name>_AccessRightToObjectOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_AccessRightToObjectExtendedTooltip</name>
@@ -1876,7 +1876,7 @@
             </autoCommandBar>
             <handlers>
               <event>Selection</event>
-              <name>ТабРолиСДоступомВыбор</name>
+              <name>RolesWithAccessTableSelection</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -2557,7 +2557,7 @@
             </autoCommandBar>
             <handlers>
               <event>Selection</event>
-              <name>_ДоступныеОбъектыВыбор</name>
+              <name>_AvailableObjectsSelection</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -3113,7 +3113,7 @@
             </autoCommandBar>
             <handlers>
               <event>Selection</event>
-              <name>ТабПользователиСДоступомВыбор</name>
+              <name>UsersWithAccessTableSelection</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -3707,7 +3707,7 @@
           </autoCommandBar>
           <handlers>
             <event>OnActivateRow</event>
-            <name>_СХТаблицыПриАктивизацииСтроки</name>
+            <name>_SXTableOnActivateRow</name>
           </handlers>
           <searchStringAddition>
             <visible>true</visible>
@@ -4072,7 +4072,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>_ПоказыватьСтруктуруХраненияВТерминах1СПриИзменении</name>
+            <name>_ShowStorageStructureIn1CTermsOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_ShowStorageStructureIn1CTermsExtendedTooltip</name>
@@ -4822,7 +4822,7 @@
               </autoCommandBar>
               <handlers>
                 <event>OnActivateRow</event>
-                <name>_СХИндексыПриАктивизацииСтроки</name>
+                <name>_SXIndexesOnActivateRow</name>
               </handlers>
               <searchStringAddition>
                 <visible>true</visible>
@@ -5784,7 +5784,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>СвойствоРегистраПриИзменении</name>
+            <name>_RegistryPropertyOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_AggregateModeExtendedTooltip</name>
@@ -5834,7 +5834,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>СвойствоРегистраПриИзменении</name>
+            <name>_RegistryPropertyOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_UseAggregatesExtendedTooltip</name>
@@ -5884,7 +5884,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>СвойствоРегистраПриИзменении</name>
+            <name>_RegistryPropertyOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_UseCurrentTotalsExtendedTooltip</name>
@@ -5934,7 +5934,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>СвойствоРегистраПриИзменении</name>
+            <name>_RegistryPropertyOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_UseTotalsExtendedTooltip</name>
@@ -5984,7 +5984,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>СвойствоРегистраПриИзменении</name>
+            <name>_RegistryPropertyOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_DividingTotalsModeExtendedTooltip</name>
@@ -7024,11 +7024,11 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>_ЗависимыеОбъектыВыбор</name>
+          <name>_DependentObjectsSelection</name>
         </handlers>
         <handlers>
           <event>OnActivateRow</event>
-          <name>_ЗависимыеОбъектыПриАктивизацииСтроки</name>
+          <name>_DependentObjectsOnActivateRow</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -7629,14 +7629,14 @@
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ShowJbjectsSubsytems</name>
+    <name>_ShowObjectsSubsytems</name>
     <title>
       <key>ru</key>
       <value>Показывать подсистемы объекта</value>
     </title>
     <title>
       <key>en</key>
-      <value>Show jbjects subsytems</value>
+      <value>Show objects subsytems</value>
     </title>
     <id>8</id>
     <valueType>
@@ -7649,7 +7649,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ShowJbjectsSubsytems</segments>
+      <segments>_ShowObjectsSubsytems</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
