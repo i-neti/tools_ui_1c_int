@@ -1747,11 +1747,11 @@
     <name>PathToDownloadFile</name>
     <synonym>
       <key>en</key>
-      <value>Path to the download file (on the server)</value>
+      <value>Path to the download file of the discrepancy table (on the server)</value>
     </synonym>
     <synonym>
       <key>ru</key>
-      <value>Путь к файлу выгрузки (на сервере)</value>
+      <value>Путь к файлу выгрузки таблицы расхождений (на сервере)</value>
     </synonym>
     <type>
       <types>String</types>
@@ -1974,11 +1974,11 @@
     <name>UploadFileFormat</name>
     <synonym>
       <key>en</key>
-      <value>Upload file format</value>
+      <value>Difference table upload file format</value>
     </synonym>
     <synonym>
       <key>ru</key>
-      <value>Формат файла выгрузки</value>
+      <value>Формат файла выгрузки таблицы расхождений</value>
     </synonym>
     <type>
       <types>String</types>
@@ -2361,6 +2361,311 @@
     <minValue xsi:type="core:UndefinedValue"/>
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
+  <attributes uuid="a46f215f-90f4-47b7-87c6-3b6a5e7c1270">
+    <name>SortTableDifferences</name>
+    <synonym>
+      <key>en</key>
+      <value>Sort table differences</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Сортировать таблицу расхождений</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="a207f289-3244-4d8c-814d-0e758f07eb0b">
+    <name>OrderSortTableDifferences</name>
+    <synonym>
+      <key>en</key>
+      <value>Sorting order</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Порядок сортировки</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>256</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="358db2ca-4052-4e28-aaf8-cb16ccb20400">
+    <name>VisibilityKey1</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility key 1</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Видимость ключ 1</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="4d3b8e01-a7aa-4769-aa3f-4f644e1ee83b">
+    <name>VisibilityKey2</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility key 2</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Видимость ключ 2</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="4c192a8c-394c-48c9-8897-a4766fecd5e2">
+    <name>VisibilityKey3</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility key 3</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Видимость ключ 3</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="a6dee6c0-23a3-4478-859d-349bcb5c083c">
+    <name>VisibilityNumberOfRecordsA</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility number of records A</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Видимость число записей А</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="16f82139-81ab-4576-80d8-1361259dcab0">
+    <name>VisibilityNumberOfRecordsB</name>
+    <synonym>
+      <key>en</key>
+      <value>Visibility number of records B</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Видимость число записей Б</value>
+    </synonym>
+    <type>
+      <types>Boolean</types>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="991268a1-0d02-46d5-831d-9a46d68fffef">
+    <name>ValueTotalAttributeA1</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="d13fb4a5-e530-49b8-9c0d-ae60d38d582d">
+    <name>ValueTotalAttributeA2</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="e74e29fe-8f60-4b79-bbb2-dbb48ba16799">
+    <name>ValueTotalAttributeA3</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="c928d046-f01a-4452-8b08-5e10973368bf">
+    <name>ValueTotalAttributeA4</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="3e634225-0a81-4d54-84fa-7a528a7a9b15">
+    <name>ValueTotalAttributeA5</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="2afea1d8-a386-4756-9897-6c5a1cf68c4e">
+    <name>ValueTotalAttributeB1</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="c7d5ccc5-56c6-4654-9437-fe0c2e77f81f">
+    <name>ValueTotalAttributeB2</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="5b6b0ca7-db08-415d-8a9c-944c65534c1d">
+    <name>ValueTotalAttributeB3</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="483643cb-cc32-47dc-b6b1-e50d2762140b">
+    <name>ValueTotalAttributeB4</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
+  <attributes uuid="b3bb725a-afcc-48e0-a9e3-ee22f094ba3e">
+    <name>ValueTotalAttributeB5</name>
+    <synonym>
+      <key>en</key>
+      <value>Total</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Итог</value>
+    </synonym>
+    <type>
+      <types>String</types>
+      <stringQualifiers>
+        <length>50</length>
+      </stringQualifiers>
+    </type>
+    <minValue xsi:type="core:UndefinedValue"/>
+    <maxValue xsi:type="core:UndefinedValue"/>
+  </attributes>
   <tabularSections uuid="7a13023d-5a75-44c8-a3ef-f763f240c071">
     <producedTypes>
       <objectType typeId="7c1accad-99ce-4b62-9df5-4b0fb4d45a06" valueTypeId="93164a1b-5bb3-4589-a561-794d5bd567e1"/>
@@ -2384,14 +2689,14 @@
       <maxValue xsi:type="core:UndefinedValue"/>
     </standardAttributes>
     <attributes uuid="ad6c1519-c7cc-4ec8-bf3c-63e387e3e066">
-      <name>Key</name>
+      <name>Key1</name>
       <synonym>
         <key>en</key>
         <value>Column</value>
       </synonym>
       <synonym>
         <key>ru</key>
-        <value>Key</value>
+        <value>Key1</value>
       </synonym>
       <type>
         <types>Boolean</types>
@@ -3283,11 +3588,11 @@
       <name>HeaderPropsForUser</name>
       <synonym>
         <key>en</key>
-        <value>The heading of the attribute of the discrepancy table for the user</value>
+        <value>Header for the user</value>
       </synonym>
       <synonym>
         <key>ru</key>
-        <value>Заголовок реквизита таблицы расхождений для пользователя</value>
+        <value>Заголовок для пользователя</value>
       </synonym>
       <type>
         <types>String</types>
@@ -3300,6 +3605,41 @@
       <fillValue xsi:type="core:StringValue">
         <value></value>
       </fillValue>
+    </attributes>
+    <attributes uuid="04b13b73-6c44-4a3b-b03e-5f0a2b8e3935">
+      <name>CalculateTotal</name>
+      <synonym>
+        <key>en</key>
+        <value>Total</value>
+      </synonym>
+      <synonym>
+        <key>ru</key>
+        <value>Итог</value>
+      </synonym>
+      <type>
+        <types>Boolean</types>
+      </type>
+      <minValue xsi:type="core:UndefinedValue"/>
+      <maxValue xsi:type="core:UndefinedValue"/>
+    </attributes>
+    <attributes uuid="656d6392-008a-436f-89dd-5d843ec6e6e3">
+      <name>AggregateFunctionCalculationTotal</name>
+      <synonym>
+        <key>en</key>
+        <value>Aggregate function</value>
+      </synonym>
+      <synonym>
+        <key>ru</key>
+        <value>Агрегатная функция</value>
+      </synonym>
+      <type>
+        <types>String</types>
+        <stringQualifiers>
+          <length>50</length>
+        </stringQualifiers>
+      </type>
+      <minValue xsi:type="core:UndefinedValue"/>
+      <maxValue xsi:type="core:UndefinedValue"/>
     </attributes>
   </tabularSections>
   <tabularSections uuid="4215cc90-6ef9-4eb7-b129-0ee65bf1c43f">
@@ -3387,11 +3727,11 @@
       <name>HeaderPropsForUser</name>
       <synonym>
         <key>en</key>
-        <value>The heading of the attribute of the discrepancy table for the user</value>
+        <value>Header for the user</value>
       </synonym>
       <synonym>
         <key>ru</key>
-        <value>Заголовок реквизита таблицы расхождений для пользователя</value>
+        <value>Заголовок для пользователя</value>
       </synonym>
       <type>
         <types>String</types>
@@ -3404,6 +3744,41 @@
       <fillValue xsi:type="core:StringValue">
         <value></value>
       </fillValue>
+    </attributes>
+    <attributes uuid="8cc56593-a068-40ad-a78b-c231f9317fff">
+      <name>CalculateTotal</name>
+      <synonym>
+        <key>en</key>
+        <value>Total</value>
+      </synonym>
+      <synonym>
+        <key>ru</key>
+        <value>Итог</value>
+      </synonym>
+      <type>
+        <types>Boolean</types>
+      </type>
+      <minValue xsi:type="core:UndefinedValue"/>
+      <maxValue xsi:type="core:UndefinedValue"/>
+    </attributes>
+    <attributes uuid="14e015a7-d4fc-4058-b7f2-58b9132210a3">
+      <name>AggregateFunctionCalculationTotal</name>
+      <synonym>
+        <key>en</key>
+        <value>Aggregate function</value>
+      </synonym>
+      <synonym>
+        <key>ru</key>
+        <value>Агрегатная функция</value>
+      </synonym>
+      <type>
+        <types>String</types>
+        <stringQualifiers>
+          <length>50</length>
+        </stringQualifiers>
+      </type>
+      <minValue xsi:type="core:UndefinedValue"/>
+      <maxValue xsi:type="core:UndefinedValue"/>
     </attributes>
   </tabularSections>
   <tabularSections uuid="2d7a9193-137b-4f69-9e58-90df5c94b40a">
