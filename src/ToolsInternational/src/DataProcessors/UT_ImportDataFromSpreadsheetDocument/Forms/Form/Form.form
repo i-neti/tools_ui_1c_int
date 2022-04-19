@@ -3249,19 +3249,19 @@
   </autoCommandBar>
   <handlers>
     <event>ChoiceProcessing</event>
-    <name>ОбработкаВыбора</name>
+    <name>ChoiceProcessing</name>
   </handlers>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <handlers>
     <event>OnClose</event>
-    <name>ПриЗакрытии</name>
+    <name>OnClose</name>
   </handlers>
   <autoTitle>true</autoTitle>
   <autoUrl>true</autoUrl>
@@ -4077,7 +4077,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>КомандаОткрыть</name>
+        <name>OpenCommand</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
