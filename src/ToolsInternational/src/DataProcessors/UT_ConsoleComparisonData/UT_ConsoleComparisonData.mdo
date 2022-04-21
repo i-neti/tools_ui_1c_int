@@ -3585,7 +3585,7 @@
       </fillValue>
     </attributes>
     <attributes uuid="f20dff1a-b120-4897-bfcc-35f84d040cc9">
-      <name>HeaderPropsForUser</name>
+      <name>HeaderAttributeForUser</name>
       <synonym>
         <key>en</key>
         <value>Header for the user</value>
