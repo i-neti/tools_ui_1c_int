@@ -9606,7 +9606,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.SettingsFileA.HeaderPropsForUser</segments>
+                      <segments>Объект.SettingsFileA.HeaderAttributeForUser</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
