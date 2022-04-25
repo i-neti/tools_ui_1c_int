@@ -9,7 +9,7 @@
     <value>Редактирование связи поиска</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>ИскатьПо</name>
+    <name>SearchBy</name>
     <id>1</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -18,11 +18,11 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ИскатьПо</segments>
+        <segments>SearchBy</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>ИскатьПоРасширеннаяПодсказка</name>
+      <name>SearchByExtendedTooltip</name>
       <id>9</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -37,7 +37,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ИскатьПоКонтекстноеМеню</name>
+      <name>SearchByContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -61,7 +61,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>СвязьПоВладельцу</name>
+    <name>LinkByOwner</name>
     <id>3</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -70,11 +70,11 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>СвязьПоВладельцу</segments>
+        <segments>LinkByOwner</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>СвязьПоВладельцуРасширеннаяПодсказка</name>
+      <name>LinkByOwnerExtendedTooltip</name>
       <id>10</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -89,7 +89,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>СвязьПоВладельцуКонтекстноеМеню</name>
+      <name>LinkByOwnerContextMenu</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -118,10 +118,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКоманд</name>
+    <name>CommandGroup</name>
     <id>8</id>
     <items xsi:type="form:Button">
-      <name>ОК</name>
+      <name>OK</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -129,7 +129,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОКРасширеннаяПодсказка</name>
+        <name>OKExtendedTooltip</name>
         <id>12</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -152,7 +152,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Отмена</name>
+      <name>Cancel</name>
       <id>7</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -160,7 +160,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОтменаРасширеннаяПодсказка</name>
+        <name>CancelExtendedTooltip</name>
         <id>13</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -203,7 +203,7 @@
       <value>Группа команд</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаКомандРасширеннаяПодсказка</name>
+      <name>CommandGroupExtendedTooltip</name>
       <id>11</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -234,7 +234,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <windowOpeningMode>LockOwnerWindow</windowOpeningMode>
   <autoTitle>true</autoTitle>
@@ -247,7 +247,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ImportDataFromSpreadsheetDocument</types>
@@ -261,7 +261,7 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ИскатьПо</name>
+    <name>SearchBy</name>
     <title>
       <key>en</key>
       <value>Search by</value>
@@ -283,7 +283,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СвязьПоВладельцу</name>
+    <name>LinkByOwner</name>
     <title>
       <key>en</key>
       <value>Link by owner</value>
@@ -306,7 +306,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ИспользуемыеТипы</name>
+    <name>UsedTypes</name>
+    <title>
+      <key>en</key>
+      <value>Used types</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Используемые типы</value>
@@ -323,7 +327,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ИспользоватьВладельца</name>
+    <name>UseOwner</name>
+    <title>
+      <key>en</key>
+      <value>Use owner</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Использовать владельца</value>
@@ -363,7 +371,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОсновныеДействияФормыОК</name>
+        <name>OK</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>

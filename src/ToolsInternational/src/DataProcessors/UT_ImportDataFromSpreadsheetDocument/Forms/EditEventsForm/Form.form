@@ -9,7 +9,7 @@
     <value>Форма редактирования события</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>НадписьТекстВыражения</name>
+    <name>ExpressionTextLabel</name>
     <id>1</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -18,12 +18,12 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>НадписьТекстВыражения</segments>
+        <segments>ExpressionTextLabel</segments>
       </paths>
     </dataPath>
     <titleLocation>None</titleLocation>
     <extendedTooltip>
-      <name>НадписьТекстВыраженияРасширеннаяПодсказка</name>
+      <name>ExpressionTextLabelExtendedTooltip</name>
       <id>16</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -38,7 +38,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>НадписьТекстВыраженияКонтекстноеМеню</name>
+      <name>ExpressionTextLabelContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -65,13 +65,13 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаПанель</name>
+    <name>BarGroup</name>
     <id>3</id>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаПередЗаписьюОбъекта</name>
+      <name>BeforeWriteObjectGroup</name>
       <id>4</id>
       <items xsi:type="form:FormField">
-        <name>ПередЗаписьюОбъекта</name>
+        <name>BeforeWriteObject</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -80,12 +80,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПередЗаписьюОбъекта</segments>
+            <segments>BeforeWriteObject</segments>
           </paths>
         </dataPath>
         <titleLocation>None</titleLocation>
         <extendedTooltip>
-          <name>ПередЗаписьюОбъектаРасширеннаяПодсказка</name>
+          <name>BeforeWriteObjectExtendedTooltip</name>
           <id>19</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -100,7 +100,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПередЗаписьюОбъектаКонтекстноеМеню</name>
+          <name>BeforeWriteObjectContextMenu</name>
           <id>6</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -145,7 +145,7 @@
         <value>Группа перед записью объекта</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаПередЗаписьюОбъектаРасширеннаяПодсказка</name>
+        <name>BeforeWriteObjectGroupExtendedTooltip</name>
         <id>18</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -166,10 +166,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаПриЗаписиОбъекта</name>
+      <name>OnWriteObjectGroup</name>
       <id>7</id>
       <items xsi:type="form:FormField">
-        <name>ПриЗаписиОбъекта</name>
+        <name>OnWriteObject</name>
         <id>8</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -178,12 +178,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПриЗаписиОбъекта</segments>
+            <segments>OnWriteObject</segments>
           </paths>
         </dataPath>
         <titleLocation>None</titleLocation>
         <extendedTooltip>
-          <name>ПриЗаписиОбъектаРасширеннаяПодсказка</name>
+          <name>OnWriteObjectExtendedTooltip</name>
           <id>21</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -198,7 +198,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПриЗаписиОбъектаКонтекстноеМеню</name>
+          <name>OnWriteObjectContextMenu</name>
           <id>9</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -243,7 +243,7 @@
         <value>Группа при записи объекта</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаПриЗаписиОбъектаРасширеннаяПодсказка</name>
+        <name>OnWriteObjectGroupExtendedTooltip</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -264,10 +264,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаПослеДобавленияСтроки</name>
+      <name>AfterAddRowGroup</name>
       <id>10</id>
       <items xsi:type="form:FormField">
-        <name>ПослеДобавленияСтроки</name>
+        <name>AfterAddRow</name>
         <id>11</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -276,12 +276,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПослеДобавленияСтроки</segments>
+            <segments>AfterAddRow</segments>
           </paths>
         </dataPath>
         <titleLocation>None</titleLocation>
         <extendedTooltip>
-          <name>ПослеДобавленияСтрокиРасширеннаяПодсказка</name>
+          <name>AfterAddRowExtendedTooltip</name>
           <id>23</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -296,7 +296,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПослеДобавленияСтрокиКонтекстноеМеню</name>
+          <name>AfterAddRowContextMenu</name>
           <id>12</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -341,7 +341,7 @@
         <value>Группа после добавления строки</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаПослеДобавленияСтрокиРасширеннаяПодсказка</name>
+        <name>AfterAddRowGroupExtendedTooltip</name>
         <id>22</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -383,7 +383,7 @@
       <value>Группа панель</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаПанельРасширеннаяПодсказка</name>
+      <name>BarGroupExtendedTooltip</name>
       <id>17</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -401,17 +401,17 @@
     <extInfo xsi:type="form:PagesGroupExtInfo">
       <handlers>
         <event>OnCurrentPageChange</event>
-        <name>ПанельПриСменеСтраницы</name>
+        <name>BarOnCurrentPageChange</name>
       </handlers>
       <pagesRepresentation>TabsOnTop</pagesRepresentation>
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаПанельКоманд</name>
+    <name>CommandBarGroup</name>
     <id>13</id>
     <items xsi:type="form:Button">
-      <name>ОК</name>
+      <name>OK</name>
       <id>14</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -419,7 +419,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОКРасширеннаяПодсказка</name>
+        <name>OKExtendedTooltip</name>
         <id>25</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -441,7 +441,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Закрыть</name>
+      <name>Close</name>
       <id>15</id>
       <title>
         <key>en</key>
@@ -457,7 +457,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ЗакрытьРасширеннаяПодсказка</name>
+        <name>CloseExtendedTooltip</name>
         <id>26</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -488,7 +488,7 @@
     </title>
     <title>
       <key>ru</key>
-      <value>Группа панель команд</value>
+      <value>Command bar group</value>
     </title>
     <toolTip>
       <key>en</key>
@@ -499,7 +499,7 @@
       <value>Группа панель команд</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаПанельКомандРасширеннаяПодсказка</name>
+      <name>CommandBarGroupExtendedTooltip</name>
       <id>24</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -530,7 +530,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <windowOpeningMode>LockOwnerWindow</windowOpeningMode>
   <autoTitle>true</autoTitle>
@@ -543,7 +543,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ImportDataFromSpreadsheetDocument</types>
@@ -557,7 +557,7 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>НадписьТекстВыражения</name>
+    <name>ExpressionTextLabel</name>
     <title>
       <key>en</key>
       <value>Expression text label</value>
@@ -579,7 +579,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПередЗаписьюОбъекта</name>
+    <name>BeforeWriteObject</name>
     <title>
       <key>en</key>
       <value>Before write object</value>
@@ -600,7 +600,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПриЗаписиОбъекта</name>
+    <name>OnWriteObject</name>
     <title>
       <key>en</key>
       <value>On write object</value>
@@ -621,7 +621,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПослеДобавленияСтроки</name>
+    <name>AfterAddRow</name>
     <title>
       <key>en</key>
       <value>After add row</value>
@@ -642,7 +642,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>РежимЗагрузки</name>
+    <name>ImportMode</name>
+    <title>
+      <key>en</key>
+      <value>Import mode</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Режим загрузки</value>
@@ -685,7 +689,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОсновныеДействияФормыОК</name>
+        <name>OK</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>

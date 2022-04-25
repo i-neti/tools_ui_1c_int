@@ -1,108 +1,108 @@
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ
+// FORM ITEMS EVENT HANDLERS
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "ОК"
+// OK button handler
 //
-&НаКлиенте
-Процедура ОКНажатие(Команда)
-	Закрыть(Элементы.СписокНастроек.ТекущиеДанные);
-КонецПроцедуры
+&AtClient
+Procedure OK(Command)
+	Close(Items.SettingsList.CurrentData);
+EndProcedure
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "Отмена"
+// Cancel button handler
 //
-&НаКлиенте
-Процедура ОтменаНажатие(Команда)
-	Закрыть();
-КонецПроцедуры
+&AtClient
+Procedure Cancel(Command)
+	Close();
+EndProcedure
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "Удалить"
+// Delete button handler
 //
-&НаКлиенте
-Процедура УдалитьНажатие(Команда)
+&AtClient
+Procedure Delete(Command)
 
-	ТекущиеДанные = Элементы.СписокНастроек.ТекущиеДанные;
-	Если ТекущиеДанные = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+	CurrentData = Items.SettingsList.CurrentData;
+	If CurrentData = Undefined Then
+		Return;
+	EndIf;
 
-	Если СоздавалиНовуюСтроку И ТекущиеДанные = СписокНастроек[СписокНастроек.Количество() - 1] Тогда
-		СоздавалиНовуюСтроку = Ложь;
-	КонецЕсли;
+	If NewRowAdded And CurrentData = SettingsList[SettingsList.Count() - 1] Then
+		NewRowAdded = False;
+	EndIf;
 
-	Если СписокНастроек.Количество() = 1 Тогда
-		СоздавалиНовуюСтроку = Истина;
-		ТекущиеДанные.Представление = "";
-		ТекущиеДанные.Пометка = Ложь;
-	Иначе
-		СписокНастроек.Удалить(ТекущиеДанные);
-	КонецЕсли;
+	If SettingsList.Count() = 1 Then
+		NewRowAdded = True;
+		CurrentData.Presentation = "";
+		CurrentData.Check = False;
+	Else
+		SettingsList.Delete(CurrentData);
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ФОРМЫ
+// FORM EVENT HANDLERS
 
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
-	Если СписокНастроек.Количество() = 0 Тогда
-		ТекущиеДанные = СписокНастроек.Добавить();
-		ТекущиеДанные.Представление = "Основная";
-		ТекущиеДанные.Значение = "Новая";
-		СоздавалиНовуюСтроку = Истина;
-	Иначе
-		СоздавалиНовуюСтроку = Ложь;
-		ТекущиеДанные = СписокНастроек[0];
-	КонецЕсли;
+	If SettingsList.Count() = 0 Then
+		CurrentData = SettingsList.Add();
+		CurrentData.Presentation = NStr("ru = 'Основная'; en = 'Main'");
+		CurrentData.Value.Add(NStr("ru = 'Новая'; en = 'New'"));
+		NewRowAdded = True;
+	Else
+		NewRowAdded = False;
+		CurrentData = SettingsList[0];
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура НаименованиеНастройкиОкончаниеВводаТекста(Элемент, Текст, ДанныеВыбора, СтандартнаяОбработка)
-	Нашли = Ложь;
+&AtClient
+Procedure SettingDescriptionTextEditEnd(Item, Text, ChoiceData, StandardProcessing)
+	Found = False;
 
-	Для Каждого ТекущиеДанные Из СписокНастроек Цикл
-		Если ТекущиеДанные.Представление = Текст Тогда
-			Нашли = Истина;
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+	For Each CurrentData In SettingsList Do
+		If CurrentData.Presentation = Text Then
+			Found = True;
+			Break;
+		EndIf;
+	EndDo;
 
-	Если Не Нашли Тогда
+	If Not Found Then
 
-		Если Не СоздавалиНовуюСтроку Тогда
-			ТекущиеДанные = СписокНастроек.Добавить();
-			СоздавалиНовуюСтроку = Истина;
-		Иначе
-			ТекущиеДанные = СписокНастроек[СписокНастроек.Количество() - 1];
-		КонецЕсли;
+		If Not NewRowAdded Then
+			CurrentData = SettingsList.Add();
+			NewRowAdded = True;
+		Else
+			CurrentData = SettingsList[SettingsList.Count() - 1];
+		EndIf;
 
-		ТекущиеДанные.Представление = Текст;
-	КонецЕсли;
+		CurrentData.Presentation = Text;
+	EndIf;
 
-	Элементы.СписокНастроек.ТекущаяСтрока = ТекущиеДанные;
-КонецПроцедуры
+	Items.SettingsList.CurrentRow = CurrentData;
+EndProcedure
 
-&НаКлиенте
-Процедура ИспользоватьПриОткрытииПриИзменении(Элемент)
-	ТекущиеДанные = Элементы.СписокНастроек.ТекущиеДанные;
-	Если ТекущиеДанные.Пометка Тогда
-		Для Каждого ЭлементСписка Из СписокНастроек Цикл
-			Если ЭлементСписка.Пометка И Не ЭлементСписка = ТекущиеДанные Тогда
-				ЭлементСписка.Пометка = Ложь;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure UseOnOpenOnChange(Item)
+	CurrentData = Items.SettingsList.CurrentData;
+	If CurrentData.Check Then
+		For Each ListItem In SettingsList Do
+			If ListItem.Check And Not ListItem = CurrentData Then
+				ListItem.Check = False;
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура СписокНастроекПометкаПриИзменении(Элемент)
-	ТекущиеДанные = Элементы.СписокНастроек.ТекущиеДанные;
-	Если ТекущиеДанные.Пометка Тогда
-		Для Каждого ЭлементСписка Из СписокНастроек Цикл
-			Если ЭлементСписка.Пометка И Не ЭлементСписка = ТекущиеДанные Тогда
-				ЭлементСписка.Пометка = Ложь;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure SettingsListCheckOnChange(Item)
+	CurrentData = Items.SettingsList.CurrentData;
+	If CurrentData.Check Then
+		For Each ListItem In SettingsList Do
+			If ListItem.Check And Not ListItem = CurrentData Then
+				ListItem.Check = False;
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure

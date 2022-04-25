@@ -9,7 +9,7 @@
     <value>Форма редактирования выражения</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>НадписьТекстВыражения</name>
+    <name>ExpressionTextLabel</name>
     <id>1</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -18,12 +18,12 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>НадписьТекстВыражения</segments>
+        <segments>ExpressionTextLabel</segments>
       </paths>
     </dataPath>
     <titleLocation>None</titleLocation>
     <extendedTooltip>
-      <name>НадписьТекстВыраженияРасширеннаяПодсказка</name>
+      <name>ExpressionTextLabelExtendedTooltip</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -38,7 +38,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>НадписьТекстВыраженияКонтекстноеМеню</name>
+      <name>ExpressionTextLabelContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -65,7 +65,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>ПолеТекстовогоДокумента</name>
+    <name>TextDocumentField</name>
     <id>3</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -74,12 +74,12 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ПолеТекстовогоДокумента</segments>
+        <segments>TextDocumentField</segments>
       </paths>
     </dataPath>
     <titleLocation>None</titleLocation>
     <extendedTooltip>
-      <name>ПолеТекстовогоДокументаРасширеннаяПодсказка</name>
+      <name>TextDocumentFieldExtendedTooltip</name>
       <id>9</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -94,7 +94,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ПолеТекстовогоДокументаКонтекстноеМеню</name>
+      <name>TextDocumentFieldContextMenu</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -118,7 +118,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКоманды</name>
+    <name>CommandGroup</name>
     <id>6</id>
     <items xsi:type="form:Button">
       <name>ОК</name>
@@ -152,7 +152,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Закрыть</name>
+      <name>Close</name>
       <id>7</id>
       <title>
         <key>en</key>
@@ -168,7 +168,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ЗакрытьРасширеннаяПодсказка</name>
+        <name>CloseExtendedTooltip</name>
         <id>12</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -211,7 +211,7 @@
     </toolTip>
     <horizontalStretch>true</horizontalStretch>
     <extendedTooltip>
-      <name>ГруппаКомандыРасширеннаяПодсказка</name>
+      <name>CommandGroupExtendedTooltip</name>
       <id>10</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -242,7 +242,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <windowOpeningMode>LockOwnerWindow</windowOpeningMode>
   <autoTitle>true</autoTitle>
@@ -255,7 +255,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ImportDataFromSpreadsheetDocument</types>
@@ -269,7 +269,7 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>НадписьТекстВыражения</name>
+    <name>ExpressionTextLabel</name>
     <title>
       <key>en</key>
       <value>Expression text label</value>
@@ -291,7 +291,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПолеТекстовогоДокумента</name>
+    <name>TextDocumentField</name>
     <title>
       <key>en</key>
       <value>Text document field</value>
@@ -335,7 +335,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОсновныеДействияФормыОК</name>
+        <name>OK</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
