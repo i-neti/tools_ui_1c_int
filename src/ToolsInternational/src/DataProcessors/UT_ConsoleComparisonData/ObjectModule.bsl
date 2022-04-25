@@ -2330,7 +2330,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 							Execute RowSettingsFile.ArbitraryCode;
 						Except
 							ErrorText = ErrorDescription();
-							ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1:%2';en = 'Error executing arbitrary code (props %1:%2'")
+							ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1):%2';en = 'Error executing arbitrary code (attribute %1):%2'")
 								, RowSettingsFile.LineNumber
 								, ErrorText);	
 							Message(ErrorMessage);
@@ -2373,7 +2373,9 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				NumberOfColumnsInFileLessThanRequired = False;
 				
 				If ColumnNumberWithKey > NumberLastColumn Then					
-					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбцов ключа";					
+					ErrorText = StrTemplate(Nstr("ru = 'Файл %1 содержит %2 колонок, проверьте настройки столбцов ключа';en = 'File %1 contains %2 columns, check key column settings'")
+						, BaseID
+						, NumberLastColumn);					
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKeyFromFile " + BaseID;
@@ -2383,7 +2385,9 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				EndIf;
 				
 				If NumberColumnsInKey > 1 And ColumnNumberWithKey2 > NumberLastColumn Then					
-					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбца 2 ключа";					
+					ErrorText = StrTemplate(Nstr("ru = 'Файл %1 содержит %2 колонок, проверьте настройки столбца 2 ключа';en = 'File %1 contains %2 columns, check column 2 key settings'")
+						, BaseID
+						, NumberLastColumn);					
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKey2FromFile " + BaseID;
@@ -2393,7 +2397,9 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				EndIf;
 				
 				If NumberColumnsInKey > 2 And ColumnNumberWithKey3 > NumberLastColumn Then					
-					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбца 3 ключа";
+					ErrorText = StrTemplate(Nstr("ru = 'Файл %1 содержит %2 колонок, проверьте настройки столбца 3 ключа';en = 'File %1 contains %2 columns, check column 3 key settings'")
+						, BaseID
+						, NumberLastColumn);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKey3FromFile " + BaseID;
@@ -2468,7 +2474,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());								
 						Message(ErrorText);
 					EndTry;
 				EndIf;
@@ -2481,7 +2490,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+								, Key2
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2496,7 +2508,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+								, Key3
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2508,14 +2523,16 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
-					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If RowSettingsFile.НомерКолонки = 0 Then
+					//Not set the column number (for example, if the attribute is filled programmatically)
+					If RowSettingsFile.NumberColumn = 0 Then
 						Continue;
 					EndIf;
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 					
-					If RowSettingsFile.НомерКолонки > NumberLastColumn Then						
-						ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки колонок реквизитов";						
+					If RowSettingsFile.NumberColumn > NumberLastColumn Then						
+						ErrorText = StrTemplate(Nstr("ru = 'Файл %1 содержит %2 колонок, проверьте настройки колонок реквизитов';en = 'File %1 contains %2 columns, check attribute column settings'")
+							, BaseID
+							, NumberLastColumn);						
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.SettingsFile" + BaseID;
@@ -2524,9 +2541,9 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Return ValueTable;
 					EndIf;
 					
-					RowReceiver[AttributeName] = TrimAll(File.Cells(NumberCurrentRow, RowSettingsFile.НомерКолонки).Value);
+					RowReceiver[AttributeName] = TrimAll(File.Cells(NumberCurrentRow, RowSettingsFile.NumberColumn).Value);
 					
-					//FillType переменных, которые будут использоваться в произвольном коде
+					//FillType variables to be used in arbitrary code
 					РВрем = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
@@ -2549,14 +2566,14 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 			ElsIf FileFormat = "DOC" Then
 
-				//In документа WORD попадают символы, которые 1С не может вывести в ТЗ на форме и выдает ошибку Text XML содержит недопустимый символ
-	        	ЗаменяемыеСимволы = New Array;
-				ЗаменяемыеСимволы.Add(Char(7));	//¶
-				ЗаменяемыеСимволы.Add(Char(13));	//черный круг
+				//In the WORD document, characters enter that 1C cannot display in the Value table on the form and gives an error Text XML contains an invalid character
+	        	ReplaceableSymbols = New Array;
+				ReplaceableSymbols.Add(Char(7));	//¶
+				ReplaceableSymbols.Add(Char(13));	//black circle
 								
 				Key1 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey).Range.Text);
-				For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-					Key1 = StrReplace(Key1, ЗаменямыйСимвол, "");
+				For Each ReplaceableSymbol In ReplaceableSymbols Do 
+					Key1 = StrReplace(Key1, ReplaceableSymbol, "");
 				EndDo;
 							
 				If ThisObject["CastKeyToString" + BaseID] Then
@@ -2574,8 +2591,8 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				If NumberColumnsInKey > 1 Then
 					
 					Key2 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey2).Range.Text);
-					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-						Key2 = StrReplace(Key2, ЗаменямыйСимвол, "");
+					For Each ReplaceableSymbol In ReplaceableSymbols Do 
+						Key2 = StrReplace(Key2, ReplaceableSymbol, "");
 					EndDo;
 					
 					If ThisObject["CastKey2ToString" + BaseID] Then
@@ -2595,8 +2612,8 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				If NumberColumnsInKey > 2 Then
 					
 					Key3 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey3).Range.Text);
-					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-						Key3 = StrReplace(Key3, ЗаменямыйСимвол, "");
+					For Each ReplaceableSymbol In ReplaceableSymbols Do 
+						Key3 = StrReplace(Key3, ReplaceableSymbol, "");
 					EndDo;
 
 							
@@ -2622,7 +2639,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());								
 						Message(ErrorText);
 					EndTry;
 				EndIf;
@@ -2635,7 +2655,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+								, Key2
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2650,7 +2673,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+								, Key3
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2662,18 +2688,18 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
-					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If RowSettingsFile.НомерКолонки = 0 Then
+					//Not set the column number (for example, if the attribute is filled programmatically)
+					If RowSettingsFile.NumberColumn = 0 Then
 						Continue;
 					EndIf;
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-					ЗнчениеРеквизита = TrimAll(File.Cell(NumberCurrentRow, RowSettingsFile.НомерКолонки).Range.Text);
-					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-						ЗнчениеРеквизита = StrReplace(ЗнчениеРеквизита, ЗаменямыйСимвол, "");
+					ValueAttribute = TrimAll(File.Cell(NumberCurrentRow, RowSettingsFile.NumberColumn).Range.Text);
+					For Each ReplaceableSymbol In ReplaceableSymbols Do 
+						ValueAttribute = StrReplace(ValueAttribute, ReplaceableSymbol, "");
 					EndDo;
-					RowReceiver[AttributeName] = ЗнчениеРеквизита;
+					RowReceiver[AttributeName] = ValueAttribute;
 					
-					//FillType переменных, которые будут использоваться в произвольном коде
+					//FillType variables to be used in arbitrary code
 					РВрем = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
@@ -2696,19 +2722,19 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 			ElsIf FileFormat = "CSV" Or FileFormat = "TXT" Then
 
-				СтрокаТекста = File.GetLine(NumberCurrentRow);
+				RowTextFromFile = File.GetLine(NumberCurrentRow);
 						
 				If FileFormat = "CSV" Then
-					СимволРазделителяКолонок = ";";
+					ColumnSeparatorCharacter = ";";
 				Else
-					СимволРазделителяКолонок = "	";
+					ColumnSeparatorCharacter = "	";
 				EndIf;	
 				
-				СимволРазделителя = Chars.LF;
+				SeparatorCharacter = Chars.LF;
 				
-				СтрокаМногострочногоТекста = StrReplace(СтрокаТекста,СимволРазделителяКолонок,СимволРазделителя);
+				RowMultilineText = StrReplace(RowTextFromFile, ColumnSeparatorCharacter, SeparatorCharacter);
 				
-				Key1 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey);
+				Key1 = StrGetLine(RowMultilineText,ColumnNumberWithKey);
 				
 				If ThisObject["CastKeyToString" + BaseID] Then
 					Key1 = TrimAll(String(Key1));
@@ -2724,7 +2750,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 								
 				If NumberColumnsInKey > 1 Then
 					
-					Key2 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey2);
+					Key2 = StrGetLine(RowMultilineText, ColumnNumberWithKey2);
 				
 					If ThisObject["CastKeyToString" + BaseID] Then
 						Key2 = TrimAll(String(Key2));
@@ -2742,7 +2768,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				
 				If NumberColumnsInKey > 2 Then
 					
-					Key3 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey3);
+					Key3 = StrGetLine(RowMultilineText, ColumnNumberWithKey3);
 				
 					If ThisObject["CastKeyToString" + BaseID] Then
 						Key3 = TrimAll(String(Key3));
@@ -2765,7 +2791,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());								
 						Message(ErrorText);
 					EndTry;
 				EndIf;
@@ -2778,7 +2807,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+								, Key2
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2793,7 +2825,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+								, Key3
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2805,14 +2840,14 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
-					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If RowSettingsFile.НомерКолонки = 0 Then
+					//Not set the column number (for example, if the attribute is filled programmatically)
+					If RowSettingsFile.NumberColumn = 0 Then
 						Continue;
 					EndIf;
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-					RowReceiver[AttributeName] = StrGetLine(СтрокаМногострочногоТекста,RowSettingsFile.НомерКолонки);
+					RowReceiver[AttributeName] = StrGetLine(RowMultilineText,RowSettingsFile.NumberColumn);
 					
-					//FillType переменных, которые будут использоваться в произвольном коде
+					//FillType variables to be used in arbitrary code
 					РВрем = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
@@ -2835,7 +2870,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 			ElsIf FileFormat = "DBF" Then
 				
-				//На всякий случай, хотя такого не должно быть
+				//Just in case, although this should not be
 				If FileDBF.EOF() Then
 					Continue;
 				EndIf;
@@ -2897,7 +2932,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());								
 						Message(ErrorText);
 					EndTry;
 				EndIf;
@@ -2910,7 +2948,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+								, Key2
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2925,7 +2966,10 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+								, Key3
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -2937,14 +2981,14 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
-					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If RowSettingsFile.НомерКолонки = 0 Then
+					//Not set the column number (for example, if the attribute is filled programmatically)
+					If RowSettingsFile.NumberColumn = 0 Then
 						Continue;
 					EndIf;
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-					RowReceiver[AttributeName] = FileDBF[FileDBF.поля[RowSettingsFile.НомерКолонки - 1].Name];
+					RowReceiver[AttributeName] = FileDBF[FileDBF.поля[RowSettingsFile.NumberColumn - 1].Name];
 					
-					//FillType переменных, которые будут использоваться в произвольном коде
+					//FillType variables to be used in arbitrary code
 					РВрем = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
@@ -2967,7 +3011,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 //#EndRegion
 
 
-//#Region Произвольный_код_заполнения_реквизитов
+//#Region Arbitrary_code_of_filling_details
 			
 			For Each RowSettingsFile In SettingsFile Do
 				
@@ -2975,10 +3019,13 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 				РТек = RowReceiver[AttributeName];
 
 				Try
-					Execute RowSettingsFile.ПроизвольныйКод;
+					Execute RowSettingsFile.ArbitraryCode;
 				Except
 					ErrorText = ErrorDescription();
-					Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
+					ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1):%2';en = 'Error executing arbitrary code (attribute %1):%2'")
+						, RowSettingsFile.LineNumber
+						, ErrorText);
+					Message(ErrorMessage);
 				EndTry;
 				
 				If ThisObject["CollapseTable" + BaseID] Then
@@ -3077,9 +3124,9 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 	JSONReader.Close();
 	
 	ЭлементНайден = False;
-	For каждого CurrentData In ДанныеJSON Do
+	For Each CurrentData In ДанныеJSON Do
 		
-		//Array с данными уже найден на предыдущей итерации
+		//Array with data already found in previous iteration
 		If ЭлементНайден Then 
 			Break;
 		EndIf;
@@ -3089,23 +3136,26 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 			
 			ЭлементНайден = True;
 			
-			For каждого ТекущееЗначениеJSON In CurrentData.Value Do
+			For каждого CurrentValueJSON In CurrentData.Value Do
 			
 				FillVariablesPWithDefaultValues();
 										
 				RowReceiver = ValueTable.Add();
 				
 				Try				
-					If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey) Then
-						Raise "Attribute JSON с именем " + ColumnNameWithKey + " не найден";
+					If Not CurrentValueJSON.Property(ColumnNameWithKey) Then
+						RaiseMessage = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+							, ColumnNameWithKey);
+						Raise RaiseMessage;
 					EndIf;
 				Except
-					ErrorText = "Attribute JSON с именем " + ColumnNameWithKey + " не найден";
+					ErrorText = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+						, ColumnNameWithKey);
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					Return Undefined;
 				EndTry; 
 				
-				Key1 = ТекущееЗначениеJSON[ColumnNameWithKey];
+				Key1 = CurrentValueJSON[ColumnNameWithKey];
 				
 				If ThisObject["CastKeyToUpperCase" + BaseID] Then
 					Key1 = TrimAll(Upper(String(Key1)));
@@ -3117,16 +3167,19 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 				If NumberColumnsInKey > 1 Then
 				
 					Try				
-						If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey2) Then
-							Raise "Attribute JSON с именем " + ColumnNameWithKey2 + " не найден";
+						If Not CurrentValueJSON.Property(ColumnNameWithKey2) Then
+							RaiseMessage = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+								, ColumnNameWithKey2);
+							Raise RaiseMessage;							
 						EndIf;
 					Except
-						ErrorText = "Attribute JSON с именем " + ColumnNameWithKey2 + " не найден";
+						ErrorText = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+							, ColumnNameWithKey2);
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					Key2 = ТекущееЗначениеJSON[ColumnNameWithKey2];
+					Key2 = CurrentValueJSON[ColumnNameWithKey2];
 							
 					If ThisObject["CastKey2ToString" + BaseID] Then
 						Key2 = TrimAll(String(Key2));
@@ -3145,16 +3198,19 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 				If NumberColumnsInKey > 2 Then
 				
 					Try				
-						If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey3) Then
-							Raise "Attribute JSON с именем " + ColumnNameWithKey3 + " не найден";
+						If Not CurrentValueJSON.Property(ColumnNameWithKey3) Then
+							RaiseMessage = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+								, ColumnNameWithKey3);
+							Raise RaiseMessage;
 						EndIf;
 					Except
-						ErrorText = "Attribute JSON с именем " + ColumnNameWithKey3 + " не найден";
+						ErrorText = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+							, ColumnNameWithKey3);
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					Key3 = ТекущееЗначениеJSON[ColumnNameWithKey3];
+					Key3 = CurrentValueJSON[ColumnNameWithKey3];
 							
 					If ThisObject["CastKey3ToString" + BaseID] Then
 						Key3 = TrimAll(String(Key3));
@@ -3177,7 +3233,10 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());							
 						Message(ErrorText);
 					EndTry;
 				EndIf;
@@ -3191,7 +3250,10 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+								, Key2
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -3206,7 +3268,10 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+								, Key3
+								, BaseID
+								, ErrorDescription());
 							Message(ErrorText);
 						EndTry;
 					EndIf;
@@ -3219,25 +3284,28 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
 					
-					//Not задано имя колонки (например, если реквизит заполняется программно)
+					//Not set the column number (for example, if the attribute is filled programmatically)
 					If IsBlankString(RowSettingsFile.ColumnName) Then
 						Continue;
 					EndIf;
 					
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 					Try				
-						If Not ТекущееЗначениеJSON.Property(RowSettingsFile.ColumnName) Then
-							Raise "Attribute JSON с именем " + RowSettingsFile.ColumnName + " не найден";
+						If Not CurrentValueJSON.Property(RowSettingsFile.ColumnName) Then
+							RaiseMessage = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+								, RowSettingsFile.ColumnName);
+							Raise RaiseMessage;							
 						EndIf;
 					Except
-						ErrorText = "Attribute JSON с именем " + RowSettingsFile.ColumnName + " не найден";
+						ErrorText = StrTemplate(Nstr("ru = 'Реквизит JSON с именем %1 не найден';en = 'JSON attribute named %1 not found'")
+							, RowSettingsFile.ColumnName);								
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					RowReceiver[AttributeName] = ТекущееЗначениеJSON[RowSettingsFile.ColumnName];
+					RowReceiver[AttributeName] = CurrentValueJSON[RowSettingsFile.ColumnName];
 										
-					//FillType переменных, которые будут использоваться в произвольном коде
+					//FillType variables to be used in arbitrary code
 					РВрем = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
@@ -3254,7 +3322,7 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 				EndDo;
 		
 		
-#Region Произвольный_код_заполнения_реквизитов
+#Region Arbitrary_code_of_filling_details
 		
 				For Each RowSettingsFile In SettingsFile Do
 					
@@ -3262,10 +3330,13 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 					РТек = RowReceiver[AttributeName];
 
 					Try
-						Execute RowSettingsFile.ПроизвольныйКод;
+						Execute RowSettingsFile.ArbitraryCode;
 					Except
 						ErrorText = ErrorDescription();
-						Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
+						ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1):%2';en = 'Error executing arbitrary code (attribute %1):%2'")
+							, RowSettingsFile.LineNumber
+							, ErrorText);
+						Message(ErrorMessage);
 					EndTry;
 					
 					If ThisObject["CollapseTable" + BaseID] Then
@@ -3342,10 +3413,10 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 	EndIf;
 	
 	NumberCurrentRow = NumberFirstRow;	
-	ТекущееЧислоСтрокСПустымиКлючами = 0;
+	CurrentNumberRowsWithEmptyKeys = 0;
 	While True Do
 		
-		Key1 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey,NumberCurrentRow,ColumnNumberWithKey).Text;
+		Key1 = ThisObject["Table" + BaseID].Region(NumberCurrentRow, ColumnNumberWithKey, NumberCurrentRow, ColumnNumberWithKey).Text;
 								
 		If ThisObject["CastKeyToString" + BaseID] Then
 			Key1 = TrimAll(String(Key1));
@@ -3361,7 +3432,7 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 						
 		If NumberColumnsInKey > 1 Then
 			
-			Key2 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey2,NumberCurrentRow,ColumnNumberWithKey2).Text;
+			Key2 = ThisObject["Table" + BaseID].Region(NumberCurrentRow, ColumnNumberWithKey2, NumberCurrentRow, ColumnNumberWithKey2).Text;
 					
 			If ThisObject["CastKey2ToString" + BaseID] Then
 				Key2 = TrimAll(String(Key2));
@@ -3379,7 +3450,7 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 		
 		If NumberColumnsInKey > 2 Then
 			
-			Key3 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey3,NumberCurrentRow,ColumnNumberWithKey3).Text;
+			Key3 = ThisObject["Table" + BaseID].Region(NumberCurrentRow, ColumnNumberWithKey3, NumberCurrentRow, ColumnNumberWithKey3).Text;
 					
 			If ThisObject["CastKey3ToString" + BaseID] Then
 				Key3 = TrimAll(String(Key3));
@@ -3400,20 +3471,20 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 				If Not ValueIsFilled(Key2) Then
 					If NumberColumnsInKey > 2 Then
 						If Not ValueIsFilled(Key3) Then
-							ТекущееЧислоСтрокСПустымиКлючами = ТекущееЧислоСтрокСПустымиКлючами + 1;
+							CurrentNumberRowsWithEmptyKeys = CurrentNumberRowsWithEmptyKeys + 1;
 						EndIf;
 					Else
-						ТекущееЧислоСтрокСПустымиКлючами = ТекущееЧислоСтрокСПустымиКлючами + 1;
+						CurrentNumberRowsWithEmptyKeys = CurrentNumberRowsWithEmptyKeys + 1;
 					EndIf;
 				EndIf;
 			Else
-				ТекущееЧислоСтрокСПустымиКлючами = ТекущееЧислоСтрокСПустымиКлючами + 1;
+				CurrentNumberRowsWithEmptyKeys = CurrentNumberRowsWithEmptyKeys + 1;
 			EndIf;
 		Else
-			ТекущееЧислоСтрокСПустымиКлючами = 0;
+			CurrentNumberRowsWithEmptyKeys = 0;
 		EndIf;
 		
-		If ТекущееЧислоСтрокСПустымиКлючами = NumberOfRowsWithEmptyKeysToBreakReading Then
+		If CurrentNumberRowsWithEmptyKeys = NumberOfRowsWithEmptyKeysToBreakReading Then
 			Break;
 		EndIf;
 		
@@ -3428,7 +3499,10 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 			Try
 			    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 			Except
-				ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+				ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+					, Key1
+					, BaseID
+					, ErrorDescription()); 				
 				Message(ErrorText);
 			EndTry;
 		EndIf;
@@ -3441,7 +3515,10 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 				Try
 				    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 				Except
-					ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+						, Key2
+						, BaseID
+						, ErrorDescription());
 					Message(ErrorText);
 				EndTry;
 			EndIf;
@@ -3456,7 +3533,10 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 				Try
 				    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 				Except
-					ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+						, Key3
+						, BaseID
+						, ErrorDescription());
 					Message(ErrorText);
 				EndTry;
 			EndIf;
@@ -3469,7 +3549,7 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 		For Each RowSettingsFile In SettingsFile Do
 		
 			AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-			RowReceiver[AttributeName] = TrimAll(ThisObject["Table" + BaseID].Region(NumberCurrentRow,RowSettingsFile.НомерКолонки,NumberCurrentRow,RowSettingsFile.НомерКолонки).Text);
+			RowReceiver[AttributeName] = TrimAll(ThisObject["Table" + BaseID].Region(NumberCurrentRow,RowSettingsFile.NumberColumn,NumberCurrentRow,RowSettingsFile.NumberColumn).Text);
 			
 			//FillType переменных, которые будут использоваться в произвольном коде
 			РВрем = RowReceiver[AttributeName];
@@ -3493,10 +3573,13 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 			РТек = RowReceiver[AttributeName];
 
 			Try
-				Execute RowSettingsFile.ПроизвольныйКод;
+				Execute RowSettingsFile.ArbitraryCode;
 			Except
 				ErrorText = ErrorDescription();
-				Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
+				ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1):%2';en = 'Error executing arbitrary code (attribute %1):%2'")
+					, RowSettingsFile.LineNumber
+					, ErrorText);
+				Message(ErrorMessage);		
 			EndTry;
 			
 			If ThisObject["CollapseTable" + BaseID] Then
@@ -3538,15 +3621,15 @@ EndFunction
 #EndRegion
 
 
-#Region Вспомогательные_процедуры_и_функции
+#Region Auxiliary_procedures_and_functions
 
-Function CheckFillingAttributes(ИсточникДляПредварительногоПросмотра = "", ErrorsText = "") Export
+Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 	
-	РеквизитыЗаполненыКорректно = True;
+	AttributesFilledOutCorrectly = True;
 	
 	If NumberColumnsInKey = 0 Then
-		РеквизитыЗаполненыКорректно = False;
-		ErrorText = "Not заполнено число столбцов в ключе";
+		AttributesFilledOutCorrectly = False;
+		ErrorText = Nstr("ru = 'Не заполнено число столбцов в ключе';en = 'The number of columns in the key is not filled'");
 		UserMessage = New UserMessage;
 		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.NumberColumnsInKey";
@@ -3555,8 +3638,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 	EndIf;
 		
 	If NumberOfRowsWithEmptyKeysToBreakReading = 0 Then
-		РеквизитыЗаполненыКорректно = False;
-		ErrorText = "Not заполнено число строк с пустыми ключами для прерывания чтения";
+		AttributesFilledOutCorrectly = False;
+		ErrorText = Nstr("ru = 'Не заполнено число строк с пустыми ключами для прерывания чтения';en = 'The number of rows with empty keys to abort reading is not filled'");
 		UserMessage = New UserMessage;
 		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.NumberOfRowsWithEmptyKeysToBreakReading";
@@ -3566,13 +3649,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 	
 #Region _1С_8_1С_77_SQL
 
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
+	If IsBlankString(SourceForPreview) Or SourceForPreview = "A" Then
 	
 		If BaseTypeA >= 0 And BaseTypeA <= 2 Or BaseTypeA = 5 Then
 			
 			If IsBlankString(QueryTextA) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен текст запроса к базе А";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнен текст запроса к базе А';en = 'The text of the request to the base A is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextA";
@@ -3584,13 +3667,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 		
 	EndIf;
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
+	If IsBlankString(SourceForPreview) Or SourceForPreview = "B" Then
 		
 		If BaseTypeB >= 0 And BaseTypeB <= 2 Or BaseTypeB = 5 Then
 		
 			If IsBlankString(QueryTextB) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен текст запроса к базе Б";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнен текст запроса к базе Б';en = 'The text of the request to the base B is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextB";
@@ -3607,14 +3690,14 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 
 #Region Файл_Табличный_документ
 
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
+	If IsBlankString(SourceForPreview) Or SourceForPreview = "A" Then
 	
 		If BaseTypeA = 3 Or BaseTypeA = 4 Then
 				
 			If BaseTypeA = 3 And IsBlankString(ConnectionToExternalBaseAFileFormat) Then
 				
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен формат файла А";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнен формат файла А';en = 'File format A is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ConnectionToExternalBaseAFileFormat";
@@ -3625,8 +3708,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If IsBlankString(ColumnNameKeyFromFileA) Then
 				
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом файла А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом файла А';en = 'The name of the column with the key of file A is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKeyFromFileA";
@@ -3639,8 +3722,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 					If ColumnNameKey2FromFileA = 0 Then
 						
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя столбца с ключом 2 файла А";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 2 файла А';en = 'The name of the column with the key 2 of file A is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey2FromFileA";
@@ -3655,8 +3738,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 					If ColumnNameKey3FromFileA = 0 Then
 						
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя столбца с ключом 3 файла А";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 3 файла А';en = 'The name of the column with the key 3 of file A is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey3FromFileA";
@@ -3669,8 +3752,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If IsBlankString(DataStorageMethodInXMLFileA) Then
 				
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен способ хранения данных в файле А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен способ хранения данных в файле А';en = 'The method of storing data in file A is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.DataStorageMethodInXMLFileA";
@@ -3681,12 +3764,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 			Else
 				
-				//For файлов xls и doc должен быть указан номер книги /таблицы
+				//For xls and doc files the book/table number must be specified
 				If BaseTypeA = 3 And (ConnectionToExternalBaseAFileFormat = "XLS" Or ConnectionToExternalBaseAFileFormat = "DOC") Then
 					
 					If ConnectionToExternalDatabaseANumberTableInFile = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер " + ?(ConnectionToExternalBaseAFileFormat = "XLS", "книги", "таблицы") + " файла А";
+						AttributesFilledOutCorrectly = False;						
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер %1 файла А';en = 'The %1 number of file A is not filled'")
+							, ?(ConnectionToExternalBaseAFileFormat = "XLS", Nstr("ru = 'книги';en = 'book'"), Nstr("ru = 'таблицы';en = 'table'")));
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConnectionToExternalDatabaseANumberTableInFile";
@@ -3697,8 +3781,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				EndIf;
 				
 				If NumberFirstRowFileA = 0 Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен номер первой строки файла/таблицы А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен номер первой строки файла/таблицы А';en = 'The number of the first line of file/table A is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.NumberFirstRowFileA";
@@ -3707,8 +3791,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				EndIf;
 				
 				If ColumnNumberKeyFromFileA = 0 Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен номер столбца с ключом файла/таблицы А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом файла/таблицы А';en = 'The column number with the file/table A key is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKeyFromFileA";
@@ -3718,8 +3802,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If NumberColumnsInKey > 1 Then			
 					If ColumnNumberKey2FromFileA = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер столбца с ключом 2 файла/таблицы А";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом 2 файла/таблицы А';en = 'Column number with key 2 of file/table A is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey2FromFileA";
@@ -3730,8 +3814,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If NumberColumnsInKey > 2 Then			
 					If ColumnNumberKey3FromFileA = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер столбца с ключом 3 файла/таблицы А";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом 3 файла/таблицы А';en = 'Column number with key 3 of file/table A is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey3FromFileA";
@@ -3740,13 +3824,14 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 					EndIf;			
 				EndIf; 
 				
-				For Each СтрокаТЧ In SettingsFileA Do
-					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер колонки файла/таблицы А, соответствующий реквизиту А" + СтрокаТЧ.LineNumber;
+				For Each RowTP_SettingsFileA In SettingsFileA Do
+					If IsBlankString(RowTP_SettingsFileA.ArbitraryCode) And RowTP_SettingsFileA.NumberColumn = 0 Then
+						AttributesFilledOutCorrectly = False;
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер колонки файла/таблицы А, соответствующий реквизиту А%1';en = 'File/table A column number corresponding to attribute A%1 is not filled'")
+							, RowTP_SettingsFileA.LineNumber);
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
-						UserMessage.Field = "Object.SettingsFileA[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
+						UserMessage.Field = "Object.SettingsFileA[" + (RowTP_SettingsFileA.LineNumber - 1) + "].NumberColumn";
 						UserMessage.Message();
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
@@ -3758,13 +3843,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 		
 	EndIf; 
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
+	If IsBlankString(SourceForPreview) Or SourceForPreview = "B" Then
 		If BaseTypeB = 3 Or BaseTypeB = 4 Then
 				
 			If BaseTypeB = 3 And IsBlankString(ConnectionToExternalBaseBFileFormat) Then
 				
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен формат файла Б";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнен формат файла Б';en = 'File format B is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ConnectionToExternalBaseBFileFormat";
@@ -3775,8 +3860,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 
 				If IsBlankString(ColumnNameKeyFromFileB) Then
 				
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом файла Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом файла Б';en = 'The name of the column with the key of file B is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKeyFromFileB";
@@ -3787,8 +3872,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If NumberColumnsInKey > 1 Then			
 					If ColumnNameKey2FromFileB = 0 Then					
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя столбца с ключом 2 файла Б";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 2 файла Б';en = 'The name of the column with the key 2 of file B is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey2FromFileB";
@@ -3799,8 +3884,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If NumberColumnsInKey > 2 Then			
 					If ColumnNameKey3FromFileB = 0 Then					
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя столбца с ключом 3 файла Б";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 3 файла Б';en = 'The name of the column with the key 3 of file B is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey3FromFileB";
@@ -3811,8 +3896,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				If IsBlankString(DataStorageMethodInXMLFileB) Then
 				
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен способ хранения данных в файле Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен способ хранения данных в файле Б';en = 'The method of storing data in file B is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.DataStorageMethodInXMLFileB";
@@ -3827,8 +3912,9 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 					
 					//For файлов xls и doc должен быть указан номер книги /таблицы
 					If ConnectionToExternalDatabaseBNumberTableInFile = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер " + ?(ConnectionToExternalBaseBFileFormat = "XLS", "книги", "таблицы") + " файла А";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер %1 файла А';en = 'The %1 number of file A is not filled'")
+							, ?(ConnectionToExternalBaseAFileFormat = "XLS", Nstr("ru = 'книги';en = 'book'"), Nstr("ru = 'таблицы';en = 'table'")));
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConnectionToExternalDatabaseBNumberTableInFile";
@@ -3838,8 +3924,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				EndIf;
 				
 				If NumberFirstRowFileB = 0 Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен номер первой строки файла/таблицы Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен номер первой строки файла/таблицы Б';en = 'The number of the first line of file/table B is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.NumberFirstRowFileB";
@@ -3848,8 +3934,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				EndIf;
 				
 				If ColumnNumberKeyFromFileB = 0 Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен номер столбца с ключом файла/таблицы Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом файла/таблицы Б';en = 'The column number with the file/table B key is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKeyFromFileB";
@@ -3861,8 +3947,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 					If ColumnNumberKey2FromFileB = 0 Then
 						
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер столбца с ключом 2 файла/таблицы Б";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом 2 файла/таблицы B';en = 'Column number with key 2 of file/table Б is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey2FromFileB";
@@ -3877,8 +3963,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 					If ColumnNumberKey3FromFileB = 0 Then
 						
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер столбца с ключом 3 файла/таблицы Б";
+						AttributesFilledOutCorrectly = False;
+						ErrorText = Nstr("ru = 'Не заполнен номер столбца с ключом 3 файла/таблицы Б';en = 'Column number with key 3 of file/table B is not filled'");
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey3FromFileB";
@@ -3889,13 +3975,14 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				
 				EndIf;
 				
-				For Each СтрокаТЧ In SettingsFileB Do
-					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнен номер колонки файла/таблицы Б, соответствующий реквизиту Б" + СтрокаТЧ.LineNumber;
+				For Each RowTP_SettingsFileB In SettingsFileB Do
+					If IsBlankString(RowTP_SettingsFileB.ArbitraryCode) And RowTP_SettingsFileB.NumberColumn = 0 Then
+						AttributesFilledOutCorrectly = False;
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер колонки файла/таблицы Б, соответствующий реквизиту Б%1';en = 'File/table B column number corresponding to attribute B%1 is not filled'")
+							, RowTP_SettingsFileB.LineNumber);							
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
-						UserMessage.Field = "Object.SettingsFileB[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
+						UserMessage.Field = "Object.SettingsFileB[" + (RowTP_SettingsFileB.LineNumber - 1) + "].NumberColumn";
 						UserMessage.Message();
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
@@ -3912,13 +3999,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 
  #Region JSON
  
-	 If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
+	 If IsBlankString(SourceForPreview) Or SourceForPreview = "A" Then
 		 
 	 	If BaseTypeA = 6 Then
 		 
 			If IsBlankString(QueryTextA) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнена строка JSON";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнена строка JSON';en = 'JSON string not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextA";
@@ -3928,8 +4015,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 						
 			If IsBlankString(ColumnNameKeyFromFileA) Then
 					
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнено имя столбца с ключом файла А";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом файла А';en = 'The name of the column with the key of file A is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ColumnNameKeyFromFileA";
@@ -3942,8 +4029,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 				If ColumnNameKey2FromFileA = 0 Then
 					
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом 2 файла А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 2 файла А';en = 'The name of the column with the key 2 of file A is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey2FromFileA";
@@ -3958,8 +4045,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 				If ColumnNameKey3FromFileA = 0 Then
 					
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом 3 файла А";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 3 файла А';en = 'The name of the column with the key 3 of file A is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey3FromFileA";
@@ -3975,13 +4062,13 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 	EndIf;
 	
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
+	If IsBlankString(SourceForPreview) Or SourceForPreview = "B" Then
 			
 		If BaseTypeB = 6 Then
 		 
 			If IsBlankString(QueryTextB) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнена строка JSON";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнена строка JSON';en = 'JSON string not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextB";
@@ -3991,8 +4078,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 			If IsBlankString(ColumnNameKeyFromFileB) Then
 					
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнено имя столбца с ключом файла Б";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом файла Б';en = 'The name of the column with the key of file B is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ColumnNameKeyFromFileB";
@@ -4005,8 +4092,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 				If ColumnNameKey2FromFileB = 0 Then
 					
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом 2 файла Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 2 файла Б';en = 'The name of the column with the key 2 of file B is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey2FromFileB";
@@ -4021,8 +4108,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 			
 				If ColumnNameKey3FromFileB = 0 Then
 					
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя столбца с ключом 3 файла Б";
+					AttributesFilledOutCorrectly = False;
+					ErrorText = Nstr("ru = 'Не заполнено имя столбца с ключом 3 файла Б';en = 'The name of the column with the key 3 of file B is not filled'");
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey3FromFileB";
@@ -4038,14 +4125,14 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 	EndIf;
  #EndRegion 
 
- 	If IsBlankString(ИсточникДляПредварительногоПросмотра) Then
+ 	If IsBlankString(SourceForPreview) Then
 	 
-		//If код формируется автоматически, поля таблиц условий д.б. заполнены правильно
+		//If the code is generated automatically, the fields of the condition tables must be filled in correctly
 		If Not CodeForOutputRowsEditedManually And Not ConditionsOutputRowsDisabled Then
 			
 			If ConditionsOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForConditionsOutputRows) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен логический оператор для объединения условий вывода строк";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = Nstr("ru = 'Не заполнен логический оператор для объединения условий вывода строк';en = 'The logical operator for combining string output conditions is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForConditionsOutputRows";
@@ -4053,46 +4140,50 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
-			For Each СтрокаТЧ In ConditionsOutputRows Do
+			For Each RowTP_ConditionsOutputRows In ConditionsOutputRows Do
 				
-				If Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsOutputRows.NameComparedAttribute) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнено имя реквизита в строке условий вывода №%1';en = 'The attribute name is not filled in the line of output conditions No.%1'")
+						,RowTP_ConditionsOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute";
+					UserMessage.Field = "Object.ConditionsOutputRows[" + (RowTP_ConditionsOutputRows.LineNumber - 1) + "].NameComparedAttribute";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If Not ValueIsFilled(СтрокаТЧ.Condition) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено условие в строке условий вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsOutputRows.Condition) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнено условие в строке условий вывода №%1';en = 'The condition in the line of output conditions No.%1 is not filled'")
+						, RowTP_ConditionsOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].Condition";
+					UserMessage.Field = "Object.ConditionsOutputRows[" + (RowTP_ConditionsOutputRows.LineNumber - 1) + "].Condition";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If Not ValueIsFilled(СтрокаТЧ.ComparisonType) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен тип сравнения в строке условий вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsOutputRows.ComparisonType) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнен тип сравнения в строке условий вывода №%1';en = 'The comparison type is not filled in the line of output conditions No. %1'")
+						, RowTP_ConditionsOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].ComparisonType";
+					UserMessage.Field = "Object.ConditionsOutputRows[" + (RowTP_ConditionsOutputRows.LineNumber - 1) + "].ComparisonType";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If СтрокаТЧ.Condition <> "Заполнен" Then
+				If RowTP_ConditionsOutputRows.Condition <> "Заполнен" Then
 				
-					If СтрокаТЧ.ComparisonType = "Attribute" And Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute2) Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
+					If RowTP_ConditionsOutputRows.ComparisonType = "Attribute" And Not ValueIsFilled(RowTP_ConditionsOutputRows.NameComparedAttribute2) Then
+						AttributesFilledOutCorrectly = False;
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнено имя реквизита в строке условий вывода №%1';en = 'The attribute name is not filled in the line of output conditions No.%1'")
+							,RowTP_ConditionsOutputRows.LineNumber);						
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
-						UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute2";
+						UserMessage.Field = "Object.ConditionsOutputRows[" + (RowTP_ConditionsOutputRows.LineNumber - 1) + "].NameComparedAttribute2";
 						UserMessage.Message();
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
@@ -4106,8 +4197,8 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 		If Not CodeForProhibitingOutputRowsEditedManually And Not ConditionsProhibitOutputRowsDisabled Then
 			
 			If ConditionsProhibitOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForProhibitingConditionsOutputRows) Then
-				РеквизитыЗаполненыКорректно = False;
-				ErrorText = "Not заполнен логический оператор для объединения условий запрета вывода строк";
+				AttributesFilledOutCorrectly = False;
+				ErrorText = StrTemplate(Nstr("ru = 'Не заполнен логический оператор для объединения условий запрета вывода строк';en = 'The logical operator for combining the conditions for prohibiting the output of rows is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForProhibitingConditionsOutputRows";
@@ -4115,46 +4206,50 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
-			For Each СтрокаТЧ In ConditionsProhibitOutputRows Do
+			For Each RowTP_ConditionsProhibitOutputRows In ConditionsProhibitOutputRows Do
 				
-				If Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsProhibitOutputRows.NameComparedAttribute) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнено имя реквизита в строке условий запрета вывода №%1';en = 'The attribute name is not filled in the line of conditions for the prohibition of output No. %1'")
+						, RowTP_ConditionsProhibitOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute";
+					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (RowTP_ConditionsProhibitOutputRows.LineNumber - 1) + "].NameComparedAttribute";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If Not ValueIsFilled(СтрокаТЧ.Condition) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнено условие в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsProhibitOutputRows.Condition) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнено условие в строке условий запрета вывода №%1';en = 'The condition in the line of conditions of the prohibition of output No. %1 is not filled'")
+						, RowTP_ConditionsProhibitOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].Condition";
+					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (RowTP_ConditionsProhibitOutputRows.LineNumber - 1) + "].Condition";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If Not ValueIsFilled(СтрокаТЧ.ComparisonType) Then
-					РеквизитыЗаполненыКорректно = False;
-					ErrorText = "Not заполнен тип сравнения в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+				If Not ValueIsFilled(RowTP_ConditionsProhibitOutputRows.ComparisonType) Then
+					AttributesFilledOutCorrectly = False;
+					ErrorText = StrTemplate(Nstr("ru = 'Не заполнен тип сравнения в строке условий запрета вывода №%1';en = 'The comparison type is not filled in the line of conditions for prohibiting output No. %1'")
+						, RowTP_ConditionsProhibitOutputRows.LineNumber);
 					UserMessage = New UserMessage;
 					UserMessage.Text = ErrorText;
-					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].ComparisonType";
+					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (RowTP_ConditionsProhibitOutputRows.LineNumber - 1) + "].ComparisonType";
 					UserMessage.Message();
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If СтрокаТЧ.Condition <> "Заполнен" Then
+				If RowTP_ConditionsProhibitOutputRows.Condition <> "Заполнен" Then
 					
-					If СтрокаТЧ.ComparisonType = "Attribute" And Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute2) Then
-						РеквизитыЗаполненыКорректно = False;
-						ErrorText = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+					If RowTP_ConditionsProhibitOutputRows.ComparisonType = "Attribute" And Not ValueIsFilled(RowTP_ConditionsProhibitOutputRows.NameComparedAttribute2) Then
+						AttributesFilledOutCorrectly = False;
+						ErrorText = StrTemplate(Nstr("ru = 'Не заполнено имя реквизита в строке условий запрета вывода №%1';en = 'The attribute name is not filled in the line of conditions for the prohibition of output No. %1'")
+							, RowTP_ConditionsProhibitOutputRows.LineNumber);						
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
-						UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute2";
+						UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (RowTP_ConditionsProhibitOutputRows.LineNumber - 1) + "].NameComparedAttribute2";
 						UserMessage.Message();
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
@@ -4167,11 +4262,11 @@ Function CheckFillingAttributes(ИсточникДляПредварительн
 		
 	EndIf;
 	
-	Return РеквизитыЗаполненыКорректно; 
+	Return AttributesFilledOutCorrectly; 
 	
 EndFunction
 
-Function СохранитьНастройкиВБазуНаСервере(SettingRef, SaveSpreadsheetDocuments) Export
+Function SaveSettingsToBaseAtServer(SettingRef, SaveSpreadsheetDocuments) Export
 	
 	OperationCompletedSuccessfully = True;
 	
@@ -4197,7 +4292,7 @@ Function СохранитьНастройкиВБазуНаСервере(Settin
 	
 EndFunction
 
-Procedure ОткрытьНастройкиИзБазыНаСервере(SettingRef, ЗагружатьТабличныеДокументы = False) Export
+Procedure OpenSettingsFromBaseAtServer(SettingRef, UploadSpreadsheetDocuments = False) Export
 	
 	OperationCompletedSuccessfully = True;
 	
@@ -4206,40 +4301,40 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Setting
 		StorageExternal = SettingRef.Операция;
 		Data = StorageExternal.Get();
 		FillPropertyValues(ThisObject, Data);
-		//For меньшей путаницы с наименованиями в заголовок попадает наименование элемента справочника,
-		//на основании которого была заполнена обработка
+		//For less confusion with names, the name of the directory element gets into the heading,
+		//based on which processing was completed
 		Title = SettingRef.Title;
 		RelatedDataComparisonOperation = SettingRef;
 		
-		//До версии 12.1.38 вместо реквизита PeriodType использовался флаг PeriodTypeAbsolute
-		//Value True флага PeriodTypeAbsolute соответствует значение 0 реквизита PeriodType
-		//If в настройке нет реквизита PeriodType, необходимо его заполнить на основании флага PeriodTypeAbsolute
+		//Prior to version 12.1.38, the PeriodTypeAbsolute flag was used instead of the PeriodType attribute
+		//Value True of the PeriodTypeAbsolute flag corresponds to the value 0 of the PeriodType attribute
+		//If there is no PeriodType attribute in the setting, it must be filled in based on the PeriodTypeAbsolute flag
 		If Not Data.Property("PeriodType") Then
 			If Data.Property("PeriodTypeAbsolute") Then
 				PeriodType = ?(Data.PeriodTypeAbsolute, 0, 1);
 			EndIf;
 		EndIf;
 		
-		//Настройки видимости колонок ключей появились в версии 15.5.58
-		Если Не Данные.Свойство("VisibilityKey1") Тогда
-			VisibilityKey1 = Истина;
+		//Key column visibility settings appeared in version 15.5.58
+		If Not Data.Property("VisibilityKey1") Then
+			VisibilityKey1 = True;
 		EndIf;
 		
-		Если Не Данные.Свойство("VisibilityKey2") Тогда
+		If Not Data.Property("VisibilityKey2") Then
 			VisibilityKey2 = NumberColumnsInKey > 1;
 		EndIf;
 		
-		Если Не Данные.Свойство("VisibilityKey3") Тогда
+		If Not Data.Property("VisibilityKey3") Then
 			VisibilityKey3 = NumberColumnsInKey > 2;
 		EndIf;
 		
-		//Настройки видимости колонок число записей появились в версии 15.5.58
-		Если Не Данные.Свойство("VisibilityNumberOfRecordsA") Тогда
-			VisibilityNumberOfRecordsA = Истина;
+		//Column visibility settings for number of records appeared in version 15.5.58
+		If Not Data.Property("VisibilityNumberOfRecordsA") Then
+			VisibilityNumberOfRecordsA = True;
 		EndIf;
 		
-		Если Не Данные.Свойство("VisibilityNumberOfRecordsB") Тогда
-			VisibilityNumberOfRecordsB = Истина;
+		If Not Data.Property("VisibilityNumberOfRecordsB") Then
+			VisibilityNumberOfRecordsB = True;
 		EndIf;
 				
 		If Data.Property("ValueTableConditionsOutputRows") Then
@@ -4284,7 +4379,7 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Setting
 			ParameterListB.Clear();
 		EndIf;
 		
-		If ЗагружатьТабличныеДокументы Then
+		If UploadSpreadsheetDocuments Then
 			If Data.BaseTypeA = 4 Then
 				Try
 					If Data.Property("TableAValueStorage") Then
@@ -4304,9 +4399,9 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Setting
 			EndIf;
 		EndIf;
 		
-		//Реструктуризация параметров
+		//Restructuring parameters
 		
-		//Parameter CompositeKey заменен на NumberColumnsInKey
+		//Parameter CompositeKey replaced by NumberColumnsInKey
 		If NumberColumnsInKey = 0 Then
 			NumberColumnsInKey = ?(CompositeKey, 2, 1); 
 		EndIf;
@@ -4515,12 +4610,12 @@ Procedure FillVariablesPWithDefaultValues()
 	
 EndProcedure
 
-Function ВыгрузитьРезультатВФайлНаСервере(ДляКлиента = False) Export
+Function ВыгрузитьРезультатВФайлНаСервере(ForClient = False) Export
 	
 	UploadFileFormat = Upper(UploadFileFormat);
 	
 	If IsBlankString(UploadFileFormat) Then
-		ErrorText = "Not указан формат файла выгрузки";
+		ErrorText = Nstr("ru = 'Не указан формат файла выгрузки';en = 'Upload file format not specified'");
 		UserMessage = New UserMessage;
 		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.UploadFileFormat";
@@ -4528,11 +4623,11 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		Return Undefined;
 	EndIf;
 	
-	If ДляКлиента Then
-		ПутьКВременномуФайлу = GetTempFileName(UploadFileFormat);
+	If ForClient Then
+		PathToTemporaryFile = GetTempFileName(UploadFileFormat);
 	Else
 		If IsBlankString(PathToDownloadFile) Then
-			ErrorText = "Not заполнен путь к файлу выгрузки (на сервере)";
+			ErrorText = Nstr("ru = 'Не заполнен путь к файлу выгрузки (на сервере)';en = 'The path to the upload file is not filled (at server)'");
 			UserMessage = New UserMessage;
 			UserMessage.Text = ErrorText;
 			UserMessage.Field = "Object.PathToDownloadFile";
@@ -4540,11 +4635,11 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 			Return Undefined;
 		EndIf;
 		
-		ПутьКВременномуФайлу = PathToDownloadFile;
+		PathToTemporaryFile = PathToDownloadFile;
 	EndIf;
 	
 	If Result.Count() = 0 Then
-		ErrorText = "None данных для выгрузки";
+		ErrorText = Nstr("ru = 'Нет данных для выгрузки';en = 'No data to upload'");
 		UserMessage = New UserMessage;
 		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.Result";
@@ -4553,60 +4648,60 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 	EndIf;
 		
 	Try	
-		DeleteFiles(ПутьКВременномуФайлу);	
+		DeleteFiles(PathToTemporaryFile);	
 	Except EndTry;
 	
-	Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ начата");
+	Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + PathToTemporaryFile + """ формата """ + UploadFileFormat + """ начата");
 	
 	If UploadFileFormat = "CSV" Then
 		
-		РазделительКолонок = ";";
-		TextWriter = New TextWriter(ПутьКВременномуФайлу, TextEncoding.UTF8);
-		СписокЗаголовковСтрокой = "№ строки" + РазделительКолонок
-				+ ?(VisibilityKey1, "Ключ 1" + РазделительКолонок, "")
-				+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "Ключ 2" + РазделительКолонок, "")
-				+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "Ключ 3" + РазделительКолонок, "")
-				+ ?(VisibilityNumberOfRecordsA, "Число записей А" + РазделительКолонок, "")
-				+ ?(VisibilityNumberOfRecordsB, "Число записей Б" + РазделительКолонок, "");
+		ColumnSeparator = ";";
+		TextWriter = New TextWriter(PathToTemporaryFile, TextEncoding.UTF8);
+		ListHeaderString = "№ строки" + ColumnSeparator
+				+ ?(VisibilityKey1, "Ключ 1" + ColumnSeparator, "")
+				+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "Ключ 2" + ColumnSeparator, "")
+				+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "Ключ 3" + ColumnSeparator, "")
+				+ ?(VisibilityNumberOfRecordsA, "Число записей А" + ColumnSeparator, "")
+				+ ?(VisibilityNumberOfRecordsB, "Число записей Б" + ColumnSeparator, "");
 		
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
 			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
-				СписокЗаголовковСтрокой = СписокЗаголовковСтрокой + РазделительКолонок + СтрЗаменить(ViewsHeadersAttributes["A" + AttributesCounter], РазделительКолонок,",");
+				ListHeaderString = ListHeaderString + ColumnSeparator + СтрЗаменить(ViewsHeadersAttributes["A" + AttributesCounter], ColumnSeparator,",");
 			EndIf;
 		EndDo;
 		
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
 			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
-				СписокЗаголовковСтрокой = СписокЗаголовковСтрокой + РазделительКолонок + СтрЗаменить(ViewsHeadersAttributes["B" + AttributesCounter], РазделительКолонок,",");
+				ListHeaderString = ListHeaderString + ColumnSeparator + СтрЗаменить(ViewsHeadersAttributes["B" + AttributesCounter], ColumnSeparator,",");
 			EndIf;
 		EndDo;
 		
-		СписокЗаголовковСтрокой = СтрЗаменить(СписокЗаголовковСтрокой, "" + РазделительКолонок + РазделительКолонок, РазделительКолонок);
-		TextWriter.Write(СписокЗаголовковСтрокой);
+		ListHeaderString = СтрЗаменить(ListHeaderString, "" + ColumnSeparator + ColumnSeparator, ColumnSeparator);
+		TextWriter.Write(ListHeaderString);
 			
 		RowsCounter = 0;
-		For Each СтрокаТЧ In Result Do
+		For Each RowTP_Result In Result Do
 			
 			RowsCounter = RowsCounter + 1;
 			
 			TextWriter.Write(
 				Chars.LF
-					+ "" + СтрокаТЧ.LineNumber + РазделительКолонок
-					+ ?(VisibilityKey1, "" + СтрокаТЧ.Key1 + РазделительКолонок, "")
-					+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "" + СтрокаТЧ.Key2 + РазделительКолонок, "")
-					+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "" + СтрокаТЧ.Key3 + РазделительКолонок, "")
-					+ ?(VisibilityNumberOfRecordsA, "" + СтрокаТЧ.NumberOfRecordsA + РазделительКолонок, "")
-					+ ?(VisibilityNumberOfRecordsB, "" + СтрокаТЧ.NumberOfRecordsB + РазделительКолонок, "")
-					+ ?(VisibilityAttributeA1, "" + СтрокаТЧ.AttributeA1 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeA2, "" + СтрокаТЧ.AttributeA2 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeA3, "" + СтрокаТЧ.AttributeA3 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeA4, "" + СтрокаТЧ.AttributeA4 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeA5, "" + СтрокаТЧ.AttributeA5 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeB1, "" + СтрокаТЧ.AttributeB1 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeB2, "" + СтрокаТЧ.AttributeB2 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeB3, "" + СтрокаТЧ.AttributeB3 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeB4, "" + СтрокаТЧ.AttributeB4 + РазделительКолонок, "")
-					+ ?(VisibilityAttributeB5, "" + СтрокаТЧ.AttributeB5 + РазделительКолонок, "")
+					+ "" + RowTP_Result.LineNumber + ColumnSeparator
+					+ ?(VisibilityKey1, "" + RowTP_Result.Key1 + ColumnSeparator, "")
+					+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "" + RowTP_Result.Key2 + ColumnSeparator, "")
+					+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "" + RowTP_Result.Key3 + ColumnSeparator, "")
+					+ ?(VisibilityNumberOfRecordsA, "" + RowTP_Result.NumberOfRecordsA + ColumnSeparator, "")
+					+ ?(VisibilityNumberOfRecordsB, "" + RowTP_Result.NumberOfRecordsB + ColumnSeparator, "")
+					+ ?(VisibilityAttributeA1, "" + RowTP_Result.AttributeA1 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeA2, "" + RowTP_Result.AttributeA2 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeA3, "" + RowTP_Result.AttributeA3 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeA4, "" + RowTP_Result.AttributeA4 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeA5, "" + RowTP_Result.AttributeA5 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeB1, "" + RowTP_Result.AttributeB1 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeB2, "" + RowTP_Result.AttributeB2 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeB3, "" + RowTP_Result.AttributeB3 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeB4, "" + RowTP_Result.AttributeB4 + ColumnSeparator, "")
+					+ ?(VisibilityAttributeB5, "" + RowTP_Result.AttributeB5 + ColumnSeparator, "")
 			);
 		
 		EndDo; 
@@ -4622,9 +4717,9 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		UploadFileFormat = "TXT" Or
 		UploadFileFormat = "XLSX" Then
 				
-		//НомерКолонкиЧислоЗаписейА = ?(ЧислоСтолбцовВКлюче > 1 И VisibilityKey2, ?(ЧислоСтолбцовВКлюче > 2 И VisibilityKey3, 5, 4), 3);
-		ЧислоВыгружаемыхКлючей = ?(VisibilityKey1, 1, 0) + ?(ЧислоСтолбцовВКлюче > 1 И VisibilityKey2, 1, 0) + ?(ЧислоСтолбцовВКлюче > 2 И VisibilityKey3, 1, 0);
-		НомерКолонкиСПервымВыгружаемымРеквизитом = ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + ?(VisibilityNumberOfRecordsB, 1, 0) + 2;		
+		//NumberColumnsNumberOfRecordsA = ?(NumberColumnsInKey > 1 И VisibilityKey2, ?(NumberColumnsInKey > 2 И VisibilityKey3, 5, 4), 3);
+		NumberOfUploadedKeys = ?(VisibilityKey1, 1, 0) + ?(NumberColumnsInKey > 1 И VisibilityKey2, 1, 0) + ?(NumberColumnsInKey > 2 И VisibilityKey3, 1, 0);
+		ColumnNumberFirstPageDownAttributes = NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + ?(VisibilityNumberOfRecordsB, 1, 0) + 2;		
 		
 		SpreadsheetDocument = New SpreadsheetDocument;
 		SpreadsheetDocument.PageOrientation = PageOrientation.Landscape;
@@ -4642,130 +4737,118 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		EndIf;
 		
 		Если VisibilityNumberOfRecordsA Тогда
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ЧислоВыгружаемыхКлючей + 2,  		"Число записей А",, 7);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, NumberOfUploadedKeys + 2,  		"Число записей А",, 7);
 		EndIf; 
 		
 		Если VisibilityNumberOfRecordsB Тогда
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + 2,  	"Число записей Б",, 7);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2,  	"Число записей Б",, 7);
 		EndIf;
 		
-		СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = 0;
+		OffsetFromColumnWithFirstUploadedAttribute = 0;
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
 			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, ViewsHeadersAttributes["A" + AttributesCounter]);
-				СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, ViewsHeadersAttributes["A" + AttributesCounter]);
+				OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 			EndIf;
 		EndDo;
 		
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
 			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, ViewsHeadersAttributes["B" + AttributesCounter]);
-				СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, ViewsHeadersAttributes["B" + AttributesCounter]);
+				OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 			EndIf;
 		EndDo;
 		
-		РазмерыКолонок = New Structure;
-		РазмерыКолонок.Insert("К1", 0);
-		РазмерыКолонок.Insert("К2", 0);
-		РазмерыКолонок.Insert("К3", 0);
-		РазмерыКолонок.Insert("А1", 0);
-		РазмерыКолонок.Insert("А2", 0);
-		РазмерыКолонок.Insert("А3", 0);
-		РазмерыКолонок.Insert("А4", 0);
-		РазмерыКолонок.Insert("А5", 0);
-		РазмерыКолонок.Insert("Б1", 0);
-		РазмерыКолонок.Insert("Б2", 0);
-		РазмерыКолонок.Insert("Б3", 0);
-		РазмерыКолонок.Insert("Б4", 0);
-		РазмерыКолонок.Insert("Б5", 0);
+		ColumnsSizesStructure = New Structure;
+		ColumnsSizesStructure.Insert("K1", 0);
+		ColumnsSizesStructure.Insert("K2", 0);
+		ColumnsSizesStructure.Insert("K3", 0);
+		ColumnsSizesStructure.Insert("A1", 0);
+		ColumnsSizesStructure.Insert("A2", 0);
+		ColumnsSizesStructure.Insert("A3", 0);
+		ColumnsSizesStructure.Insert("A4", 0);
+		ColumnsSizesStructure.Insert("A5", 0);
+		ColumnsSizesStructure.Insert("B1", 0);
+		ColumnsSizesStructure.Insert("B2", 0);
+		ColumnsSizesStructure.Insert("B3", 0);
+		ColumnsSizesStructure.Insert("B4", 0);
+		ColumnsSizesStructure.Insert("B5", 0);
 		RowsCounter = 0;
-		For Each СтрокаТЧ In Result Do
+		For Each RowTP_Result In Result Do
 			
-			РазмерыКолонок.K1 = Max(2, РазмерыКолонок.K1, StrLen(СтрокаТЧ.Key1));
+			ColumnsSizesStructure.K1 = Max(2, ColumnsSizesStructure.K1, StrLen(RowTP_Result.Key1));
 			If NumberColumnsInKey > 1 And VisibilityKey2 Then
-				РазмерыКолонок.К2 = Макс(2,РазмерыКолонок.K2, StrLen(СтрокаТЧ.Key2));
+				ColumnsSizesStructure.K2 = Макс(2,ColumnsSizesStructure.K2, StrLen(RowTP_Result.Key2));
 			EndIf;
 			If NumberColumnsInKey > 2 And VisibilityKey3 Then				
-				РазмерыКолонок.К3 = Max(2, РазмерыКолонок.К3, StrLen(СтрокаТЧ.Key3));
+				ColumnsSizesStructure.K3 = Max(2, ColumnsSizesStructure.K3, StrLen(RowTP_Result.Key3));
 			EndIf;
 			
-			РазмерыКолонок.A1 = Макс(2,РазмерыКолонок.А1,StrLen(СтрокаТЧ.AttributeA1));
-			РазмерыКолонок.A2 = Макс(2,РазмерыКолонок.А2,StrLen(СтрокаТЧ.AttributeA2));
-			РазмерыКолонок.A3 = Макс(2,РазмерыКолонок.А3,StrLen(СтрокаТЧ.AttributeA3));
-			РазмерыКолонок.A4 = Макс(2,РазмерыКолонок.А4,StrLen(СтрокаТЧ.AttributeA4));
-			РазмерыКолонок.A5 = Макс(2,РазмерыКолонок.А5,StrLen(СтрокаТЧ.AttributeA5));
-			РазмерыКолонок.B1 = Макс(2,РазмерыКолонок.Б1,StrLen(СтрокаТЧ.AttributeB1));
-			РазмерыКолонок.B2 = Макс(2,РазмерыКолонок.Б2,StrLen(СтрокаТЧ.AttributeB2));
-			РазмерыКолонок.B3 = Макс(2,РазмерыКолонок.Б3,StrLen(СтрокаТЧ.AttributeB3));
-			РазмерыКолонок.B4 = Макс(2,РазмерыКолонок.Б4,StrLen(СтрокаТЧ.AttributeB4));
-			РазмерыКолонок.B5 = Макс(2,РазмерыКолонок.Б5,StrLen(СтрокаТЧ.AttributeB5));
+			ColumnsSizesStructure.A1 = Макс(2,ColumnsSizesStructure.A1,StrLen(RowTP_Result.AttributeA1));
+			ColumnsSizesStructure.A2 = Макс(2,ColumnsSizesStructure.A2,StrLen(RowTP_Result.AttributeA2));
+			ColumnsSizesStructure.A3 = Макс(2,ColumnsSizesStructure.A3,StrLen(RowTP_Result.AttributeA3));
+			ColumnsSizesStructure.A4 = Макс(2,ColumnsSizesStructure.A4,StrLen(RowTP_Result.AttributeA4));
+			ColumnsSizesStructure.A5 = Макс(2,ColumnsSizesStructure.A5,StrLen(RowTP_Result.AttributeA5));
+			ColumnsSizesStructure.B1 = Макс(2,ColumnsSizesStructure.B1,StrLen(RowTP_Result.AttributeB1));
+			ColumnsSizesStructure.B2 = Макс(2,ColumnsSizesStructure.B2,StrLen(RowTP_Result.AttributeB2));
+			ColumnsSizesStructure.B3 = Макс(2,ColumnsSizesStructure.B3,StrLen(RowTP_Result.AttributeB3));
+			ColumnsSizesStructure.B4 = Макс(2,ColumnsSizesStructure.B4,StrLen(RowTP_Result.AttributeB4));
+			ColumnsSizesStructure.B5 = Макс(2,ColumnsSizesStructure.B5,StrLen(RowTP_Result.AttributeB5));
 			
 			RowsCounter = RowsCounter + 1;
 			
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 1, СтрокаТЧ.LineNumber, 1, 7);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 1, RowTP_Result.LineNumber, 1, 7);
 			If VisibilityKey1 Then
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 2, СтрокаТЧ.Key1,, РазмерыКолонок.K1);
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 2, RowTP_Result.Key1,, ColumnsSizesStructure.K1);
 			EndIf;
 			If NumberColumnsInKey > 1 And VisibilityKey2 Then
 				SetCellValueSpreadsheetDocument(SpreadsheetDocument
 					, RowsCounter + 1
 					, ?(VisibilityKey1, 1, 0) + 2
-					, СтрокаТЧ.Key2
+					, RowTP_Result.Key2
 					,
-					, РазмерыКолонок.K2);
+					, ColumnsSizesStructure.K2);
 			EndIf;
 			If NumberColumnsInKey > 2 And VisibilityKey3 Then
 				SetCellValueSpreadsheetDocument(SpreadsheetDocument
 					, RowsCounter + 1
 					, ?(VisibilityKey1, 1, 0) + ?(VisibilityKey2, 1, 0) + 2
-					, СтрокаТЧ.Key3
+					, RowTP_Result.Key3
 					,
-					, РазмерыКолонок.K3);
-			EndIf;
-				
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА,		СтрокаТЧ.ЧислоЗаписейА, 1, 7);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 1, СтрокаТЧ.ЧислоЗаписейБ, 1, 7);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 2, СтрокаТЧ.AttributeA1,, МаксДлинаА1);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 3,	СтрокаТЧ.AttributeA2,, МаксДлинаА2);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 4,	СтрокаТЧ.AttributeA3,, МаксДлинаА3);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 5, СтрокаТЧ.AttributeA4,, МаксДлинаА4);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 6, СтрокаТЧ.AttributeA5,, МаксДлинаА5);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 7, СтрокаТЧ.AttributeB1,, МаксДлинаБ1);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 8, СтрокаТЧ.AttributeB2,, МаксДлинаБ2);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 9, СтрокаТЧ.AttributeB3,, МаксДлинаБ3);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 10,СтрокаТЧ.AttributeB4,, МаксДлинаБ4);
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 11,СтрокаТЧ.AttributeB5,, МаксДлинаБ5);
+					, ColumnsSizesStructure.K3);
+			EndIf;							
 		
 			Если VisibilityNumberOfRecordsA Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ЧислоВыгружаемыхКлючей + 2,	СтрокаТЧ.ЧислоЗаписейА, 1, 7);
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, NumberOfUploadedKeys + 2,	RowTP_Result.NumberOfRecordsA, 1, 7);
 			EndIf;
 			
 			Если VisibilityNumberOfRecordsB Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + 2, СтрокаТЧ.ЧислоЗаписейБ, 1, 7);
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2, RowTP_Result.NumberOfRecordsB, 1, 7);
 			EndIf;
 			
-			СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = 0;
+			OffsetFromColumnWithFirstUploadedAttribute = 0;
 			For CounterAttributes = 1 По NumberOfRequisites Цикл 
 				Если ThisObject["VisibilityAttributeA" + CounterAttributes] Тогда
-					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, СтрокаТЧ["AttributeA" + CounterAttributes],, РазмерыКолонок["A" + CounterAttributes]);
-					СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, RowTP_Result["AttributeA" + CounterAttributes],, ColumnsSizesStructure["A" + CounterAttributes]);
+					OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 				EndIf;
 			EndDo;
 			
 			For CounterAttributes = 1 По NumberOfRequisites Цикл 
 				Если ThisObject["VisibilityAttributeB" + CounterAttributes] Тогда
-					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, СтрокаТЧ["AttributeB" + CounterAttributes],, РазмерыКолонок["B" + CounterAttributes]);
-					СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, RowTP_Result["AttributeB" + CounterAttributes],, ColumnsSizesStructure["B" + CounterAttributes]);
+					OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 				EndIf;
 			EndDo;
 			
 		EndDo; 
 		
-		SpreadsheetDocument.Write(ПутьКВременномуФайлу, SpreadsheetDocumentFileType[UploadFileFormat]);
+		SpreadsheetDocument.Write(PathToTemporaryFile, SpreadsheetDocumentFileType[UploadFileFormat]);
 		
 	Else
 		
-		ErrorText = "Format файла выгрузки """ + UploadFileFormat + """ не предусмотрен";
+		ErrorText = StrTemplate(Nstr("ru = 'Формат файла выгрузки ""%1"" не предусмотрен';en = 'Upload file format ''%1'' is not supported'")
+			, UploadFileFormat);
 		UserMessage = New UserMessage;
 		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.UploadFileFormat";
@@ -4774,20 +4857,20 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		
 	EndIf;
 	
-	If ДляКлиента Then
+	If ForClient Then
 		
-		ДанныеФайла = New BinaryData(ПутьКВременномуФайлу);
-		АдресФайла = PutToTempStorage(ДанныеФайла);
+		FileData = New BinaryData(PathToTemporaryFile);
+		FileAddress = PutToTempStorage(FileData);
 		
 		Try
-			DeleteFiles(ПутьКВременномуФайлу);
+			DeleteFiles(PathToTemporaryFile);
 		Except EndTry;
 		
-		Return АдресФайла;
+		Return FileAddress;
 		
 	Else
 		
-		Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ завершена (число строк: " + RowsCounter + ")");
+		Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + PathToTemporaryFile + """ формата """ + UploadFileFormat + """ завершена (число строк: " + RowsCounter + ")");
 		Return Undefined;
 		
 	EndIf;
