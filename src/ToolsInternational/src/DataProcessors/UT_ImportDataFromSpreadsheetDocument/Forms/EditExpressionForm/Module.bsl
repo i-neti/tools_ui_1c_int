@@ -1,24 +1,31 @@
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ
+// FORM ITEMS EVENT HANDLERS
 
-// Процедура - обаботчик события, при нажатии на кнопку "ОК" Командной панели "ОсновныеДействияФормы"
+// OK button handler
 //
-&НаКлиенте
-Процедура ОсновныеДействияФормыОК(Команда)
+&AtClient
+Procedure OK(Command)
 
-	ОповеститьОВыборе(Новый Структура("Источник, Результат, Выражение", "ФормаРедактированияВыражения", Истина,
-		ПолеТекстовогоДокумента.ПолучитьТекст()));
+	NotifyChoice(New Structure("Source, Result, Expression", "EditExpressionForm", True,
+		TextDocumentField.GetText()));
 
-КонецПроцедуры
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
-	НадписьТекстВыражения =
-	"В тексте выражения можно использовать следующие предопределенные параметры:
+EndProcedure
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	ExpressionTextLabel =
+	NStr("ru = 'В тексте выражения можно использовать следующие предопределенные параметры:
 	|   Результат      - результат вычисления (на входе - значение по умолчанию)
 	|   ТекстЯчейки    - текст текущей ячейки
 	|   ТекстыЯчеек    - массив текстов ячеек строки
 	|   ТекущиеДанные  - структура загруженных значений
 	|   ОписаниеОшибки - описание ошибки, выводимое в примечание ячейки и в окно сообщений
-	|Встроенные функции, функции общих модулей.";
-КонецПроцедуры
+	|Встроенные функции, функции общих модулей.';
+	|en = 'The following predefined parameters are available in the expression text:
+	|   Result         - An evaluation result. Default value on start of the procedure.
+	|   CellText       - A current cell text.
+	|   CellsTexts     - An array of row cells texts.
+	|   CurrentData    - A structure with an imported values.
+	|	ErrorDescription - A description of an error which can be put out to cell tootlip and to message window.
+	|Embedded functions, common module functions.'");
+EndProcedure

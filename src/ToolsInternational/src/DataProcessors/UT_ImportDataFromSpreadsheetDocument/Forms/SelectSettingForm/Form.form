@@ -9,10 +9,10 @@
     <value>Выбор настройки</value>
   </title>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаПоля</name>
+    <name>FieldsGroup</name>
     <id>1</id>
     <items xsi:type="form:Table">
-      <name>СписокНастроек</name>
+      <name>SettingsList</name>
       <id>3</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -20,11 +20,11 @@
         <common>true</common>
       </userVisible>
       <dataPath xsi:type="form:DataPath">
-        <segments>СписокНастроек</segments>
+        <segments>SettingsList</segments>
       </dataPath>
       <titleLocation>None</titleLocation>
       <items xsi:type="form:FormField">
-        <name>СписокНастроекПометка</name>
+        <name>SettingsListCheck</name>
         <id>6</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -33,15 +33,15 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>СписокНастроек.Пометка</segments>
+            <segments>SettingsList.Check</segments>
           </paths>
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>СписокНастроекПометкаПриИзменении</name>
+          <name>SettingsListCheckOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>СписокНастроекПометкаРасширеннаяПодсказка</name>
+          <name>SettingsListCheckExtendedTooltip</name>
           <id>26</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -56,7 +56,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекПометкаКонтекстноеМеню</name>
+          <name>SettingsListCheckContextMenu</name>
           <id>7</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -73,7 +73,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>СписокНастроекПредставление</name>
+        <name>SettingsListPresentation</name>
         <id>8</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -82,11 +82,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>СписокНастроек.Представление</segments>
+            <segments>SettingsList.Presentation</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>СписокНастроекПредставлениеРасширеннаяПодсказка</name>
+          <name>SettingsListPresentationExtendedTooltip</name>
           <id>27</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -101,7 +101,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекПредставлениеКонтекстноеМеню</name>
+          <name>SettingsListPresentationContextMenu</name>
           <id>9</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -125,7 +125,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>СписокНастроекЗначение</name>
+        <name>SettingsListValue</name>
         <id>10</id>
         <enabled>true</enabled>
         <userVisible>
@@ -133,11 +133,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>СписокНастроек.Значение</segments>
+            <segments>SettingsList.Value</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>СписокНастроекЗначениеРасширеннаяПодсказка</name>
+          <name>SettingsListValueExtendedTooltip</name>
           <id>28</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -152,7 +152,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекЗначениеКонтекстноеМеню</name>
+          <name>SettingsListValueContextMenu</name>
           <id>11</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -176,7 +176,7 @@
         </extInfo>
       </items>
       <autoCommandBar>
-        <name>СписокНастроекКоманднаяПанель</name>
+        <name>SettingsListCommandBar</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -191,10 +191,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>СписокНастроекСтрокаПоиска</name>
+        <name>SettingsListSearchString</name>
         <id>17</id>
         <extendedTooltip>
-          <name>СписокНастроекСтрокаПоискаРасширеннаяПодсказка</name>
+          <name>SettingsListSearchStringExtendedTooltip</name>
           <id>19</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -209,7 +209,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекСтрокаПоискаКонтекстноеМеню</name>
+          <name>SettingsListSearchStringContextMenu</name>
           <id>18</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -228,10 +228,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>СписокНастроекСостояниеПросмотра</name>
+        <name>SettingsListViewStatus</name>
         <id>20</id>
         <extendedTooltip>
-          <name>СписокНастроекСостояниеПросмотраРасширеннаяПодсказка</name>
+          <name>SettingsListViewStatusExtendedTooltip</name>
           <id>22</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -246,7 +246,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекСостояниеПросмотраКонтекстноеМеню</name>
+          <name>SettingsListViewStatusContextMenu</name>
           <id>21</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -267,10 +267,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>СписокНастроекУправлениеПоиском</name>
+        <name>SettingsListSearchControl</name>
         <id>23</id>
         <extendedTooltip>
-          <name>СписокНастроекУправлениеПоискомРасширеннаяПодсказка</name>
+          <name>SettingsListSearchControlExtendedTooltip</name>
           <id>25</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -285,7 +285,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>СписокНастроекУправлениеПоискомКонтекстноеМеню</name>
+          <name>SettingsListSearchControlContextMenu</name>
           <id>24</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -300,7 +300,7 @@
         </extInfo>
       </searchControlAddition>
       <extendedTooltip>
-        <name>СписокНастроекРасширеннаяПодсказка</name>
+        <name>SettingsListExtendedTooltip</name>
         <id>16</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -315,7 +315,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СписокНастроекКонтекстноеМеню</name>
+        <name>SettingsListContextMenu</name>
         <id>4</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -371,7 +371,7 @@
       <value>Группа поля</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаПоляРасширеннаяПодсказка</name>
+      <name>FieldsGroupExtendedTooltip</name>
       <id>15</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -395,10 +395,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКнопки</name>
+    <name>ButtonsGroup</name>
     <id>2</id>
     <items xsi:type="form:Button">
-      <name>ОК</name>
+      <name>OK</name>
       <id>12</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -406,7 +406,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОКРасширеннаяПодсказка</name>
+        <name>OKExtendedTooltip</name>
         <id>30</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -421,7 +421,7 @@
         </extInfo>
       </extendedTooltip>
       <type>UsualButton</type>
-      <commandName>Form.Command.ОК</commandName>
+      <commandName>Form.Command.OK</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -429,7 +429,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Отмена</name>
+      <name>Cancel</name>
       <id>13</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -437,7 +437,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОтменаРасширеннаяПодсказка</name>
+        <name>CancelExtendedTooltip</name>
         <id>31</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -452,7 +452,7 @@
         </extInfo>
       </extendedTooltip>
       <type>UsualButton</type>
-      <commandName>Form.Command.Отмена</commandName>
+      <commandName>Form.Command.Cancel</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -460,7 +460,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Удалить</name>
+      <name>Delete</name>
       <id>14</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -468,7 +468,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>УдалитьРасширеннаяПодсказка</name>
+        <name>DeleteExtendedTooltip</name>
         <id>32</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -483,7 +483,7 @@
         </extInfo>
       </extendedTooltip>
       <type>UsualButton</type>
-      <commandName>Form.Command.Удалить</commandName>
+      <commandName>Form.Command.Delete</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -512,7 +512,7 @@
       <value>Группа кнопки</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаКнопкиРасширеннаяПодсказка</name>
+      <name>ButtonsGroupExtendedTooltip</name>
       <id>29</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -547,7 +547,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <windowOpeningMode>LockOwnerWindow</windowOpeningMode>
   <autoTitle>true</autoTitle>
@@ -559,7 +559,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ImportDataFromSpreadsheetDocument</types>
@@ -573,7 +573,7 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>СписокНастроек</name>
+    <name>SettingsList</name>
     <title>
       <key>en</key>
       <value>Settings list</value>
@@ -593,7 +593,7 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
       <title>
         <key>en</key>
         <value>Check</value>
@@ -614,7 +614,7 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>en</key>
         <value>Presentation</value>
@@ -636,7 +636,7 @@
       </edit>
     </columns>
     <columns>
-      <name>Значение</name>
+      <name>Value</name>
       <title>
         <key>en</key>
         <value>Value</value>
@@ -658,16 +658,20 @@
     </columns>
   </attributes>
   <formCommands>
-    <name>ОК</name>
+    <name>OK</name>
     <title>
       <key>en</key>
       <value>OK</value>
     </title>
     <title>
       <key>ru</key>
-      <value>ОК</value>
+      <value>OK</value>
     </title>
     <id>1</id>
+    <toolTip>
+      <key>en</key>
+      <value>OK</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>ОК</value>
@@ -677,13 +681,13 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОКНажатие</name>
+        <name>OK</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>Отмена</name>
+    <name>Cancel</name>
     <title>
       <key>en</key>
       <value>Cancel</value>
@@ -706,13 +710,13 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОтменаНажатие</name>
+        <name>Cancel</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>Удалить</name>
+    <name>Delete</name>
     <title>
       <key>en</key>
       <value>Delete</value>
@@ -735,7 +739,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалитьНажатие</name>
+        <name>Delete</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>

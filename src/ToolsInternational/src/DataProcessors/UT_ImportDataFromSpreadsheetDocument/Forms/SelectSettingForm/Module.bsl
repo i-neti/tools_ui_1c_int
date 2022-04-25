@@ -1,53 +1,53 @@
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ЭЛЕМЕНТОВ УПРАВЛЕНИЯ
+// FORM ITEMS EVENT HANDLERS
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "ОК"
+// OK button handler
 //
-&НаКлиенте
-Процедура ОКНажатие(Команда)
-	ОповеститьОВыборе(Элементы.СписокНастроек.ТекущиеДанные);
-	//Закрыть();
-КонецПроцедуры
+&AtClient
+Procedure OK(Command)
+	NotifyChoice(Items.SettingsList.CurrentData);
+	//Close();
+EndProcedure
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "Отмена"
+// Cancel button handler
 //
-&НаКлиенте
-Процедура ОтменаНажатие(Команда)
-	Закрыть();
-КонецПроцедуры
+&AtClient
+Procedure Cancel(Command)
+	Close();
+EndProcedure
 
-// Процедура - обаботчик события "Нажатие" в: Кнопка "Удалить"
+// Delete button handler
 //
-&НаКлиенте
-Процедура УдалитьНажатие(Команда)
+&AtClient
+Procedure Delete(Command)
 
-	ТекущиеДанные = Элементы.СписокНастроек.ТекущиеДанные;
-	Если Не ТекущиеДанные = Неопределено Тогда
-		СписокНастроек.Удалить(ТекущиеДанные);
-	КонецЕсли;
+	CurrentData = Items.SettingsList.CurrentData;
+	If Not CurrentData = Undefined Then
+		SettingsList.Delete(CurrentData);
+	EndIf;
 
-КонецПроцедуры
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
+EndProcedure
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
-	ТекущиеДанные = СписокНастроек[0];
+	CurrentData = SettingsList[0];
 
-	Если Не ТекущиеДанные = Неопределено Тогда
-		Элементы.СписокНастроек.ТекущаяСтрока = ТекущиеДанные;
-	КонецЕсли;
+	If Not CurrentData = Undefined Then
+		Items.SettingsList.CurrentRow = CurrentData;
+	EndIf;
 
-	Элементы.Удалить.Доступность = Не СписокНастроек.Количество() = 0;
-	Элементы.ОК.Доступность      = Не СписокНастроек.Количество() = 0;
+	Items.Delete.Enabled = Not SettingsList.Count() = 0;
+	Items.OK.Enabled      = Not SettingsList.Count() = 0;
 
-КонецПроцедуры
-&НаКлиенте
-Процедура СписокНастроекПометкаПриИзменении(Элемент)
-	ТекущиеДанные = Элементы.СписокНастроек.ТекущиеДанные;
-	Если ТекущиеДанные.Пометка Тогда
-		Для Каждого ЭлементСписка Из СписокНастроек Цикл
-			Если ЭлементСписка.Пометка И Не ЭлементСписка = ТекущиеДанные Тогда
-				ЭлементСписка.Пометка = Ложь;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
+EndProcedure
+&AtClient
+Procedure SettingsListCheckOnChange(Item)
+	CurrentData = Item.SettingsList.CurrentData;
+	If CurrentData.Check Then
+		For Each ListItem In SettingsList Do
+			If ListItem.Check And Not ListItem = CurrentData Then
+				ListItem.Check = False;
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
