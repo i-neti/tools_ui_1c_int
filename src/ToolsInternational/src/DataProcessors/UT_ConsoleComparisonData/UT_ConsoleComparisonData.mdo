@@ -19,7 +19,7 @@
   </synonym>
   <comment>15.4.55</comment>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_ConsoleComparisonData.Form.ФормаУправляемая</defaultForm>
+  <defaultForm>DataProcessor.UT_ConsoleComparisonData.Form.Form</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -3974,10 +3974,10 @@
     </attributes>
   </tabularSections>
   <forms uuid="2d6bea3d-9750-4f5e-ab85-1647e8b77052">
-    <name>ФормаУправляемая</name>
+    <name>Form</name>
     <synonym>
       <key>ru</key>
-      <value>Форма управляемая</value>
+      <value>Form</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
