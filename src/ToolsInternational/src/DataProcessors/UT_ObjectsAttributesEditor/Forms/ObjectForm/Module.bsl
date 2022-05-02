@@ -498,79 +498,79 @@ Function pFindObjectByURL(Val URL)
 	Return Ref;
 EndFunction
 
-&AtServerБезКонтекста
-Function vGetRemoteObjectRef(Знач пСтрокаОбъектНеНайден)
-	пРезультат = New Structure("Отказ, ПричинаОтказа, Ссылка", True, "");
-	пРезультат.ПричинаОтказа = NSTR("ru = 'Неправильный формат строки!';en = 'Incorrect string format!'");
+&AtServerNoContext
+Function vGetRemoteObjectRef(Val pObjectNotFoundString)
+	pResult = New Structure("Cancel, CancelCause, Ref", True, "");
+	pResult.CancelCause = NSTR("ru = 'Неправильный формат строки!';en = 'Incorrect string format.'");
 
-	If IsBlankString(пСтрокаОбъектНеНайден) Then
-		пСтрокаОбъектНеНайден = "<Object no found> (769:b1390050568b35ac11e6e46fdd2c3861)";
+	If IsBlankString(pObjectNotFoundString) Then
+		pObjectNotFoundString = "<Object no found> (769:b1390050568b35ac11e6e46fdd2c3861)";
 	EndIf;
 
-	пСтрокаОбъектНеНайден = Сред(пСтрокаОбъектНеНайден, СтрНайти(пСтрокаОбъектНеНайден, "(") + 1);
-	пСтрокаОбъектНеНайден = StrReplace(пСтрокаОбъектНеНайден, ")", "");
-	пСтрокаОбъектНеНайден = СокрЛП(пСтрокаОбъектНеНайден);
+	pObjectNotFoundString = Mid(pObjectNotFoundString, StrFind(pObjectNotFoundString, "(") + 1);
+	pObjectNotFoundString = StrReplace(pObjectNotFoundString, ")", "");
+	pObjectNotFoundString = TrimAll(pObjectNotFoundString);
 
-	Поз = СтрНайти(пСтрокаОбъектНеНайден, ":");
+	Pos = StrFind(pObjectNotFoundString, ":");
 
-	пТип = Лев(пСтрокаОбъектНеНайден, Поз - 1);
-	пСтрока = Сред(пСтрокаОбъектНеНайден, Поз + 1);
+	pType = Left(pObjectNotFoundString, Pos - 1);
+	pString = Mid(pObjectNotFoundString, Pos + 1);
 
 	Try
-		пUUID = Сред(пСтрока, 25, 8) + "-" + Сред(пСтрока, 21, 4) + "-" + Сред(пСтрока, 17, 4) + "-" + Сред(пСтрока, 1,
-			4) + "-" + Сред(пСтрока, 5, 12);
-		пUUID = New УникальныйИдентификатор(пUUID);
+		pUUID = Mid(pString, 25, 8) + "-" + Mid(pString, 21, 4) + "-" + Mid(pString, 17, 4) + "-" + Mid(pString, 1,
+			4) + "-" + Mid(pString, 5, 12);
+		pUUID = New UUID(pUUID);
 
-		пСтрукОбъектыМД = New Structure("ПланыОбмена, Справочники, Документы, ПланыВидовРасчета, ПланыВидовХарактеристик, ПланыСчетов, БизнесПроцессы, Задачи");
+		pStructMDObjects = New Structure("ExchangePlans, Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts, BusinessProcesses, Tasks");
 
-		For Each пРаздел Из пСтрукОбъектыМД Do
-			For Each Элем Из Метаданные[пРаздел.Ключ] Do
-				пМенеджер = Вычислить(пРаздел.Ключ + "[Элем.Name]");
-				пСтрока = ValueToStringInternal(пМенеджер.ПустаяСсылка());
-				Поз1 = СтрНайти(пСтрока, ",", НаправлениеПоиска.СКонца);
-				Поз2 = СтрНайти(пСтрока, ":");
+		For Each pSection In pStructMDObjects Do
+			For Each Item In Metadata[pSection.Key] Do
+				pManager = Eval(pSection.Key + "[Item.Name]");
+				pString = ValueToStringInternal(pManager.EmptyRef());
+				Pos1 = StrFind(pString, ",", SearchDirection.FromEnd);
+				Pos2 = StrFind(pString, ":");
 
-				If Сред(пСтрока, Поз1 + 1, Поз2 - Поз1 - 1) = пТип Then
-					пРезультат.Ссылка = пМенеджер.ПолучитьСсылку(пUUID);
-					пРезультат.Отказ = False;
+				If Mid(pString, Pos1 + 1, Pos2 - Pos1 - 1) = pType Then
+					pResult.Ref = pManager.GetRef(pUUID);
+					pResult.Cancel = False;
 
-					Return пРезультат;
+					Return pResult;
 				EndIf;
 			EndDo;
 		EndDo;
 	Except
-		пРезультат.ПричинаОтказа = пРезультат.ПричинаОтказа + Символы.ПС + КраткоеПредставлениеОшибки(
-			ИнформацияОбОшибке());
-		Return пРезультат;
+		pResult.CancelCause = pResult.CancelCause + Chars.LF + BriefErrorDescription(
+			ErrorInfo());
+		Return pResult;
 	EndTry;
 
-	Return пРезультат;
+	Return pResult;
 EndFunction
 &AtServer
 Procedure FindObjectByUUIDServer()
-	If Не IsBlankString(_UUID) Then
+	If Not IsBlankString(_UUID) Then
 		mObjectRef = Undefined;
 		_ObjectType = "";
 
 		Try
-			УИД = New УникальныйИдентификатор(_UUID);
+			UUID = New UUID(_UUID);
 		Except
-				Сообщить(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value!'"));
+				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
 			Return;
 		EndTry;
 
-		If Не ValueIsFilled(УИД) Then
+		If Not ValueIsFilled(UUID) Then
 			Return;
 		EndIf;
 
-		Струк = New Structure("Справочники, Документы, ПланыВидовРасчета, ПланыВидовХарактеристик, ПланыСчетов, БизнесПроцессы, Задачи");
-		For Each Элем Из Струк Do
-			ОбъектыМенеджер = Вычислить(Элем.Ключ);
-			For Each Менеджер Из ОбъектыМенеджер Do
-				Х = Менеджер.ПолучитьСсылку(УИД);
-				If Х.ПолучитьОбъект() <> Undefined Then
-					mObjectRef = Х;
-					_ObjectType = mObjectRef.Метаданные().ПолноеИмя();
+		Struct = New Structure("Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts, BusinessProcesses, Tasks");
+		For Each Item In Struct Do
+			ObjectsManager = Eval(Item.Key);
+			For Each Manager In ObjectsManager Do
+				X = Manager.GetRef(UUID);
+				If X.GetObject() <> Undefined Then
+					mObjectRef = X;
+					_ObjectType = mObjectRef.Metadata().FullName();
 					vRefreshObjectData();
 					Return;
 				EndIf;
@@ -581,210 +581,210 @@ EndProcedure
 
 &AtServer
 Procedure FindObjectByType_UUIDServer()
-	If Не IsBlankString(_ObjectType) И Не IsBlankString(_UUID) Then
+	If Not IsBlankString(_ObjectType) And Not IsBlankString(_UUID) Then
 		Try
-			УИД = New УникальныйИдентификатор(_UUID);
+			UUID = New UUID(_UUID);
 		Except
-				Сообщить(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value!'"));
+				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
 			Return;
 		EndTry;
 
-		ИмяТипа = StrReplace(_ObjectType, ".", "Ref.");
+		TypeName = StrReplace(_ObjectType, ".", "Ref.");
 		Try
-			mObjectRef = XMLЗначение(Тип(ИмяТипа), _UUID);
+			mObjectRef = XMLValue(Type(TypeName), _UUID);
 			vRefreshObjectData();
 		Except
 		EndTry;
 	EndIf;
 EndProcedure
 &AtServer
-Function вСоздатьNewОбъект(ОбъектМД)
-	пИмя = ОбъектМД.Name;
+Function vCreateNewОбъект(MDObject)
+	pName = MDObject.Name;
 
-	If Метаданные.Справочники.Содержит(ОбъектМД) Или Метаданные.ПланыВидовХарактеристик.Содержит(ОбъектМД) Then
-		ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
+	If Metadata.Catalogs.Contains(MDObject) Or Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Then
+		IsHierarchyFoldersAndItems = vIsHierarchyFoldersAndItems(MDObject);
 
-		If ЭтоИерархияГруппИЭлементов Then
-			Array = ObjectAttributes.НайтиСтроки(New Structure("Name", "ЭтоГруппа"));
-			пЭтоГруппа = (Array.Количество() = 1 И Array[0].ЭтоГруппа = True);
+		If IsHierarchyFoldersAndItems Then
+			Array = ObjectAttributes.FindRows(New Structure("Name", "IsFolder"));
+			pIsFolder = (Array.Count() = 1 And Array[0].IsFolder = True);
 		Else
-			пЭтоГруппа = False;
+			pIsFolder = False;
 		EndIf;
 
-		If Метаданные.Справочники.Содержит(ОбъектМД) Then
-			Менеджер = Справочники;
+		If Metadata.Catalogs.Contains(MDObject) Then
+			Manager = Catalogs;
 		Else
-			Менеджер = ПланыВидовХарактеристик;
+			Manager = ChartsOfCharacteristicTypes;
 		EndIf;
 
-		NewОбъект = ?(пЭтоГруппа, Менеджер[пИмя].СоздатьГруппу(), Менеджер[пИмя].СоздатьЭлемент());
+		NewObject = ?(pIsFolder, Manager[pName].CreateFolder(), Manager[pName].CreateItem());
 
-	ElsIf Метаданные.ПланыОбмена.Содержит(ОбъектМД) Then
-		NewОбъект = ПланыОбмена[пИмя].СоздатьУзел();
+	ElsIf Metadata.ExchangePlans.Contains(MDObject) Then
+		NewObject = ExchangePlans[pName].CreateNode();
 
-	ElsIf Метаданные.Документы.Содержит(ОбъектМД) Then
-		NewОбъект = Документы[пИмя].СоздатьДокумент();
+	ElsIf Metadata.Documents.Contains(MDObject) Then
+		NewObject = Documents[pName].CreateDocument();
 
-	ElsIf Метаданные.ПланыСчетов.Содержит(ОбъектМД) Then
-		NewОбъект = ПланыСчетов[пИмя].СоздатьСчет();
+	ElsIf Metadata.ChartsOfAccounts.Contains(MDObject) Then
+		NewObject = ChartsOfAccounts[pName].CreateAccount();
 
-	ElsIf Метаданные.ПланыВидовРасчета.Содержит(ОбъектМД) Then
-		NewОбъект = ПланыВидовРасчета[пИмя].СоздатьВидРасчета();
+	ElsIf Metadata.ChartsOfCalculationTypes.Contains(MDObject) Then
+		NewObject = ChartsOfCalculationTypes[pName].CreateCalculationType();
 
-	ElsIf Метаданные.БизнесПроцессы.Содержит(ОбъектМД) Then
-		NewОбъект = БизнесПроцессы[пИмя].СоздатьБизнесПроцесс();
+	ElsIf Metadata.BusinessProcesses.Contains(MDObject) Then
+		NewObject = BusinessProcesses[pName].CreateBusinessProcess();
 
-	ElsIf Метаданные.Задачи.Содержит(ОбъектМД) Then
-		NewОбъект = Задачи[пИмя].СоздатьЗадачу();
+	ElsIf Metadata.Tasks.Contains(MDObject) Then
+		NewObject = Tasks[pName].CreateTask();
 
 	Else
-		NewОбъект = Undefined;
+		NewObject = Undefined;
 	EndIf;
 
-	Return NewОбъект;
+	Return NewObject;
 EndFunction
 
-&AtServerБезКонтекста
-Function вУстановитьСсылкуНового(пОбъект, Знач пСтрокаUUID)
+&AtServerNoContext
+Function vSetNewObjectRef(pObject, Val pStringUUID)
 	Try
-		пUUID = New УникальныйИдентификатор(пСтрокаUUID);
+		pUUID = New UUID(pStringUUID);
 	Except
-		Сообщить(NSTR("ru = 'Неправильный формат UUID!';en = 'Incorrect UUID format!'"));
+		Message(NSTR("ru = 'Неправильный формат UUID!';en = 'Incorrect UUID format.'"));
 		Return False;
 	EndTry;
 
-	ОбъектМД = пОбъект.Метаданные();
-	пИмя = ОбъектМД.Name;
+	MDObject = pObject.Metadata();
+	pName = MDObject.Name;
 
-	If Метаданные.Справочники.Содержит(ОбъектМД) Then
-		пМенеджер = Справочники[пИмя];
+	If Metadata.Catalogs.Contains(MDObject) Then
+		pManager = Catalogs[pName];
 
-	ElsIf Метаданные.ПланыВидовХарактеристик.Содержит(ОбъектМД) Then
-		пМенеджер = ПланыВидовХарактеристик[пИмя];
+	ElsIf Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Then
+		pManager = ChartsOfCharacteristicTypes[pName];
 
-	ElsIf Метаданные.ПланыОбмена.Содержит(ОбъектМД) Then
-		пМенеджер = ПланыОбмена[пИмя];
+	ElsIf Metadata.ExchangePlans.Contains(MDObject) Then
+		pManager = ExchangePlans[pName];
 
-	ElsIf Метаданные.Документы.Содержит(ОбъектМД) Then
-		пМенеджер = Документы[пИмя];
+	ElsIf Metadata.Documents.Contains(MDObject) Then
+		pManager = Documents[pName];
 
-	ElsIf Метаданные.ПланыСчетов.Содержит(ОбъектМД) Then
-		пМенеджер = ПланыСчетов[пИмя];
+	ElsIf Metadata.ChartsOfAccounts.Contains(MDObject) Then
+		pManager = ChartsOfAccounts[pName];
 
-	ElsIf Метаданные.ПланыВидовРасчета.Содержит(ОбъектМД) Then
-		пМенеджер = ПланыВидовРасчета[пИмя];
+	ElsIf Metadata.ChartsOfCalculationTypes.Contains(MDObject) Then
+		pManager = ChartsOfCalculationTypes[pName];
 
-	ElsIf Метаданные.БизнесПроцессы.Содержит(ОбъектМД) Then
-		пМенеджер = БизнесПроцессы[пИмя];
+	ElsIf Metadata.BusinessProcesses.Contains(MDObject) Then
+		pManager = BusinessProcesses[pName];
 
-	ElsIf Метаданные.Задачи.Содержит(ОбъектМД) Then
-		пМенеджер = Задачи[пИмя];
+	ElsIf Metadata.Tasks.Contains(MDObject) Then
+		pManager = Tasks[pName];
 
 	Else
-		Сообщить(ОбъектМД.ПолноеИмя() + NSTR("ru = ' - данный тип не обрабатывается!';en = '- this type is not processed!'"));
+		Message(MDObject.FullName() + NSTR("ru = ' - данный тип не обрабатывается!';en = '- this type is not processed.'"));
 		Return False;
 	EndIf;
 
 	Try
-		пНоваяСсылка = пМенеджер.ПолучитьСсылку(пUUID);
-		пОбъект.УстановитьСсылкуНового(пНоваяСсылка);
+		pNewRef = pManager.GetRef(pUUID);
+		pObject.SetNewObjectRef(pNewRef);
 	Except
-		Сообщить(NSTR("ru = 'Не удалось установить ссылку для нового объекта!';en = 'Failed to set reference for new object!'"));
-		Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
+		Message(NSTR("ru = 'Не удалось установить ссылку для нового объекта!';en = 'Failed to set reference for new object.'"));
+		Message(BriefErrorDescription(ErrorInfo()));
 		Return False;
 	EndTry;
 
 	Return True;
 EndFunction
 
-&AtServerБезКонтекста
-Function вПолучитьСсылкуНаОбъект(Знач пСсылка)
-	УстановитьПривилегированныйРежим(True);
+&AtServerNoContext
+Function vGetObjectRef(Val pRef)
+	SetPrivilegedMode(True);
 
-	пПолноеИмя = пСсылка.Метаданные().ПолноеИмя();
+	pFullName = pRef.Metadata().FullName();
 
-	Запрос = New Запрос;
-	Запрос.УстановитьПараметр("Ссылка", пСсылка);
+	Query = New Query;
+	Query.SetParameter("Ref", pRef);
 
-	Запрос.Текст = "ВЫБРАТЬ ПЕРВЫЕ 1
-				   |	т.Ссылка КАК Ссылка
-				   |ИЗ
-				   |	" + пПолноеИмя + " КАК т
-										 |ГДЕ
-										 |	т.Ссылка = &Ссылка";
+	Query.Text = "SELECT TOP 1
+				 |	t.Ref AS Ref
+				 |FROM
+				 |	" + pFullName + " AS t
+									|WHERE
+									|	t.Ref = &Ref";
 
-	Выборка = Запрос.Выполнить().Выбрать();
+	Selection = Query.Execute().Select();
 
-	Return ?(Выборка.Следующий(), Выборка.Ссылка, Undefined);
+	Return ?(Selection.Next(), Selection.Ref, Undefined);
 EndFunction
 
 &AtServer
-Function vWriteObject(Знач КакNew = False, Знач пСтрокаUUID = Undefined)
-	If КакNew Then
-		If Не вПроверитьСуществованиеОбъекта(mObjectRef) Then
-			ОбъектМД = mObjectRef.Метаданные();
-			ОбъектДляЗаписи = вСоздатьNewОбъект(ОбъектМД);
-			If ОбъектДляЗаписи = Undefined Then
-				Сообщить(NSTR("ru = 'Не удалось создать New объект типа ';en = 'Failed to create a new object of type'") + ОбъектМД.ПолноеИмя());
+Function vWriteObject(Val AsNew = False, Val pStringUUID = Undefined)
+	If AsNew Then
+		If Not vCheckObjectExisting(mObjectRef) Then
+			MDObject = mObjectRef.Metadata();
+			ObjectToWrite = vCreateNewОбъект(MDObject);
+			If ObjectToWrite = Undefined Then
+				Message(NSTR("ru = 'Не удалось создать New объект типа ';en = 'Failed to create a new object of type.'") + MDObject.FullName());
 				Return False;
 			EndIf;
 		Else
-			ОбъектДляЗаписи = mObjectRef.Скопировать();
+			ObjectToWrite = mObjectRef.Copy();
 		EndIf;
 
-		If пСтрокаUUID <> Undefined Then
-			If Не вУстановитьСсылкуНового(ОбъектДляЗаписи, пСтрокаUUID) Then
+		If pStringUUID <> Undefined Then
+			If Not vSetNewObjectRef(ObjectToWrite, pStringUUID) Then
 				Return False;
 			EndIf;
 		EndIf;
 	Else
-		ОбъектДляЗаписи = mObjectRef.ПолучитьОбъект();
+		ObjectToWrite = mObjectRef.GetObject();
 	EndIf;
 
-	If ОбъектДляЗаписи = Undefined Then
-		Сообщить(NSTR("ru = 'Не удалось получить объект для записи (битая ссылка)!';en = 'Failed to get object to write to (broken reference)!'"));
+	If ObjectToWrite = Undefined Then
+		Message(NSTR("ru = 'Не удалось получить объект для записи (битая ссылка)!';en = 'Failed to get object to write to (broken reference).'"));
 		Return False;
 	EndIf;
 
-//	If _ЗаписьВРежимеЗагрузки Then
-//		ОбъектДляЗаписи.ОбменДанными.Загрузка = True;
+//	If _WriteInLoadingMode Then
+//		ObjectToWrite.DataExchange.Load = True;
 //	EndIf;
 
-//	If _ИспользоватьДополнительныеСвойстваПриЗаписи И _ДополнительныеСвойства.Количество() <> 0 Then
+//	If _UseAdditionalPropertiesOnWrite И _AdditionalProperties.Count() <> 0 Then
 //		Try
-//			For Each Стр Из _ДополнительныеСвойства Do
-//				ОбъектДляЗаписи.ДополнительныеСвойства.Вставить(Стр.Ключ, Стр.Value);
+//			For Each Str In _AdditionalProperties Do
+//				ObjectToWrite.AdditionalProperties.Insert(Str.Key, Str.Value);
 //			EndDo;
 //		Except
-//			Сообщить("Ошибка при установке ДополнительныхСвойств: неправильное значение ключа """ + Стр.Ключ + """");
+//			Message(NStr("ru = 'Ошибка при установке ДополнительныхСвойств: неправильное значение ключа '; en = 'AdditionalProperties set error: wrong key value.'""") + Str.Key + """");
 //			Return False;
 //		EndTry;
 //	EndIf;
 
-	Струк = New Structure("ЭтоГруппа");
+	Struct = New Structure("IsFolder");
 
 	Try
-		ОбъектМД = ОбъектДляЗаписи.Метаданные();
-		ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
-		ЭтоГруппа = ?(ЭтоИерархияГруппИЭлементов, ОбъектДляЗаписи.ЭтоГруппа, False);
+		MDObject = ObjectToWrite.Metadata();
+		IsHierarchyFoldersAndItems = vIsHierarchyFoldersAndItems(MDObject);
+		IsFolder = ?(IsHierarchyFoldersAndItems, ObjectToWrite.IsFolder, False);
 
-		For Each Стр Из ObjectAttributes Do
-			If Не Струк.Свойство(Стр.Name) И Стр.Категория <> -1 Then
-				If ЭтоИерархияГруппИЭлементов Then
-					If (ЭтоГруппа И Стр.ДляГруппыИлиЭлемента = 1) Или (Не ЭтоГруппа И Стр.ДляГруппыИлиЭлемента = -1) Then
-						Продолжить;
+		For Each Str In ObjectAttributes Do
+			If Not Struct.Property(Str.Name) And Str.Категория <> -1 Then
+				If IsHierarchyFoldersAndItems Then
+					If (IsFolder And Str.ForFolderAndItem = 1) Or (Not IsFolder And Str.ForFolderAndItem = -1) Then
+						Continue;
 					EndIf;
 				EndIf;
-				If ОбъектДляЗаписи[Стр.Name] <> Стр.Value Then
-					ОбъектДляЗаписи[Стр.Name] = Стр.Value;
+				If ObjectToWrite[Str.Name] <> Str.Value Then
+					ObjectToWrite[Str.Name] = Str.Value;
 				EndIf;
 			EndIf;
 		EndDo;
 		
 		// специализированные табличные части 1С
-		вЗаписатьСпециализированныеТабличныеЧасти(ОбъектМД, ОбъектДляЗаписи);
+		вЗаписатьСпециализированныеТабличныеЧасти(MDObject, ОбъектДляЗаписи);
 
-		For Each ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Do
+		For Each ЭлемТЧ Из MDObject.ТабличныеЧасти Do
 			If ЭтоИерархияГруппИЭлементов Then
 				If (ЭтоГруппа И ЭлемТЧ.Использование
 					= Метаданные.СвойстваОбъектов.ИспользованиеРеквизита.ДляЭлемента) Then
@@ -825,7 +825,7 @@ Function vWriteObject(Знач КакNew = False, Знач пСтрокаUUID = 
 EndFunction
 
 &AtServerБезКонтекста
-Function вПроверитьСуществованиеОбъекта(Знач пСсылка)
+Function vCheckObjectExisting(Знач пСсылка)
 	If пСсылка = Undefined Или Не ValueIsFilled(пСсылка) Then
 		Return False;
 	EndIf;
@@ -1204,7 +1204,7 @@ Procedure вЗаполнитьДанныеОбъекта(НадоСоздава�
 
 		If ОбъектМД <> Undefined Then
 
-			ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
+			ЭтоИерархияГруппИЭлементов = vIsHierarchyFoldersAndItems(ОбъектМД);
 
 			вЗаполнитьСтандартныеРеквизиты(ОбъектМД);
 			
@@ -1604,7 +1604,7 @@ Function вСформироватьСтруктуруТипов()
 EndFunction
 
 &AtServerБезКонтекста
-Function вЭтоИерархияГруппИЭлементов(ОбъектМД)
+Function vIsHierarchyFoldersAndItems(ОбъектМД)
 	Струк = New Structure("Иерархический, ВидИерархии");
 	ЗаполнитьЗначенияСвойств(Струк, ОбъектМД);
 	Return (Струк.Иерархический = True И Струк.ВидИерархии
