@@ -553,13 +553,13 @@ Procedure FindObjectByUUIDServer()
 		_ObjectType = "";
 
 		Try
-			UUID = New UUID(_UUID);
+			UID = New UUID(_UUID);
 		Except
 				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
 			Return;
 		EndTry;
 
-		If Not ValueIsFilled(UUID) Then
+		If Not ValueIsFilled(UID) Then
 			Return;
 		EndIf;
 
@@ -567,7 +567,7 @@ Procedure FindObjectByUUIDServer()
 		For Each Item In Struct Do
 			ObjectsManager = Eval(Item.Key);
 			For Each Manager In ObjectsManager Do
-				X = Manager.GetRef(UUID);
+				X = Manager.GetRef(UID);
 				If X.GetObject() <> Undefined Then
 					mObjectRef = X;
 					_ObjectType = mObjectRef.Metadata().FullName();
@@ -583,7 +583,7 @@ EndProcedure
 Procedure FindObjectByType_UUIDServer()
 	If Not IsBlankString(_ObjectType) And Not IsBlankString(_UUID) Then
 		Try
-			UUID = New UUID(_UUID);
+			UID = New UUID(_UUID);
 		Except
 				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
 			Return;
