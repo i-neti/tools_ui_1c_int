@@ -4301,10 +4301,10 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_PostingAllowed</name>
+    <name>_PostingIsAllowed</name>
     <title>
       <key>en</key>
-      <value>Posting allowed</value>
+      <value>Posting is allowed</value>
     </title>
     <title>
       <key>ru</key>
