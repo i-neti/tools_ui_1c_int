@@ -1725,7 +1725,7 @@
           <name>_ValueToFillContextMenu</name>
           <id>93</id>
           <items xsi:type="form:FormGroup">
-            <name>_ЗначениеДляЗаполненияКонтекстноеМенюГруппа1</name>
+            <name>_ValueToFillContextMenuGroup1</name>
             <id>144</id>
             <items xsi:type="form:Button">
               <name>_ValueToFillContextMenu_InsertUUID</name>
@@ -1762,8 +1762,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>ru</key>
+              <value>Value to fill context menu group1</value>
+            </title>
             <extendedTooltip>
-              <name>_ЗначениеДляЗаполненияКонтекстноеМенюГруппа1РасширеннаяПодсказка</name>
+              <name>_ValueToFillContextMenuGroup1ExtendedTooltip</name>
               <id>145</id>
               <visible>true</visible>
               <enabled>true</enabled>
