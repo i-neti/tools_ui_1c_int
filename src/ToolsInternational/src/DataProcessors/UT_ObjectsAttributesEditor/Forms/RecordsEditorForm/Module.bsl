@@ -272,7 +272,7 @@ EndProcedure
 Procedure _SwitchRecordsActivity(Command)
 	CurrData = Items._TabRegisters.CurrentData;
 	If CurrData <> Undefined Then
-		AttributeName = vGetAttributeName(CurrentData.FullName);
+		AttributeName = vGetAttributeName(CurrData.FullName);
 		If ThisForm[AttributeName].Count() <> 0 Then
 
 			For Each Str In ThisForm[AttributeName] Do
@@ -345,8 +345,8 @@ EndProcedure
 
 &AtClient
 Procedure vShowValueVS(Value)
-	ParamsStruct = New Structure("FormsPath, ValueStorageData", FormsPath, Value);
-	OpenForm("CommonForm.UT_ValueStorageForm", ParamsStruct, , CurrentDate());
+	ParamStruct = New Structure("FormsPath, ValueStorageData", FormsPath, Value);
+	OpenForm("CommonForm.UT_ValueStorageForm", ParamStruct, , CurrentDate());
 EndProcedure
 &AtClientAtServerNoContext
 Function vGetAttributeName(Val FullName)
@@ -659,114 +659,114 @@ Procedure vCreateRecordSetsAttributes(CreateAttributes = True)
 EndProcedure
 
 &AtServer
-Function vCheckAttributeExistence(ИмяРеквизита)
-	Струк = New Structure(ИмяРеквизита);
-	FillPropertyValues(Струк, ThisForm);
+Function vCheckAttributeExistence(AttributeName)
+	Struct = New Structure(AttributeName);
+	FillPropertyValues(Struct, ThisForm);
 
-	Return (Струк[ИмяРеквизита] <> Undefined);
+	Return (Struct[AttributeName] <> Undefined);
 EndFunction
 
 &AtServer
 Procedure vRefresh()
-	НадоСоздаватьРеквизиты = (TypeOf(mObjectRef) <> TypeOf(mObjectRefPrevious));
+	CreateAttributes = (TypeOf(mObjectRef) <> TypeOf(mObjectRefPrevious));
 
 	mObjectRefPrevious = mObjectRef;
 
-	If НадоСоздаватьРеквизиты Then
+	If CreateAttributes Then
 		vDeleteRecordSetsAttributes();
 
-		_TabRegisters.Очистить();
+		_TabRegisters.Clear();
 
 		mRegistersTableCurrRow = Undefined;
 
 		If mObjectRef <> Undefined Then
-			ОбъектМД = mObjectRef.Metadata();
-			_FullNameДокумента = ОбъектМД.FullName();
+			MDObject = mObjectRef.Metadata();
+			_DocumentFullName = MDObject.FullName();
 
-			For Each ОбъектРегистрМД Из ОбъектМД.Движения Do
-				НС = _TabRegisters.Добавить();
-				НС.Name = ОбъектРегистрМД.Name;
-				НС.Presentation = ОбъектРегистрМД.Представление();
-				НС.FullName = ОбъектРегистрМД.FullName();
-				НС.RegisterType = Лев(НС.FullName, СтрНайти(НС.FullName, ".") - 1);
+			For Each MDRegisterObject In MDObject.RegisterRecords Do
+				NR = _TabRegisters.Add();
+				NR.Name = MDRegisterObject.Name;
+				NR.Presentation = MDRegisterObject.Presentation();
+				NR.FullName = MDRegisterObject.FullName();
+				NR.RegisterType = Left(NR.FullName, StrFind(NR.FullName, ".") - 1);
 			EndDo;
 		EndIf;
 
-		_TabRegisters.Сортировать("FullName");
+		_TabRegisters.Sort("FullName");
 	EndIf;
 
-	vCreateRecordSetsAttributes(НадоСоздаватьРеквизиты);
+	vCreateRecordSetsAttributes(CreateAttributes);
 EndProcedure
 &AtClient
-Procedure RecordSetOnChange(Элемент)
-	ТекДанные = Items._TabRegisters.ТекущиеДанные;
-	If ТекДанные <> Undefined Then
-		ТекДанные.Changed = True;
-		ТекДанные.Write = True;
-		ТекДанные.RecordCount = ThisForm[Элемент.Name].Количество();
-		ТекДанные.RecordsExists = (ТекДанные.RecordCount <> 0);
+Procedure RecordSetOnChange(Item)
+	CurrData = Items._TabRegisters.CurrentData;
+	If CurrData <> Undefined Then
+		CurrData.Changed = True;
+		CurrData.Write = True;
+		CurrData.RecordCount = ThisForm[Item.Name].Count();
+		CurrData.RecordsExists = (CurrData.RecordCount <> 0);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure _TabRegistersOnActivateRow(Элемент)
-	ТекСтрока = Элемент.ТекущаяСтрока;
-	If ТекСтрока <> mRegistersTableCurrRow Then
+Procedure _TabRegistersOnActivateRow(Item)
+	CurrRow = Item.CurrentRow;
+	If CurrRow <> mRegistersTableCurrRow Then
 		mOldRegistersTableCurrRow = mRegistersTableCurrRow;
-		mRegistersTableCurrRow = ТекСтрока;
-		AttachIdleHandler("вПриАктивизацииСтрокиТаблицыРегистров", 0.1, True);
+		mRegistersTableCurrRow = CurrRow;
+		AttachIdleHandler("vOnActivateRegistersTableRow", 0.1, True);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure вПриАктивизацииСтрокиТаблицыРегистров() Export
+Procedure vOnActivateRegistersTableRow() Export
 	If mOldRegistersTableCurrRow <> Undefined Then
-		ТекДанные = _TabRegisters.FindByID(mOldRegistersTableCurrRow);
-		If ТекДанные <> Undefined Then
-			ИмяРеквизита = vGetAttributeName(ТекДанные.FullName);
+		CurrData = _TabRegisters.FindByID(mOldRegistersTableCurrRow);
+		If CurrData <> Undefined Then
+			AttributeName = vGetAttributeName(CurrData.FullName);
 		EndIf;
 	EndIf;
 
-	ТекДанные = Undefined;
+	CurrData = Undefined;
 	If mRegistersTableCurrRow <> Undefined Then
-		ТекДанные = _TabRegisters.FindByID(mRegistersTableCurrRow);
-		If ТекДанные <> Undefined Then
-			ИмяРеквизита = vGetAttributeName(ТекДанные.FullName);
-			Items.RecordSetsPages.ТекущаяСтраница = Items["Стр_" + ИмяРеквизита];
+		CurrData = _TabRegisters.FindByID(mRegistersTableCurrRow);
+		If CurrData <> Undefined Then
+			AttributeName = vGetAttributeName(CurrData.FullName);
+			Items.RecordSetsPages.CurrentPage = Items["Str_" + AttributeName];
 		EndIf;
 	EndIf;
 
-	If ТекДанные = Undefined Then
-		Items.RecordSetsPages.ТекущаяСтраница = Items.StrExample;
+	If CurrData = Undefined Then
+		Items.RecordSetsPages.CurrentPage = Items.StrExample;
 	EndIf;
 EndProcedure
 &AtClient
-Procedure _FillCurrentColumnData(Команда)
-	ТекДанные = Items._TabRegisters.ТекущиеДанные;
-	If ТекДанные <> Undefined Then
-		ИмяРеквизита = vGetAttributeName(ТекДанные.FullName);
-		ТекТаб = ThisForm[ИмяРеквизита];
+Procedure _FillCurrentColumnData(Command)
+	CurrData = Items._TabRegisters.CurrentData;
+	If CurrData <> Undefined Then
+		AttributeName = vGetAttributeName(CurrData.FullName);
+		CurrTab = ThisForm[AttributeName];
 
-		If ТекТаб.Количество() > 0 Then
+		If CurrTab.Count() > 0 Then
 
-			пЗначение = _ValueToFill;
+			pValue = _ValueToFill;
 
-			ТекДанные.Write = True;
-			ТекДанные.Changed = True;
+			CurrData.Write = True;
+			CurrData.Changed = True;
 
-			ТекТабЭФ = Items[ИмяРеквизита];
-			ТекПолеЭФ = ТекТабЭФ.ТекущийЭлемент;
+			CurrTabFI = Items[AttributeName];
+			CurrFieldFI = CurrTabFI.CurrentItem;
 
-			пПоле = Сред(ТекПолеЭФ.Имя, StrLen(ИмяРеквизита) + 2);
+			pField = Mid(CurrFieldFI.Name, StrLen(AttributeName) + 2);
 
 			If _ProcessOnlySelectedRowsOnFilling Then
-				For Each Элем Из ТекТабЭФ.ВыделенныеСтроки Do
-					Стр = ТекТаб.FindByID(Элем);
-					Стр[пПоле] = пЗначение;
+				For Each Item In CurrTabFI.SelectedRows Do
+					Str = CurrTab.FindByID(Item);
+					Str[pField] = pValue;
 				EndDo;
 			Else
-				For Each Стр Из ТекТаб Do
-					Стр[пПоле] = пЗначение;
+				For Each Str In CurrTab Do
+					Str[pField] = pValue;
 				EndDo;
 			EndIf;
 		EndIf;
@@ -774,174 +774,174 @@ Procedure _FillCurrentColumnData(Команда)
 EndProcedure
 
 &AtClient
-Procedure _ValueToFillStartChoice(Элемент, ДанныеВыбора, StandardProcessing)
+Procedure _ValueToFillStartChoice(Item, ChoiceData, StandardProcessing)
 	If _ValueToFill = Undefined Then
 		StandardProcessing = False;
-		СтрукПарам = New Structure("CloseOnOwnerClose, TypesToFillValues", True, True);
-		OpenForm("CommonForm.UT_MetadataSelectionForm", СтрукПарам, Элемент, , , , ,
+		ParamStruct = New Structure("CloseOnOwnerClose, TypesToFillValues", True, True);
+		OpenForm("CommonForm.UT_MetadataSelectionForm", ParamStruct, Item, , , , ,
 			FormWindowOpeningMode.LockOwnerWindow);
-	ElsIf TypeOf(_ValueToFill) = Тип("УникальныйИдентификатор") Then
+	ElsIf TypeOf(_ValueToFill) = Type("UUID") Then
 		StandardProcessing = False;
 	Else
 		Array = New Array;
-		Array.Добавить(TypeOf(_ValueToFill));
-		Элемент.TypeRestriction = New TypeDescription(Array);
+		Array.Add(TypeOf(_ValueToFill));
+		Item.TypeRestriction = New TypeDescription(Array);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure _ValueToFillClearing(Элемент, StandardProcessing)
-	Элемент.TypeRestriction = New TypeDescription;
+Procedure _ValueToFillClearing(Item, StandardProcessing)
+	Item.TypeRestriction = New TypeDescription;
 EndProcedure
 
 
-// загрузка движений из другого документа
+// Loading records from another document.
 &AtServerNoContext
-Function вПолучитьПериодРегистрации(ДокСсылка, ИмяТаблицы)
-	Запрос = New Запрос;
-	Запрос.УстановитьПараметр("Ссылка", ДокСсылка);
-	Запрос.Текст = "ВЫБРАТЬ ПЕРВЫЕ 1
-				   |	АвансовыйОтчет.Дата КАК Дата
-				   |ИЗ
-				   |	" + ИмяТаблицы + " КАК АвансовыйОтчет
-										 |ГДЕ
-										 |	АвансовыйОтчет.Ссылка = &Ссылка";
+Function vGetRecordingPeriod(DocRef, TableName)
+	Query = New Query;
+	Query.SetParameter("Ref", DocRef);
+	Query.Текст = "SELECT TOP 1
+				   |	AdvanceReport.Date AS Date
+				   |IN
+				   |	" + TableName + " AS AdvanceReport
+										 |WHERE
+										 |	AdvanceReport.Ref = &Ref";
 
-	Выборка = Запрос.Выполнить().Выбрать();
+	Selection = Query.Execute().Select();
 
-	Return ?(Выборка.Следующий(), Выборка.Дата, Undefined);
+	Return ?(Selection.Next(), Selection.Date, Undefined);
 EndFunction
 &AtClient
-Procedure _LoadOtherDocumentRecords(Команда)
-	If Не vCheckRecorder() Then
+Procedure _LoadOtherDocumentRecords(Command)
+	If Not vCheckRecorder() Then
 		Return;
 	EndIf;
 
-	СтрукПарам = New Structure("CloseOnOwnerClose, MetadataGroups", True, "Documents");
-	OpenForm("CommonForm.UT_MetadataSelectionForm", СтрукПарам, ThisForm, , , , ,
+	ParamStruct = New Structure("CloseOnOwnerClose, MetadataGroups", True, "Documents");
+	OpenForm("CommonForm.UT_MetadataSelectionForm", ParamStruct, ThisForm, , , , ,
 		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 &AtClient
-Procedure ChoiceProcessingAtClient(ВыбранноеЗначение, ИсточникВыбора)
-	ПоказатьВводЗначения(New NotifyDescription("вОбработатьВыборДокументаДляЗагрузкиДвижений", ThisForm),
-		ВыбранноеЗначение, NStr("ru = 'Документ для загрузки движений';en = 'Document for records loading'"));
+Procedure ChoiceProcessingAtClient(SelectedValue, ChoiceSource)
+	ShowInputValue(New NotifyDescription("vHandleDocumentSelectionForLoadingRecords", ThisForm),
+		SelectedValue, NStr("ru = 'Документ для загрузки движений';en = 'Document for loading records.'"));
 EndProcedure
 
 &AtClient
-Procedure вОбработатьВыборДокументаДляЗагрузкиДвижений(Значение, ДопParameters = Undefined) Export
-	If Значение <> Undefined Then
-		vShowQueryBox("вЗагрузитьДвиженияИзДокумента",
-			nstr("ru = 'Будут загружены движения из выбранного документа. Продолжить?';en = 'Will be loaded records from selected document. Continue?'"), Значение);
+Procedure vHandleDocumentSelectionForLoadingRecords(Value, AdditionalParameters = Undefined) Export
+	If Value <> Undefined Then
+		vShowQueryBox("vLoadRecordsFromDocument",
+			NStr("ru = 'Будут загружены движения из выбранного документа. Продолжить?';en = 'Records from the selected document will be loaded. Do you want to continue?'"), Value);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure вЗагрузитьДвиженияИзДокумента(РезультатВопроса, ДокСсылка) Export
-	If РезультатВопроса = DialogReturnCode.Да И ValueIsFilled(ДокСсылка) Then
-		If вЗагрузитьДвиженияИзДокументаНаСервере(ДокСсылка) Then
-			_СортироватьРегистрыСтандартно(Undefined);
+Procedure vLoadRecordsFromDocument(QueryResult, DocRef) Export
+	If QueryResult = DialogReturnCode.Yes And ValueIsFilled(DocRef) Then
+		If vLoadRecordsFromDocumentAtServer(DocRef) Then
+			_SortRegistersByDefault(Undefined);
 		EndIf;
 	EndIf;
 EndProcedure
 
 &AtServer
-Function вЗагрузитьДвиженияИзДокументаНаСервере(ДокСсылка)
-	пРезультат = False;
+Function vLoadRecordsFromDocumentAtServer(DocRef)
+	pResult = False;
 
-	пДжвиженияПриемник = mObjectRef.Metadata().Движения;
+	pRecordsDestination = mObjectRef.Metadata().RegisterRecords;
 
-	For Each ЭлеметМД Из ДокСсылка.Metadata().Движения Do
-		If пДжвиженияПриемник.Содержит(ЭлеметМД) Then
-			пFullName = ЭлеметМД.FullName();
-			пВидРегистра = Лев(пFullName, СтрНайти(пFullName, ".") - 1);
+	For Each MDItem In DocRef.Metadata().RegisterRecords Do
+		If pRecordsDestination.Contains(MDItem) Then
+			pFullName = MDItem.FullName();
+			pRegisterType = Left(pFullName, StrFind(pFullName, ".") - 1);
 
-			ТабДанные = vReadRecordSet(ДокСсылка, пВидРегистра, ЭлеметМД.Имя);
-			If ТабДанные.Количество() <> 0 Then
-				СтрукОсновное = New Structure("Период, Recorder", вПолучитьПериодРегистрации(mObjectRef,
-					_FullNameДокумента), mObjectRef);
-				ИмяРеквизита = vGetAttributeName(пFullName);
-				ТабНабор = ThisForm[ИмяРеквизита];
-				For Each Стр Из ТабДанные Do
-					НС = ТабНабор.Добавить();
-					FillPropertyValues(НС, Стр);
-					FillPropertyValues(НС, СтрукОсновное);
+			TabData = vReadRecordSet(DocRef, pRegisterType, MDItem.Name);
+			If TabData.Count() <> 0 Then
+				StructMain = New Structure("Period, Recorder", vGetRecordingPeriod(mObjectRef,
+					_DocumentFullName), mObjectRef);
+				AttributeName = vGetAttributeName(pFullName);
+				TabSet = ThisForm[AttributeName];
+				For Each Str In TabData Do
+					NR = TabSet.Add();
+					FillPropertyValues(NR, Str);
+					FillPropertyValues(NR, StructMain);
 				EndDo;
 
-				Array = _TabRegisters.FindRows(New Structure("FullName", пFullName));
-				If Array.Количество() <> 0 Then
-					СтрРегистр = Array[0];
-					СтрРегистр.Write = True;
-					СтрРегистр.Changed = True;
-					СтрРегистр.RecordsExists = True;
-					СтрРегистр.RecordCount = ТабНабор.Количество();
+				Array = _TabRegisters.FindRows(New Structure("FullName", pFullName));
+				If Array.Count() <> 0 Then
+					StrRegister = Array[0];
+					StrRegister.Write = True;
+					StrRegister.Changed = True;
+					StrRegister.RecordsExists = True;
+					StrRegister.RecordCount = TabSet.Count();
 				EndIf;
 
-				пРезультат = True;
+				pResult = True;
 			EndIf;
 		EndIf;
 	EndDo;
 
-	Return пРезультат;
+	Return pResult;
 EndFunction
 &AtClient
-Procedure _InsertUUID(Команда)
-	ТекТаблица = ThisForm.ТекущийЭлемент;
+Procedure _InsertUUID(Command)
+	CurrTable = ThisForm.CurrentItem;
 
-	If ТекТаблица.Name = "_ValueToFill" Then
-		пСтрук = New Structure("Таблица", ТекТаблица.Name);
-		ПоказатьВводСтроки(New NotifyDescription("вОбработатьВвод_UUID", ThisForm, пСтрук), mLastUUID,
+	If CurrTable.Name = "_ValueToFill" Then
+		pStruct = New Structure("Table", CurrTable.Name);
+		ShowInputString(New NotifyDescription("vProcessInput_UUID", ThisForm, pStruct), mLastUUID,
 			NStr("ru = 'Введите уникальный идентификатор';en = 'Enter a unique identifier (UUID)'"), , False);
 		Return;
-	ElsIf TypeOf(ТекТаблица) <> Тип("ТаблицаФормы") Then
+	ElsIf TypeOf(CurrTable) <> Тип("FormTable") Then
 		Return;
 	EndIf;
 
-	ТекКолонка = ТекТаблица.ТекущийЭлемент;
-	If ТекКолонка = Undefined Или ТекКолонка.ТолькоПросмотр Then
+	CurrColumn = CurrTable.CurrentItem;
+	If CurrColumn = Undefined Or CurrColumn.ReadOnly Then
 		Return;
 	EndIf;
 
 	Try
-		пДоступныеТипы = ТекКолонка.ДоступныеТипы.Типы();
-		If пДоступныеТипы.Количество() <> 0 И пДоступныеТипы.Найти(Тип("УникальныйИдентификатор")) <> 0 Then
+		pAvailableTypes = CurrColumn.AvailableTypes.Types();
+		If pAvailableTypes.Count() <> 0 And pAvailableTypes.Find(Type("UUID")) <> 0 Then
 			Return;
 		EndIf;
 	Except
 	EndTry;
 
-	ТекДанные = Items[ТекТаблица.Name].ТекущиеДанные;
-	If ТекДанные <> Undefined Then
-		пСтрук = New Structure("Таблица", ТекТаблица.Name);
+	CurrData = Items[CurrTable.Name].CurrentData;
+	If CurrData <> Undefined Then
+		pStruct = New Structure("Table", CurrTable.Name);
 
-		пСтрук.Вставить("Поле", Сред(ТекКолонка.Имя, StrLen(ТекТаблица.Имя) + 2));
+		pStruct.Insert("Field", Сред(CurrColumn.Name, StrLen(CurrTable.Name) + 2));
 
-		ПоказатьВводСтроки(New NotifyDescription("вОбработатьВвод_UUID", ThisForm, пСтрук), mLastUUID,
+		ShowInputString(New NotifyDescription("vProcessInput_UUID", ThisForm, pStruct), mLastUUID,
 			NStr("ru = 'Введите уникальный идентификатор';en = 'Enter a unique identifier (UUID)'"), , False);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure вОбработатьВвод_UUID(Строка, пСтрук = Undefined) Export
-	If Строка <> Undefined И Не ПустаяСтрока(Строка) Then
+Procedure vProcessInput_UUID(String, pStruct = Undefined) Export
+	If String <> Undefined And Not isBlankString(String) Then
 		Try
-			пЗначение = New УникальныйИдентификатор(Строка);
-			mLastUUID = Строка;
+			pValue = New UUID(String);
+			mLastUUID = String;
 		Except
-			ПоказатьПредупреждение( , NSTR("ru = 'Значение не может быть преобразовано в Уникальный идентификатор!';en = 'The value cannot be converted to a Unique identifier! (UUID)'"), 20);
+			ShowMessageBox( , NSTR("ru = 'Значение не может быть преобразовано в Уникальный идентификатор!';en = 'The value cannot be converted to a Unique identifier (UUID).'"), 20);
 			Return;
 		EndTry;
 
-		If пСтрук.Таблица = "_ValueToFill" Then
-			_ValueToFill = пЗначение;
+		If pStruct.Table = "_ValueToFill" Then
+			_ValueToFill = pValue;
 		Else
-			ТекДанные = Items[пСтрук.Таблица].ТекущиеДанные;
-			If ТекДанные <> Undefined Then
-				ТекДанные[пСтрук.Поле] = пЗначение;
+			CurrData = Items[pStruct.Таблица].CurrentData;
+			If CurrData <> Undefined Then
+				CurrData[pStruct.Field] = pValue;
 
-				ТекДанныеРег = Items._TabRegisters.ТекущиеДанные;
-				ТекДанныеРег.Write = True;
-				ТекДанныеРег.Changed = True;
+				CurrDataReg = Items._TabRegisters.CurrentData;
+				CurrDataReg.Write = True;
+				CurrDataReg.Changed = True;
 			EndIf;
 		EndIf;
 	EndIf;
