@@ -1,100 +1,120 @@
-Var ЧислоРеквизитов Export;
-Var ПредставленияЗаголовковРеквизитов Export;
-Var КодПриведенияРеквизитаКТипуЧисло;
+Var NumberOfRequisites Export;
+Var ViewsHeadersAttributes Export; //type - Map
+Var CodeCastingAttributeToTypeNumber;
 
-#Region Основные_процедуры_и_функции
-Procedure СравнитьДанныеНаСервере(ТекстОшибок = "") Export
+#Region Main_procedures_and_functions
+
+Procedure CompareDataOnServer(ErrorsText = "") Export
 	
 	//Сообщения при ошибке в произвольном коде незачем показывать больше одного раза, они скорее всего будут одинаковые
-	СообщениеОбОшибкеПриВыполненииКодаДляВыводаСтрок = False;
-	СообщениеОбОшибкеПриВыполненииКодаДляЗапретаВыводаСтрок = False;
-	СообщениеОНаличииНесколькихСтрокПоОдномуКлючу = False;
+	//Error messages in arbitrary code should not be shown more than once, they will most likely be the same
+	ErrorMessageRunningCodeForOutputRows = False;
+	ErrorMessageWhenExecutingCodeToForbidRowOutput = False;
+	MessageHaveMultipleRowsOneKey = False;
 		
-	If Not ПроверитьЗаполнениеРеквизитов() Then
+	If Not CheckFillingAttributes() Then
 		Return;
 	EndIf;
 	
-	СмещениеНомераРеквизита = NumberColumnsInKey - 1;
+	OffsetNumberAttribute = NumberColumnsInKey - 1;
 	
-	ТекстОшибки = "";
-	ПодключениеА = Undefined;
-	ТЗ_А = ПрочитатьДанныеИПолучитьТЗ("А", ТекстОшибки, ПодключениеА);
+	ErrorText = "";
+	ConnectionA = Undefined;
+	ValueTable_A = ReadDataAndGetValueTable("A", ErrorText, ConnectionA);
 	
-	If ТЗ_А = Undefined Then
-		ТекстОшибок = ТекстОшибок + ?(IsBlankString(ТекстОшибок), "", Chars.LF) + ТекстОшибки;
+	If ValueTable_A = Undefined Then
+		ErrorsText = ErrorsText + ?(IsBlankString(ErrorsText), "", Chars.LF) + ErrorText;
 	EndIf;
 	
-	ТекстОшибки = "";
-	ПодключениеБ = Undefined;
-	ТЗ_Б = ПрочитатьДанныеИПолучитьТЗ("Б", ТекстОшибки, ПодключениеБ);
+	ErrorText = "";
+	ConnectionB = Undefined;
+	ValueTable_B = ReadDataAndGetValueTable("B", ErrorText, ConnectionB);
 	
-	If ТЗ_Б = Undefined Then
-		ТекстОшибок = ТекстОшибок + ?(IsBlankString(ТекстОшибок), "", Chars.LF) + ТекстОшибки;
+	If ValueTable_B = Undefined Then
+		ErrorsText = ErrorsText + ?(IsBlankString(ErrorsText), "", Chars.LF) + ErrorText;
 	EndIf;
 	
-	If ТЗ_А = Undefined Or ТЗ_Б = Undefined Then
+	If ValueTable_A = Undefined Or ValueTable_B = Undefined Then
 		Return;
 	EndIf;
 		
-	ИмяКолонкиКоличествоСтрокИсточникаДанных = "КоличествоСтрокИсточникаДанных_" + StrReplace(String(New UUID), "-", "");
+	ColumnNameNumberOfRowsDataSource = "NumberOfRowsDataSource_" + StrReplace(String(New UUID), "-", "");
 	
 	
-#Region ТЗ_А_Сгруппированная
+#Region ValueTable_A_Grouped
 	
-	ТЗ_А_Сгруппированная = ТЗ_А.Copy();
-	ТЗ_А_Сгруппированная.Cols.Add(ИмяКолонкиКоличествоСтрокИсточникаДанных);
+	ValueTable_A_Grouped = ValueTable_A.Copy();
+	ValueTable_A_Grouped.Columns.Add(ColumnNameNumberOfRowsDataSource);
 	
-	ИмяКлючаА = ТЗ_А_Сгруппированная.Cols.Get(0).Name;
-	КолонкиСКлючомАСтрокой = ИмяКлючаА;
+	KeyNameA1 = ValueTable_A_Grouped.Columns.Get(0).Name;
+	ColumnsKeyAString = KeyNameA1;
 	
 	If NumberColumnsInKey > 1 Then
-		ИмяКлючаА2 = ТЗ_А_Сгруппированная.Cols.Get(1).Name;
-		КолонкиСКлючомАСтрокой = КолонкиСКлючомАСтрокой + "," + ИмяКлючаА2;
+		KeyNameA2 = ValueTable_A_Grouped.Columns.Get(1).Name;
+		ColumnsKeyAString = ColumnsKeyAString + "," + KeyNameA2;
 	EndIf;
 	
 	If NumberColumnsInKey > 2 Then
-		ИмяКлючаА3 = ТЗ_А_Сгруппированная.Cols.Get(2).Name;
-		КолонкиСКлючомАСтрокой = КолонкиСКлючомАСтрокой + "," + ИмяКлючаА3;
+		KeyNameA3 = ValueTable_A_Grouped.Columns.Get(2).Name;
+		ColumnsKeyAString = ColumnsKeyAString + "," + KeyNameA3;
 	EndIf;
 		
-	ТЗ_А_Сгруппированная.FillValues(1,ИмяКолонкиКоличествоСтрокИсточникаДанных);	
-	ТЗ_А_Сгруппированная.Collapse(КолонкиСКлючомАСтрокой, ИмяКолонкиКоличествоСтрокИсточникаДанных);	
-	ТЗ_А_Сгруппированная.Indexes.Add(КолонкиСКлючомАСтрокой);
+	ValueTable_A_Grouped.FillValues(1,ColumnNameNumberOfRowsDataSource);	
+	ValueTable_A_Grouped.Collapse(ColumnsKeyAString, ColumnNameNumberOfRowsDataSource);	
+	ValueTable_A_Grouped.Indexes.Add(ColumnsKeyAString);
 	
 #EndRegion
 
 
-#Region ТЗ_Б_Сгруппированная
+#Region ValueTable_B_Grouped
 
-	ТЗ_Б_Сгруппированная = ТЗ_Б.Copy();
-	ТЗ_Б_Сгруппированная.Cols.Add(ИмяКолонкиКоличествоСтрокИсточникаДанных);
+	ValueTable_B_Grouped = ValueTable_B.Copy();
+	ValueTable_B_Grouped.Columns.Add(ColumnNameNumberOfRowsDataSource);
 	
-	ИмяКлючаБ = ТЗ_Б_Сгруппированная.Cols.Get(0).Name;
-	КолонкиСКлючомБСтрокой = ИмяКлючаБ;
+	KeyNameB1 = ValueTable_B_Grouped.Columns.Get(0).Name;
+	ColumnsKeyBString = KeyNameB1;
 	If NumberColumnsInKey > 1 Then
-		ИмяКлючаБ2 = ТЗ_Б_Сгруппированная.Cols.Get(1).Name;
-		КолонкиСКлючомБСтрокой = КолонкиСКлючомБСтрокой + "," + ИмяКлючаБ2;
+		KeyNameB2 = ValueTable_B_Grouped.Columns.Get(1).Name;
+		ColumnsKeyBString = ColumnsKeyBString + "," + KeyNameB2;
 	EndIf;
 	If NumberColumnsInKey > 2 Then
-		ИмяКлючаБ3 = ТЗ_Б_Сгруппированная.Cols.Get(2).Name;
-		КолонкиСКлючомБСтрокой = КолонкиСКлючомБСтрокой + "," + ИмяКлючаБ3;
+		KeyNameB3 = ValueTable_B_Grouped.Columns.Get(2).Name;
+		ColumnsKeyBString = ColumnsKeyBString + "," + KeyNameB3;
 	EndIf;
 			
-	ТЗ_Б_Сгруппированная.FillValues(1, ИмяКолонкиКоличествоСтрокИсточникаДанных);
-	ТЗ_Б_Сгруппированная.Collapse(КолонкиСКлючомБСтрокой, ИмяКолонкиКоличествоСтрокИсточникаДанных);
-	ТЗ_Б_Сгруппированная.Indexes.Add(КолонкиСКлючомБСтрокой);
+	ValueTable_B_Grouped.FillValues(1, ColumnNameNumberOfRowsDataSource);
+	ValueTable_B_Grouped.Collapse(ColumnsKeyBString, ColumnNameNumberOfRowsDataSource);
+	ValueTable_B_Grouped.Indexes.Add(ColumnsKeyBString);
 	
 #EndRegion
 
 
-	ЧислоКолонокТЗ_А = ТЗ_А.Cols.Count();
-	ЧислоКолонокТЗ_Б = ТЗ_Б.Cols.Count();
+	NumberOfColumnsValueTable_A = ValueTable_A.Columns.Count();
+	NumberOfColumnsValueTable_B = ValueTable_B.Columns.Count();
 	
-	For Счетчик = 1 To ЧислоРеквизитов Do
+	TotalsByAttributesMap = New Map;
+	For AttributesCounter = 1 To NumberOfRequisites Do
 		
-		ThisObject["VisibilityAttributeA" + Счетчик] = ThisObject["VisibilityAttributeA" + Счетчик] And ЧислоКолонокТЗ_А >= Счетчик;
-		ThisObject["VisibilityAttributeB" + Счетчик] = ThisObject["VisibilityAttributeB" + Счетчик] And ЧислоКолонокТЗ_Б >= Счетчик;
+		ThisObject["VisibilityAttributeA" + AttributesCounter] = ThisObject["VisibilityAttributeA" + AttributesCounter] And NumberOfColumnsValueTable_A >= AttributesCounter;
+		ThisObject["VisibilityAttributeB" + AttributesCounter] = ThisObject["VisibilityAttributeB" + AttributesCounter] And NumberOfColumnsValueTable_B >= AttributesCounter;
 		
+		TotalsByAttributesMap.Insert("AttributeA" + AttributesCounter, New Structure(
+			"ОшибкаПриВычислении,CalculateTotal,AggregateFunctionCalculationTotal,ValueTotal,СуммаЗначений,ЧислоЗначений"
+				, False
+				, ?(SettingsFileA.Count() < AttributesCounter, False, SettingsFileA[AttributesCounter - 1].CalculateTotal)
+				, ?(SettingsFileA.Count() < AttributesCounter, "Сумма", SettingsFileA[AttributesCounter - 1].AggregateFunctionCalculationTotal)
+				, Undefined
+				, 0
+				, 0));
+		TotalsByAttributesMap.Insert("AttributeB" + AttributesCounter, New Structure(
+			"ОшибкаПриВычислении,CalculateTotal,AggregateFunctionCalculationTotal,ValueTotal,СуммаЗначений,ЧислоЗначений"
+				, False
+				, ?(SettingsFileB.Count() < AttributesCounter, False, SettingsFileB[AttributesCounter - 1].CalculateTotal)
+				, ?(SettingsFileB.Count() < AttributesCounter, "Сумма", SettingsFileB[AttributesCounter - 1].AggregateFunctionCalculationTotal)
+				, Undefined
+				, 0
+				, 0));
+				
 	EndDo;
 	
 	Result.Clear();
@@ -104,117 +124,119 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 	
 	If RelationalOperation = 1 Or RelationalOperation = 2 Or RelationalOperation = 3 Or RelationalOperation = 4 Or RelationalOperation = 6 Or RelationalOperation = 7 Then
 		
-		For Each СтрокаТЗ_А_Сгруппированная In ТЗ_А_Сгруппированная Do 		
+		For Each RowValueTable_A_Grouped In ValueTable_A_Grouped Do 		
 			           			
-			Key = СтрокаТЗ_А_Сгруппированная[ИмяКлючаА];
+			Key1 = RowValueTable_A_Grouped[KeyNameA1];
 			
 			If NumberColumnsInKey > 1 Then
-				Ключ2 = СтрокаТЗ_А_Сгруппированная[ИмяКлючаА2];				
+				Key2 = RowValueTable_A_Grouped[KeyNameA2];				
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				Key3 = СтрокаТЗ_А_Сгруппированная[ИмяКлючаА3];
+				Key3 = RowValueTable_A_Grouped[KeyNameA3];
 			EndIf;
 
-			If ПодключениеБ = Undefined Then
-				ОтборСтруктура = New Structure;
+			If ConnectionB = Undefined Then
+				SelectionStructure = New Structure;
 			Else
-				ОтборСтруктура = ПодключениеБ.NewObject("Structure");
+				SelectionStructure = ConnectionB.NewObject("Structure");
 			EndIf;
-			ОтборСтруктура.Insert(ИмяКлючаБ, Key);
+			
+			SelectionStructure.Insert(KeyNameB1, Key1);
+			
 			If NumberColumnsInKey > 1 Then
-				ОтборСтруктура.Insert(ИмяКлючаБ2, Ключ2);
+				SelectionStructure.Insert(KeyNameB2, Key2);
 			EndIf;
 			If NumberColumnsInKey > 2 Then
-				ОтборСтруктура.Insert(ИмяКлючаБ3, Key3);
+				SelectionStructure.Insert(KeyNameB3, Key3);
 			EndIf;
 			
-			НайденныеСтроки = ТЗ_Б_Сгруппированная.FindRows(ОтборСтруктура);
-			СтрокаТЗ_Б_Сгруппированная = ?(НайденныеСтроки.Count() > 0, НайденныеСтроки.Get(0), Undefined);
+			FoundRows = ValueTable_B_Grouped.FindRows(SelectionStructure);
+			RowValueTable_B_Grouped = ?(FoundRows.Count() > 0, FoundRows.Get(0), Undefined);
 			
 			If RelationalOperation = 2 Or RelationalOperation = 3
-				Or ((RelationalOperation = 1 Or RelationalOperation = 7) And СтрокаТЗ_Б_Сгруппированная = Undefined) 
-				Or ((RelationalOperation = 4 Or RelationalOperation = 6) And СтрокаТЗ_Б_Сгруппированная <> Undefined) Then
+				Or ((RelationalOperation = 1 Or RelationalOperation = 7) And RowValueTable_B_Grouped = Undefined) 
+				Or ((RelationalOperation = 4 Or RelationalOperation = 6) And RowValueTable_B_Grouped <> Undefined) Then
 				
-				СтрокаТР = Result.Add();
+				RowTP_Result = Result.Add();
 				
 			Else
 				Continue;
 			EndIf;
 			
-			СтрокаТР.Key = Key;
+			RowTP_Result.Key1 = Key;
 			If DisplayKeyColumnTypes Then
-				СтрокаТР.ColumnType1Key = TypeOf(СтрокаТР.Key);
+				RowTP_Result.ColumnType1Key = TypeOf(RowTP_Result.Key1);
 			EndIf;
 			If NumberColumnsInKey > 1 Then
-				СтрокаТР.Key2 = Ключ2;
+				RowTP_Result.Key2 = Key2;
 				If DisplayKeyColumnTypes Then
-					СтрокаТР.ColumnType2Key = TypeOf(СтрокаТР.Key2);
+					RowTP_Result.ColumnType2Key = TypeOf(RowTP_Result.Key2);
 				EndIf;
 			EndIf;
 			If NumberColumnsInKey > 2 Then
-				СтрокаТР.Key3 = Key3;
+				RowTP_Result.Key3 = Key3;
 				If DisplayKeyColumnTypes Then
-					СтрокаТР.ColumnType3Key = TypeOf(СтрокаТР.Key3);
+					RowTP_Result.ColumnType3Key = TypeOf(RowTP_Result.Key3);
 				EndIf;
 			EndIf;
 			
-			СтрокаТР.NumberOfRecordsA = СтрокаТЗ_А_Сгруппированная[ИмяКолонкиКоличествоСтрокИсточникаДанных];
-			If СтрокаТЗ_Б_Сгруппированная <> Undefined Then
-				СтрокаТР.NumberOfRecordsB = СтрокаТЗ_Б_Сгруппированная[ИмяКолонкиКоличествоСтрокИсточникаДанных];
+			RowTP_Result.NumberOfRecordsA = RowValueTable_A_Grouped[ColumnNameNumberOfRowsDataSource];
+			If RowValueTable_B_Grouped <> Undefined Then
+				RowTP_Result.NumberOfRecordsB = RowValueTable_B_Grouped[ColumnNameNumberOfRowsDataSource];
 			EndIf;
 			
-			If ЧислоКолонокТЗ_А > 1 Then
+			If NumberOfColumnsValueTable_A > 1 Then
 								
-				If ПодключениеА = Undefined Then
-					ОтборСтруктура = New Structure;
+				If ConnectionA = Undefined Then
+					SelectionStructure = New Structure;
 				Else
-					ОтборСтруктура = ПодключениеА.NewObject("Structure");
+					SelectionStructure = ConnectionA.NewObject("Structure");
 				EndIf;
-				ОтборСтруктура.Insert(ИмяКлючаА, Key);
+				SelectionStructure.Insert(KeyNameA1, Key);
 				If NumberColumnsInKey > 1 Then
-					ОтборСтруктура.Insert(ИмяКлючаА2, Ключ2);
+					SelectionStructure.Insert(KeyNameA2, Key2);
 				EndIf;
 				If NumberColumnsInKey > 2 Then
-					ОтборСтруктура.Insert(ИмяКлючаА3, Key3);
+					SelectionStructure.Insert(KeyNameA3, Key3);
 				EndIf;
 				
-				НайденныеСтроки = ТЗ_А.FindRows(ОтборСтруктура);
-				СтрокаТЗ_А = ?(НайденныеСтроки.Count() > 0, НайденныеСтроки.Get(0), Undefined);
+				FoundRows = ValueTable_A.FindRows(SelectionStructure);
+				RowValueTable_A = ?(FoundRows.Count() > 0, FoundRows.Get(0), Undefined);
 				
-				//Values реквизитов выводятся только при наличии единственной записи по ключу
-				If СтрокаТР.NumberOfRecordsA = 1 Then
-					For СчетчикКолонокА = 1 To Min(ЧислоРеквизитов, ЧислоКолонокТЗ_А - NumberColumnsInKey) Do
-						СтрокаТР["AttributeA" + СчетчикКолонокА] = СтрокаТЗ_А.Get(СчетчикКолонокА + СмещениеНомераРеквизита);
+				//Values ​​of attributes are displayed only if there is a single entry by key
+				If RowTP_Result.NumberOfRecordsA = 1 Then
+					For CounterColumnA = 1 To Min(NumberOfRequisites, NumberOfColumnsValueTable_A - NumberColumnsInKey) Do
+						RowTP_Result["AttributeA" + CounterColumnA] = RowValueTable_A.Get(CounterColumnA + OffsetNumberAttribute);
 					EndDo;
 				EndIf;
 				
 			EndIf;
 						
-			If ЧислоКолонокТЗ_Б > 1 Then
+			If NumberOfColumnsValueTable_B > 1 Then
 								
-				If ПодключениеБ = Undefined Then
-					ОтборСтруктура = New Structure;
+				If ConnectionB = Undefined Then
+					SelectionStructure = New Structure;
 				Else
-					ОтборСтруктура = ПодключениеБ.NewObject("Structure");
+					SelectionStructure = ConnectionB.NewObject("Structure");
 				EndIf;
-				ОтборСтруктура.Insert(ИмяКлючаБ, Key);
+				SelectionStructure.Insert(KeyNameB1, Key);
 				If NumberColumnsInKey > 1 Then
-					ОтборСтруктура.Insert(ИмяКлючаБ2, Ключ2);
+					SelectionStructure.Insert(KeyNameB2, Key2);
 				EndIf;
 				If NumberColumnsInKey > 2 Then
-					ОтборСтруктура.Insert(ИмяКлючаБ3, Key3);
+					SelectionStructure.Insert(KeyNameB3, Key3);
 				EndIf;
 				
-				НайденныеСтроки = ТЗ_Б.FindRows(ОтборСтруктура);
-				СтрокаТЗ_Б = ?(НайденныеСтроки.Count() > 0, НайденныеСтроки.Get(0), Undefined);
+				FoundRows = ValueTable_B.FindRows(SelectionStructure);
+				RowValueTable_B = ?(FoundRows.Count() > 0, FoundRows.Get(0), Undefined);
 							
-				If СтрокаТЗ_Б <> Undefined Then
+				If RowValueTable_B <> Undefined Then
 					
 					//Values реквизитов выводятся только при наличии единственной записи по ключу
-					If СтрокаТР.NumberOfRecordsB = 1 Then
-						For СчетчикКолонокБ = 1 To Min(ЧислоРеквизитов, ЧислоКолонокТЗ_Б - NumberColumnsInKey) Do
-							СтрокаТР["AttributeB" + СчетчикКолонокБ] = СтрокаТЗ_Б.Get(СчетчикКолонокБ + СмещениеНомераРеквизита);
+					If RowTP_Result.NumberOfRecordsB = 1 Then
+						For CounterColumnB = 1 To Min(NumberOfRequisites, NumberOfColumnsValueTable_B - NumberColumnsInKey) Do
+							RowTP_Result["AttributeB" + CounterColumnB] = RowValueTable_B.Get(CounterColumnB + OffsetNumberAttribute);
 						EndDo;
 					EndIf;
 					
@@ -228,17 +250,17 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 				Try
 					Execute CodeForOutputRows;
 				Except
-					If Not СообщениеОбОшибкеПриВыполненииКодаДляВыводаСтрок Then
-						ТекстОшибки = ErrorDescription();
-						Message(ТекстОшибки);
+					If Not ErrorMessageRunningCodeForOutputRows Then
+						ErrorText = ErrorDescription();
+						Message(Format(CurrentDate(),"DLF=DT") + ": " + ErrorText);
 					EndIf;
-					СообщениеОбОшибкеПриВыполненииКодаДляВыводаСтрок = True;
+					ErrorMessageRunningCodeForOutputRows = True;
 				EndTry;
 			EndIf;
 			
 			//If число строк с одним ключом больше 1, результирующую строку нужно вывести обязательно, 
 			//т.к. условия в данном случае некорректно применять вообще
-			If СтрокаТР.NumberOfRecordsA <= 1 And СтрокаТР.NumberOfRecordsB <= 1 Then
+			If RowTP_Result.NumberOfRecordsA <= 1 And RowTP_Result.NumberOfRecordsB <= 1 Then
 				
 				ConditionsProhibitOutputRowCompleted = False;
 				
@@ -246,24 +268,97 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 					Try
 						Execute CodeForProhibitingOutputRows; 
 					Except
-						If Not СообщениеОбОшибкеПриВыполненииКодаДляЗапретаВыводаСтрок Then
-							ТекстОшибки = ErrorDescription();
-							Message(ТекстОшибки);						
+						If Not ErrorMessageWhenExecutingCodeToForbidRowOutput Then
+							ErrorText = ErrorDescription();
+							Message(Format(CurrentDate(),"DLF=DT") + ": " + ErrorText);						
 						EndIf;
-						СообщениеОбОшибкеПриВыполненииКодаДляЗапретаВыводаСтрок = True;
+						ErrorMessageWhenExecutingCodeToForbidRowOutput = True;
 					EndTry;
 				EndIf;
 				
 				//Условия вывода строк, установленные пользователем
 				If Not ConditionsOutputRowCompleted Or ConditionsProhibitOutputRowCompleted Then					
 					
-					Result.Delete(СтрокаТР);
+					Result.Delete(RowTP_Result);
+					Continue;
 					
 				EndIf;
 				
+				For AttributesCounter = 1 По NumberOfRequisites Do
+					
+					AttributeName = "AttributeA" + AttributesCounter;
+					If TotalsByAttributesMap[AttributeName].РассчитыватьИтог And TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = False Then
+						Try
+							пЗначениеРеквизита = RowTP_Result[AttributeName];
+							Если ЗначениеЗаполнено(пЗначениеРеквизита) Then
+								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
+								//Количество
+								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Then
+									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Then
+									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
+									//Сумма
+									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Then
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+									//Среднее
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Then
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+									//Максимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Then
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Max(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									//Минимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Then
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Min(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									EndIf;
+								Иначе
+									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								EndIf;
+							EndIf;
+						Except
+							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = True;
+						EndTry;
+					EndIf;
+					
+					AttributeName = "AttributeB" + AttributesCounter;
+					Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог И TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = False Then
+						Попытка
+							пЗначениеРеквизита = RowTP_Result[AttributeName];
+							Если ЗначениеЗаполнено(пЗначениеРеквизита) Then
+								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
+								//Количество
+								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Then
+									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Then
+									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
+									//Сумма
+									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Then
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+									//Среднее
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Then
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+									//Максимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Then
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Max(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									//Минимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Then
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Min(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									EndIf;
+								Иначе
+									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								EndIf;
+							EndIf;
+						Исключение
+							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+						КонецПопытки;
+					EndIf;
+					
+				EndDo;
+				
 			Else
 				
-				СообщениеОНаличииНесколькихСтрокПоОдномуКлючу = True;
+				MessageHaveMultipleRowsOneKey = True;
 				
 			EndIf;
 			
@@ -278,86 +373,86 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 	
 	If RelationalOperation = 3 Or RelationalOperation = 4 Or RelationalOperation = 5 Or RelationalOperation = 7 Then
 		
-		For Each СтрокаТЗ_Б_Сгруппированная In ТЗ_Б_Сгруппированная Do 		
+		For Each RowValueTable_B_Grouped In ValueTable_B_Grouped Do 		
 			
-			Key = СтрокаТЗ_Б_Сгруппированная[ИмяКлючаБ];
+			Key1 = RowValueTable_B_Grouped[KeyNameB1];
 			
 			If NumberColumnsInKey > 1 Then
-				Ключ2 = СтрокаТЗ_Б_Сгруппированная[ИмяКлючаБ2];				
+				Key2 = RowValueTable_B_Grouped[KeyNameB2];				
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				Key3 = СтрокаТЗ_Б_Сгруппированная[ИмяКлючаБ3];
+				Key3 = RowValueTable_B_Grouped[KeyNameB3];
 			EndIf;
 
-			If ПодключениеА = Undefined Then
-				ОтборСтруктура = New Structure;
+			If ConnectionA = Undefined Then
+				SelectionStructure = New Structure;
 			Else
-				ОтборСтруктура = ПодключениеА.NewObject("Structure");
+				SelectionStructure = ConnectionA.NewObject("Structure");
 			EndIf;
-			ОтборСтруктура.Insert(ИмяКлючаА, Key);
+			SelectionStructure.Insert(KeyNameA1, Key);
 			If NumberColumnsInKey > 1 Then
-				ОтборСтруктура.Insert(ИмяКлючаА2, Ключ2);
+				SelectionStructure.Insert(KeyNameA2, Key2);
 			EndIf;
 			If NumberColumnsInKey > 2 Then
-				ОтборСтруктура.Insert(ИмяКлючаА3, Key3);
+				SelectionStructure.Insert(KeyNameA3, Key3);
 			EndIf;
 			
-			НайденныеСтроки = ТЗ_А_Сгруппированная.FindRows(ОтборСтруктура);
-			СтрокаТЗ_А_Сгруппированная = ?(НайденныеСтроки.Count() > 0, НайденныеСтроки.Get(0), Undefined);
+			FoundRows = ValueTable_A_Grouped.FindRows(SelectionStructure);
+			RowValueTable_A_Grouped = ?(FoundRows.Count() > 0, FoundRows.Get(0), Undefined);
 						
-			//All пересечения обработаны в предыдущей секции
-			If СтрокаТЗ_А_Сгруппированная <> Undefined Then
+			//All intersections processed in the previous section
+			If RowValueTable_A_Grouped <> Undefined Then
 				Continue;
 			EndIf;
 			
-			СтрокаТР = Result.Add();
+			RowTP_Result = Result.Add();
 			
-			СтрокаТР.Key = Key;
+			RowTP_Result.Key1 = Key;
 			If DisplayKeyColumnTypes Then
-				СтрокаТР.ColumnType1Key = TypeOf(СтрокаТР.Key);
+				RowTP_Result.ColumnType1Key = TypeOf(RowTP_Result.Key1);
 			EndIf;
 			
 			If NumberColumnsInKey > 1 Then
-				СтрокаТР.Key2 = Ключ2;
+				RowTP_Result.Key2 = Key2;
 				If DisplayKeyColumnTypes Then
-					СтрокаТР.ColumnType2Key = TypeOf(СтрокаТР.Key2);
+					RowTP_Result.ColumnType2Key = TypeOf(RowTP_Result.Key2);
 				EndIf;
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				СтрокаТР.Key3 = Key3;
+				RowTP_Result.Key3 = Key3;
 				If DisplayKeyColumnTypes Then
-					СтрокаТР.ColumnType3Key = TypeOf(СтрокаТР.Key3);
+					RowTP_Result.ColumnType3Key = TypeOf(RowTP_Result.Key3);
 				EndIf;
 			EndIf;
 			
-			СтрокаТР.NumberOfRecordsB = СтрокаТЗ_Б_Сгруппированная[ИмяКолонкиКоличествоСтрокИсточникаДанных];
+			RowTP_Result.NumberOfRecordsB = RowValueTable_B_Grouped[ColumnNameNumberOfRowsDataSource];
 			
-			If ЧислоКолонокТЗ_Б > 1 Then
+			If NumberOfColumnsValueTable_B > 1 Then
 				      							
-				If ПодключениеБ = Undefined Then
-					ОтборСтруктура = New Structure;
+				If ConnectionB = Undefined Then
+					SelectionStructure = New Structure;
 				Else
-					ОтборСтруктура = ПодключениеБ.NewObject("Structure");
+					SelectionStructure = ConnectionB.NewObject("Structure");
 				EndIf;
-				ОтборСтруктура.Insert(ИмяКлючаБ, Key);
+				SelectionStructure.Insert(KeyNameB1, Key);
 				If NumberColumnsInKey > 1 Then
-					ОтборСтруктура.Insert(ИмяКлючаБ2, Ключ2);
+					SelectionStructure.Insert(KeyNameB2, Key2);
 				EndIf;
 				If NumberColumnsInKey > 2 Then
-					ОтборСтруктура.Insert(ИмяКлючаБ3, Key3);
+					SelectionStructure.Insert(KeyNameB3, Key3);
 				EndIf;
 				
-				НайденныеСтроки = ТЗ_Б.FindRows(ОтборСтруктура);
-				СтрокаТЗ_Б = ?(НайденныеСтроки.Count() > 0, НайденныеСтроки.Get(0), Undefined);
+				FoundRows = ValueTable_B.FindRows(SelectionStructure);
+				RowValueTable_B = ?(FoundRows.Count() > 0, FoundRows.Get(0), Undefined);
 			
-				If СтрокаТЗ_Б <> Undefined Then
+				If RowValueTable_B <> Undefined Then
 					
 					//Values реквизитов выводятся только при наличии единственной записи по ключу
-					If СтрокаТР.NumberOfRecordsB = 1 Then
-						For СчетчикКолонокБ = 1 To Min(ЧислоРеквизитов, ЧислоКолонокТЗ_Б - NumberColumnsInKey) Do
-							СтрокаТР["AttributeB" + СчетчикКолонокБ] = СтрокаТЗ_Б.Get(СчетчикКолонокБ + СмещениеНомераРеквизита);
+					If RowTP_Result.NumberOfRecordsB = 1 Then
+						For CounterColumnB = 1 To Min(NumberOfRequisites, NumberOfColumnsValueTable_B - NumberColumnsInKey) Do
+							RowTP_Result["AttributeB" + CounterColumnB] = RowValueTable_B.Get(CounterColumnB + OffsetNumberAttribute);
 						EndDo;
 					EndIf;
 					
@@ -367,7 +462,7 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 			
 			//If число строк с одним ключом больше 1, результирующую строку нужно вывести обязательно, 
 			//т.к. условия в данном случае некорректно применять вообще
-			If СтрокаТР.NumberOfRecordsA <= 1 And СтрокаТР.NumberOfRecordsB <= 1 Then
+			If RowTP_Result.NumberOfRecordsA <= 1 And RowTP_Result.NumberOfRecordsB <= 1 Then
 				
 				ConditionsOutputRowCompleted = True;
 				
@@ -375,11 +470,11 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 					Try
 						Execute CodeForOutputRows; 
 					Except
-						If Not СообщениеОбОшибкеПриВыполненииКодаДляВыводаСтрок Then
-							ТекстОшибки = ErrorDescription();
-							Message(ТекстОшибки);						
+						If Not ErrorMessageRunningCodeForOutputRows Then
+							ErrorText = ErrorDescription();
+							Message(Format(CurrentDate(),"DLF=DT") + ": " + ErrorText);						
 						EndIf;
-						СообщениеОбОшибкеПриВыполненииКодаДляВыводаСтрок = True;
+						ErrorMessageRunningCodeForOutputRows = True;
 					EndTry;
 				EndIf;
 				
@@ -389,24 +484,62 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 					Try
 						Execute CodeForProhibitingOutputRows; 
 					Except
-						If Not СообщениеОбОшибкеПриВыполненииКодаДляЗапретаВыводаСтрок Then
-							ТекстОшибки = ErrorDescription();
-							Message(ТекстОшибки);
+						If Not ErrorMessageWhenExecutingCodeToForbidRowOutput Then
+							ErrorText = ErrorDescription();
+							Message(Format(CurrentDate(),"DLF=DT") + ": " + ErrorText);
 						EndIf;
-						СообщениеОбОшибкеПриВыполненииКодаДляЗапретаВыводаСтрок = True;
+						ErrorMessageWhenExecutingCodeToForbidRowOutput = True;
 					EndTry;
 				EndIf;
 				
 				//Условия вывода строк, установленные пользователем
 				If Not ConditionsOutputRowCompleted Or ConditionsProhibitOutputRowCompleted Then					
 					
-					Result.Delete(СтрокаТР);
-					
+					Result.Delete(RowTP_Result);
+					Continue;
 				EndIf;
+				
+				For AttributesCounter = 1 По NumberOfRequisites Цикл
+															
+					AttributeName = "AttributeB" + AttributesCounter;
+					Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог И TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Ложь Тогда
+						Попытка
+							пЗначениеРеквизита = RowTP_Result[AttributeName];
+							Если ЗначениеЗаполнено(пЗначениеРеквизита) Тогда
+								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
+								//Количество
+								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
+									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Тогда
+									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
+									//Сумма
+									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+									//Среднее
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
+										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
+										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
+									//Максимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Тогда
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Неопределено, Макс(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									//Минимум
+									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Тогда
+										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Неопределено, Мин(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+									EndIf;
+								Иначе
+									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								EndIf;
+							EndIf;
+						Исключение
+							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+						КонецПопытки;
+					EndIf;
+					
+				EndDo;
 				
 			Else
 				
-				СообщениеОНаличииНесколькихСтрокПоОдномуКлючу = True;
+				MessageHaveMultipleRowsOneKey = True;
 				
 			EndIf;
 			
@@ -415,93 +548,148 @@ Procedure СравнитьДанныеНаСервере(ТекстОшибок 
 	EndIf;
 #EndRegion 
 
-	
-	If СообщениеОНаличииНесколькихСтрокПоОдномуКлючу Then
-		Message("Обнаружены дубликаты (подсвечены красным цветом), настройки отбора на них не распространяются. Просмотреть дублирующиеся строки можно на форме предварительного просмотра.");
+	For AttributesCounter = 1 По NumberOfRequisites Цикл
+					
+		AttributeName = "AttributeA" + AttributesCounter;
+		Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог Тогда
+			Если TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении Тогда
+				TotalsByAttributesMap[AttributeName].ЗначениеИтога = "Ошибка";
+			Иначе
+				//Сумма
+				Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].СуммаЗначений;
+				//Среднее
+				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЧислоЗначений <> 0, TotalsByAttributesMap[AttributeName].СуммаЗначений / TotalsByAttributesMap[AttributeName].ЧислоЗначений, 0);
+				//Количество
+				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].ЧислоЗначений;
+				EndIf;
+			EndIf;
+		
+			ThisObject["ЗначениеИтога" + AttributeName] = "A" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ЗначениеИтога;
+		
+		Иначе
+			ThisObject["ЗначениеИтога" + AttributeName] = "";
+		EndIf;
+		
+		AttributeName = "AttributeB" + AttributesCounter;
+		Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог Тогда
+			Если TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении Тогда
+				TotalsByAttributesMap[AttributeName].ЗначениеИтога = "Ошибка";
+			Иначе
+				//Сумма
+				Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].СуммаЗначений;
+				//Среднее
+				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЧислоЗначений <> 0, TotalsByAttributesMap[AttributeName].СуммаЗначений / TotalsByAttributesMap[AttributeName].ЧислоЗначений, 0);
+					//Количество
+				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
+					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].ЧислоЗначений;
+				EndIf;
+			EndIf;
+			
+			ThisObject["ЗначениеИтога" + AttributeName] = "B" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ЗначениеИтога;
+			
+		Иначе
+			ThisObject["ЗначениеИтога" + AttributeName] = "";
+		EndIf;
+		
+	EndDo;
+
+	Если SortTableDifferences Тогда
+		Result.Сортировать(OrderSortTableDifferences);
+	EndIf;
+		
+	If MessageHaveMultipleRowsOneKey Then
+		Message(Формат(ТекущаяДата(),"DLF=DT") + ": Обнаружены дубликаты (подсвечены красным цветом), настройки отбора на них не распространяются. Просмотреть дублирующиеся строки можно на форме предварительного просмотра.");
 	EndIf;
 	
 EndProcedure
 
-Function ПрочитатьДанныеИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки = "", Подключение = Undefined) Export
+Function ReadDataAndGetValueTable(BaseID, ErrorText = "", Connection = Undefined) Export
 	
-	//Current или внешняя база 1С 8
-	If ThisObject["BaseType" + ИдентификаторБазы] = 0 Or ThisObject["BaseType" + ИдентификаторБазы] = 1 Then
-		 ТЗ = ВыполнитьЗапрос1С8ИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки, Подключение);
+	//Current or external base 1C 8
+	If ThisObject["BaseType" + BaseID] = 0 Or ThisObject["BaseType" + BaseID] = 1 Then
+		 ValueTable = ExecuteQuery1C8AndGetValueTable(BaseID, ErrorText, Connection);
 	//SQL
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 2 Then		
-		ТЗ = ВыполнитьЗапросSQLИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки);
+	ElsIf ThisObject["BaseType" + BaseID] = 2 Then		
+		ValueTable = ExecuteQuerySQLAndGetValueTable(BaseID, ErrorText);
 	//File
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 3 Then
-		ТЗ = ПрочитатьДанныеИзФайлаИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки);
+	ElsIf ThisObject["BaseType" + BaseID] = 3 Then
+		ValueTable = ReadDataFromFileAndGetValueTable(BaseID, ErrorText);
 	//Table
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 4 Then		
-		ТЗ = ПолучитьДанныеИзТабличногоДокумента(ИдентификаторБазы, ТекстОшибки);
-	//Outer база 1С 7.7
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 5 Then		
-		ТЗ = ВыполнитьЗапрос1С77ИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки);
+	ElsIf ThisObject["BaseType" + BaseID] = 4 Then		
+		ValueTable = GetDataFromSpreadsheetDocument(BaseID, ErrorText);
+	//Outer base 1С 7.7
+	ElsIf ThisObject["BaseType" + BaseID] = 5 Then		
+		ValueTable = ExecuteQuery1C77AndGetValueTable(BaseID, ErrorText);
 	//JSON
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 6 Then		
-		ТЗ = ПрочитатьДанныеИзJSONИПолучитьТЗ(ИдентификаторБазы, ТекстОшибки);
+	ElsIf ThisObject["BaseType" + BaseID] = 6 Then		
+		ValueTable = ReadDataFromJSONAndGetValueTable(BaseID, ErrorText);
 	Else
-		ТекстОшибки = "Type базы " + ИдентификаторБазы + " '" + ThisObject["BaseType" + ИдентификаторБазы] + "' не предусмотрен";
-		Message(ТекстОшибки);
-		ТЗ = Undefined;
+		ErrorText = StrTemplate(Nstr("ru = 'Тип базы %1 ''%2'' не предусмотрен';en = 'Base type %1 ''%2'' is not provided'")
+			, BaseID
+			, ThisObject["BaseType" + BaseID]);
+		Message(Format(CurrentDate(),"DLF=DT") + ": " + ErrorText);
+		ValueTable = Undefined;
 	EndIf;
 	
-	If ThisObject["BaseType" + ИдентификаторБазы] >= 3 And ThisObject["CollapseTable" + ИдентификаторБазы] Then
-		СтолбцыКлюча = "Key";
+	If ThisObject["BaseType" + BaseID] >= 3 And ThisObject["CollapseTable" + BaseID] Then
+		KeyColumns = "Key1";
 		If NumberColumnsInKey > 1 Then
-			СтолбцыКлюча = СтолбцыКлюча + ",Key2";
+			KeyColumns = KeyColumns + ",Key2";
 		EndIf;
 		If NumberColumnsInKey > 2 Then
-			СтолбцыКлюча = СтолбцыКлюча + ",Key3";
+			KeyColumns = KeyColumns + ",Key3";
 		EndIf;
-		ТЗ.Collapse(СтолбцыКлюча,"Реквизит1,Реквизит2,Реквизит3,Реквизит4,Реквизит5");
+		ValueTable.Collapse(KeyColumns,"Attribute1, Attribute2, Attribute3, Attribute4, Attribute5");
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ВыполнитьЗапрос1С8ИПолучитьТЗ(ИдентификаторБазы, ТекстОшибок = "", Подключение = Undefined)
+Function ExecuteQuery1C8AndGetValueTable(BaseID, ErrorsText = "", Connection = Undefined)
 	
 	//Current
-	If ThisObject["BaseType" + ИдентификаторБазы] = 0 Then
+	If ThisObject["BaseType" + BaseID] = 0 Then
 		
 		Query = New Query;
-		Query.Text = ThisObject["QueryText" + ИдентификаторБазы];
+		Query.Text = ThisObject["QueryText" + BaseID];
 		
-		УстановитьПараметры(Query, ИдентификаторБазы); 
+		SetParameters(Query, BaseID); 
 		
 	//Outer
-	ElsIf ThisObject["BaseType" + ИдентификаторБазы] = 1 Then
+	ElsIf ThisObject["BaseType" + BaseID] = 1 Then
 		
-		If ThisObject["WorkOptionExternalBase" + ИдентификаторБазы] = 0 Then
-			ПараметрСоединения = 
-				"File=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "PathBase"]
-				+ """;Usr=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Login"]
-				+ """;Pwd=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Password"] + """;";	
+		If ThisObject["WorkOptionExternalBase" + BaseID] = 0 Then
+			ParameterConnections = 
+				"File=""" + ThisObject["ConnectionToExternalBase" + BaseID + "PathBase"]
+				+ """;Usr=""" + ThisObject["ConnectionToExternalBase" + BaseID + "Login"]
+				+ """;Pwd=""" + ThisObject["ConnectionToExternalBase" + BaseID + "Password"] + """;";	
 		Else
-			ПараметрСоединения = 
-				"Srvr=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Server"]
-				+ """;Ref=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "PathBase"] 
-				+ """;Usr=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Login"] 
-				+ """;Pwd=""" + ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Password"] + """;";
+			ParameterConnections = 
+				"Srvr=""" + ThisObject["ConnectionToExternalBase" + BaseID + "Server"]
+				+ """;Ref=""" + ThisObject["ConnectionToExternalBase" + BaseID + "PathBase"] 
+				+ """;Usr=""" + ThisObject["ConnectionToExternalBase" + BaseID + "Login"] 
+				+ """;Pwd=""" + ThisObject["ConnectionToExternalBase" + BaseID + "Password"] + """;";
 		EndIf;
 				
 		Try
-			COMConnector = New COMObject(ThisObject["ВерсияПлатформыВнешнейБазы" + ИдентификаторБазы] + ".COMConnector");
-			Подключение = COMConnector.Connect(ПараметрСоединения);
+			COMConnector = New COMObject(ThisObject["VersionPlatformExternalBase" + BaseID] + ".COMConnector");
+			Connection = COMConnector.Connect(ParameterConnections);
 		Except
-			ТекстОшибки = ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = ErrorDescription();
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
 		EndTry;
 
-		Query = Подключение.NewObject("Query");
-		Query.Text = ThisObject["QueryText" + ИдентификаторБазы];
+		Query = Connection.NewObject("Query");
+		Query.Text = ThisObject["QueryText" + BaseID];
 		
-		УстановитьПараметры(Query, ИдентификаторБазы); 
+		SetParameters(Query, BaseID); 
 	
 	EndIf;
 	
@@ -509,95 +697,103 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 	Query.SetParameter("ValidTo", 	AbsolutePeriodValue.ValidTo);
 	
 	Try
-		ТЗ = Query.Execute().Unload();
+		ValueTable = Query.Execute().Unload();
 	Except
-		ТекстОшибки = ErrorDescription();
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-		ТЗ = Undefined;
+		ErrorText = ErrorDescription();
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
+		ValueTable = Undefined;
 	EndTry;
 	
-	If ТЗ <> Undefined Then
+	If ValueTable <> Undefined Then
 				
-		ЧислоКолонокВТЗ = ТЗ.Cols.Count();
-		If NumberColumnsInKey > ЧислоКолонокВТЗ Then
-			ТекстОшибки = "Выборка содержит " + ЧислоКолонокВТЗ + " колонок, проверьте корректность заданного числа столбцов в ключе";
+		NumberOfcolumnsInValueTable = ValueTable.Columns.Count();
+		If NumberColumnsInKey > NumberOfcolumnsInValueTable Then
+			ErrorText = StrTemplate(Nstr("ru = 'Выборка из источника %1 содержит %2 колонок, проверьте корректность заданного числа столбцов в ключе';en = 'The selection from the source %1 contains %2 columns, check the correctness of the specified number of columns in the key'")
+				, BaseID
+				, NumberOfcolumnsInValueTable);
 			UserMessage = New UserMessage;
-			UserMessage.Text = ТекстОшибки;
+			UserMessage.Text = ErrorText;
 			UserMessage.Field = "Object.NumberColumnsInKey";
 			UserMessage.Message();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
 		EndIf;
 		    
-		For СчетчикРеквизитов = 1 To Min(ЧислоКолонокВТЗ - NumberColumnsInKey, ЧислоРеквизитов) Do //
+		For AttributesCounter = 1 To Min(NumberOfcolumnsInValueTable - NumberColumnsInKey, NumberOfRequisites) Do //
 			
-			ИмяРеквизита = String(ИдентификаторБазы) + СчетчикРеквизитов;
-			ПредставленияЗаголовковРеквизитов[ИмяРеквизита] = ИмяРеквизита + ": " + ТЗ.Cols.Get(СчетчикРеквизитов + NumberColumnsInKey - 1).Title;
-		
+			If ThisObject["SettingsFile" + BaseID].Count() >= AttributesCounter Then
+				HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
+			Else
+				HeaderAttributeFromSettings = "";
+			EndIf;
+			
+			AttributeName = String(BaseID) + AttributesCounter;			
+			ViewsHeadersAttributes[AttributeName] = AttributeName + ": " + ?(IsBlankString(HeaderAttributeFromSettings), ValueTable.Columns.Get(AttributesCounter + NumberColumnsInKey - 1).Title, HeaderAttributeFromSettings);
+					
 		EndDo; 
 		
-		If (ThisObject["UseAsKeyUniqueIdentifier" + ИдентификаторБазы]
-			Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-			Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] 
-			Or ThisObject["CastKeyToString" + ИдентификаторБазы]
-			Or ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы])
+		If (ThisObject["UseAsKeyUniqueIdentifier" + BaseID]
+			Or ThisObject["CastKeyToUpperCase" + BaseID] 
+			Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] 
+			Or ThisObject["CastKeyToString" + BaseID]
+			Or ThisObject["ExecuteArbitraryKeyCode1" + BaseID])
 			Or NumberColumnsInKey > 1 And 
-			(ThisObject["UseAsKey2UniqueIdentifier" + ИдентификаторБазы] 
-			Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-			Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] 
-			Or ThisObject["CastKey2ToString" + ИдентификаторБазы]
-			Or ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы])
+			(ThisObject["UseAsKey2UniqueIdentifier" + BaseID] 
+			Or ThisObject["CastKey2ToUpperCase" + BaseID] 
+			Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] 
+			Or ThisObject["CastKey2ToString" + BaseID]
+			Or ThisObject["ExecuteArbitraryKeyCode2" + BaseID])
 			Or NumberColumnsInKey > 2 And 
-			(ThisObject["UseAsKey3UniqueIdentifier" + ИдентификаторБазы] 
-			Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-			Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] 
-			Or ThisObject["CastKey3ToString" + ИдентификаторБазы]
-			Or ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы])Then
+			(ThisObject["UseAsKey3UniqueIdentifier" + BaseID] 
+			Or ThisObject["CastKey3ToUpperCase" + BaseID] 
+			Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] 
+			Or ThisObject["CastKey3ToString" + BaseID]
+			Or ThisObject["ExecuteArbitraryKeyCode3" + BaseID])Then
 			
-			ИмяПервойКолонки 	= ТЗ.Cols.Get(0).Name;
-			ИмяКолонкиКлюч		= ИмяПервойКолонки;
-			НомерКолонкиКлюч	= 0;
-			НомерКолонкиКлюч2	= 1;
-			НомерКолонкиКлюч3	= 2;
+			FirstColumnName 	= ValueTable.Columns.Get(0).Name;
+			ColumnNameKey1		= FirstColumnName;
+			ColumnNumberKey1	= 0;
+			ColumnNumberKey2	= 1;
+			ColumnNumberKey3	= 2;
 			
 			If NumberColumnsInKey > 1 Then
-				ИмяВторойКолонки = ТЗ.Cols.Get(1).Name;
-				ИмяКолонкиКлюч2 = ИмяВторойКолонки;
+				SecondColumnName = ValueTable.Columns.Get(1).Name;
+				ColumnNameKey2 = SecondColumnName;
 			Else
-				ИмяВторойКолонки = "";
-				ИмяКолонкиКлюч2 = "";
+				SecondColumnName = "";
+				ColumnNameKey2 = "";
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				ИмяТретьейКолонки = ТЗ.Cols.Get(2).Name;
-				ИмяКолонкиКлюч3 = ИмяТретьейКолонки;
+				ThirdColumnName = ValueTable.Columns.Get(2).Name;
+				ColumnNameKey3 = ThirdColumnName;
 			Else
-				ИмяТретьейКолонки = "";
-				ИмяКолонкиКлюч3 = "";
+				ThirdColumnName = "";
+				ColumnNameKey3 = "";
 			EndIf;
 			
-			If ThisObject["UseAsKeyUniqueIdentifier" + ИдентификаторБазы]
-				Or ThisObject["CastKeyToString" + ИдентификаторБазы] 
-				Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-				Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
+			If ThisObject["UseAsKeyUniqueIdentifier" + BaseID]
+				Or ThisObject["CastKeyToString" + BaseID] 
+				Or ThisObject["CastKeyToUpperCase" + BaseID] 
+				Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
 				
-				ИмяКолонкиКлюч = "Key" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-				ТЗ.Cols.Insert(НомерКолонкиКлюч, ИмяКолонкиКлюч);
-				НомерКолонкиКлюч2 = НомерКолонкиКлюч2 + 1;
-				НомерКолонкиКлюч3 = НомерКолонкиКлюч3 + 1;
+				ColumnNameKey1 = "Key1" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+				ValueTable.Columns.Insert(ColumnNumberKey1, ColumnNameKey1);
+				ColumnNumberKey2 = ColumnNumberKey2 + 1;
+				ColumnNumberKey3 = ColumnNumberKey3 + 1;
 
 			EndIf;
 		
 			If NumberColumnsInKey > 1 Then
 			
-				If ThisObject["UseAsKey2UniqueIdentifier" + ИдентификаторБазы]
-					Or ThisObject["CastKey2ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["UseAsKey2UniqueIdentifier" + BaseID]
+					Or ThisObject["CastKey2ToString" + BaseID] 
+					Or ThisObject["CastKey2ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
 					
-					ИмяКолонкиКлюч2 = "Key2" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-					ТЗ.Cols.Insert(НомерКолонкиКлюч2, ИмяКолонкиКлюч2);
-					НомерКолонкиКлюч3 = НомерКолонкиКлюч3 + 1;
+					ColumnNameKey2 = "Key2" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+					ValueTable.Columns.Insert(ColumnNumberKey2, ColumnNameKey2);
+					ColumnNumberKey3 = ColumnNumberKey3 + 1;
 					
 				EndIf;
 				
@@ -605,64 +801,67 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 			
 			If NumberColumnsInKey > 2 Then
 			
-				If ThisObject["UseAsKey3UniqueIdentifier" + ИдентификаторБазы]
-					Or ThisObject["CastKey3ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["UseAsKey3UniqueIdentifier" + BaseID]
+					Or ThisObject["CastKey3ToString" + BaseID] 
+					Or ThisObject["CastKey3ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
 					
-					ИмяКолонкиКлюч3 = "Key3" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-					ТЗ.Cols.Insert(НомерКолонкиКлюч3, ИмяКолонкиКлюч3);
+					ColumnNameKey3 = "Key3" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+					ValueTable.Columns.Insert(ColumnNumberKey3, ColumnNameKey3);
 					
 				EndIf;
 				
 			EndIf;
 			
 			//Indexing
-			КолонкиСКлючомСтрокой = ИмяКолонкиКлюч;
+			ColumnsWithKeyRow = ColumnNameKey1;
 			If NumberColumnsInKey > 1 Then
-				КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + "," + ИмяКолонкиКлюч2;
+				ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ColumnNameKey2;
 			EndIf;
 			If NumberColumnsInKey > 2 Then
-				КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + "," + ИмяКолонкиКлюч3;
+				ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ColumnNameKey3;
 			EndIf;
 
-			ТЗ.Indexes.Add(КолонкиСКлючомСтрокой);
+			ValueTable.Indexes.Add(ColumnsWithKeyRow);
 			       						
-			СчетчикСтрок = 0;
-			For Each СтрокаТЗ In ТЗ Do
+			RowsCounter = 0;
+			For Each RowValueTable In ValueTable Do
 				
-				СчетчикСтрок = СчетчикСтрок + 1;
+				RowsCounter = RowsCounter + 1;
 								
 				Try
 					
-					If ThisObject["UseAsKeyUniqueIdentifier" + ИдентификаторБазы] Then
-						If ThisObject["BaseType" + ИдентификаторБазы] = 0 Then
-							СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(XMLString(СтрокаТЗ[ИмяПервойКолонки]));
+					If ThisObject["UseAsKeyUniqueIdentifier" + BaseID] Then
+						If ThisObject["BaseType" + BaseID] = 0 Then
+							RowValueTable[ColumnNameKey1] = TrimAll(XMLString(RowValueTable[FirstColumnName]));
 						Else
-							СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(Подключение.XMLString(СтрокаТЗ[ИмяПервойКолонки]));
+							RowValueTable[ColumnNameKey1] = TrimAll(Connection.XMLString(RowValueTable[FirstColumnName]));
 						EndIf;
-					ElsIf ThisObject["CastKeyToString" + ИдентификаторБазы]
-						Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы]
-						Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(String(СтрокаТЗ[ИмяПервойКолонки]));
+					ElsIf ThisObject["CastKeyToString" + BaseID]
+						Or ThisObject["CastKeyToUpperCase" + BaseID]
+						Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(String(RowValueTable[FirstColumnName]));
 					EndIf;
 					
-					If ThisObject["KeyLengthWhenCastingToString" + ИдентификаторБазы] > 0 Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(Left(СтрокаТЗ[ИмяКолонкиКлюч], ThisObject["KeyLengthWhenCastingToString" + ИдентификаторБазы]));
+					If ThisObject["KeyLengthWhenCastingToString" + BaseID] > 0 Then
+						RowValueTable[ColumnNameKey1] = TrimAll(Left(RowValueTable[ColumnNameKey1], ThisObject["KeyLengthWhenCastingToString" + BaseID]));
 					EndIf;
 						
-					If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч])));
+					If ThisObject["CastKeyToUpperCase" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(Upper(String(RowValueTable[ColumnNameKey1])));
 					EndIf;
 					
-					If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч]), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey1]), "{", ""), "}", ""));
 					EndIf;
 					
 				Except
 					
-					ТекстОшибки = "Error при обработке ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке ключа в строке %1 выборки из базы %2: %3';en = 'Error processing key in row %1 of selection from base %2: %3'")
+						, RowsCounter
+						, BaseID
+						, ErrorDescription());
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndTry;
 				
@@ -670,35 +869,38 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 						
 					Try
 						
-						If ThisObject["UseAsKey2UniqueIdentifier" + ИдентификаторБазы] Then
-							If ThisObject["BaseType" + ИдентификаторБазы] = 0 Then
-								СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(XMLString(СтрокаТЗ[ИмяВторойКолонки]));
+						If ThisObject["UseAsKey2UniqueIdentifier" + BaseID] Then
+							If ThisObject["BaseType" + BaseID] = 0 Then
+								RowValueTable[ColumnNameKey2] = TrimAll(XMLString(RowValueTable[SecondColumnName]));
 							Else
-								СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(Подключение.XMLString(СтрокаТЗ[ИмяВторойКолонки]));
+								RowValueTable[ColumnNameKey2] = TrimAll(Connection.XMLString(RowValueTable[SecondColumnName]));
 							EndIf;
-						ElsIf ThisObject["CastKey2ToString" + ИдентификаторБазы]
-							Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы]
-							Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(String(СтрокаТЗ[ИмяВторойКолонки]));
+						ElsIf ThisObject["CastKey2ToString" + BaseID]
+							Or ThisObject["CastKey2ToUpperCase" + BaseID]
+							Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(String(RowValueTable[SecondColumnName]));
 						EndIf;
 
 						
-						If ThisObject["KeyLength2WhenCastingToString" + ИдентификаторБазы] > 0 Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(Left(СтрокаТЗ[ИмяКолонкиКлюч2], ThisObject["KeyLengthWhenCastingToString" + ИдентификаторБазы]));
+						If ThisObject["KeyLength2WhenCastingToString" + BaseID] > 0 Then
+							RowValueTable[ColumnNameKey2] = TrimAll(Left(RowValueTable[ColumnNameKey2], ThisObject["KeyLengthWhenCastingToString" + BaseID]));
 						EndIf;
 						
-						If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч2])));
+						If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(Upper(String(RowValueTable[ColumnNameKey2])));
 						EndIf;
 						
-						If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч2]), "{", ""), "}", ""));
+						If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey2]), "{", ""), "}", ""));
 						EndIf;
 						
 					Except
 						
-						ТекстОшибки = "Error при обработке столбца 2 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 2 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 2 of key in row %1 of fetch from base %2: %3'")
+							, RowsCounter
+							, BaseID
+							, ErrorDescription());
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndTry;
 					
@@ -708,99 +910,111 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 						
 					Try
 						
-						If ThisObject["UseAsKey3UniqueIdentifier" + ИдентификаторБазы] Then
-							If ThisObject["BaseType" + ИдентификаторБазы] = 0 Then
-								СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(XMLString(СтрокаТЗ[ИмяТретьейКолонки]));
+						If ThisObject["UseAsKey3UniqueIdentifier" + BaseID] Then
+							If ThisObject["BaseType" + BaseID] = 0 Then
+								RowValueTable[ColumnNameKey3] = TrimAll(XMLString(RowValueTable[ThirdColumnName]));
 							Else
-								СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(Подключение.XMLString(СтрокаТЗ[ИмяТретьейКолонки]));
+								RowValueTable[ColumnNameKey3] = TrimAll(Connection.XMLString(RowValueTable[ThirdColumnName]));
 							EndIf;
-						ElsIf ThisObject["CastKey3ToString" + ИдентификаторБазы]
-							Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы]
-							Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(String(СтрокаТЗ[ИмяТретьейКолонки]));
+						ElsIf ThisObject["CastKey3ToString" + BaseID]
+							Or ThisObject["CastKey3ToUpperCase" + BaseID]
+							Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(String(RowValueTable[ThirdColumnName]));
 						EndIf;
 						
-						If ThisObject["KeyLength3WhenCastingToString" + ИдентификаторБазы] > 0 Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(Left(СтрокаТЗ[ИмяКолонкиКлюч3], ThisObject["KeyLengthWhenCastingToString" + ИдентификаторБазы]));
+						If ThisObject["KeyLength3WhenCastingToString" + BaseID] > 0 Then
+							RowValueTable[ColumnNameKey3] = TrimAll(Left(RowValueTable[ColumnNameKey3], ThisObject["KeyLengthWhenCastingToString" + BaseID]));
 						EndIf;
 						
-						If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч3])));
+						If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(Upper(String(RowValueTable[ColumnNameKey3])));
 						EndIf;
 						
-						If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч3]), "{", ""), "}", ""));
+						If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey3]), "{", ""), "}", ""));
 						EndIf;
 						
 					Except
 						
-						ТекстОшибки = "Error при обработке столбца 3 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 3 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 3 of key in row %1 of fetch from base %2: %3'")
+							, RowsCounter
+							,  BaseID
+							, ErrorDescription());
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndTry;
 					
 				EndIf;
 						
-#Region Произвольный_код_обработки_ключа
+#Region Arbitrary_key_processing_code
 
-				КлючТек = СтрокаТЗ[ИмяКолонкиКлюч];
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = RowValueTable[ColumnNameKey1];
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ[ИмяКолонкиКлюч] = КлючТек;
+				RowValueTable[ColumnNameKey1] = KeyCurrent;
 				
 				If NumberColumnsInKey > 1 Then
-					КлючТек = СтрокаТЗ[ИмяКолонкиКлюч2];
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = RowValueTable[ColumnNameKey2];
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());							
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаТЗ[ИмяКолонкиКлюч2] = КлючТек;
+					RowValueTable[ColumnNameKey2] = KeyCurrent;
 				EndIf;
 				
 				If NumberColumnsInKey > 2 Then
-					КлючТек = СтрокаТЗ[ИмяКолонкиКлюч3];
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = RowValueTable[ColumnNameKey3];
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаТЗ[ИмяКолонкиКлюч3] = КлючТек;
+					RowValueTable[ColumnNameKey3] = KeyCurrent;
 				EndIf;
 	
 #EndRegion
 				
 			EndDo;
 			
-			If ThisObject["UseAsKeyUniqueIdentifier" + ИдентификаторБазы] 
-				Or ThisObject["CastKeyToString" + ИдентификаторБазы] 
-				Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-				Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
+			If ThisObject["UseAsKeyUniqueIdentifier" + BaseID] 
+				Or ThisObject["CastKeyToString" + BaseID] 
+				Or ThisObject["CastKeyToUpperCase" + BaseID] 
+				Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
 			
-				ТЗ.Cols.Delete(ИмяПервойКолонки);
+				ValueTable.Columns.Delete(FirstColumnName);
 			
 			EndIf;
 		
 			If NumberColumnsInKey > 1 Then
 								
-				If ThisObject["UseAsKey2UniqueIdentifier" + ИдентификаторБазы] 
-					Or ThisObject["CastKey2ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["UseAsKey2UniqueIdentifier" + BaseID] 
+					Or ThisObject["CastKey2ToString" + BaseID] 
+					Or ThisObject["CastKey2ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
 					
-					ТЗ.Cols.Delete(ИмяВторойКолонки);
+					ValueTable.Columns.Delete(SecondColumnName);
 					
 				EndIf;
 				
@@ -808,12 +1022,12 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 			
 			If NumberColumnsInKey > 2 Then
 								
-				If ThisObject["UseAsKey3UniqueIdentifier" + ИдентификаторБазы] 
-					Or ThisObject["CastKey3ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["UseAsKey3UniqueIdentifier" + BaseID] 
+					Or ThisObject["CastKey3ToString" + BaseID] 
+					Or ThisObject["CastKey3ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
 					
-					ТЗ.Cols.Delete(ИмяТретьейКолонки);
+					ValueTable.Columns.Delete(ThirdColumnName);
 					
 				EndIf;
 				
@@ -823,97 +1037,101 @@ Function ВыполнитьЗапрос1С8ИПолучитьТЗ(Идентиф
 		
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ВыполнитьЗапрос1С77ИПолучитьТЗ(ИдентификаторБазы, ТекстОшибок = "", Подключение = Undefined)
+Function ExecuteQuery1C77AndGetValueTable(BaseID, ErrorsText = "", Connection = Undefined)
 	
-	PathBase = ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "PathBase"];
-	User = ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Login"];
-	Password = ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Password"];
+	PathBase = ThisObject["ConnectionToExternalBase" + BaseID + "PathBase"];
+	User = ThisObject["ConnectionToExternalBase" + BaseID + "Login"];
+	Password = ThisObject["ConnectionToExternalBase" + BaseID + "Password"];
 		
-	Подключение = New COMObject("V1CEnterprise.Application");
+	Connection = New COMObject("V1CEnterprise.Application");
     
     Try   
 		
-		СтрокаПодключения = "/D"""+TrimAll(PathBase)+""" /N"""+TrimAll(User)+""" /P"""+TrimAll(Password)+"""";
-        ПодключениеУстановлено = Подключение.Initialize(Подключение.RMTrade,СтрокаПодключения,"NO_SPLASH_SHOW");
+		RowConnection = "/D""" + TrimAll(PathBase) + """ /N""" + TrimAll(User) + """ /P""" + TrimAll(Password) + """";
+        ConnectionInstalled = Connection.Initialize(Connection.RMTrade, RowConnection, "NO_SPLASH_SHOW");
         
-        If ПодключениеУстановлено Then
-            ЕстьПодключение = True;
+        If ConnectionInstalled Then
+            YesConnection = True;
         Else
-            ТекстОшибки = "Error при подключении к внешней базе";
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+            ErrorText = Nstr("ru = 'Ошибка при подключении к внешней базе';en = 'Error connecting to external database'");
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
         EndIf;    
     Except
-        ТекстОшибки = "Error при подключении к внешней базе: " + ErrorDescription();
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+        ErrorText = StrTemplate(Nstr("ru = 'Ошибка при подключении к внешней базе: %1';en = 'Error connecting to external database: %1'")
+        	, ErrorDescription());
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
 		Return Undefined;
 	EndTry;
 		
-	Query = Подключение.CreateObject("Query");
-	QueryText = ThisObject["QueryText" + ИдентификаторБазы];
+	Query = Connection.CreateObject("Query");
+	QueryText = ThisObject["QueryText" + BaseID];
 	
 	If Query.Execute(QueryText) = 0 Then
 		Return Undefined;
 	EndIf;
 
-	ТЗ = New ValueTable;
-	ТЗ.Cols.Add("Key");
+	ValueTable = New ValueTable;
+	ValueTable.Columns.Add("Key1");
 	If NumberColumnsInKey > 1 Then
-		ТЗ.Cols.Add("Key2");
+		ValueTable.Columns.Add("Key2");
 	EndIf;
 	If NumberColumnsInKey > 2 Then
-		ТЗ.Cols.Add("Key3");
+		ValueTable.Columns.Add("Key3");
 	EndIf;
-	ТЗ.Cols.Add("Реквизит1");
-	ТЗ.Cols.Add("Реквизит2");
-	ТЗ.Cols.Add("Реквизит3");
-	ТЗ.Cols.Add("Реквизит4");
-	ТЗ.Cols.Add("Реквизит5");
+	ValueTable.Columns.Add("Attribute1");
+	ValueTable.Columns.Add("Attribute2");
+	ValueTable.Columns.Add("Attribute3");
+	ValueTable.Columns.Add("Attribute4");
+	ValueTable.Columns.Add("Attribute5");
 	
-	ТаблицаЗначений1С77 = Подключение.CreateObject("ValueTable");
-	Query.Unload(ТаблицаЗначений1С77,1,0);	
-	LineCount = ТаблицаЗначений1С77.LineCount();
-	ColumnsCount = ТаблицаЗначений1С77.ColumnsCount();
-	For СчетчикСтрок = 1 To LineCount Do
+	ValueTable1C77 = Connection.CreateObject("ValueTable");
+	Query.Unload(ValueTable1C77,1,0);	
+	LineCount = ValueTable1C77.LineCount();
+	ColumnsCount = ValueTable1C77.ColumnsCount();
+	For RowsCounter = 1 To LineCount Do
 		
-		СтрокаТЗ = ТЗ.Add();
+		RowValueTable = ValueTable.Add();
 			
-		Ключ1 = ТаблицаЗначений1С77.GetValue(СчетчикСтрок, 1);
+		Key1 = ValueTable1C77.GetValue(RowsCounter, 1);
 		
 		If NumberColumnsInKey > 1 Then
-			Ключ2 = ТаблицаЗначений1С77.GetValue(СчетчикСтрок, 2);
+			Key2 = ValueTable1C77.GetValue(RowsCounter, 2);
 		Else
-			Ключ2 = "";				
+			Key2 = "";				
 		EndIf;
 		
 		If NumberColumnsInKey > 2 Then
-			Ключ3 = ТаблицаЗначений1С77.GetValue(СчетчикСтрок, 3);
+			Key3 = ValueTable1C77.GetValue(RowsCounter, 3);
 		Else
-			Ключ3 = "";				
+			Key3 = "";				
 		EndIf;
 		
 		Try
 			
-			If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-				Ключ1 = TrimAll(String(Ключ1));
+			If ThisObject["CastKeyToString" + BaseID] Then
+				Key1 = TrimAll(String(Key1));
 			EndIf;
 		
-			If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-				Ключ1 = TrimAll(Upper(String(Ключ1)));
+			If ThisObject["CastKeyToUpperCase" + BaseID] Then
+				Key1 = TrimAll(Upper(String(Key1)));
 			EndIf;
 			
-			If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-				Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+			If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+				Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 			EndIf;
 			
 		Except
 			
-			ТекстОшибки = "Error при обработке ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке ключа в строке %1 выборки из базы %2: %3';en = 'Error processing key in row %1 of fetch from base %2: %3'")
+				, RowsCounter
+				, BaseID
+				, ErrorDescription());
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			
 		EndTry;
 		
@@ -921,22 +1139,25 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 			
 			Try
 			
-				If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-					Ключ2 = TrimAll(String(Ключ2));
+				If ThisObject["CastKey2ToString" + BaseID] Then
+					Key2 = TrimAll(String(Key2));
 				EndIf;
 			
-				If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-					Ключ2 = TrimAll(Upper(String(Ключ2)));
+				If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+					Key2 = TrimAll(Upper(String(Key2)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-					Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+					Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 				EndIf;
 			
 			Except
 				
-				ТекстОшибки = "Error при обработке столбца 2 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 2 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 2 of key in row %1 of fetch from base %2: %3'")
+					, RowsCounter
+					, BaseID
+					, ErrorDescription());
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 			EndTry;
 			
@@ -946,81 +1167,93 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 			
 			Try
 			
-			If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(String(Ключ3));
+			If ThisObject["CastKey3ToString" + BaseID] Then
+				Key3 = TrimAll(String(Key3));
 			EndIf;
 		
-			If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(Upper(String(Ключ3)));
+			If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+				Key3 = TrimAll(Upper(String(Key3)));
 			EndIf;
 			
-			If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+			If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+				Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 			EndIf;
 			
 			Except
 				
-				ТекстОшибки = "Error при обработке столбца 3 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 3 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 3 of key in row %1 of fetch from base %2: %3'")
+					, RowsCounter
+					, BaseID
+					, ErrorDescription());				
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 			EndTry;
 			
 		EndIf;
 			          			
-#Region Произвольный_код_обработки_ключа
+#Region Arbitrary_key_processing_code
 
-			КлючТек = Ключ1;
-			If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+			KeyCurrent = Key1;
+			If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 				Try
-				    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+				    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 				Except
-					ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-					Message(ТекстОшибки);
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, Key1
+							, BaseID
+							, ErrorDescription());					
+					Message(ErrorText);
 				EndTry;
 			EndIf;
-			СтрокаТЗ.Key = КлючТек;
+			RowValueTable.Key1 = KeyCurrent;
 			
 			If NumberColumnsInKey > 1 Then
-				КлючТек = Ключ2;				
-				If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+				KeyCurrent = Key2;				
+				If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+							, Key2
+							, BaseID
+							, ErrorDescription());						
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ.Key2 = КлючТек;
+				RowValueTable.Key2 = KeyCurrent;
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				КлючТек = Ключ3;
-				If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+				KeyCurrent = Key3;
+				If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+							, Key3
+							, BaseID
+							, ErrorDescription());						
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ.Key3 = КлючТек;
+				RowValueTable.Key3 = KeyCurrent;
 			EndIf;
 			
 #EndRegion 
 			
-		For СчетчикКолонок = 1 To Min(ЧислоРеквизитов, ColumnsCount - NumberColumnsInKey) Do    
+		For ColumnCounter = 1 To Min(NumberOfRequisites, ColumnsCount - NumberColumnsInKey) Do    
 			
-			//ColumnName = = ТаблицаЗначений1С77.ПолучитьПараметрыКолонки(СчетчикКолонок);
-			ЗначениеЯчейки = ТаблицаЗначений1С77.GetValue(СчетчикСтрок, СчетчикКолонок + NumberColumnsInKey);
-			СтрокаТЗ["Attribute" + СчетчикКолонок] = ЗначениеЯчейки;
+			//ColumnName = = ValueTable1C77.ПолучитьПараметрыКолонки(ColumnCounter);
+			CellValue = ValueTable1C77.GetValue(RowsCounter, ColumnCounter + NumberColumnsInKey);
+			RowValueTable["Attribute" + ColumnCounter] = CellValue;
 			
 		EndDo;
 				
 	EndDo;
 	
-	Подключение.Exit(0);
+	Connection.Exit(0);
 	
-	Подключение = Undefined;
+	Connection = Undefined;
 		
 	//Query = CreateObject("Query");
 	//QueryText = 
@@ -1038,123 +1271,126 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 	//	Return;
 	//EndIf;
 	
-	//ТаблицаЗначений1С77 = CreateObject("ValueTable");
-	//Query.Unload(ТаблицаЗначений1С77,1,0);	
-	//LineCount = ТаблицаЗначений1С77.LineCount();
-	//ColumnsCount = ТаблицаЗначений1С77.ColumnsCount();
-	//For СчетчикСтрок = 1 To LineCount Do
+	//ValueTable1C77 = CreateObject("ValueTable");
+	//Query.Unload(ValueTable1C77,1,0);	
+	//LineCount = ValueTable1C77.LineCount();
+	//ColumnsCount = ValueTable1C77.ColumnsCount();
+	//For RowsCounter = 1 To LineCount Do
 	//	ВсяСтрока = "";
-	//	For СчетчикКолонок = 1 To ТаблицаЗначений1С77.ColumnsCount() Do    
-	//		//ColumnName = = ТаблицаЗначений1С77.ПолучитьПараметрыКолонки(СчетчикКолонок);
-	//		ЗначениеЯчейки = ТаблицаЗначений1С77.GetValue(СчетчикСтрок, СчетчикКолонок); 
-	//		ВсяСтрока = ВсяСтрока + ", " + ЗначениеЯчейки;
+	//	For ColumnCounter = 1 To ValueTable1C77.ColumnsCount() Do    
+	//		//ColumnName = = ValueTable1C77.ПолучитьПараметрыКолонки(ColumnCounter);
+	//		CellValue = ValueTable1C77.GetValue(RowsCounter, ColumnCounter); 
+	//		ВсяСтрока = ВсяСтрока + ", " + CellValue;
 	//	EndDo;
 	//	Message(ВсяСтрока);
 	//	
 	//EndDo
 	
-#Region Заполнение_ТЗ
+//#Region Заполнение_ТЗ
 	
-	If ТЗ <> Undefined Then
+	If ValueTable <> Undefined Then
 		
-		If (ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-		Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] 
-		Or ThisObject["CastKeyToString" + ИдентификаторБазы]
-		Or ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы])
+		If (ThisObject["CastKeyToUpperCase" + BaseID] 
+		Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] 
+		Or ThisObject["CastKeyToString" + BaseID]
+		Or ThisObject["ExecuteArbitraryKeyCode1" + BaseID])
 		Or NumberColumnsInKey > 1 And 
-		(ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-		Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] 
-		Or ThisObject["CastKey2ToString" + ИдентификаторБазы]
-		Or ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы])
+		(ThisObject["CastKey2ToUpperCase" + BaseID] 
+		Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] 
+		Or ThisObject["CastKey2ToString" + BaseID]
+		Or ThisObject["ExecuteArbitraryKeyCode2" + BaseID])
 		Or NumberColumnsInKey > 2 And 
-		(ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-		Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] 
-		Or ThisObject["CastKey3ToString" + ИдентификаторБазы]
-		Or ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы])Then
+		(ThisObject["CastKey3ToUpperCase" + BaseID] 
+		Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] 
+		Or ThisObject["CastKey3ToString" + BaseID]
+		Or ThisObject["ExecuteArbitraryKeyCode3" + BaseID])Then
 		
-			ИмяПервойКолонки = ТЗ.Cols.Get(0).Name;
+			FirstColumnName = ValueTable.Columns.Get(0).Name;
 			
 			If NumberColumnsInKey > 1 Then
-				ИмяВторойКолонки = ТЗ.Cols.Get(1).Name;
+				SecondColumnName = ValueTable.Columns.Get(1).Name;
 			Else
-				ИмяВторойКолонки = "";
+				SecondColumnName = "";
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				ИмяТретьейКолонки = ТЗ.Cols.Get(2).Name;
+				ThirdColumnName = ValueTable.Columns.Get(2).Name;
 			Else
-				ИмяТретьейКолонки = "";
+				ThirdColumnName = "";
 			EndIf;
 			
-			ИмяКолонкиКлюч 		= ТЗ.Cols.Get(0).Name;
+			ColumnNameKey1 		= ValueTable.Columns.Get(0).Name;
 			If NumberColumnsInKey > 1 Then
-				ИмяКолонкиКлюч2 = ТЗ.Cols.Get(1).Name;
+				ColumnNameKey2 = ValueTable.Columns.Get(1).Name;
 			Else
-				ИмяКолонкиКлюч2 = "";
+				ColumnNameKey2 = "";
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				ИмяКолонкиКлюч3 = ТЗ.Cols.Get(2).Name;
+				ColumnNameKey3 = ValueTable.Columns.Get(2).Name;
 			Else
-				ИмяКолонкиКлюч3 = "";
+				ColumnNameKey3 = "";
 			EndIf;
 			
-			If ThisObject["CastKeyToString" + ИдентификаторБазы] 
-				Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-				Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
+			If ThisObject["CastKeyToString" + BaseID] 
+				Or ThisObject["CastKeyToUpperCase" + BaseID] 
+				Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
 				
-				ИмяКолонкиКлюч = "Key" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-				ТЗ.Cols.Insert(0, ИмяКолонкиКлюч);//, ОписаниеСтроки);
+				ColumnNameKey1 = "Key1" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+				ValueTable.Columns.Insert(0, ColumnNameKey1);//, DescriptionString);
 
 			EndIf;
 		
 			If NumberColumnsInKey > 1 Then
 			
-				If ThisObject["CastKey2ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["CastKey2ToString" + BaseID] 
+					Or ThisObject["CastKey2ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
 					
-					ИмяКолонкиКлюч2 = "Key2" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-					ТЗ.Cols.Insert(1, ИмяКолонкиКлюч2);
+					ColumnNameKey2 = "Key2" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+					ValueTable.Columns.Insert(1, ColumnNameKey2);
 				EndIf;
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
 			
-				If ThisObject["CastKey3ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["CastKey3ToString" + BaseID] 
+					Or ThisObject["CastKey3ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
 					
-					ИмяКолонкиКлюч3 = "Key3" + Format(CurrentDate(), "ДФ=ddMMyyyyHHmmss");
-					ТЗ.Cols.Insert(2, ИмяКолонкиКлюч3);
+					ColumnNameKey3 = "Key3" + Format(CurrentDate(), "DF=ddMMyyyyHHmmss");
+					ValueTable.Columns.Insert(2, ColumnNameKey3);
 				EndIf;
 			EndIf;
 			       						
-			СчетчикСтрок = 0;			
-			For Each СтрокаТЗ In ТЗ Do
+			RowsCounter = 0;			
+			For Each RowValueTable In ValueTable Do
 				
-				СчетчикСтрок = СчетчикСтрок + 1;
+				RowsCounter = RowsCounter + 1;
 				
 				Try
 					
-					If ThisObject["CastKeyToString" + ИдентификаторБазы]
-						Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы]
-						Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(String(СтрокаТЗ[ИмяПервойКолонки]));
+					If ThisObject["CastKeyToString" + BaseID]
+						Or ThisObject["CastKeyToUpperCase" + BaseID]
+						Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(String(RowValueTable[FirstColumnName]));
 					EndIf;
 						
-					If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч])));
+					If ThisObject["CastKeyToUpperCase" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(Upper(String(RowValueTable[ColumnNameKey1])));
 					EndIf;
 					
-					If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-						СтрокаТЗ[ИмяКолонкиКлюч] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч]), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+						RowValueTable[ColumnNameKey1] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey1]), "{", ""), "}", ""));
 					EndIf;
 					
 				Except
 					
-					ТекстОшибки = "Error при обработке ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке ключа в строке %1 выборки из базы %2: %3';en = 'Error processing key in row %1 of fetch from base %2: %3'")
+						, RowsCounter
+						, BaseID
+						, ErrorDescription());
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndTry;
 				
@@ -1162,24 +1398,24 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 						
 					Try
 						
-						If ThisObject["CastKey2ToString" + ИдентификаторБазы]
-							Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы]
-							Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(String(СтрокаТЗ[ИмяВторойКолонки]));
+						If ThisObject["CastKey2ToString" + BaseID]
+							Or ThisObject["CastKey2ToUpperCase" + BaseID]
+							Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(String(RowValueTable[SecondColumnName]));
 						EndIf;
 
-						If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч2])));
+						If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(Upper(String(RowValueTable[ColumnNameKey2])));
 						EndIf;
 						
-						If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч2] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч2]), "{", ""), "}", ""));
+						If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey2] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey2]), "{", ""), "}", ""));
 						EndIf;
 						
 					Except
 						
-						ТекстОшибки = "Error при обработке столбца 2 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = "Error при обработке столбца 2 ключа в строке " + RowsCounter + " выборки из базы " + BaseID + ": " + ErrorDescription();
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndTry;
 					
@@ -1189,87 +1425,96 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 						
 					Try
 						
-						If ThisObject["CastKey3ToString" + ИдентификаторБазы]
-							Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы]
-							Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(String(СтрокаТЗ[ИмяТретьейКолонки]));
+						If ThisObject["CastKey3ToString" + BaseID]
+							Or ThisObject["CastKey3ToUpperCase" + BaseID]
+							Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(String(RowValueTable[ThirdColumnName]));
 						EndIf;
 						
-						If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(Upper(String(СтрокаТЗ[ИмяКолонкиКлюч3])));
+						If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(Upper(String(RowValueTable[ColumnNameKey3])));
 						EndIf;
 						
-						If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-							СтрокаТЗ[ИмяКолонкиКлюч3] = TrimAll(StrReplace(StrReplace(String(СтрокаТЗ[ИмяКолонкиКлюч3]), "{", ""), "}", ""));
+						If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+							RowValueTable[ColumnNameKey3] = TrimAll(StrReplace(StrReplace(String(RowValueTable[ColumnNameKey3]), "{", ""), "}", ""));
 						EndIf;
 						
 					Except
 						
-						ТекстОшибки = "Error при обработке столбца 3 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = "Error при обработке столбца 3 ключа в строке " + RowsCounter + " выборки из базы " + BaseID + ": " + ErrorDescription();
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndTry;
 					
 				EndIf;
 						
-	#Region Произвольный_код_обработки_ключа
+	#Region Arbitrary_key_processing_code
 
-				КлючТек = СтрокаТЗ[ИмяКолонкиКлюч];
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = RowValueTable[ColumnNameKey1];
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());						
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ[ИмяКолонкиКлюч] = КлючТек;
+				RowValueTable[ColumnNameKey1] = KeyCurrent;
 				
 				If NumberColumnsInKey > 1 Then
-					КлючТек = СтрокаТЗ[ИмяКолонкиКлюч2];
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = RowValueTable[ColumnNameKey2];
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());							
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаТЗ[ИмяКолонкиКлюч2] = КлючТек;
+					RowValueTable[ColumnNameKey2] = KeyCurrent;
 				EndIf;
 				
 				If NumberColumnsInKey > 2 Then
-					КлючТек = СтрокаТЗ[ИмяКолонкиКлюч3];
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = RowValueTable[ColumnNameKey3];
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + КлючТек + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+							, KeyCurrent
+							, BaseID
+							, ErrorDescription());							
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаТЗ[ИмяКолонкиКлюч3] = КлючТек;
+					RowValueTable[ColumnNameKey3] = KeyCurrent;
 				EndIf;
 
 	#EndRegion
 				
 			EndDo;
 			
-			If ThisObject["CastKeyToString" + ИдентификаторБазы] 
-				Or ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] 
-				Or ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
+			If ThisObject["CastKeyToString" + BaseID] 
+				Or ThisObject["CastKeyToUpperCase" + BaseID] 
+				Or ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
 			
-				ТЗ.Cols.Delete(ИмяПервойКолонки);
+				ValueTable.Columns.Delete(FirstColumnName);
 			
 			EndIf;
 		
 			If NumberColumnsInKey > 1 Then
 								
-				If ThisObject["CastKey2ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["CastKey2ToString" + BaseID] 
+					Or ThisObject["CastKey2ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
 					
-					ТЗ.Cols.Delete(ИмяВторойКолонки);
+					ValueTable.Columns.Delete(SecondColumnName);
 					
 				EndIf;
 				
@@ -1277,142 +1522,175 @@ Function ВыполнитьЗапрос1С77ИПолучитьТЗ(Иденти�
 			
 			If NumberColumnsInKey > 2 Then
 								
-				If ThisObject["CastKey3ToString" + ИдентификаторБазы] 
-					Or ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] 
-					Or ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
+				If ThisObject["CastKey3ToString" + BaseID] 
+					Or ThisObject["CastKey3ToUpperCase" + BaseID] 
+					Or ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
 					
-					ТЗ.Cols.Delete(ИмяТретьейКолонки);
+					ValueTable.Columns.Delete(ThirdColumnName);
 					
 				EndIf;
 				
 			EndIf;
 			
 		EndIf;
+	
+//#EndRegion
+	
+		//Indexing
+		ColumnsWithKeyRow = ColumnNameKey1;
+		If NumberColumnsInKey > 1 Then
+			ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ColumnNameKey2;
+		EndIf;
+		If NumberColumnsInKey > 2 Then
+			ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ColumnNameKey3;
+		EndIf;
+
+		ValueTable.Индексы.Добавить(ColumnsWithKeyRow);
+		
+		For AttributesCounter = 1 По ThisObject["SettingsFile" + BaseID].Count() Цикл
+			
+			AttributeName = Строка(BaseID) + AttributesCounter;
+			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
+			
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Реквизит " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
+		
+		EndDo;
 		
 	EndIf;
 	
-#EndRegion
-		
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ВыполнитьЗапросSQLИПолучитьТЗ(ИдентификаторБазы, ТекстОшибок = "")
+Function ExecuteQuerySQLAndGetValueTable(BaseID, ErrorsText = "")
 	
-	ServerName =  ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Server"];
-	DSN 	= ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "PathBase"];                                                                                                           
-	UID 	= ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Login"];
-	PWD 	= ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "Password"];
-	Driver 	= ThisObject["ConnectionToExternalBase" + ИдентификаторБазы + "ДрайверSQL"];
+	ServerName =  ThisObject["ConnectionToExternalBase" + BaseID + "Server"];
+	DSN 	= ThisObject["ConnectionToExternalBase" + BaseID + "PathBase"];                                                                                                           
+	UID 	= ThisObject["ConnectionToExternalBase" + BaseID + "Login"];
+	PWD 	= ThisObject["ConnectionToExternalBase" + BaseID + "Password"];
+	Driver 	= ThisObject["ConnectionToExternalBase" + BaseID + "ДрайверSQL"];
 	
 	Try              
-		ConnectString = "Driver={" + Driver + "};Server="+ServerName+";Database="+DSN+";Uid="+UID+";Pwd="+PWD;
-		Соединение = New COMObject("ADODB.Connection");
-		Соединение.Open(ConnectString); 
+		ConnectString = "Driver={" + Driver + "};Server=" + ServerName + ";Database=" + DSN + ";Uid=" + UID + ";Pwd=" + PWD;
+		Connection = New COMObject("ADODB.Connection");
+		Connection.Open(ConnectString); 
 	Except
-		ТекстОшибки = ErrorDescription();
-		Message("Not удалось подключиться к : " + ТекстОшибки);
+		ErrorText = ErrorDescription();
+		MessageText = StrTemplate(Nstr("ru = 'Не удалось подключиться к : %1';en = 'Failed to connect to : %1'"), ErrorText);
+		Message(MessageText);
 		Return Undefined;
 	EndTry;
 	
-	СмещениеНомераРеквизита = NumberColumnsInKey - 1;
+	OffsetNumberAttribute = NumberColumnsInKey - 1;
 		
-	ТЗ = New ValueTable;
-	ТЗ.Cols.Add("Key");
-	КолонкиСКлючомСтрокой = "Key";
+	ValueTable = New ValueTable;
+	ValueTable.Columns.Add("Key1");
+	ColumnsWithKeyRow = "Key1";
 	
 	If NumberColumnsInKey > 1 Then
-		ТЗ.Cols.Add("Key2");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Key2";
+		ValueTable.Columns.Add("Key2");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key2";
 	EndIf;
 	
 	If NumberColumnsInKey > 2 Then
-		ТЗ.Cols.Add("Key3");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Key3";
+		ValueTable.Columns.Add("Key3");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key3";
 	EndIf;
 	
-	ТЗ.Cols.Add("Реквизит1");
-	ТЗ.Cols.Add("Реквизит2");
-	ТЗ.Cols.Add("Реквизит3");
-	ТЗ.Cols.Add("Реквизит4");
-	ТЗ.Cols.Add("Реквизит5");
+	ValueTable.Columns.Add("Attribute1");
+	ValueTable.Columns.Add("Attribute2");
+	ValueTable.Columns.Add("Attribute3");
+	ValueTable.Columns.Add("Attribute4");
+	ValueTable.Columns.Add("Attribute5");
 	
 	Try
 		
-		Рекордсет = New COMObject("ADODB.RecordSet"); 
+		RecordSet = New COMObject("ADODB.RecordSet"); 
 		Command = New COMObject("ADODB.Command");
-		Command.ActiveConnection = Соединение;
-		Command.CommandText = ThisObject["QueryText" + ИдентификаторБазы];
+		Command.ActiveConnection = Connection;
+		Command.CommandText = ThisObject["QueryText" + BaseID];
 		Command.CommandType = 1;
 		
-		Рекордсет = Command.Execute();
+		RecordSet = Command.Execute();
 		
-		ЧислоКолонокВТЗ = Рекордсет.Fields.Count;
-		If NumberColumnsInKey > ЧислоКолонокВТЗ Then
+		NumberOfcolumnsInValueTable = RecordSet.Fields.Count;
+		If NumberColumnsInKey > NumberOfcolumnsInValueTable Then
 			
-			ТекстОшибки = "Выборка содержит " + ЧислоКолонокВТЗ + " кол., проверьте корректность заданного числа столбцов в ключе";
+			ErrorText = StrTemplate(Nstr("ru = 'Выборка из источника %1 содержит %2 колонок, проверьте корректность заданного числа столбцов в ключе';en = 'The selection from the source %1 contains %2 columns, check the correctness of the specified number of columns in the key'")
+				, BaseID
+				, NumberOfcolumnsInValueTable);
 			UserMessage = New UserMessage;
-			UserMessage.Text = ТекстОшибки;
+			UserMessage.Text = ErrorText;
 			UserMessage.Field = "Object.NumberColumnsInKey";
 			UserMessage.Message();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-			Рекордсет.Close();
-			Соединение.Close();
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
+			RecordSet.Close();
+			Connection.Close();
 			
 			Return Undefined;
 			
 		EndIf;
 				
-		СчетчикСтрок = 0;			
-		While Рекордсет.EOF = 0 Do
+		RowsCounter = 0;			
+		While RecordSet.EOF = 0 Do
 			
-			СчетчикСтрок = СчетчикСтрок + 1;
+			RowsCounter = RowsCounter + 1;
 			
-			If СчетчикСтрок = 1 Then
+			If RowsCounter = 1 Then
 				
-				For СчетчикРеквизитов = 1 To Min(ЧислоКолонокВТЗ - NumberColumnsInKey, ЧислоРеквизитов) Do
+				For AttributesCounter = 1 To Min(NumberOfcolumnsInValueTable - NumberColumnsInKey, NumberOfRequisites) Do
 					
-					ИмяРеквизита = String(ИдентификаторБазы) + СчетчикРеквизитов;
-					ПредставленияЗаголовковРеквизитов[ИмяРеквизита] = ИмяРеквизита + ": " + Рекордсет.Fields(СчетчикРеквизитов + NumberColumnsInKey - 1).Name;
-				
+					Если ThisObject["SettingsFile" + BaseID].Count() >= AttributesCounter Тогда
+						HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
+					Иначе
+						HeaderAttributeFromSettings = "";
+					EndIf;
+					
+					AttributeName = String(BaseID) + AttributesCounter;					
+					ViewsHeadersAttributes[AttributeName] = AttributeName + ": " 
+						+ ?(IsBlankString(HeaderAttributeFromSettings), RecordSet.Fields(AttributesCounter + NumberColumnsInKey - 1).Name, HeaderAttributeFromSettings);
+					
 				EndDo; 
 				
 			EndIf;
 			
-			СтрокаТЗ = ТЗ.Add();
+			RowValueTable = ValueTable.Add();
 			
-			Ключ1 = Рекордсет.Fields(0).Value;
+			Key1 = RecordSet.Fields(0).Value;
 			
 			If NumberColumnsInKey > 1 Then
-				Ключ2 = Рекордсет.Fields(1).Value;
+				Key2 = RecordSet.Fields(1).Value;
 			Else
-				Ключ2 = "";				
+				Key2 = "";				
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				Ключ3 = Рекордсет.Fields(2).Value;
+				Key3 = RecordSet.Fields(2).Value;
 			Else
-				Ключ3 = "";				
+				Key3 = "";				
 			EndIf;
 			
 			Try
 				
-				If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(String(Ключ1));
+				If ThisObject["CastKeyToString" + BaseID] Then
+					Key1 = TrimAll(String(Key1));
 				EndIf;
 			
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 				
 			Except
 				
-				ТекстОшибки = "Error при обработке ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке ключа в строке %1 выборки из базы %2: %3';en = 'Error processing key in row %1 of fetch from base %2: %3'")
+						, RowsCounter
+						, BaseID
+						, ErrorDescription());
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 			EndTry;
 			
@@ -1420,22 +1698,25 @@ Function ВыполнитьЗапросSQLИПолучитьТЗ(Идентиф�
 				
 				Try
 				
-					If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKey2ToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 				
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 				
 				Except
 					
-					ТекстОшибки = "Error при обработке столбца 2 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 2 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 2 of key in row %1 of fetch from base %2: %3'")
+						, RowsCounter
+						, BaseID
+						, ErrorDescription());					
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndTry;
 				
@@ -1445,479 +1726,515 @@ Function ВыполнитьЗапросSQLИПолучитьТЗ(Идентиф�
 				
 				Try
 				
-				If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-					Ключ3 = TrimAll(String(Ключ3));
+				If ThisObject["CastKey3ToString" + BaseID] Then
+					Key3 = TrimAll(String(Key3));
 				EndIf;
 			
-				If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-					Ключ3 = TrimAll(Upper(String(Ключ3)));
+				If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+					Key3 = TrimAll(Upper(String(Key3)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-					Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+					Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 				EndIf;
 				
 				Except
 					
-					ТекстОшибки = "Error при обработке столбца 3 ключа в строке " + СчетчикСтрок + " выборки из базы " + ИдентификаторБазы + ": " + ErrorDescription();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обработке столбца 3 ключа в строке %1 выборки из базы %2: %3';en = 'Error processing column 3 of key in row %1 of fetch from base %2: %3'")
+						, RowsCounter
+						, BaseID
+						, ErrorDescription());					
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndTry;
 				
 			EndIf;
 			          			
-#Region Произвольный_код_обработки_ключа
+#Region Arbitrary_key_processing_code
 
-			КлючТек = Ключ1;
-			If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+			KeyCurrent = Key1;
+			If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 				Try
-				    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+				    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 				Except
-					ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-					Message(ТекстОшибки);
+					ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+						, Key1
+						, BaseID
+						, ErrorDescription());					
+					Message(ErrorText);
 				EndTry;
 			EndIf;
-			СтрокаТЗ.Key = КлючТек;
+			RowValueTable.Key1 = KeyCurrent;
 			
 			If NumberColumnsInKey > 1 Then
-				КлючТек = Ключ2;				
-				If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+				KeyCurrent = Key2;				
+				If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+						, Key2
+						, BaseID
+						, ErrorDescription());						
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ.Key2 = КлючТек;
+				RowValueTable.Key2 = KeyCurrent;
 			EndIf;
 			
 			If NumberColumnsInKey > 2 Then
-				КлючТек = Ключ3;
-				If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+				KeyCurrent = Key3;
+				If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+						, Key3
+						, BaseID
+						, ErrorDescription());						
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаТЗ.Key3 = КлючТек;
+				RowValueTable.Key3 = KeyCurrent;
 			EndIf;
 			
 #EndRegion 
 			
-			ЧислоКолонокВВыборке = Рекордсет.Fields.Count;
+			NumberOfcolumnsInSelection = RecordSet.Fields.Count;
 			
-			For Счетчик = 1 To Min(ЧислоРеквизитов, ЧислоКолонокВВыборке - NumberColumnsInKey) Do
-				СтрокаТЗ["Attribute" + Счетчик] = Рекордсет.Fields(Счетчик + NumberColumnsInKey - 1).Value 
+			For Counter = 1 To Min(NumberOfRequisites, NumberOfcolumnsInSelection - NumberColumnsInKey) Do
+				RowValueTable["Attribute" + Counter] = RecordSet.Fields(Counter + NumberColumnsInKey - 1).Value 
 			EndDo;
 			
-			Рекордсет.MoveNext();
+			RecordSet.MoveNext();
 			
 		EndDo;
 
-		Рекордсет.Close();
-		Соединение.Close();
+		RecordSet.Close();
+		Connection.Close();
 		
 	Except
 		
-		ТекстОшибки = ErrorDescription();
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-		ТЗ = Undefined;
+		ErrorText = ErrorDescription();
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
+		ValueTable = Undefined;
 		
 	EndTry;
 	
 	//Indexing
-	If ТЗ <> Undefined Then
-		ТЗ.Indexes.Add(КолонкиСКлючомСтрокой);
+	If ValueTable <> Undefined Then
+		ValueTable.Indexes.Add(ColumnsWithKeyRow);
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ПрочитатьДанныеИзФайлаИПолучитьТЗ(ИдентификаторБазы, ТекстОшибок = "")
+Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 	
-	ТЗ = New ValueTable;
-	ТЗ.Cols.Add("Key");
-	КолонкиСКлючомСтрокой = "Key";
+	ValueTable = New ValueTable;
+	ValueTable.Columns.Add("Key1");
+	ColumnsWithKeyRow = "Key1";
 	
 	If NumberColumnsInKey > 1 Then
-		ТЗ.Cols.Add("Key2");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Key2";
+		ValueTable.Columns.Add("Key2");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key2";
 	EndIf;
 	
 	If NumberColumnsInKey > 2 Then
-		ТЗ.Cols.Add("Key3");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Key3";
+		ValueTable.Columns.Add("Key3");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key3";
 	EndIf;
 	
-	ТЗ.Cols.Add("Реквизит1");
-	ТЗ.Cols.Add("Реквизит2");
-	ТЗ.Cols.Add("Реквизит3");
-	ТЗ.Cols.Add("Реквизит4");
-	ТЗ.Cols.Add("Реквизит5");
+	ValueTable.Columns.Add("Attribute1");
+	ValueTable.Columns.Add("Attribute2");
+	ValueTable.Columns.Add("Attribute3");
+	ValueTable.Columns.Add("Attribute4");
+	ValueTable.Columns.Add("Attribute5");
 	
-	ПутьКФайлу 			= ThisObject["ConnectionToExternalBase"		+ ИдентификаторБазы + "ПутьКФайлу"];
-	ФорматФайла 		= ThisObject["ConnectionToExternalBase" 		+ ИдентификаторБазы + "ФорматФайла"];
-	НомерПервойСтроки 	= ThisObject["НомерПервойСтрокиФайла" 		+ ИдентификаторБазы];
-	SettingsFile 		= ThisObject["SettingsFile" 				+ ИдентификаторБазы];
-	НомерТаблицы		= ThisObject["ConnectionToExternalBase"		+ ИдентификаторБазы + "НомерТаблицыВФайле"];
+	PathToFile 		= ThisObject["ConnectionToExternalBase"	+ BaseID + "PathToFile"];
+	FileFormat 		= ThisObject["ConnectionToExternalBase" + BaseID + "FileFormat"];
+	NumberFirstRow 	= ThisObject["NumberFirstRowFile" 		+ BaseID];
+	SettingsFile 	= ThisObject["SettingsFile" 			+ BaseID];
+	NumberTable		= ThisObject["ConnectionToExternalBase"	+ BaseID + "NumberTableInFile"];
 	
-	НомерСтолбцаСКлючом = ThisObject["ColumnNumberKeyFromFile" 	+ ИдентификаторБазы];
-	ИмяСтолбцаСКлючом 	= ThisObject["ColumnNameKeyFromFile" 	+ ИдентификаторБазы];	
+	ColumnNumberWithKey = ThisObject["ColumnNumberKeyFromFile" 	+ BaseID];
+	ColumnNameWithKey 	= ThisObject["ColumnNameKeyFromFile" 	+ BaseID];	
 	If NumberColumnsInKey > 1 Then
-		НомерСтолбцаСКлючом2 	= ThisObject["ColumnNumberKey2FromFile" + ИдентификаторБазы];
-		ИмяСтолбцаСКлючом2 		= ThisObject["ColumnNameKey2FromFile" + ИдентификаторБазы];
+		ColumnNumberWithKey2 	= ThisObject["ColumnNumberKey2FromFile" + BaseID];
+		ColumnNameWithKey2 		= ThisObject["ColumnNameKey2FromFile" + BaseID];
 	EndIf;	
 	If NumberColumnsInKey > 2 Then
-		НомерСтолбцаСКлючом3 	= ThisObject["ColumnNumberKey3FromFile" + ИдентификаторБазы];
-		ИмяСтолбцаСКлючом3 		= ThisObject["ColumnNameKey3FromFile" + ИдентификаторБазы];
+		ColumnNumberWithKey3 	= ThisObject["ColumnNumberKey3FromFile" + BaseID];
+		ColumnNameWithKey3 		= ThisObject["ColumnNameKey3FromFile" + BaseID];
 	EndIf;
 	
-	//Проверка открытия файла
-	If ФорматФайла = "XLS" Then
+	//File open check
+	If FileFormat = "XLS" Then
 		
 		Try
 			Excel = New COMObject("Excel.Application");
 			Excel.DisplayAlerts = 0;
 			Excel.Visible = False;
 			
-			Книга = Excel.WorkBooks.Open(ПутьКФайлу);
-			File = Книга.WorkSheets(НомерТаблицы);
+			Book = Excel.WorkBooks.Open(PathToFile);
+			File = Book.WorkSheets(NumberTable);
 		Except
-			ТекстОшибки = "Error при открытии XLS-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при открытии XLS-файла %1: %2';en = 'Error opening .XLS file %1: %2'")
+				, PathToFile
+				, ErrorDescription());
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
 		EndTry;
 		
 		xlCellTypeLastCell = 11;
 		
 		Try
-			НомерПоследнейСтроки = File.Cells.SpecialCells(xlCellTypeLastCell).Row;			
+			NumberLastRow = File.Cells.SpecialCells(xlCellTypeLastCell).Row;			
 		Except
-			Message("Error при определении номера последней строки в файле. Number последней строки установлен в 1000");
-			НомерПоследнейСтроки = 1000;
+			MessageText = Nstr("ru = 'Ошибка при определении номера последней строки в файле. Номер последней строки установлен в 1000';en = 'An error occurred while determining the number of the last line in the file. Last row number set to 1000'");			
+			NumberLastRow = 1000;
 		EndTry;
 		
 		Try
-			НомерПоследнейКолонки = File.Cells.SpecialCells(xlCellTypeLastCell).Column;
+			NumberLastColumn = File.Cells.SpecialCells(xlCellTypeLastCell).Column;
 		Except			
-			НомерПоследнейКолонки = 1000;
+			NumberLastColumn = 1000;
 		EndTry;
 				
-	ElsIf ФорматФайла = "DOC" Then
+	ElsIf FileFormat = "DOC" Then
 		
 		Try
 			Word = New COMObject("Word.Application");
 			Word.DisplayAlerts = 0;
 			Word.Visible = False;
 			
-			Word.Application.Documents.Open(ПутьКФайлу);
+			Word.Application.Documents.Open(PathToFile);
 			Document = Word.ActiveDocument();
 			
 		Except
-			ТекстОшибки = "Error при открытии DOC-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при открытии DOC-файла %1: %2';en = 'Error opening .DOC file %1: %2'")
+				, PathToFile
+				, ErrorDescription());			
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Word = Undefined;
 			Return Undefined;
 		EndTry;
 		
 		Try 
-			File = Document.Tables(НомерТаблицы);
-		Except
-			ТекстОшибки = "Error при обращении к таблице " + НомерТаблицы + " DOC-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			File = Document.Tables(NumberTable);
+		Except			
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при обращении к таблице %1 DOC-файла %2: %3';en = 'Error accessing table %1 of DOC file %2: %3'")
+				, NumberTable
+				, PathToFile
+				, ErrorDescription());
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Document.Close(0);
 			Word.Quit();
 			Return Undefined;
 		EndTry;
 
 		Try
-			НомерПоследнейСтроки = File.Rows.count;
+			NumberLastRow = File.Rows.count;
 		Except
-			Message("Error при определении номера последней строки в файле. Number последней строки установлен в 1000");
-			НомерПоследнейСтроки = 1000;
+			Message("Ошибка при определении номера последней строки в файле. Number последней строки установлен в 1000");
+			NumberLastRow = 1000;
 		EndTry;
 		
-	ElsIf ФорматФайла = "CSV" Or ФорматФайла = "TXT" Then
+	ElsIf FileFormat = "CSV" Or FileFormat = "TXT" Then
 		
 		Try
 			File = New TextDocument();
-			File.Read(ПутьКФайлу);
-			НомерПоследнейСтроки = File.LineCount(); 
+			File.Read(PathToFile);
+			NumberLastRow = File.LineCount(); 
 		Except
-			ТекстОшибки = "Error при открытии " + ФорматФайла + "-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при открытии %1-файла %2: %3';en = 'Error opening .%1 file %2: %3'")
+				, FileFormat
+				, PathToFile
+				, ErrorDescription());			
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
 		EndTry;
 		
-	ElsIf ФорматФайла = "DBF" Then 
+	ElsIf FileFormat = "DBF" Then 
 		
 		Try
-			ФайлDBF = New XBase;
-			ФайлDBF.OpenFile(ПутьКФайлу,,True);
-			НомерПоследнейСтроки = ФайлDBF.RecCount();
-			ФайлDBF.First();
+			FileDBF = New XBase;
+			FileDBF.OpenFile(PathToFile,,True);
+			NumberLastRow = FileDBF.RecCount();
+			FileDBF.First();
 		Except
-			ТекстОшибки = "Error при открытии DBF-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при открытии DBF-файла %1: %2';en = 'Error opening .DBF file %1: %2'")
+				, PathToFile
+				, ErrorDescription());
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined;
 		EndTry;
 
-	ElsIf ФорматФайла = "XML" Then
+	ElsIf FileFormat = "XML" Then
 		
 		Try
-			Парсер = New XMLReader;
-		    Парсер.OpenFile(ПутьКФайлу);	 
-		    Построитель = New DOMBuilder;	 
-		    ФайлXML = Построитель.Read(Парсер);
+			XMLReader = New XMLReader;
+		    XMLReader.OpenFile(PathToFile);	 
+		    DOMBuilder = New DOMBuilder;	 
+		    FileXML = DOMBuilder.Read(XMLReader);
 		Except
-			ТекстОшибки = "Error при открытии XML-файла " + ПутьКФайлу + ": " + ErrorDescription();
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			ErrorText = StrTemplate(Nstr("ru = 'Ошибка при открытии XML-файла %1: %2';en = 'Error opening .XML file %1: %2'")
+				, PathToFile
+				, ErrorDescription());
+			ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			Return Undefined
 		EndTry;
 		
 	Else
 		
-		ТекстОшибки = "Format файла '" + ФорматФайла + "' не предусмотрен";
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+		ErrorText = StrTemplate(Nstr("ru = 'Формат файла ''%1'' не предусмотрен';en = 'File format ''%1'' is not supported'")
+			, FileFormat);
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
 		Return Undefined;
 		
 	EndIf;
 	
 	//Processing строк
-#Region XML
+//#Region XML
 	
-	If ФорматФайла = "XML" Then
+	If FileFormat = "XML" Then
 		
-		ИмяРодительскогоУзла = ThisObject["ИмяРодительскогоУзлаФайла" + ИдентификаторБазы];
-		ИмяЭлементаСДаннымиФайла = ThisObject["ИмяЭлементаСДаннымиФайла" + ИдентификаторБазы];
+		ParentNodeName = ThisObject["ParentNodeNameFile" + BaseID];
+		ElementNameWithDataFile = ThisObject["ElementNameWithDataFile" + BaseID];
 		
-		КорневойУзел = ФайлXML.DocumentElement;
-		If IsBlankString(ИмяРодительскогоУзла) Then
-			ParentNode = КорневойУзел
+		RootNode = FileXML.DocumentElement;
+		If IsBlankString(ParentNodeName) Then
+			ParentNode = RootNode
 		Else
-			ParentNode = НайтиПодчиненныйУзелXMLФайлаПоИмени(КорневойУзел, ИмяРодительскогоУзла);
+			ParentNode = FindSlaveNodeXMLFileByName(RootNode, ParentNodeName);
 		EndIf;
 		
 		If ParentNode <> Undefined Then
 			
 			For Each CurrentItem In ParentNode.ChildNodes Do
 				
-				If IsBlankString(ИмяЭлементаСДаннымиФайла) Or CurrentItem.NodeName = ИмяЭлементаСДаннымиФайла Then
+				If IsBlankString(ElementNameWithDataFile) Or CurrentItem.NodeName = ElementNameWithDataFile Then
 					
-#Region XML_СпособХраненияДанныхВXMLФайле_В_атрибутах
+//#Region XML_MethodStoringDataInXMLFile_In_Attributes
 				
-					If ThisObject["СпособХраненияДанныхВXMLФайле" + ИдентификаторБазы] = "В атрибутах" Then
+					If ThisObject["DataStorageMethodInXMLFile" + BaseID] = "В атрибутах" Then
 						
-						ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
+						FillVariablesPWithDefaultValues();
 												
-						СтрокаПриемник = ТЗ.Add();
+						RowReceiver = ValueTable.Add();
 						
-						Item = CurrentItem.Attributes.GetNamedItem(ИмяСтолбцаСКлючом);
-						If Item = Undefined Then
-							Raise "Attribute с именем " + ИмяСтолбцаСКлючом + " не найден";
+						Item = CurrentItem.Attributes.GetNamedItem(ColumnNameWithKey);
+						If Item = Undefined Then							
+							Raise StrTemplate(Nstr("ru = 'Реквизит с именем %1 не найден';en = 'Attribute named %1 not found'"), ColumnNameWithKey);
 						EndIf;
 						
-						Ключ1 = Item.Value;
-						If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-							Ключ1 = TrimAll(Upper(String(Ключ1)));
+						Key1 = Item.Value;
+						If ThisObject["CastKeyToUpperCase" + BaseID] Then
+							Key1 = TrimAll(Upper(String(Key1)));
 						EndIf;
-						If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-							Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+						If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+							Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 						EndIf;
 						
 						If NumberColumnsInKey > 1 Then
 						
-							Item = CurrentItem.Attributes.GetNamedItem(ИмяСтолбцаСКлючом2);
+							Item = CurrentItem.Attributes.GetNamedItem(ColumnNameWithKey2);
 							If Item = Undefined Then
-								Raise "Attribute с именем " + ИмяСтолбцаСКлючом2 + " не найден";
+								Raise StrTemplate(Nstr("ru = 'Реквизит с именем %1 не найден';en = 'Attribute named %1 not found'"), ColumnNameWithKey2);								
 							EndIf;
 							
-							Ключ2 = Item.Value;
+							Key2 = Item.Value;
 									
-							If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-								Ключ2 = TrimAll(String(Ключ2));
+							If ThisObject["CastKey2ToString" + BaseID] Then
+								Key2 = TrimAll(String(Key2));
 							EndIf;
 							
-							If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-								Ключ2 = TrimAll(Upper(String(Ключ2)));
+							If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+								Key2 = TrimAll(Upper(String(Key2)));
 							EndIf;
 							
-							If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-								Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+							If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+								Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 							EndIf;
 														
 						EndIf;
 						
 						If NumberColumnsInKey > 2 Then
 						
-							Item = CurrentItem.Attributes.GetNamedItem(ИмяСтолбцаСКлючом3);
+							Item = CurrentItem.Attributes.GetNamedItem(ColumnNameWithKey3);
 							If Item = Undefined Then
-								Raise "Attribute с именем " + ИмяСтолбцаСКлючом3 + " не найден";
+								Raise StrTemplate(Nstr("ru = 'Реквизит с именем %1 не найден';en = 'Attribute named %1 not found'"), ColumnNameWithKey3);								
 							EndIf;
 							
-							Ключ3 = Item.Value;
+							Key3 = Item.Value;
 									
-							If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-								Ключ3 = TrimAll(String(Ключ3));
+							If ThisObject["CastKey3ToString" + BaseID] Then
+								Key3 = TrimAll(String(Key3));
 							EndIf;
 							
-							If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-								Ключ3 = TrimAll(Upper(String(Ключ3)));
+							If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+								Key3 = TrimAll(Upper(String(Key3)));
 							EndIf;
 							
-							If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-								Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+							If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+								Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 							EndIf;
 							
 						EndIf;
 						
-#Region Произвольный_код_обработки_ключа
+//#Region Arbitrary_key_processing_code
 
-						КлючТек = Ключ1;
-						If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+						KeyCurrent = Key1;
+						If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 							Try
-							    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+							    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 							Except
-								ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-								Message(ТекстОшибки);
+								ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+									, Key1
+									, BaseID
+									, ErrorDescription());								
+								Message(ErrorText);
 							EndTry;
 						EndIf;
 						
-						СтрокаПриемник.Key = КлючТек;
+						RowReceiver.Key1 = KeyCurrent;
 						
 						If NumberColumnsInKey > 1 Then
 							
-							КлючТек = Ключ2;
-							If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+							KeyCurrent = Key2;
+							If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 								Try
-								    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+								    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 								Except
-									ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-									Message(ТекстОшибки);
+									ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+										, Key2
+										, BaseID
+										, ErrorDescription());									
+									Message(ErrorText);
 								EndTry;
 							EndIf;
-							СтрокаПриемник.Key2 = КлючТек;
+							RowReceiver.Key2 = KeyCurrent;
 							
 						EndIf;
 						
 						If NumberColumnsInKey > 2 Then
 							
-							КлючТек = Ключ3;
-							If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+							KeyCurrent = Key3;
+							If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 								Try
-								    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+								    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 								Except
-									ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-									Message(ТекстОшибки);
+									ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+										, Key3
+										, BaseID
+										, ErrorDescription());
+									Message(ErrorText);
 								EndTry;
 							EndIf;
-							СтрокаПриемник.Key3 = КлючТек;
+							RowReceiver.Key3 = KeyCurrent;
 							
 						EndIf;
 						
-#EndRegion  
+//#EndRegion  
 
-						ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-						For Each СтрокаНастроекФайла In SettingsFile Do
+						FillVariablesPWithDefaultValues();
+						For Each RowSettingsFile In SettingsFile Do
 							
-							//Not задано имя колонки (например, если реквизит заполняется программно)
-							If IsBlankString(СтрокаНастроекФайла.ColumnName) Then
+							//Not the column name is set (for example, if the attribute is filled programmatically)
+							If IsBlankString(RowSettingsFile.ColumnName) Then
 								Continue;
 							EndIf;
 							
-							ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-							Item = CurrentItem.Attributes.GetNamedItem(СтрокаНастроекФайла.ColumnName);
+							AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+							Item = CurrentItem.Attributes.GetNamedItem(RowSettingsFile.ColumnName);
 							If Item = Undefined Then
-								Raise "Attribute с именем " + СтрокаНастроекФайла.ColumnName + " не найден";
+								Raise StrTemplate(Nstr("ru = 'Реквизит с именем %1 не найден';en = 'Attribute named %1 not found'"), RowSettingsFile.ColumnName);								
 							EndIf;
-							СтрокаПриемник[ИмяРеквизита] = Item.Value;
+							RowReceiver[AttributeName] = Item.Value;
 							
-							//FillType переменных, которые будут использоваться в произвольном коде
-							РВрем = СтрокаПриемник[ИмяРеквизита];
-							If СтрокаНастроекФайла.LineNumber = 1 Then
+							//FillType of variables to be used in arbitrary code
+							РВрем = RowReceiver[AttributeName];
+							If RowSettingsFile.LineNumber = 1 Then
 								Р1 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+							ElsIf RowSettingsFile.LineNumber = 2 Then
 								Р2 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+							ElsIf RowSettingsFile.LineNumber = 3 Then
 								Р3 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+							ElsIf RowSettingsFile.LineNumber = 4 Then
 								Р4 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+							ElsIf RowSettingsFile.LineNumber = 5 Then
 								Р5 = РВрем;
 							EndIf;
 
 						EndDo;
 						
-#EndRegion
+//#EndRegion
 
-#Region XML_СпособХраненияДанныхВXMLФайле_В_элементах
+//#Region XML_MethodStoringDataInXMLFile_In_Elements
 						
-					ElsIf ThisObject["СпособХраненияДанныхВXMLФайле" + ИдентификаторБазы] = "В элементах" Then
+					ElsIf ThisObject["DataStorageMethodInXMLFile" + BaseID] = "В элементах" Then
 						
-						ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
+						FillVariablesPWithDefaultValues();
 						
-						СтрокаПриемник = ТЗ.Add();
+						RowReceiver = ValueTable.Add();
 						
-						For Each ДочернийЭлемент In CurrentItem.ChildNodes Do
+						For Each ChildElement In CurrentItem.ChildNodes Do
 							
-							If ДочернийЭлемент.NodeName = ИмяСтолбцаСКлючом Then
+							If ChildElement.NodeName = ColumnNameWithKey Then
 								
-								Ключ1 = ДочернийЭлемент.TextContent;
-								If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-									Ключ1 = TrimAll(Upper(String(Ключ1)));
+								Key1 = ChildElement.TextContent;
+								If ThisObject["CastKeyToUpperCase" + BaseID] Then
+									Key1 = TrimAll(Upper(String(Key1)));
 								EndIf;
-								If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-									Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+								If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+									Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 								EndIf;
 								
-								СтрокаПриемник.Key = Ключ1;
+								RowReceiver.Key1 = Key1;
 								
 							EndIf;
 								
-							If ДочернийЭлемент.NodeName = ИмяСтолбцаСКлючом2 And NumberColumnsInKey > 1 Then
+							If ChildElement.NodeName = ColumnNameWithKey2 And NumberColumnsInKey > 1 Then
 								
-								Ключ2 = ДочернийЭлемент.TextContent;
-								If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-									Ключ2 = TrimAll(Upper(String(Ключ2)));
+								Key2 = ChildElement.TextContent;
+								If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+									Key2 = TrimAll(Upper(String(Key2)));
 								EndIf;
-								If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-									Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+								If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+									Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 								EndIf;
 								
-								СтрокаПриемник.Key2 = Ключ2;
+								RowReceiver.Key2 = Key2;
 			                    						
 							EndIf;                
 							
-							If ДочернийЭлемент.NodeName = ИмяСтолбцаСКлючом3 And NumberColumnsInKey > 2 Then
+							If ChildElement.NodeName = ColumnNameWithKey3 And NumberColumnsInKey > 2 Then
 								
-								Ключ3 = ДочернийЭлемент.TextContent;
-								If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-									Ключ3 = TrimAll(Upper(String(Ключ2)));
+								Key3 = ChildElement.TextContent;
+								If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+									Key3 = TrimAll(Upper(String(Key2)));
 								EndIf;
-								If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-									Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+								If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+									Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 								EndIf;
 								
-								СтрокаПриемник.Key3 = Ключ3;
+								RowReceiver.Key3 = Key3;
 			                    						
 							EndIf;
 							
-							For Each СтрокаНастроекФайла In SettingsFile Do
+							For Each RowSettingsFile In SettingsFile Do
 							
-								//Not задано имя колонки (например, если реквизит заполняется программно)
-								If IsBlankString(СтрокаНастроекФайла.ColumnName) Then
+								//Not the column name is set (for example, if the attribute is filled programmatically)
+								If IsBlankString(RowSettingsFile.ColumnName) Then
 									Continue;
 								EndIf;
 								
-								TagName = СтрокаНастроекФайла.ColumnName;
-								ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-								If ДочернийЭлемент.NodeName = TagName Then
+								TagName = RowSettingsFile.ColumnName;
+								AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+								If ChildElement.NodeName = TagName Then
 									
-									СтрокаПриемник[ИмяРеквизита] = ДочернийЭлемент.TextContent;;
+									RowReceiver[AttributeName] = ChildElement.TextContent;;
 									
 								EndIf;
 																
@@ -1925,100 +2242,113 @@ Function ПрочитатьДанныеИзФайлаИПолучитьТЗ(Ид
 							
 						EndDo;
 						
-#Region Произвольный_код_обработки_ключа
-						КлючТек = СтрокаПриемник.Key;
-						If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+//#Region Arbitrary_key_processing_code
+						KeyCurrent = RowReceiver.Key1;
+						If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 							Try
-							    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+							    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 							Except
-								ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-								Message(ТекстОшибки);
+								ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 1: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 1: ""%1"") on source %2: %3'") 
+									, Key1
+									, BaseID
+									, ErrorDescription());								
+								Message(ErrorText);
 							EndTry;
 						EndIf;
-						СтрокаПриемник.Key = КлючТек;
+						RowReceiver.Key1 = KeyCurrent;
 						
 						If NumberColumnsInKey > 1 Then
 							
-							КлючТек = СтрокаПриемник.Key2;
-							If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+							KeyCurrent = RowReceiver.Key2;
+							If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 								Try
-								    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+								    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 								Except
-									ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-									Message(ТекстОшибки);
+									ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 2: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 2: ""%1"") on source %2: %3'") 
+										, Key2
+										, BaseID
+										, ErrorDescription());
+									Message(ErrorText);
 								EndTry;
 							EndIf;
-							СтрокаПриемник.Key2 = КлючТек;
+							RowReceiver.Key2 = KeyCurrent;
 							
 						EndIf;
 						
 						If NumberColumnsInKey > 2 Then
-							КлючТек = СтрокаПриемник.Key3;
-							If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+							KeyCurrent = RowReceiver.Key3;
+							If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 								Try
-								    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+								    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 								Except
-									ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-									Message(ТекстОшибки);
+									ErrorText = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (ключ 3: ""%1"") источника %2: %3';en = 'Arbitrary code execution error (key 3: ""%1"") on source %2: %3'") 
+										, Key3
+										, BaseID
+										, ErrorDescription());
+									Message(ErrorText);
 								EndTry;
 							EndIf;
-							СтрокаПриемник.Key3 = КлючТек;
+							RowReceiver.Key3 = KeyCurrent;
 						EndIf;
-#EndRegion 
+//#EndRegion 
 
-						ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-						For Each СтрокаНастроекФайла In SettingsFile Do
-							//Not задано имя колонки (например, если реквизит заполняется программно)
-							If IsBlankString(СтрокаНастроекФайла.ColumnName) Then
+						FillVariablesPWithDefaultValues();
+						For Each RowSettingsFile In SettingsFile Do
+							//Not the column name is set (for example, if the attribute is filled programmatically)
+							If IsBlankString(RowSettingsFile.ColumnName) Then
 								Continue;
 							EndIf;
 							
-							ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
+							AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 							
-							РВрем = СтрокаПриемник[ИмяРеквизита];
-							If СтрокаНастроекФайла.LineNumber = 1 Then
+							РВрем = RowReceiver[AttributeName];
+							If RowSettingsFile.LineNumber = 1 Then
 								Р1 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+							ElsIf RowSettingsFile.LineNumber = 2 Then
 								Р2 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+							ElsIf RowSettingsFile.LineNumber = 3 Then
 								Р3 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+							ElsIf RowSettingsFile.LineNumber = 4 Then
 								Р4 = РВрем;
-							ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+							ElsIf RowSettingsFile.LineNumber = 5 Then
 								Р5 = РВрем;
 							EndIf;
 							
 						EndDo;
 																		
 					Else 
-						Raise "Not задан способ хранения данных в XML-файле базы " + ИдентификаторБазы;				
+						Raise StrTemplate(Nstr("ru = 'Не задан способ хранения данных в XML-файле базы %1';en = 'No way to store data in database XML file %1'")
+							, BaseID);				
 					EndIf;
 					
-					For Each СтрокаНастроекФайла In SettingsFile Do
+					For Each RowSettingsFile In SettingsFile Do
 				
-						ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-						РТек = СтрокаПриемник[ИмяРеквизита];
+						AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+						РТек = RowReceiver[AttributeName];
 
 						Try
-							Execute СтрокаНастроекФайла.ArbitraryCode;
+							Execute RowSettingsFile.ArbitraryCode;
 						Except
-							ТекстОшибки = ErrorDescription();
-							Message("Error при выполнении произвольного кода (реквизит " + СтрокаНастроекФайла.LineNumber + "):" + ТекстОшибки);
+							ErrorText = ErrorDescription();
+							ErrorMessage = StrTemplate(Nstr("ru = 'Ошибка при выполнении произвольного кода (реквизит %1:%2';en = 'Error executing arbitrary code (props %1:%2'")
+								, RowSettingsFile.LineNumber
+								, ErrorText);	
+							Message(ErrorMessage);
 						EndTry;
 						
-						If ThisObject["CollapseTable" + ИдентификаторБазы] Then
+						If ThisObject["CollapseTable" + BaseID] Then
 							Try
-								Execute КодПриведенияРеквизитаКТипуЧисло;
+								Execute CodeCastingAttributeToTypeNumber;
 							Except
 								РТек = 0;
 							EndTry;
 						EndIf;
 						
-						СтрокаПриемник[ИмяРеквизита] = РТек;
+						RowReceiver[AttributeName] = РТек;
 
 					EndDo;
 					
-#EndRegion
+//#EndRegion
 
 				EndIf;
 				
@@ -2026,349 +2356,349 @@ Function ПрочитатьДанныеИзФайлаИПолучитьТЗ(Ид
 			
 		EndIf;
 		
-#EndRegion 
+//#EndRegion 
 
 	Else
 	
-		For НомерТекущейСтроки = НомерПервойСтроки To НомерПоследнейСтроки Do
+		For NumberCurrentRow = NumberFirstRow To NumberLastRow Do
 			
-			ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
+			FillVariablesPWithDefaultValues();
 			
-			СтрокаПриемник = ТЗ.Add();
+			RowReceiver = ValueTable.Add();
 			
-#Region XLS
+//#Region XLS
 
-			If ФорматФайла = "XLS" Then
+			If FileFormat = "XLS" Then
 				
-				ЧислоКолонокВФайлеМеньшеТребуемого = False;
+				NumberOfColumnsInFileLessThanRequired = False;
 				
-				If НомерСтолбцаСКлючом > НомерПоследнейКолонки Then
-					ТекстОшибки = "File содержит " + НомерПоследнейКолонки + " кол., проверьте настройки столбцов ключа";
+				If ColumnNumberWithKey > NumberLastColumn Then					
+					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбцов ключа";					
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
-					UserMessage.Field = "Object.ColumnNumberKeyFromFile " + ИдентификаторБазы;
+					UserMessage.Text = ErrorText;
+					UserMessage.Field = "Object.ColumnNumberKeyFromFile " + BaseID;
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-					ЧислоКолонокВФайлеМеньшеТребуемого = True;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
+					NumberOfColumnsInFileLessThanRequired = True;
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 And НомерСтолбцаСКлючом2 > НомерПоследнейКолонки Then
-					ТекстОшибки = "File содержит " + НомерПоследнейКолонки + " кол., проверьте настройки столбца 2 ключа";
+				If NumberColumnsInKey > 1 And ColumnNumberWithKey2 > NumberLastColumn Then					
+					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбца 2 ключа";					
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
-					UserMessage.Field = "Object.ColumnNumberKey2FromFile " + ИдентификаторБазы;
+					UserMessage.Text = ErrorText;
+					UserMessage.Field = "Object.ColumnNumberKey2FromFile " + BaseID;
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-					ЧислоКолонокВФайлеМеньшеТребуемого = True;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
+					NumberOfColumnsInFileLessThanRequired = True;
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 And НомерСтолбцаСКлючом3 > НомерПоследнейКолонки Then
-					ТекстОшибки = "File содержит " + НомерПоследнейКолонки + " кол., проверьте настройки столбца 3 ключа";
+				If NumberColumnsInKey > 2 And ColumnNumberWithKey3 > NumberLastColumn Then					
+					ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки столбца 3 ключа";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
-					UserMessage.Field = "Object.ColumnNumberKey3FromFile " + ИдентификаторБазы;
+					UserMessage.Text = ErrorText;
+					UserMessage.Field = "Object.ColumnNumberKey3FromFile " + BaseID;
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-					ЧислоКолонокВФайлеМеньшеТребуемого = True;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
+					NumberOfColumnsInFileLessThanRequired = True;
 				EndIf;
 				
-				If ЧислоКолонокВФайлеМеньшеТребуемого Then
+				If NumberOfColumnsInFileLessThanRequired Then
 					
-					Книга.Close(0);
+					Book.Close(0);
 					Excel.Quit();
-					Return ТЗ;
+					Return ValueTable;
 					
 				EndIf;
 				
-				Ключ1 = TrimAll(File.Cells(НомерТекущейСтроки, НомерСтолбцаСКлючом).Value);
+				Key1 = TrimAll(File.Cells(NumberCurrentRow, ColumnNumberWithKey).Value);
 							
-				If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(String(Ключ1));
+				If ThisObject["CastKeyToString" + BaseID] Then
+					Key1 = TrimAll(String(Key1));
 				EndIf;
 				
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 								
-				If ЧислоСтолбцовВКлюче > 1 Then			
+				If NumberColumnsInKey > 1 Then			
 					
-					Ключ2 = TrimAll(File.Cells(НомерТекущейСтроки, НомерСтолбцаСКлючом2).Value);
+					Key2 = TrimAll(File.Cells(NumberCurrentRow, ColumnNumberWithKey2).Value);
 							
-					If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKey2ToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 					
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 					     										
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 										
-					Ключ3 = TrimAll(File.Cells(НомерТекущейСтроки, НомерСтолбцаСКлючом3).Value);
+					Key3 = TrimAll(File.Cells(NumberCurrentRow, ColumnNumberWithKey3).Value);
 							
-					If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(String(Ключ3));
+					If ThisObject["CastKey3ToString" + BaseID] Then
+						Key3 = TrimAll(String(Key3));
 					EndIf;
 					
-					If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(Upper(String(Ключ3)));
+					If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+						Key3 = TrimAll(Upper(String(Key3)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+						Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 					EndIf;
 					
 				EndIf;
 				
 				
-#Region Произвольный_код_обработки_ключа
+//#Region Arbitrary_key_processing_code
 
-				КлючТек = Ключ1;
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = Key1;
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаПриемник.Key = КлючТек;
+				RowReceiver.Key = KeyCurrent;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					КлючТек = Ключ2;
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = Key2;
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ2 = КлючТек;
+					RowReceiver.Key2 = KeyCurrent;
 					
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					КлючТек = Ключ3;
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = Key3;
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ3 = КлючТек;
+					RowReceiver.Key3 = KeyCurrent;
 					
 				EndIf;
 				
-#EndRegion
+//#EndRegion
 
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				FillVariablesPWithDefaultValues();
+				For Each RowSettingsFile In SettingsFile Do
 					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If СтрокаНастроекФайла.НомерКолонки = 0 Then
+					If RowSettingsFile.НомерКолонки = 0 Then
 						Continue;
 					EndIf;
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 					
-					If СтрокаНастроекФайла.НомерКолонки > НомерПоследнейКолонки Then
-						ТекстОшибки = "File содержит " + НомерПоследнейКолонки + " кол., проверьте настройки колонок реквизитов";
+					If RowSettingsFile.НомерКолонки > NumberLastColumn Then						
+						ErrorText = "Файл " + BaseID + " содержит " + NumberLastColumn + " кол., проверьте настройки колонок реквизитов";						
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
-						UserMessage.Field = "Object.SettingsFile" + ИдентификаторБазы;
+						UserMessage.Text = ErrorText;
+						UserMessage.Field = "Object.SettingsFile" + BaseID;
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
-						Return ТЗ;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
+						Return ValueTable;
 					EndIf;
 					
-					СтрокаПриемник[ИмяРеквизита] = TrimAll(File.Cells(НомерТекущейСтроки, СтрокаНастроекФайла.НомерКолонки).Value);
+					RowReceiver[AttributeName] = TrimAll(File.Cells(NumberCurrentRow, RowSettingsFile.НомерКолонки).Value);
 					
 					//FillType переменных, которые будут использоваться в произвольном коде
-					РВрем = СтрокаПриемник[ИмяРеквизита];
-					If СтрокаНастроекФайла.LineNumber = 1 Then
+					РВрем = RowReceiver[AttributeName];
+					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+					ElsIf RowSettingsFile.LineNumber = 2 Then
 						Р2 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+					ElsIf RowSettingsFile.LineNumber = 3 Then
 						Р3 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+					ElsIf RowSettingsFile.LineNumber = 4 Then
 						Р4 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+					ElsIf RowSettingsFile.LineNumber = 5 Then
 						Р5 = РВрем;
 					EndIf;
 					
 				EndDo;
 							
-#EndRegion 	
+//#EndRegion 	
 
 			
-#Region DOC
+//#Region DOC
 
-			ElsIf ФорматФайла = "DOC" Then
+			ElsIf FileFormat = "DOC" Then
 
 				//In документа WORD попадают символы, которые 1С не может вывести в ТЗ на форме и выдает ошибку Text XML содержит недопустимый символ
 	        	ЗаменяемыеСимволы = New Array;
 				ЗаменяемыеСимволы.Add(Char(7));	//¶
 				ЗаменяемыеСимволы.Add(Char(13));	//черный круг
 								
-				Ключ1 = TrimAll(File.Cell(НомерТекущейСтроки, НомерСтолбцаСКлючом).Range.Text);
+				Key1 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey).Range.Text);
 				For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-					Ключ1 = StrReplace(Ключ1, ЗаменямыйСимвол, "");
+					Key1 = StrReplace(Key1, ЗаменямыйСимвол, "");
 				EndDo;
 							
-				If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(String(Ключ1));
+				If ThisObject["CastKeyToString" + BaseID] Then
+					Key1 = TrimAll(String(Key1));
 				EndIf;
 				
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 								
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					Ключ2 = TrimAll(File.Cell(НомерТекущейСтроки, НомерСтолбцаСКлючом2).Range.Text);
+					Key2 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey2).Range.Text);
 					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-						Ключ2 = StrReplace(Ключ2, ЗаменямыйСимвол, "");
+						Key2 = StrReplace(Key2, ЗаменямыйСимвол, "");
 					EndDo;
 					
-					If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKey2ToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 					
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 					     										
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					Ключ3 = TrimAll(File.Cell(НомерТекущейСтроки, НомерСтолбцаСКлючом3).Range.Text);
+					Key3 = TrimAll(File.Cell(NumberCurrentRow, ColumnNumberWithKey3).Range.Text);
 					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
-						Ключ3 = StrReplace(Ключ3, ЗаменямыйСимвол, "");
+						Key3 = StrReplace(Key3, ЗаменямыйСимвол, "");
 					EndDo;
 
 							
-					If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(String(Ключ3));
+					If ThisObject["CastKey3ToString" + BaseID] Then
+						Key3 = TrimAll(String(Key3));
 					EndIf;
 					
-					If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(Upper(String(Ключ3)));
+					If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+						Key3 = TrimAll(Upper(String(Key3)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+						Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 					EndIf;
 					
 				EndIf;
 				
 				
-#Region Произвольный_код_обработки_ключа
+//#Region Arbitrary_key_processing_code
 
-				КлючТек = Ключ1;
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = Key1;
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаПриемник.Key = КлючТек;
+				RowReceiver.Key = KeyCurrent;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					КлючТек = Ключ2;
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = Key2;
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ2 = КлючТек;
+					RowReceiver.Key2 = KeyCurrent;
 					
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					КлючТек = Ключ3;
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = Key3;
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ3 = КлючТек;
+					RowReceiver.Key3 = KeyCurrent;
 					
 				EndIf;
 				
-#EndRegion
+//#EndRegion
 
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				FillVariablesPWithDefaultValues();
+				For Each RowSettingsFile In SettingsFile Do
 					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If СтрокаНастроекФайла.НомерКолонки = 0 Then
+					If RowSettingsFile.НомерКолонки = 0 Then
 						Continue;
 					EndIf;
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-					ЗнчениеРеквизита = TrimAll(File.Cell(НомерТекущейСтроки, СтрокаНастроекФайла.НомерКолонки).Range.Text);
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+					ЗнчениеРеквизита = TrimAll(File.Cell(NumberCurrentRow, RowSettingsFile.НомерКолонки).Range.Text);
 					For Each ЗаменямыйСимвол In ЗаменяемыеСимволы Do 
 						ЗнчениеРеквизита = StrReplace(ЗнчениеРеквизита, ЗаменямыйСимвол, "");
 					EndDo;
-					СтрокаПриемник[ИмяРеквизита] = ЗнчениеРеквизита;
+					RowReceiver[AttributeName] = ЗнчениеРеквизита;
 					
 					//FillType переменных, которые будут использоваться в произвольном коде
-					РВрем = СтрокаПриемник[ИмяРеквизита];
-					If СтрокаНастроекФайла.LineNumber = 1 Then
+					РВрем = RowReceiver[AttributeName];
+					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+					ElsIf RowSettingsFile.LineNumber = 2 Then
 						Р2 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+					ElsIf RowSettingsFile.LineNumber = 3 Then
 						Р3 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+					ElsIf RowSettingsFile.LineNumber = 4 Then
 						Р4 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+					ElsIf RowSettingsFile.LineNumber = 5 Then
 						Р5 = РВрем;
 					EndIf;
 					
 				EndDo;
 							
-#EndRegion 	
+//#EndRegion 	
 
 
-#Region CSV_TXT
+//#Region CSV_TXT
 
-			ElsIf ФорматФайла = "CSV" Or ФорматФайла = "TXT" Then
+			ElsIf FileFormat = "CSV" Or FileFormat = "TXT" Then
 
-				СтрокаТекста = File.GetLine(НомерТекущейСтроки);
+				СтрокаТекста = File.GetLine(NumberCurrentRow);
 						
-				If ФорматФайла = "CSV" Then
+				If FileFormat = "CSV" Then
 					СимволРазделителяКолонок = ";";
 				Else
 					СимволРазделителяКолонок = "	";
@@ -2378,371 +2708,371 @@ Function ПрочитатьДанныеИзФайлаИПолучитьТЗ(Ид
 				
 				СтрокаМногострочногоТекста = StrReplace(СтрокаТекста,СимволРазделителяКолонок,СимволРазделителя);
 				
-				Ключ1 = StrGetLine(СтрокаМногострочногоТекста,НомерСтолбцаСКлючом);
+				Key1 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey);
 				
-				If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(String(Ключ1));
+				If ThisObject["CastKeyToString" + BaseID] Then
+					Key1 = TrimAll(String(Key1));
 				EndIf;
 			
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 								
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					Ключ2 = StrGetLine(СтрокаМногострочногоТекста,НомерСтолбцаСКлючом2);
+					Key2 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey2);
 				
-					If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKeyToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 				
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 															
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					Ключ3 = StrGetLine(СтрокаМногострочногоТекста,НомерСтолбцаСКлючом3);
+					Key3 = StrGetLine(СтрокаМногострочногоТекста,ColumnNumberWithKey3);
 				
-					If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(String(Ключ3));
+					If ThisObject["CastKeyToString" + BaseID] Then
+						Key3 = TrimAll(String(Key3));
 					EndIf;
 				
-					If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(Upper(String(Ключ3)));
+					If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+						Key3 = TrimAll(Upper(String(Key3)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+						Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 					EndIf;
 										
 				EndIf;
 				
-#Region Произвольный_код_обработки_ключа
+//#Region Arbitrary_key_processing_code
 
-				КлючТек = Ключ1;
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = Key1;
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаПриемник.Key = КлючТек;
+				RowReceiver.Key1 = KeyCurrent;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					КлючТек = Ключ2;
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = Key2;
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ2 = КлючТек;
+					RowReceiver.Key2 = KeyCurrent;
 					
 				EndIf;
 
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					КлючТек = Ключ3;
-				 	If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = Key3;
+				 	If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ3 = КлючТек;
+					RowReceiver.Key3 = KeyCurrent;
 					
 				EndIf;
 				
-#EndRegion 
+//#EndRegion 
 
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				FillVariablesPWithDefaultValues();
+				For Each RowSettingsFile In SettingsFile Do
 					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If СтрокаНастроекФайла.НомерКолонки = 0 Then
+					If RowSettingsFile.НомерКолонки = 0 Then
 						Continue;
 					EndIf;
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-					СтрокаПриемник[ИмяРеквизита] = StrGetLine(СтрокаМногострочногоТекста,СтрокаНастроекФайла.НомерКолонки);
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+					RowReceiver[AttributeName] = StrGetLine(СтрокаМногострочногоТекста,RowSettingsFile.НомерКолонки);
 					
 					//FillType переменных, которые будут использоваться в произвольном коде
-					РВрем = СтрокаПриемник[ИмяРеквизита];
-					If СтрокаНастроекФайла.LineNumber = 1 Then
+					РВрем = RowReceiver[AttributeName];
+					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+					ElsIf RowSettingsFile.LineNumber = 2 Then
 						Р2 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+					ElsIf RowSettingsFile.LineNumber = 3 Then
 						Р3 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+					ElsIf RowSettingsFile.LineNumber = 4 Then
 						Р4 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+					ElsIf RowSettingsFile.LineNumber = 5 Then
 						Р5 = РВрем;
 					EndIf;
 					
 				EndDo;
 
-#EndRegion 	
+//#EndRegion 	
 
 
-#Region DBF
+//#Region DBF
 
-			ElsIf ФорматФайла = "DBF" Then
+			ElsIf FileFormat = "DBF" Then
 				
 				//На всякий случай, хотя такого не должно быть
-				If ФайлDBF.EOF() Then
+				If FileDBF.EOF() Then
 					Continue;
 				EndIf;
 				
-				Ключ1 = ФайлDBF[ФайлDBF.Fields[НомерСтолбцаСКлючом - 1].Name];
+				Key1 = FileDBF[FileDBF.Fields[ColumnNumberWithKey - 1].Name];
 				
-				If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(String(Ключ1));
+				If ThisObject["CastKeyToString" + BaseID] Then
+					Key1 = TrimAll(String(Key1));
 				EndIf;
 			
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
 				
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					Ключ2 = ФайлDBF[ФайлDBF.Fields[НомерСтолбцаСКлючом2 - 1].Name];
+					Key2 = FileDBF[FileDBF.Fields[ColumnNumberWithKey2 - 1].Name];
 				
-					If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKey2ToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 				
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 										
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					Ключ3 = ФайлDBF[ФайлDBF.Fields[НомерСтолбцаСКлючом3 - 1].Name];
+					Key3 = FileDBF[FileDBF.Fields[ColumnNumberWithKey3 - 1].Name];
 				
-					If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(String(Ключ3));
+					If ThisObject["CastKey3ToString" + BaseID] Then
+						Key3 = TrimAll(String(Key3));
 					EndIf;
 				
-					If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(Upper(String(Ключ3)));
+					If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+						Key3 = TrimAll(Upper(String(Key3)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+						Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 					EndIf;
 										
 				EndIf;
 				
-#Region Произвольный_код_обработки_ключа
+//#Region Arbitrary_key_processing_code
 
-				КлючТек = Ключ1;
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = Key1;
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						Message(ErrorText);
 					EndTry;
 				EndIf;
-				СтрокаПриемник.Key = КлючТек;
+				RowReceiver.Key1 = KeyCurrent;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 
-					КлючТек = Ключ2;
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = Key2;
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ2 = КлючТек;
+					RowReceiver.Key2 = KeyCurrent;
 					
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					КлючТек = Ключ3;
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = Key3;
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ3 = КлючТек;
+					RowReceiver.Key3 = KeyCurrent;
 					
 				EndIf;
 				
-#EndRegion  
+//#EndRegion  
 
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				FillVariablesPWithDefaultValues();
+				For Each RowSettingsFile In SettingsFile Do
 					//Not задан номер колонки (например, если реквизит заполняется программно)
-					If СтрокаНастроекФайла.НомерКолонки = 0 Then
+					If RowSettingsFile.НомерКолонки = 0 Then
 						Continue;
 					EndIf;
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-					СтрокаПриемник[ИмяРеквизита] = ФайлDBF[ФайлDBF.поля[СтрокаНастроекФайла.НомерКолонки - 1].Name];
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+					RowReceiver[AttributeName] = FileDBF[FileDBF.поля[RowSettingsFile.НомерКолонки - 1].Name];
 					
 					//FillType переменных, которые будут использоваться в произвольном коде
-					РВрем = СтрокаПриемник[ИмяРеквизита];
-					If СтрокаНастроекФайла.LineNumber = 1 Then
+					РВрем = RowReceiver[AttributeName];
+					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+					ElsIf RowSettingsFile.LineNumber = 2 Then
 						Р2 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+					ElsIf RowSettingsFile.LineNumber = 3 Then
 						Р3 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+					ElsIf RowSettingsFile.LineNumber = 4 Then
 						Р4 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+					ElsIf RowSettingsFile.LineNumber = 5 Then
 						Р5 = РВрем;
 					EndIf;
 					
 				EndDo;	
 				
-				ФайлDBF.Next();
+				FileDBF.Next();
 							
 			EndIf;
 
-#EndRegion
+//#EndRegion
 
 
-#Region Произвольный_код_заполнения_реквизитов
+//#Region Произвольный_код_заполнения_реквизитов
 			
-			For Each СтрокаНастроекФайла In SettingsFile Do
+			For Each RowSettingsFile In SettingsFile Do
 				
-				ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-				РТек = СтрокаПриемник[ИмяРеквизита];
+				AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+				РТек = RowReceiver[AttributeName];
 
 				Try
-					Execute СтрокаНастроекФайла.ПроизвольныйКод;
+					Execute RowSettingsFile.ПроизвольныйКод;
 				Except
-					ТекстОшибки = ErrorDescription();
-					Message("Error при выполнении произвольного кода (реквизит " + СтрокаНастроекФайла.LineNumber + "):" + ТекстОшибки);
+					ErrorText = ErrorDescription();
+					Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
 				EndTry;
 				
-				If ThisObject["CollapseTable" + ИдентификаторБазы] Then
+				If ThisObject["CollapseTable" + BaseID] Then
 					Try
-						Execute КодПриведенияРеквизитаКТипуЧисло;
+						Execute CodeCastingAttributeToTypeNumber;
 					Except
 						РТек = 0;
 					EndTry;
 				EndIf;
 				
-				СтрокаПриемник[ИмяРеквизита] = РТек;
+				RowReceiver[AttributeName] = РТек;
 								
 			EndDo;
 			
-#EndRegion 
+//#EndRegion 
 
 		EndDo;
 
 	EndIf;
 	
-	If ФорматФайла = "XLS" Then
-		Книга.Close(0);
+	If FileFormat = "XLS" Then
+		Book.Close(0);
 		Excel.Quit();
-	ElsIf ФорматФайла = "DOC" Then
+	ElsIf FileFormat = "DOC" Then
 		Document.Close(0);
 		Word.Quit();
-	ElsIf ФорматФайла = "DBF" Then
-		ФайлDBF.CloseFile();
-	ElsIf ФорматФайла = "XML" Then
-		Парсер.Close();
+	ElsIf FileFormat = "DBF" Then
+		FileDBF.CloseFile();
+	ElsIf FileFormat = "XML" Then
+		XMLReader.Close();
 	EndIf;
 	
-	//Indexing
-	If ТЗ <> Undefined Then
+	If ValueTable <> Undefined Then
 		
-		ТЗ.Indexes.Add(КолонкиСКлючомСтрокой);
+		//Indexing
+		ValueTable.Indexes.Add(ColumnsWithKeyRow);
 		
-		For СчетчикРеквизитов = 1 To ThisObject["SettingsFile" + ИдентификаторБазы].Count() Do
+		For AttributesCounter = 1 To ThisObject["SettingsFile" + BaseID].Count() Do
 			
-			ИмяРеквизита = String(ИдентификаторБазы) + СчетчикРеквизитов;
-			ЗаголовокРеквизитаИзНастроек = ThisObject["SettingsFile" + ИдентификаторБазы][СчетчикРеквизитов - 1].ЗаголовокРеквизитаДляПользователя;
+			AttributeName = String(BaseID) + AttributesCounter;
+			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ПредставленияЗаголовковРеквизитов[ИмяРеквизита] = ?(IsBlankString(ЗаголовокРеквизитаИзНастроек), "Attribute " + ИдентификаторБазы + СчетчикРеквизитов, ИмяРеквизита + ": " + ЗаголовокРеквизитаИзНастроек);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ПрочитатьДанныеИзJSONИПолучитьТЗ(ИдентификаторБазы, ТекстОшибок = "")
+Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 	
-	ТЗ = New ValueTable;
-	ТЗ.Cols.Add("Key");
-	КолонкиСКлючомСтрокой = "Key";
+	ValueTable = New ValueTable;
+	ValueTable.Columns.Add("Key");
+	ColumnsWithKeyRow = "Key";
 	
-	If ЧислоСтолбцовВКлюче > 1 Then
-		ТЗ.Cols.Add("Ключ2");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Ключ2";
+	If NumberColumnsInKey > 1 Then
+		ValueTable.Columns.Add("Key2");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key2";
 	EndIf;
 	
-	If ЧислоСтолбцовВКлюче > 2 Then
-		ТЗ.Cols.Add("Ключ3");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Ключ3";
+	If NumberColumnsInKey > 2 Then
+		ValueTable.Columns.Add("Key3");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key3";
 	EndIf;
 	
-	ТЗ.Cols.Add("Реквизит1");
-	ТЗ.Cols.Add("Реквизит2");
-	ТЗ.Cols.Add("Реквизит3");
-	ТЗ.Cols.Add("Реквизит4");
-	ТЗ.Cols.Add("Реквизит5");
+	ValueTable.Columns.Add("Attribute1");
+	ValueTable.Columns.Add("Attribute2");
+	ValueTable.Columns.Add("Attribute3");
+	ValueTable.Columns.Add("Attribute4");
+	ValueTable.Columns.Add("Attribute5");
 	
-	//ПутьКФайлу 			= ThisObject["ConnectionToExternalBase"		+ ИдентификаторБазы + "ПутьКФайлу"];
-	//ФорматФайла 		= ThisObject["ConnectionToExternalBase" 		+ ИдентификаторБазы + "ФорматФайла"];
-	//НомерПервойСтроки 	= ThisObject["НомерПервойСтрокиФайла" 		+ ИдентификаторБазы];
-	SettingsFile 		= ThisObject["SettingsFile" 				+ ИдентификаторБазы];
-	//НомерТаблицы		= ThisObject["ConnectionToExternalBase"		+ ИдентификаторБазы + "НомерТаблицыВФайле"];
-	ИмяЭлементаСДаннымиФайла = ThisObject["ИмяЭлементаСДаннымиФайла" + ИдентификаторБазы];
+	//PathToFile 			= ThisObject["ConnectionToExternalBase"		+ BaseID + "PathToFile"];
+	//FileFormat 		= ThisObject["ConnectionToExternalBase" 		+ BaseID + "FileFormat"];
+	//NumberFirstRow 	= ThisObject["NumberFirstRowFile" 		+ BaseID];
+	SettingsFile 		= ThisObject["SettingsFile" 				+ BaseID];
+	//NumberTable		= ThisObject["ConnectionToExternalBase"		+ BaseID + "NumberTableInFile"];
+	ElementNameWithDataFile = ThisObject["ElementNameWithDataFile" + BaseID];
 	
-	НомерСтолбцаСКлючом = ThisObject["ColumnNumberKeyFromFile" 	+ ИдентификаторБазы];
-	ИмяСтолбцаСКлючом 	= ThisObject["ColumnNameKeyFromFile" 	+ ИдентификаторБазы];	
-	If ЧислоСтолбцовВКлюче > 1 Then
-		НомерСтолбцаСКлючом2 	= ThisObject["ColumnNumberKey2FromFile" + ИдентификаторБазы];
-		ИмяСтолбцаСКлючом2 		= ThisObject["ColumnNameKey2FromFile" + ИдентификаторБазы];
+	ColumnNumberWithKey = ThisObject["ColumnNumberKeyFromFile" 	+ BaseID];
+	ColumnNameWithKey 	= ThisObject["ColumnNameKeyFromFile" 	+ BaseID];	
+	If NumberColumnsInKey > 1 Then
+		ColumnNumberWithKey2 	= ThisObject["ColumnNumberKey2FromFile" + BaseID];
+		ColumnNameWithKey2 		= ThisObject["ColumnNameKey2FromFile" + BaseID];
 	EndIf;	
-	If ЧислоСтолбцовВКлюче > 2 Then
-		НомерСтолбцаСКлючом3 	= ThisObject["ColumnNumberKey3FromFile" + ИдентификаторБазы];
-		ИмяСтолбцаСКлючом3 		= ThisObject["ColumnNameKey3FromFile" + ИдентификаторБазы];
+	If NumberColumnsInKey > 2 Then
+		ColumnNumberWithKey3 	= ThisObject["ColumnNumberKey3FromFile" + BaseID];
+		ColumnNameWithKey3 		= ThisObject["ColumnNameKey3FromFile" + BaseID];
 	EndIf;
 	
 	JSONReader = New JSONReader;
-	JSONReader.SetString(ThisObject["QueryText" + ИдентификаторБазы]);
+	JSONReader.SetString(ThisObject["QueryText" + BaseID]);
 	ДанныеJSON = ReadJSON(JSONReader);
 	JSONReader.Close();
 	
@@ -2754,170 +3084,170 @@ Function ПрочитатьДанныеИзJSONИПолучитьТЗ(Идент
 			Break;
 		EndIf;
 		
-		If TrimAll(Upper(CurrentData.Key)) = TrimAll(Upper(ИмяЭлементаСДаннымиФайла)) And
+		If TrimAll(Upper(CurrentData.Key)) = TrimAll(Upper(ElementNameWithDataFile)) And
 			TypeOf(CurrentData.Value) = Type("Array") Then
 			
 			ЭлементНайден = True;
 			
 			For каждого ТекущееЗначениеJSON In CurrentData.Value Do
 			
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
+				FillVariablesPWithDefaultValues();
 										
-				СтрокаПриемник = ТЗ.Add();
+				RowReceiver = ValueTable.Add();
 				
 				Try				
-					If Not ТекущееЗначениеJSON.Property(ИмяСтолбцаСКлючом) Then
-						Raise "Attribute JSON с именем " + ИмяСтолбцаСКлючом + " не найден";
+					If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey) Then
+						Raise "Attribute JSON с именем " + ColumnNameWithKey + " не найден";
 					EndIf;
 				Except
-					ТекстОшибки = "Attribute JSON с именем " + ИмяСтолбцаСКлючом + " не найден";
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorText = "Attribute JSON с именем " + ColumnNameWithKey + " не найден";
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					Return Undefined;
 				EndTry; 
 				
-				Ключ1 = ТекущееЗначениеJSON[ИмяСтолбцаСКлючом];
+				Key1 = ТекущееЗначениеJSON[ColumnNameWithKey];
 				
-				If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(Upper(String(Ключ1)));
+				If ThisObject["CastKeyToUpperCase" + BaseID] Then
+					Key1 = TrimAll(Upper(String(Key1)));
 				EndIf;
-				If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-					Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+				If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+					Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 				
 					Try				
-						If Not ТекущееЗначениеJSON.Property(ИмяСтолбцаСКлючом2) Then
-							Raise "Attribute JSON с именем " + ИмяСтолбцаСКлючом2 + " не найден";
+						If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey2) Then
+							Raise "Attribute JSON с именем " + ColumnNameWithKey2 + " не найден";
 						EndIf;
 					Except
-						ТекстОшибки = "Attribute JSON с именем " + ИмяСтолбцаСКлючом2 + " не найден";
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = "Attribute JSON с именем " + ColumnNameWithKey2 + " не найден";
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					Ключ2 = ТекущееЗначениеJSON[ИмяСтолбцаСКлючом2];
+					Key2 = ТекущееЗначениеJSON[ColumnNameWithKey2];
 							
-					If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(String(Ключ2));
+					If ThisObject["CastKey2ToString" + BaseID] Then
+						Key2 = TrimAll(String(Key2));
 					EndIf;
 					
-					If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(Upper(String(Ключ2)));
+					If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+						Key2 = TrimAll(Upper(String(Key2)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+						Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 					EndIf;
 												
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 				
 					Try				
-						If Not ТекущееЗначениеJSON.Property(ИмяСтолбцаСКлючом3) Then
-							Raise "Attribute JSON с именем " + ИмяСтолбцаСКлючом3 + " не найден";
+						If Not ТекущееЗначениеJSON.Property(ColumnNameWithKey3) Then
+							Raise "Attribute JSON с именем " + ColumnNameWithKey3 + " не найден";
 						EndIf;
 					Except
-						ТекстОшибки = "Attribute JSON с именем " + ИмяСтолбцаСКлючом3 + " не найден";
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = "Attribute JSON с именем " + ColumnNameWithKey3 + " не найден";
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					Ключ3 = ТекущееЗначениеJSON[ИмяСтолбцаСКлючом3];
+					Key3 = ТекущееЗначениеJSON[ColumnNameWithKey3];
 							
-					If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(String(Ключ3));
+					If ThisObject["CastKey3ToString" + BaseID] Then
+						Key3 = TrimAll(String(Key3));
 					EndIf;
 					
-					If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(Upper(String(Ключ3)));
+					If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+						Key3 = TrimAll(Upper(String(Key3)));
 					EndIf;
 					
-					If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-						Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+					If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+						Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 					EndIf;
 					
 				EndIf;
 					
-#Region Произвольный_код_обработки_ключа
+#Region Arbitrary_key_processing_code
 
-				КлючТек = Ключ1;
-				If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+				KeyCurrent = Key1;
+				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 					Try
-					    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+					    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 					Except
-						ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-						Message(ТекстОшибки);
+						ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+						Message(ErrorText);
 					EndTry;
 				EndIf;
 				
-				СтрокаПриемник.Key = КлючТек;
+				RowReceiver.Key1 = KeyCurrent;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 					
-					КлючТек = Ключ2;
-					If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+					KeyCurrent = Key2;
+					If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ2 = КлючТек;
+					RowReceiver.Key2 = KeyCurrent;
 					
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 					
-					КлючТек = Ключ3;
-					If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+					KeyCurrent = Key3;
+					If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 						Try
-						    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+						    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 						Except
-							ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-							Message(ТекстОшибки);
+							ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+							Message(ErrorText);
 						EndTry;
 					EndIf;
-					СтрокаПриемник.Ключ3 = КлючТек;
+					RowReceiver.Key3 = KeyCurrent;
 					
 				EndIf;
 				
 #EndRegion  
 
-				ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				FillVariablesPWithDefaultValues();
+				For Each RowSettingsFile In SettingsFile Do
 					
 					//Not задано имя колонки (например, если реквизит заполняется программно)
-					If IsBlankString(СтрокаНастроекФайла.ColumnName) Then
+					If IsBlankString(RowSettingsFile.ColumnName) Then
 						Continue;
 					EndIf;
 					
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 					Try				
-						If Not ТекущееЗначениеJSON.Property(СтрокаНастроекФайла.ColumnName) Then
-							Raise "Attribute JSON с именем " + СтрокаНастроекФайла.ColumnName + " не найден";
+						If Not ТекущееЗначениеJSON.Property(RowSettingsFile.ColumnName) Then
+							Raise "Attribute JSON с именем " + RowSettingsFile.ColumnName + " не найден";
 						EndIf;
 					Except
-						ТекстОшибки = "Attribute JSON с именем " + СтрокаНастроекФайла.ColumnName + " не найден";
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorText = "Attribute JSON с именем " + RowSettingsFile.ColumnName + " не найден";
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						Return Undefined;
 					EndTry; 
 					
-					СтрокаПриемник[ИмяРеквизита] = ТекущееЗначениеJSON[СтрокаНастроекФайла.ColumnName];
+					RowReceiver[AttributeName] = ТекущееЗначениеJSON[RowSettingsFile.ColumnName];
 										
 					//FillType переменных, которые будут использоваться в произвольном коде
-					РВрем = СтрокаПриемник[ИмяРеквизита];
-					If СтрокаНастроекФайла.LineNumber = 1 Then
+					РВрем = RowReceiver[AttributeName];
+					If RowSettingsFile.LineNumber = 1 Then
 						Р1 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+					ElsIf RowSettingsFile.LineNumber = 2 Then
 						Р2 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+					ElsIf RowSettingsFile.LineNumber = 3 Then
 						Р3 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+					ElsIf RowSettingsFile.LineNumber = 4 Then
 						Р4 = РВрем;
-					ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+					ElsIf RowSettingsFile.LineNumber = 5 Then
 						Р5 = РВрем;
 					EndIf;
 
@@ -2926,27 +3256,27 @@ Function ПрочитатьДанныеИзJSONИПолучитьТЗ(Идент
 		
 #Region Произвольный_код_заполнения_реквизитов
 		
-				For Each СтрокаНастроекФайла In SettingsFile Do
+				For Each RowSettingsFile In SettingsFile Do
 					
-					ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-					РТек = СтрокаПриемник[ИмяРеквизита];
+					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+					РТек = RowReceiver[AttributeName];
 
 					Try
-						Execute СтрокаНастроекФайла.ПроизвольныйКод;
+						Execute RowSettingsFile.ПроизвольныйКод;
 					Except
-						ТекстОшибки = ErrorDescription();
-						Message("Error при выполнении произвольного кода (реквизит " + СтрокаНастроекФайла.LineNumber + "):" + ТекстОшибки);
+						ErrorText = ErrorDescription();
+						Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
 					EndTry;
 					
-					If ThisObject["CollapseTable" + ИдентификаторБазы] Then
+					If ThisObject["CollapseTable" + BaseID] Then
 						Try
-							Execute КодПриведенияРеквизитаКТипуЧисло;
+							Execute CodeCastingAttributeToTypeNumber;
 						Except
 							РТек = 0;
 						EndTry;
 					EndIf;
 				
-					СтрокаПриемник[ИмяРеквизита] = РТек;
+					RowReceiver[AttributeName] = РТек;
 				
 				EndDo;
 													
@@ -2957,119 +3287,119 @@ Function ПрочитатьДанныеИзJSONИПолучитьТЗ(Идент
 #EndRegion 
 
 	EndDo;
-	
-	//Indexing
-	If ТЗ <> Undefined Then
 		
-		ТЗ.Indexes.Add(КолонкиСКлючомСтрокой);
+	If ValueTable <> Undefined Then
 		
-		For СчетчикРеквизитов = 1 To ThisObject["SettingsFile" + ИдентификаторБазы].Count() Do
+		//Indexing
+		ValueTable.Indexes.Add(ColumnsWithKeyRow);
+		
+		For AttributesCounter = 1 To ThisObject["SettingsFile" + BaseID].Count() Do
 			
-			ИмяРеквизита = String(ИдентификаторБазы) + СчетчикРеквизитов;
-			ЗаголовокРеквизитаИзНастроек = ThisObject["SettingsFile" + ИдентификаторБазы][СчетчикРеквизитов - 1].ЗаголовокРеквизитаДляПользователя;
+			AttributeName = String(BaseID) + AttributesCounter;
+			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ПредставленияЗаголовковРеквизитов[ИмяРеквизита] = ?(IsBlankString(ЗаголовокРеквизитаИзНастроек), "Attribute " + ИдентификаторБазы + СчетчикРеквизитов, ИмяРеквизита + ": " + ЗаголовокРеквизитаИзНастроек);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
 
-Function ПолучитьДанныеИзТабличногоДокумента(ИдентификаторБазы, ТекстОшибок = "")
+Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 	
-	ТЗ = New ValueTable;
-	ТЗ.Cols.Add("Key");
-	КолонкиСКлючомСтрокой = "Key";
+	ValueTable = New ValueTable;
+	ValueTable.Columns.Add("Key");
+	ColumnsWithKeyRow = "Key";
 	
-	If ЧислоСтолбцовВКлюче > 1 Then
-		ТЗ.Cols.Add("Ключ2");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Ключ2";
+	If NumberColumnsInKey > 1 Then
+		ValueTable.Columns.Add("Key2");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key2";
 	EndIf;
 	
-	If ЧислоСтолбцовВКлюче > 2 Then
-		ТЗ.Cols.Add("Ключ3");
-		КолонкиСКлючомСтрокой = КолонкиСКлючомСтрокой + ",Ключ3";
+	If NumberColumnsInKey > 2 Then
+		ValueTable.Columns.Add("Key3");
+		ColumnsWithKeyRow = ColumnsWithKeyRow + ",Key3";
 	EndIf;
 	
-	ТЗ.Cols.Add("Реквизит1");
-	ТЗ.Cols.Add("Реквизит2");
-	ТЗ.Cols.Add("Реквизит3");
-	ТЗ.Cols.Add("Реквизит4");
-	ТЗ.Cols.Add("Реквизит5");
+	ValueTable.Columns.Add("Attribute1");
+	ValueTable.Columns.Add("Attribute2");
+	ValueTable.Columns.Add("Attribute3");
+	ValueTable.Columns.Add("Attribute4");
+	ValueTable.Columns.Add("Attribute5");
 	
-	НомерПервойСтроки 	= ThisObject["НомерПервойСтрокиФайла" + ИдентификаторБазы];
-	SettingsFile 		= ThisObject["SettingsFile" + ИдентификаторБазы];
+	NumberFirstRow 	= ThisObject["NumberFirstRowFile" + BaseID];
+	SettingsFile 		= ThisObject["SettingsFile" + BaseID];
 	
-	НомерСтолбцаСКлючом = ThisObject["ColumnNumberKeyFromFile" + ИдентификаторБазы];
-	If ЧислоСтолбцовВКлюче > 1 Then
-		НомерСтолбцаСКлючом2 = ThisObject["ColumnNumberKey2FromFile" + ИдентификаторБазы];
+	ColumnNumberWithKey = ThisObject["ColumnNumberKeyFromFile" + BaseID];
+	If NumberColumnsInKey > 1 Then
+		ColumnNumberWithKey2 = ThisObject["ColumnNumberKey2FromFile" + BaseID];
 	EndIf;
-	If ЧислоСтолбцовВКлюче > 2 Then
-		НомерСтолбцаСКлючом3 = ThisObject["ColumnNumberKey3FromFile" + ИдентификаторБазы];
+	If NumberColumnsInKey > 2 Then
+		ColumnNumberWithKey3 = ThisObject["ColumnNumberKey3FromFile" + BaseID];
 	EndIf;
 	
-	НомерТекущейСтроки = НомерПервойСтроки;	
+	NumberCurrentRow = NumberFirstRow;	
 	ТекущееЧислоСтрокСПустымиКлючами = 0;
 	While True Do
 		
-		Ключ1 = ThisObject["Table" + ИдентификаторБазы].Region(НомерТекущейСтроки,НомерСтолбцаСКлючом,НомерТекущейСтроки,НомерСтолбцаСКлючом).Text;
+		Key1 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey,NumberCurrentRow,ColumnNumberWithKey).Text;
 								
-		If ThisObject["CastKeyToString" + ИдентификаторБазы] Then
-			Ключ1 = TrimAll(String(Ключ1));
+		If ThisObject["CastKeyToString" + BaseID] Then
+			Key1 = TrimAll(String(Key1));
 		EndIf;
 		
-		If ThisObject["CastKeyToUpperCase" + ИдентификаторБазы] Then
-			Ключ1 = TrimAll(Upper(String(Ключ1)));
+		If ThisObject["CastKeyToUpperCase" + BaseID] Then
+			Key1 = TrimAll(Upper(String(Key1)));
 		EndIf;
 		
-		If ThisObject["DeleteFromKeyCurlyBrackets" + ИдентификаторБазы] Then
-			Ключ1 = TrimAll(StrReplace(StrReplace(String(Ключ1), "{", ""), "}", ""));
+		If ThisObject["DeleteFromKeyCurlyBrackets" + BaseID] Then
+			Key1 = TrimAll(StrReplace(StrReplace(String(Key1), "{", ""), "}", ""));
 		EndIf;
 						
-		If ЧислоСтолбцовВКлюче > 1 Then
+		If NumberColumnsInKey > 1 Then
 			
-			Ключ2 = ThisObject["Table" + ИдентификаторБазы].Region(НомерТекущейСтроки,НомерСтолбцаСКлючом2,НомерТекущейСтроки,НомерСтолбцаСКлючом2).Text;
+			Key2 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey2,NumberCurrentRow,ColumnNumberWithKey2).Text;
 					
-			If ThisObject["CastKey2ToString" + ИдентификаторБазы] Then
-				Ключ2 = TrimAll(String(Ключ2));
+			If ThisObject["CastKey2ToString" + BaseID] Then
+				Key2 = TrimAll(String(Key2));
 			EndIf;
 			
-			If ThisObject["CastKey2ToUpperCase" + ИдентификаторБазы] Then
-				Ключ2 = TrimAll(Upper(String(Ключ2)));
+			If ThisObject["CastKey2ToUpperCase" + BaseID] Then
+				Key2 = TrimAll(Upper(String(Key2)));
 			EndIf;
 			
-			If ThisObject["DeleteFromKey2CurlyBrackets" + ИдентификаторБазы] Then
-				Ключ2 = TrimAll(StrReplace(StrReplace(String(Ключ2), "{", ""), "}", ""));
+			If ThisObject["DeleteFromKey2CurlyBrackets" + BaseID] Then
+				Key2 = TrimAll(StrReplace(StrReplace(String(Key2), "{", ""), "}", ""));
 			EndIf;
 						
 		EndIf;
 		
-		If ЧислоСтолбцовВКлюче > 2 Then
+		If NumberColumnsInKey > 2 Then
 			
-			Ключ3 = ThisObject["Table" + ИдентификаторБазы].Region(НомерТекущейСтроки,НомерСтолбцаСКлючом3,НомерТекущейСтроки,НомерСтолбцаСКлючом3).Text;
+			Key3 = ThisObject["Table" + BaseID].Region(NumberCurrentRow,ColumnNumberWithKey3,NumberCurrentRow,ColumnNumberWithKey3).Text;
 					
-			If ThisObject["CastKey3ToString" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(String(Ключ3));
+			If ThisObject["CastKey3ToString" + BaseID] Then
+				Key3 = TrimAll(String(Key3));
 			EndIf;
 			
-			If ThisObject["CastKey3ToUpperCase" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(Upper(String(Ключ3)));
+			If ThisObject["CastKey3ToUpperCase" + BaseID] Then
+				Key3 = TrimAll(Upper(String(Key3)));
 			EndIf;
 			
-			If ThisObject["DeleteFromKey3CurlyBrackets" + ИдентификаторБазы] Then
-				Ключ3 = TrimAll(StrReplace(StrReplace(String(Ключ3), "{", ""), "}", ""));
+			If ThisObject["DeleteFromKey3CurlyBrackets" + BaseID] Then
+				Key3 = TrimAll(StrReplace(StrReplace(String(Key3), "{", ""), "}", ""));
 			EndIf;
 						
 		EndIf;
 						
-		If Not ValueIsFilled(Ключ1) Then
-			If ЧислоСтолбцовВКлюче > 1 Then
-				If Not ValueIsFilled(Ключ2) Then
-					If ЧислоСтолбцовВКлюче > 2 Then
-						If Not ValueIsFilled(Ключ3) Then
+		If Not ValueIsFilled(Key1) Then
+			If NumberColumnsInKey > 1 Then
+				If Not ValueIsFilled(Key2) Then
+					If NumberColumnsInKey > 2 Then
+						If Not ValueIsFilled(Key3) Then
 							ТекущееЧислоСтрокСПустымиКлючами = ТекущееЧислоСтрокСПустымиКлючами + 1;
 						EndIf;
 					Else
@@ -3087,183 +3417,185 @@ Function ПолучитьДанныеИзТабличногоДокумента(
 			Break;
 		EndIf;
 		
-		ЗаполнитьПеременныеРЗначениямиПоУмолчанию();
+		FillVariablesPWithDefaultValues();
 		
-		СтрокаПриемник = ТЗ.Add();
+		RowReceiver = ValueTable.Add();
 		
-#Region Произвольный_код_обработки_ключа
+#Region Arbitrary_key_processing_code
 	
-		КлючТек = Ключ1;
-		If ThisObject["ExecuteArbitraryKeyCode1" + ИдентификаторБазы] Then
+		KeyCurrent = Key1;
+		If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
 			Try
-			    Execute ThisObject["ArbitraryKeyCode1" + ИдентификаторБазы];
+			    Execute ThisObject["ArbitraryKeyCode1" + BaseID];
 			Except
-				ТекстОшибки = "Error при выполнении произвольного кода (ключ 1: """ + Ключ1 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-				Message(ТекстОшибки);
+				ErrorText = "Error при выполнении произвольного кода (ключ 1: """ + Key1 + """) источника " + BaseID + ": " + ErrorDescription();
+				Message(ErrorText);
 			EndTry;
 		EndIf;
-		СтрокаПриемник.Key = КлючТек;
+		RowReceiver.Key1 = KeyCurrent;
 		
-		If ЧислоСтолбцовВКлюче > 1 Then
+		If NumberColumnsInKey > 1 Then
 			
-			КлючТек = Ключ2;
-			If ThisObject["ExecuteArbitraryKeyCode2" + ИдентификаторБазы] Then
+			KeyCurrent = Key2;
+			If ThisObject["ExecuteArbitraryKeyCode2" + BaseID] Then
 				Try
-				    Execute ThisObject["ArbitraryKeyCode2" + ИдентификаторБазы];
+				    Execute ThisObject["ArbitraryKeyCode2" + BaseID];
 				Except
-					ТекстОшибки = "Error при выполнении произвольного кода (ключ 2: """ + Ключ2 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-					Message(ТекстОшибки);
+					ErrorText = "Error при выполнении произвольного кода (ключ 2: """ + Key2 + """) источника " + BaseID + ": " + ErrorDescription();
+					Message(ErrorText);
 				EndTry;
 			EndIf;
-			СтрокаПриемник.Ключ2 = КлючТек;
+			RowReceiver.Key2 = KeyCurrent;
 			
 		EndIf;
 		
-		If ЧислоСтолбцовВКлюче > 2 Then
+		If NumberColumnsInKey > 2 Then
 			
-			КлючТек = Ключ3;
-			If ThisObject["ExecuteArbitraryKeyCode3" + ИдентификаторБазы] Then
+			KeyCurrent = Key3;
+			If ThisObject["ExecuteArbitraryKeyCode3" + BaseID] Then
 				Try
-				    Execute ThisObject["ArbitraryKeyCode3" + ИдентификаторБазы];
+				    Execute ThisObject["ArbitraryKeyCode3" + BaseID];
 				Except
-					ТекстОшибки = "Error при выполнении произвольного кода (ключ 3: """ + Ключ3 + """) источника " + ИдентификаторБазы + ": " + ErrorDescription();
-					Message(ТекстОшибки);
+					ErrorText = "Error при выполнении произвольного кода (ключ 3: """ + Key3 + """) источника " + BaseID + ": " + ErrorDescription();
+					Message(ErrorText);
 				EndTry;
 			EndIf;
-			СтрокаПриемник.Ключ3 = КлючТек;
+			RowReceiver.Key3 = KeyCurrent;
 			
 		EndIf;
 		
 #EndRegion 
 		
-		For Each СтрокаНастроекФайла In SettingsFile Do
+		For Each RowSettingsFile In SettingsFile Do
 		
-			ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-			СтрокаПриемник[ИмяРеквизита] = TrimAll(ThisObject["Table" + ИдентификаторБазы].Region(НомерТекущейСтроки,СтрокаНастроекФайла.НомерКолонки,НомерТекущейСтроки,СтрокаНастроекФайла.НомерКолонки).Text);
+			AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+			RowReceiver[AttributeName] = TrimAll(ThisObject["Table" + BaseID].Region(NumberCurrentRow,RowSettingsFile.НомерКолонки,NumberCurrentRow,RowSettingsFile.НомерКолонки).Text);
 			
 			//FillType переменных, которые будут использоваться в произвольном коде
-			РВрем = СтрокаПриемник[ИмяРеквизита];
-			If СтрокаНастроекФайла.LineNumber = 1 Then
+			РВрем = RowReceiver[AttributeName];
+			If RowSettingsFile.LineNumber = 1 Then
 				Р1 = РВрем;
-			ElsIf СтрокаНастроекФайла.LineNumber = 2 Then
+			ElsIf RowSettingsFile.LineNumber = 2 Then
 				Р2 = РВрем;
-			ElsIf СтрокаНастроекФайла.LineNumber = 3 Then
+			ElsIf RowSettingsFile.LineNumber = 3 Then
 				Р3 = РВрем;
-			ElsIf СтрокаНастроекФайла.LineNumber = 4 Then
+			ElsIf RowSettingsFile.LineNumber = 4 Then
 				Р4 = РВрем;
-			ElsIf СтрокаНастроекФайла.LineNumber = 5 Then
+			ElsIf RowSettingsFile.LineNumber = 5 Then
 				Р5 = РВрем;
 			EndIf;	
 			
 		EndDo;
 		
-		For Each СтрокаНастроекФайла In SettingsFile Do
+		For Each RowSettingsFile In SettingsFile Do
 				
-			ИмяРеквизита = "Attribute" + СтрокаНастроекФайла.LineNumber;
-			РТек = СтрокаПриемник[ИмяРеквизита];
+			AttributeName = "Attribute" + RowSettingsFile.LineNumber;
+			РТек = RowReceiver[AttributeName];
 
 			Try
-				Execute СтрокаНастроекФайла.ПроизвольныйКод;
+				Execute RowSettingsFile.ПроизвольныйКод;
 			Except
-				ТекстОшибки = ErrorDescription();
-				Message("Error при выполнении произвольного кода (реквизит " + СтрокаНастроекФайла.LineNumber + "):" + ТекстОшибки);
+				ErrorText = ErrorDescription();
+				Message("Error при выполнении произвольного кода (реквизит " + RowSettingsFile.LineNumber + "):" + ErrorText);
 			EndTry;
 			
-			If ThisObject["CollapseTable" + ИдентификаторБазы] Then
+			If ThisObject["CollapseTable" + BaseID] Then
 				Try
-					Execute КодПриведенияРеквизитаКТипуЧисло;
+					Execute CodeCastingAttributeToTypeNumber;
 				Except
 					РТек = 0;
 				EndTry;
 			EndIf;
 			
-			СтрокаПриемник[ИмяРеквизита] = РТек;
+			RowReceiver[AttributeName] = РТек;
 							
 		EndDo;
 		
-		НомерТекущейСтроки = НомерТекущейСтроки + 1;
+		NumberCurrentRow = NumberCurrentRow + 1;
 		
 	EndDo;
 	
-	//Indexing
-	If ТЗ <> Undefined Then
+	If ValueTable <> Undefined Then
 		
-		ТЗ.Indexes.Add(КолонкиСКлючомСтрокой);
+		//Indexing
+		ValueTable.Indexes.Add(ColumnsWithKeyRow);
 		
-		For СчетчикРеквизитов = 1 To ThisObject["SettingsFile" + ИдентификаторБазы].Count() Do
+		For AttributesCounter = 1 To ThisObject["SettingsFile" + BaseID].Count() Do
 			
-			ИмяРеквизита = String(ИдентификаторБазы) + СчетчикРеквизитов;
-			ЗаголовокРеквизитаИзНастроек = ThisObject["SettingsFile" + ИдентификаторБазы][СчетчикРеквизитов - 1].ЗаголовокРеквизитаДляПользователя;
+			AttributeName = String(BaseID) + AttributesCounter;
+			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ПредставленияЗаголовковРеквизитов[ИмяРеквизита] = ?(IsBlankString(ЗаголовокРеквизитаИзНастроек), "Attribute " + ИдентификаторБазы + СчетчикРеквизитов, ИмяРеквизита + ": " + ЗаголовокРеквизитаИзНастроек);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
 	EndIf;
 	
-	Return ТЗ;
+	Return ValueTable;
 	
 EndFunction
+
 #EndRegion
 
 
 #Region Вспомогательные_процедуры_и_функции
-Function ПроверитьЗаполнениеРеквизитов(ИсточникДляПредварительногоПросмотра = "", ТекстОшибок = "") Export
+
+Function CheckFillingAttributes(ИсточникДляПредварительногоПросмотра = "", ErrorsText = "") Export
 	
 	РеквизитыЗаполненыКорректно = True;
 	
-	If ЧислоСтолбцовВКлюче = 0 Then
+	If NumberColumnsInKey = 0 Then
 		РеквизитыЗаполненыКорректно = False;
-		ТекстОшибки = "Not заполнено число столбцов в ключе";
+		ErrorText = "Not заполнено число столбцов в ключе";
 		UserMessage = New UserMessage;
-		UserMessage.Text = ТекстОшибки;
-		UserMessage.Field = "Object.ЧислоСтолбцовВКлюче";
+		UserMessage.Text = ErrorText;
+		UserMessage.Field = "Object.NumberColumnsInKey";
 		UserMessage.Message();
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
 	EndIf;
 		
 	If NumberOfRowsWithEmptyKeysToBreakReading = 0 Then
 		РеквизитыЗаполненыКорректно = False;
-		ТекстОшибки = "Not заполнено число строк с пустыми ключами для прерывания чтения";
+		ErrorText = "Not заполнено число строк с пустыми ключами для прерывания чтения";
 		UserMessage = New UserMessage;
-		UserMessage.Text = ТекстОшибки;
+		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.NumberOfRowsWithEmptyKeysToBreakReading";
 		UserMessage.Message();
-		ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+		ErrorsText = ErrorsText + Chars.LF + ErrorText;
 	EndIf;
 	
 #Region _1С_8_1С_77_SQL
 
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "А" Then
+	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
 	
 		If BaseTypeA >= 0 And BaseTypeA <= 2 Or BaseTypeA = 5 Then
 			
 			If IsBlankString(QueryTextA) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен текст запроса к базе А";
+				ErrorText = "Not заполнен текст запроса к базе А";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextA";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
 		EndIf;
 		
 	EndIf;
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "Б" Then
+	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
 		
 		If BaseTypeB >= 0 And BaseTypeB <= 2 Or BaseTypeB = 5 Then
 		
 			If IsBlankString(QueryTextB) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен текст запроса к базе Б";
+				ErrorText = "Not заполнен текст запроса к базе Б";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextB";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
 		EndIf;
@@ -3275,61 +3607,61 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 
 #Region Файл_Табличный_документ
 
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "А" Then
+	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
 	
 		If BaseTypeA = 3 Or BaseTypeA = 4 Then
 				
 			If BaseTypeA = 3 And IsBlankString(ConnectionToExternalBaseAFileFormat) Then
 				
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен формат файла А";
+				ErrorText = "Not заполнен формат файла А";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ConnectionToExternalBaseAFileFormat";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 			ElsIf BaseTypeA = 3 And ConnectionToExternalBaseAFileFormat = "XML" Then
 				
 				If IsBlankString(ColumnNameKeyFromFileA) Then
 				
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом файла А";
+					ErrorText = "Not заполнено имя столбца с ключом файла А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKeyFromFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 				EndIf; 
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 				
 					If ColumnNameKey2FromFileA = 0 Then
 						
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя столбца с ключом 2 файла А";
+						ErrorText = "Not заполнено имя столбца с ключом 2 файла А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey2FromFileA";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndIf;
 					
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 				
 					If ColumnNameKey3FromFileA = 0 Then
 						
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя столбца с ключом 3 файла А";
+						ErrorText = "Not заполнено имя столбца с ключом 3 файла А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey3FromFileA";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndIf;
 					
@@ -3338,12 +3670,12 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 				If IsBlankString(DataStorageMethodInXMLFileA) Then
 				
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен способ хранения данных в файле А";
+					ErrorText = "Not заполнен способ хранения данных в файле А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.DataStorageMethodInXMLFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 				EndIf;
 			
@@ -3354,69 +3686,69 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 					
 					If ConnectionToExternalDatabaseANumberTableInFile = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер " + ?(ConnectionToExternalBaseAFileFormat = "XLS", "книги", "таблицы") + " файла А";
+						ErrorText = "Not заполнен номер " + ?(ConnectionToExternalBaseAFileFormat = "XLS", "книги", "таблицы") + " файла А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConnectionToExternalDatabaseANumberTableInFile";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 					
 				EndIf;
 				
 				If NumberFirstRowFileA = 0 Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен номер первой строки файла/таблицы А";
+					ErrorText = "Not заполнен номер первой строки файла/таблицы А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.NumberFirstRowFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If ColumnNumberKeyFromFileA = 0 Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен номер столбца с ключом файла/таблицы А";
+					ErrorText = "Not заполнен номер столбца с ключом файла/таблицы А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKeyFromFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then			
+				If NumberColumnsInKey > 1 Then			
 					If ColumnNumberKey2FromFileA = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер столбца с ключом 2 файла/таблицы А";
+						ErrorText = "Not заполнен номер столбца с ключом 2 файла/таблицы А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey2FromFileA";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;					
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;					
 					EndIf;			
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then			
+				If NumberColumnsInKey > 2 Then			
 					If ColumnNumberKey3FromFileA = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер столбца с ключом 3 файла/таблицы А";
+						ErrorText = "Not заполнен номер столбца с ключом 3 файла/таблицы А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey3FromFileA";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;					
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;					
 					EndIf;			
 				EndIf; 
 				
 				For Each СтрокаТЧ In SettingsFileA Do
 					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер колонки файла/таблицы А, соответствующий реквизиту А" + СтрокаТЧ.LineNumber;
+						ErrorText = "Not заполнен номер колонки файла/таблицы А, соответствующий реквизиту А" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.SettingsFileA[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 				EndDo;
 				
@@ -3426,66 +3758,66 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 		
 	EndIf; 
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "Б" Then
+	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
 		If BaseTypeB = 3 Or BaseTypeB = 4 Then
 				
 			If BaseTypeB = 3 And IsBlankString(ConnectionToExternalBaseBFileFormat) Then
 				
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен формат файла Б";
+				ErrorText = "Not заполнен формат файла Б";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ConnectionToExternalBaseBFileFormat";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 			ElsIf BaseTypeB = 3 And ConnectionToExternalBaseBFileFormat = "XML" Then
 
 				If IsBlankString(ColumnNameKeyFromFileB) Then
 				
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом файла Б";
+					ErrorText = "Not заполнено имя столбца с ключом файла Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKeyFromFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then			
+				If NumberColumnsInKey > 1 Then			
 					If ColumnNameKey2FromFileB = 0 Then					
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя столбца с ключом 2 файла Б";
+						ErrorText = "Not заполнено имя столбца с ключом 2 файла Б";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey2FromFileB";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;					
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;					
 					EndIf;				
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then			
+				If NumberColumnsInKey > 2 Then			
 					If ColumnNameKey3FromFileB = 0 Then					
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя столбца с ключом 3 файла Б";
+						ErrorText = "Not заполнено имя столбца с ключом 3 файла Б";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNameKey3FromFileB";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;					
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;					
 					EndIf;				
 				EndIf;
 				
 				If IsBlankString(DataStorageMethodInXMLFileB) Then
 				
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен способ хранения данных в файле Б";
+					ErrorText = "Not заполнен способ хранения данных в файле Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.DataStorageMethodInXMLFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				
 				EndIf;
 				
@@ -3496,62 +3828,62 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 					//For файлов xls и doc должен быть указан номер книги /таблицы
 					If ConnectionToExternalDatabaseBNumberTableInFile = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер " + ?(ConnectionToExternalBaseBFileFormat = "XLS", "книги", "таблицы") + " файла А";
+						ErrorText = "Not заполнен номер " + ?(ConnectionToExternalBaseBFileFormat = "XLS", "книги", "таблицы") + " файла А";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConnectionToExternalDatabaseBNumberTableInFile";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 				EndIf;
 				
 				If NumberFirstRowFileB = 0 Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен номер первой строки файла/таблицы Б";
+					ErrorText = "Not заполнен номер первой строки файла/таблицы Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.NumberFirstRowFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If ColumnNumberKeyFromFileB = 0 Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен номер столбца с ключом файла/таблицы Б";
+					ErrorText = "Not заполнен номер столбца с ключом файла/таблицы Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNumberKeyFromFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 1 Then
+				If NumberColumnsInKey > 1 Then
 				
 					If ColumnNumberKey2FromFileB = 0 Then
 						
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер столбца с ключом 2 файла/таблицы Б";
+						ErrorText = "Not заполнен номер столбца с ключом 2 файла/таблицы Б";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey2FromFileB";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndIf;
 				
 				EndIf;
 				
-				If ЧислоСтолбцовВКлюче > 2 Then
+				If NumberColumnsInKey > 2 Then
 				
 					If ColumnNumberKey3FromFileB = 0 Then
 						
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер столбца с ключом 3 файла/таблицы Б";
+						ErrorText = "Not заполнен номер столбца с ключом 3 файла/таблицы Б";
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ColumnNumberKey3FromFileB";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 						
 					EndIf;
 				
@@ -3560,12 +3892,12 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 				For Each СтрокаТЧ In SettingsFileB Do
 					If IsBlankString(СтрокаТЧ.ПроизвольныйКод) And СтрокаТЧ.НомерКолонки = 0 Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнен номер колонки файла/таблицы Б, соответствующий реквизиту Б" + СтрокаТЧ.LineNumber;
+						ErrorText = "Not заполнен номер колонки файла/таблицы Б, соответствующий реквизиту Б" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.SettingsFileB[" + (СтрокаТЧ.LineNumber - 1) + "].НомерКолонки";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 				EndDo;
 				
@@ -3580,59 +3912,59 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 
  #Region JSON
  
-	 If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "А" Then
+	 If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "A" Then
 		 
 	 	If BaseTypeA = 6 Then
 		 
 			If IsBlankString(QueryTextA) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнена строка JSON";
+				ErrorText = "Not заполнена строка JSON";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextA";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 						
 			If IsBlankString(ColumnNameKeyFromFileA) Then
 					
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнено имя столбца с ключом файла А";
+				ErrorText = "Not заполнено имя столбца с ключом файла А";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ColumnNameKeyFromFileA";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			
 			EndIf; 
 			
-			If ЧислоСтолбцовВКлюче > 1 Then
+			If NumberColumnsInKey > 1 Then
 			
 				If ColumnNameKey2FromFileA = 0 Then
 					
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом 2 файла А";
+					ErrorText = "Not заполнено имя столбца с ключом 2 файла А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey2FromFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndIf;
 				
 			EndIf;
 			
-			If ЧислоСтолбцовВКлюче > 2 Then
+			If NumberColumnsInKey > 2 Then
 			
 				If ColumnNameKey3FromFileA = 0 Then
 					
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом 3 файла А";
+					ErrorText = "Not заполнено имя столбца с ключом 3 файла А";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey3FromFileA";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndIf;
 				
@@ -3643,59 +3975,59 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 	EndIf;
 	
 	
-	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "Б" Then
+	If IsBlankString(ИсточникДляПредварительногоПросмотра) Or ИсточникДляПредварительногоПросмотра = "B" Then
 			
 		If BaseTypeB = 6 Then
 		 
 			If IsBlankString(QueryTextB) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнена строка JSON";
+				ErrorText = "Not заполнена строка JSON";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.QueryTextB";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
 			If IsBlankString(ColumnNameKeyFromFileB) Then
 					
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнено имя столбца с ключом файла Б";
+				ErrorText = "Not заполнено имя столбца с ключом файла Б";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.ColumnNameKeyFromFileB";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			
 			EndIf; 
 			
-			If ЧислоСтолбцовВКлюче > 1 Then
+			If NumberColumnsInKey > 1 Then
 			
 				If ColumnNameKey2FromFileB = 0 Then
 					
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом 2 файла Б";
+					ErrorText = "Not заполнено имя столбца с ключом 2 файла Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey2FromFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndIf;
 				
 			EndIf;
 			
-			If ЧислоСтолбцовВКлюче > 2 Then
+			If NumberColumnsInKey > 2 Then
 			
 				If ColumnNameKey3FromFileB = 0 Then
 					
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя столбца с ключом 3 файла Б";
+					ErrorText = "Not заполнено имя столбца с ключом 3 файла Б";
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ColumnNameKey3FromFileB";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					
 				EndIf;
 				
@@ -3709,60 +4041,60 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
  	If IsBlankString(ИсточникДляПредварительногоПросмотра) Then
 	 
 		//If код формируется автоматически, поля таблиц условий д.б. заполнены правильно
-		If Not CodeForOutputRowsEditedManually And Not RowOutputConditionsDisabled Then
+		If Not CodeForOutputRowsEditedManually And Not ConditionsOutputRowsDisabled Then
 			
 			If ConditionsOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForConditionsOutputRows) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен логический оператор для объединения условий вывода строк";
+				ErrorText = "Not заполнен логический оператор для объединения условий вывода строк";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForConditionsOutputRows";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
 			For Each СтрокаТЧ In ConditionsOutputRows Do
 				
 				If Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If Not ValueIsFilled(СтрокаТЧ.Condition) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено условие в строке условий вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнено условие в строке условий вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].Condition";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If Not ValueIsFilled(СтрокаТЧ.ComparisonType) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен тип сравнения в строке условий вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнен тип сравнения в строке условий вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].ComparisonType";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If СтрокаТЧ.Condition <> "Заполнен" Then
 				
 					If СтрокаТЧ.ComparisonType = "Attribute" And Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute2) Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
+						ErrorText = "Not заполнено имя реквизита в строке условий вывода №" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConditionsOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute2";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 					
 				EndIf;
@@ -3775,56 +4107,56 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 			
 			If ConditionsProhibitOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForProhibitingConditionsOutputRows) Then
 				РеквизитыЗаполненыКорректно = False;
-				ТекстОшибки = "Not заполнен логический оператор для объединения условий запрета вывода строк";
+				ErrorText = "Not заполнен логический оператор для объединения условий запрета вывода строк";
 				UserMessage = New UserMessage;
-				UserMessage.Text = ТекстОшибки;
+				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForProhibitingConditionsOutputRows";
 				UserMessage.Message();
-				ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+				ErrorsText = ErrorsText + Chars.LF + ErrorText;
 			EndIf;
 			
 			For Each СтрокаТЧ In ConditionsProhibitOutputRows Do
 				
 				If Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If Not ValueIsFilled(СтрокаТЧ.Condition) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнено условие в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнено условие в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].Condition";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If Not ValueIsFilled(СтрокаТЧ.ComparisonType) Then
 					РеквизитыЗаполненыКорректно = False;
-					ТекстОшибки = "Not заполнен тип сравнения в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+					ErrorText = "Not заполнен тип сравнения в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
 					UserMessage = New UserMessage;
-					UserMessage.Text = ТекстОшибки;
+					UserMessage.Text = ErrorText;
 					UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].ComparisonType";
 					UserMessage.Message();
-					ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
 				If СтрокаТЧ.Condition <> "Заполнен" Then
 					
 					If СтрокаТЧ.ComparisonType = "Attribute" And Not ValueIsFilled(СтрокаТЧ.NameComparedAttribute2) Then
 						РеквизитыЗаполненыКорректно = False;
-						ТекстОшибки = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
+						ErrorText = "Not заполнено имя реквизита в строке условий запрета вывода №" + СтрокаТЧ.LineNumber;
 						UserMessage = New UserMessage;
-						UserMessage.Text = ТекстОшибки;
+						UserMessage.Text = ErrorText;
 						UserMessage.Field = "Object.ConditionsProhibitOutputRows[" + (СтрокаТЧ.LineNumber - 1) + "].NameComparedAttribute2";
 						UserMessage.Message();
-						ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
 					
 				EndIf;
@@ -3839,42 +4171,45 @@ Function ПроверитьЗаполнениеРеквизитов(Источн
 	
 EndFunction
 
-Function СохранитьНастройкиВБазуНаСервере(НастройкаСсылка, СохранятьТабличныеДокументы) Export
+Function СохранитьНастройкиВБазуНаСервере(SettingRef, SaveSpreadsheetDocuments) Export
 	
-	ОперацияЗавершенаУспешно = True;
+	OperationCompletedSuccessfully = True;
 	
 	Try
-		НастройкаОбъект = НастройкаСсылка.GetObject();
-		Data = ПолучитьДанныеВВидеСтруктурыНаСервере(СохранятьТабличныеДокументы); 
-		ХранилищеВнешнее = New ValueStorage(Data);
-		НастройкаОбъект.Операция = ХранилищеВнешнее;
-		НастройкаОбъект.Write();
-		Message("Data успешно записаны в операцию """ + НастройкаОбъект.Title + """");
-		СвязаннаяОперацияСравненияДанных = НастройкаСсылка;
-		Title = НастройкаОбъект.Title;
+		SettingObject = SettingRef.GetObject();
+		Data = GetDataAsStructureOnServer(SaveSpreadsheetDocuments); 
+		StorageExternal = New ValueStorage(Data);
+		SettingObject.Операция = StorageExternal;
+		SettingObject.Write();
+		MessageText = StrTemplate(Nstr("ru = 'Данные успешно записаны в операцию %1';en = 'Data was successfully written to the operation %1'")
+			, SettingObject.Title);
+		Message(MessageText);
+		RelatedDataComparisonOperation = SettingRef;
+		Title = SettingObject.Title;
 	Except
-		ТекстОшибки = "Error при записи данных в операцию """ + НастройкаСсылка.Title + """: " + ErrorDescription();
-		Message(ТекстОшибки);
-		ОперацияЗавершенаУспешно = False;
+		ErrorText = StrTemplate(Nstr("ru = 'Ошибка при записи данных в операцию  %1 : %2';en = '%1 : %2'")
+			, SettingRef.Titl, ErrorDescription());
+		Message(ErrorText);
+		OperationCompletedSuccessfully = False;
 	EndTry;
 
-	Return ОперацияЗавершенаУспешно;
+	Return OperationCompletedSuccessfully;
 	
 EndFunction
 
-Procedure ОткрытьНастройкиИзБазыНаСервере(НастройкаСсылка, ЗагружатьТабличныеДокументы = False) Export
+Procedure ОткрытьНастройкиИзБазыНаСервере(SettingRef, ЗагружатьТабличныеДокументы = False) Export
 	
-	ОперацияЗавершенаУспешно = True;
+	OperationCompletedSuccessfully = True;
 	
 	Try
 		
-		ХранилищеВнешнее = НастройкаСсылка.Операция;
-		Data = ХранилищеВнешнее.Get();
+		StorageExternal = SettingRef.Операция;
+		Data = StorageExternal.Get();
 		FillPropertyValues(ThisObject, Data);
 		//For меньшей путаницы с наименованиями в заголовок попадает наименование элемента справочника,
 		//на основании которого была заполнена обработка
-		Title = НастройкаСсылка.Title;
-		СвязаннаяОперацияСравненияДанных = НастройкаСсылка;
+		Title = SettingRef.Title;
+		RelatedDataComparisonOperation = SettingRef;
 		
 		//До версии 12.1.38 вместо реквизита PeriodType использовался флаг PeriodTypeAbsolute
 		//Value True флага PeriodTypeAbsolute соответствует значение 0 реквизита PeriodType
@@ -3883,6 +4218,28 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 			If Data.Property("PeriodTypeAbsolute") Then
 				PeriodType = ?(Data.PeriodTypeAbsolute, 0, 1);
 			EndIf;
+		EndIf;
+		
+		//Настройки видимости колонок ключей появились в версии 15.5.58
+		Если Не Данные.Свойство("VisibilityKey1") Тогда
+			VisibilityKey1 = Истина;
+		EndIf;
+		
+		Если Не Данные.Свойство("VisibilityKey2") Тогда
+			VisibilityKey2 = NumberColumnsInKey > 1;
+		EndIf;
+		
+		Если Не Данные.Свойство("VisibilityKey3") Тогда
+			VisibilityKey3 = NumberColumnsInKey > 2;
+		EndIf;
+		
+		//Настройки видимости колонок число записей появились в версии 15.5.58
+		Если Не Данные.Свойство("VisibilityNumberOfRecordsA") Тогда
+			VisibilityNumberOfRecordsA = Истина;
+		EndIf;
+		
+		Если Не Данные.Свойство("VisibilityNumberOfRecordsB") Тогда
+			VisibilityNumberOfRecordsB = Истина;
 		EndIf;
 				
 		If Data.Property("ValueTableConditionsOutputRows") Then
@@ -3931,7 +4288,7 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 			If Data.BaseTypeA = 4 Then
 				Try
 					If Data.Property("TableAValueStorage") Then
-						ТаблицаА = Data.TableAValueStorage.Get();
+						TableA = Data.TableAValueStorage.Get();
 					EndIf;
 				Except
 				EndTry; 
@@ -3940,7 +4297,7 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 			If Data.BaseTypeB = 4 Then
 				Try
 					If Data.Property("TableBValueStorage") Then
-						ТаблицаБ = Data.TableBValueStorage.Get();
+						TableB = Data.TableBValueStorage.Get();
 					EndIf;
 				Except
 				EndTry; 
@@ -3950,8 +4307,8 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 		//Реструктуризация параметров
 		
 		//Parameter CompositeKey заменен на NumberColumnsInKey
-		If ЧислоСтолбцовВКлюче = 0 Then
-			ЧислоСтолбцовВКлюче = ?(CompositeKey, 2, 1); 
+		If NumberColumnsInKey = 0 Then
+			NumberColumnsInKey = ?(CompositeKey, 2, 1); 
 		EndIf;
 		
 		If NumberOfRowsWithEmptyKeysToBreakReading = 0 Then
@@ -3961,189 +4318,194 @@ Procedure ОткрытьНастройкиИзБазыНаСервере(Нас�
 		Result.Clear();
 
 	Except
-		ТекстОшибки = ErrorDescription();
-		Message(ТекстОшибки);
+		ErrorText = ErrorDescription();
+		Message(ErrorText);
 	EndTry;
 
 EndProcedure
 
-Function ПолучитьДанныеВВидеСтруктурыНаСервере(СохранятьТабличныеДокументы = False) Export
+Function GetDataAsStructureOnServer(SaveSpreadsheetDocuments = False) Export
 	
-	ДанныеСтруктура = New Structure;
-	ДанныеСтруктура.Insert("QueryTextA", 											QueryTextA);
-	ДанныеСтруктура.Insert("QueryTextB", 											QueryTextB);
-	ДанныеСтруктура.Insert("BaseTypeA", 												BaseTypeA);
-	ДанныеСтруктура.Insert("BaseTypeB", 												BaseTypeB);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseAPathBase", 						ConnectionToExternalBaseAPathBase);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBPathBase",  						ConnectionToExternalBaseBPathBase);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseALogin",  							ConnectionToExternalBaseALogin);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBLogin",  							ConnectionToExternalBaseBLogin);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseAPassword", 							ConnectionToExternalBaseAPassword);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBPassword",  						ConnectionToExternalBaseBPassword);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseAServer",  						ConnectionToExternalBaseAServer);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBServer",  						ConnectionToExternalBaseBServer);
-	ДанныеСтруктура.Insert("WorkOptionExternalBaseA",  								WorkOptionExternalBaseA);
-	ДанныеСтруктура.Insert("WorkOptionExternalBaseB",   							WorkOptionExternalBaseB);
-	ДанныеСтруктура.Insert("VersionPlatformExternalBaseA",   							VersionPlatformExternalBaseA);
-	ДанныеСтруктура.Insert("VersionPlatformExternalBaseB",   							VersionPlatformExternalBaseB);
-	ДанныеСтруктура.Insert("ConnectingToExternalBaseADriverSQL",						ConnectingToExternalBaseADriverSQL);
-	ДанныеСтруктура.Insert("ConnectingToExternalBaseBDriverSQL",						ConnectingToExternalBaseBDriverSQL);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseAFileFormat",						ConnectionToExternalBaseAFileFormat);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBFileFormat",						ConnectionToExternalBaseBFileFormat);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseAPathToFile",						ConnectionToExternalBaseAPathToFile);
-	ДанныеСтруктура.Insert("ConnectionToExternalBaseBPathToFile",						ConnectionToExternalBaseBPathToFile);
-	ДанныеСтруктура.Insert("ConnectingToExternalBaseADeviceStorageFile",			ConnectingToExternalBaseADeviceStorageFile);
-	ДанныеСтруктура.Insert("ConnectingToExternalBaseBDeviceStorageFile",			ConnectingToExternalBaseBDeviceStorageFile);
-	ДанныеСтруктура.Insert("ConnectionToExternalDatabaseANumberTableInFile",				ConnectionToExternalDatabaseANumberTableInFile);
-	ДанныеСтруктура.Insert("ConnectionToExternalDatabaseBNumberTableInFile",				ConnectionToExternalDatabaseBNumberTableInFile);
+	DataStructure = New Structure;
+	DataStructure.Insert("QueryTextA", 											QueryTextA);
+	DataStructure.Insert("QueryTextB", 											QueryTextB);
+	DataStructure.Insert("BaseTypeA", 											BaseTypeA);
+	DataStructure.Insert("BaseTypeB", 											BaseTypeB);
+	DataStructure.Insert("ConnectionToExternalBaseAPathBase", 					ConnectionToExternalBaseAPathBase);
+	DataStructure.Insert("ConnectionToExternalBaseBPathBase",  					ConnectionToExternalBaseBPathBase);
+	DataStructure.Insert("ConnectionToExternalBaseALogin",  					ConnectionToExternalBaseALogin);
+	DataStructure.Insert("ConnectionToExternalBaseBLogin",  					ConnectionToExternalBaseBLogin);
+	DataStructure.Insert("ConnectionToExternalBaseAPassword", 					ConnectionToExternalBaseAPassword);
+	DataStructure.Insert("ConnectionToExternalBaseBPassword",  					ConnectionToExternalBaseBPassword);
+	DataStructure.Insert("ConnectionToExternalBaseAServer",  					ConnectionToExternalBaseAServer);
+	DataStructure.Insert("ConnectionToExternalBaseBServer",  					ConnectionToExternalBaseBServer);
+	DataStructure.Insert("WorkOptionExternalBaseA",  							WorkOptionExternalBaseA);
+	DataStructure.Insert("WorkOptionExternalBaseB",   							WorkOptionExternalBaseB);
+	DataStructure.Insert("VersionPlatformExternalBaseA",   						VersionPlatformExternalBaseA);
+	DataStructure.Insert("VersionPlatformExternalBaseB",   						VersionPlatformExternalBaseB);
+	DataStructure.Insert("ConnectingToExternalBaseADriverSQL",					ConnectingToExternalBaseADriverSQL);
+	DataStructure.Insert("ConnectingToExternalBaseBDriverSQL",					ConnectingToExternalBaseBDriverSQL);
+	DataStructure.Insert("ConnectionToExternalBaseAFileFormat",					ConnectionToExternalBaseAFileFormat);
+	DataStructure.Insert("ConnectionToExternalBaseBFileFormat",					ConnectionToExternalBaseBFileFormat);
+	DataStructure.Insert("ConnectionToExternalBaseAPathToFile",					ConnectionToExternalBaseAPathToFile);
+	DataStructure.Insert("ConnectionToExternalBaseBPathToFile",					ConnectionToExternalBaseBPathToFile);
+	DataStructure.Insert("ConnectingToExternalBaseADeviceStorageFile",			ConnectingToExternalBaseADeviceStorageFile);
+	DataStructure.Insert("ConnectingToExternalBaseBDeviceStorageFile",			ConnectingToExternalBaseBDeviceStorageFile);
+	DataStructure.Insert("ConnectionToExternalDatabaseANumberTableInFile",		ConnectionToExternalDatabaseANumberTableInFile);
+	DataStructure.Insert("ConnectionToExternalDatabaseBNumberTableInFile",		ConnectionToExternalDatabaseBNumberTableInFile);
 	
-	ДанныеСтруктура.Insert("CodeForOutputRows", 										CodeForOutputRows);
-	ДанныеСтруктура.Insert("CodeForProhibitingOutputRows", 								CodeForProhibitingOutputRows);
-	ДанныеСтруктура.Insert("BooleanOperatorForConditionsOutputRows", 				BooleanOperatorForConditionsOutputRows);
-	ДанныеСтруктура.Insert("BooleanOperatorForProhibitingConditionsOutputRows", 			BooleanOperatorForProhibitingConditionsOutputRows);
-	ДанныеСтруктура.Insert("CodeForOutputRowsEditedManually", 					CodeForOutputRowsEditedManually);
-	ДанныеСтруктура.Insert("CodeForProhibitingOutputRowsEditedManually", 			CodeForProhibitingOutputRowsEditedManually);
-	ДанныеСтруктура.Insert("RowOutputConditionsDisabled", 							RowOutputConditionsDisabled);
-	ДанныеСтруктура.Insert("ConditionsProhibitOutputRowsDisabled", 						ConditionsProhibitOutputRowsDisabled);
+	DataStructure.Insert("CodeForOutputRows", 									CodeForOutputRows);
+	DataStructure.Insert("CodeForProhibitingOutputRows", 						CodeForProhibitingOutputRows);
+	DataStructure.Insert("BooleanOperatorForConditionsOutputRows", 				BooleanOperatorForConditionsOutputRows);
+	DataStructure.Insert("BooleanOperatorForProhibitingConditionsOutputRows",	BooleanOperatorForProhibitingConditionsOutputRows);
+	DataStructure.Insert("CodeForOutputRowsEditedManually", 					CodeForOutputRowsEditedManually);
+	DataStructure.Insert("CodeForProhibitingOutputRowsEditedManually", 			CodeForProhibitingOutputRowsEditedManually);
+	DataStructure.Insert("ConditionsOutputRowsDisabled", 						ConditionsOutputRowsDisabled);
+	DataStructure.Insert("ConditionsProhibitOutputRowsDisabled", 				ConditionsProhibitOutputRowsDisabled);
 	
-	ДанныеСтруктура.Insert("RelationalOperation",   									RelationalOperation);
-	ДанныеСтруктура.Insert("VisibilityAttributeA1",										VisibilityAttributeA1);
-	ДанныеСтруктура.Insert("VisibilityAttributeA2",										VisibilityAttributeA2);
-	ДанныеСтруктура.Insert("VisibilityAttributeA3",										VisibilityAttributeA3);
-	ДанныеСтруктура.Insert("VisibilityAttributeA4",										VisibilityAttributeA4);
-	ДанныеСтруктура.Insert("VisibilityAttributeA5",										VisibilityAttributeA5);
-	ДанныеСтруктура.Insert("VisibilityAttributeB1",										VisibilityAttributeB1);
-	ДанныеСтруктура.Insert("VisibilityAttributeB2",										VisibilityAttributeB2);
-	ДанныеСтруктура.Insert("VisibilityAttributeB3",										VisibilityAttributeB3);
-	ДанныеСтруктура.Insert("VisibilityAttributeB4",										VisibilityAttributeB4);
-	ДанныеСтруктура.Insert("VisibilityAttributeB5",										VisibilityAttributeB5);
+	DataStructure.Insert("RelationalOperation",   								RelationalOperation);
 	
-	ДанныеСтруктура.Insert("PeriodTypeAbsolute",									PeriodTypeAbsolute);
-	ДанныеСтруктура.Insert("PeriodType",												PeriodType);
-	ДанныеСтруктура.Insert("AbsolutePeriodValue",								AbsolutePeriodValue);
-	ДанныеСтруктура.Insert("RelativePeriodValue",							RelativePeriodValue);
-	ДанныеСтруктура.Insert("ValueOfSlaveRelativePeriod",				ValueOfSlaveRelativePeriod);
-	ДанныеСтруктура.Insert("DiscretenessOfRelativePeriod",						DiscretenessOfRelativePeriod);
-	ДанныеСтруктура.Insert("DiscretenessOfSlaveRelativePeriod",			DiscretenessOfSlaveRelativePeriod);
-	ДанныеСтруктура.Insert("CompositeKey",											CompositeKey);
-	ДанныеСтруктура.Insert("ЧислоСтолбцовВКлюче",										ЧислоСтолбцовВКлюче);
-	ДанныеСтруктура.Insert("NumberOfRowsWithEmptyKeysToBreakReading",			NumberOfRowsWithEmptyKeysToBreakReading);
-	ДанныеСтруктура.Insert("ОтображатьТипыСтолбцовКлюча",								ОтображатьТипыСтолбцовКлюча);
-	ДанныеСтруктура.Insert("PathToDownloadFile",										PathToDownloadFile);
-	ДанныеСтруктура.Insert("UploadFileFormat",										UploadFileFormat);
+	DataStructure.Insert("PeriodTypeAbsolute",									PeriodTypeAbsolute);
+	DataStructure.Insert("PeriodType",											PeriodType);
+	DataStructure.Insert("AbsolutePeriodValue",									AbsolutePeriodValue);
+	DataStructure.Insert("RelativePeriodValue",									RelativePeriodValue);
+	DataStructure.Insert("ValueOfSlaveRelativePeriod",							ValueOfSlaveRelativePeriod);
+	DataStructure.Insert("DiscretenessOfRelativePeriod",						DiscretenessOfRelativePeriod);
+	DataStructure.Insert("DiscretenessOfSlaveRelativePeriod",					DiscretenessOfSlaveRelativePeriod);
+	DataStructure.Insert("CompositeKey",										CompositeKey);
+	DataStructure.Insert("NumberColumnsInKey",									NumberColumnsInKey);
+	DataStructure.Insert("NumberOfRowsWithEmptyKeysToBreakReading",				NumberOfRowsWithEmptyKeysToBreakReading);
+	DataStructure.Insert("DisplayKeyColumnTypes",								DisplayKeyColumnTypes);
+	DataStructure.Insert("PathToDownloadFile",									PathToDownloadFile);
+	DataStructure.Insert("UploadFileFormat",									UploadFileFormat);
+	DataStructure.Insert("SortTableDifferences",								SortTableDifferences);
+	DataStructure.Insert("OrderSortTableDifferences",							OrderSortTableDifferences);
 			
-	ДанныеСтруктура.Insert("NumberFirstRowFileA",									NumberFirstRowFileA);
-	ДанныеСтруктура.Insert("NumberFirstRowFileB",									NumberFirstRowFileB);
-	ДанныеСтруктура.Insert("ColumnNumberKeyFromFileA",								ColumnNumberKeyFromFileA);	
-	ДанныеСтруктура.Insert("ColumnNumberKey2FromFileA",							ColumnNumberKey2FromFileA);
-	ДанныеСтруктура.Insert("ColumnNumberKey3FromFileA",							ColumnNumberKey3FromFileA);
-	ДанныеСтруктура.Insert("ColumnNumberKeyFromFileB",								ColumnNumberKeyFromFileB);
-	ДанныеСтруктура.Insert("ColumnNumberKey2FromFileB",							ColumnNumberKey2FromFileB);
-	ДанныеСтруктура.Insert("ColumnNumberKey3FromFileB",							ColumnNumberKey3FromFileB);
-	ДанныеСтруктура.Insert("ColumnNameKeyFromFileA",								ColumnNameKeyFromFileA);	
-	ДанныеСтруктура.Insert("ColumnNameKey2FromFileA",								ColumnNameKey2FromFileA);	
-	ДанныеСтруктура.Insert("ColumnNameKey3FromFileA",								ColumnNameKey3FromFileA);	
-	ДанныеСтруктура.Insert("ColumnNameKeyFromFileB",								ColumnNameKeyFromFileB);	
-	ДанныеСтруктура.Insert("ColumnNameKey2FromFileB",								ColumnNameKey2FromFileB);
-	ДанныеСтруктура.Insert("ColumnNameKey3FromFileB",								ColumnNameKey3FromFileB);
-	ДанныеСтруктура.Insert("ElementNameWithDataFileA",								ElementNameWithDataFileA);	
-	ДанныеСтруктура.Insert("ElementNameWithDataFileB",								ElementNameWithDataFileB);
-	ДанныеСтруктура.Insert("ParentNodeNameFileA",								ParentNodeNameFileA);
-	ДанныеСтруктура.Insert("ParentNodeNameFileB",								ParentNodeNameFileB);
-	ДанныеСтруктура.Insert("DataStorageMethodInXMLFileA",							DataStorageMethodInXMLFileA);
-	ДанныеСтруктура.Insert("DataStorageMethodInXMLFileB",							DataStorageMethodInXMLFileB);
-	ДанныеСтруктура.Insert("CastKeyToStringA",									CastKeyToStringA);
-	ДанныеСтруктура.Insert("CastKey2ToStringA",									CastKey2ToStringA);
-	ДанныеСтруктура.Insert("CastKey3ToStringA",									CastKey3ToStringA);
-	ДанныеСтруктура.Insert("CastKeyToStringB",									CastKeyToStringB);
-	ДанныеСтруктура.Insert("CastKey2ToStringB",									CastKey2ToStringB);
-	ДанныеСтруктура.Insert("CastKey3ToStringB",									CastKey3ToStringB);
-	ДанныеСтруктура.Insert("KeyLengthWhenCastingToStringA",							KeyLengthWhenCastingToStringA);
-	ДанныеСтруктура.Insert("KeyLength2WhenCastingToStringA",						KeyLength2WhenCastingToStringA);
-	ДанныеСтруктура.Insert("KeyLength3WhenCastingToStringA",						KeyLength3WhenCastingToStringA);
-	ДанныеСтруктура.Insert("KeyLengthWhenCastingToStringB",							KeyLengthWhenCastingToStringB);
-	ДанныеСтруктура.Insert("KeyLength2WhenCastingToStringB",						KeyLength2WhenCastingToStringB);
-	ДанныеСтруктура.Insert("KeyLength3WhenCastingToStringB",						KeyLength3WhenCastingToStringB);
-	ДанныеСтруктура.Insert("UseAsKeyUniqueIdentifierA", 		UseAsKeyUniqueIdentifierA);
-	ДанныеСтруктура.Insert("UseAsKey2UniqueIdentifierA", 	UseAsKey2UniqueIdentifierA);
-	ДанныеСтруктура.Insert("UseAsKey3UniqueIdentifierA", 	UseAsKey3UniqueIdentifierA);
-	ДанныеСтруктура.Insert("UseAsKeyUniqueIdentifierB", 		UseAsKeyUniqueIdentifierB);
-	ДанныеСтруктура.Insert("UseAsKey2UniqueIdentifierB", 	UseAsKey2UniqueIdentifierB);
-	ДанныеСтруктура.Insert("UseAsKey3UniqueIdentifierB", 	UseAsKey3UniqueIdentifierB);
-	ДанныеСтруктура.Insert("CastKeyToUpperCaseA", 						CastKeyToUpperCaseA);
-	ДанныеСтруктура.Insert("CastKey2ToUpperCaseА", 						CastKey2ToUpperCaseA);
-	ДанныеСтруктура.Insert("CastKey3ToUpperCaseА", 						CastKey3ToUpperCaseA);
-	ДанныеСтруктура.Insert("CastKeyToUpperCaseБ", 						CastKeyToUpperCaseB);
-	ДанныеСтруктура.Insert("CastKey2ToUpperCaseБ", 						CastKey2ToUpperCaseB);
-	ДанныеСтруктура.Insert("CastKey3ToUpperCaseБ", 						CastKey3ToUpperCaseB);
-	ДанныеСтруктура.Insert("DeleteFromKeyCurlyBracketsA", 							DeleteFromKeyCurlyBracketsA);
-	ДанныеСтруктура.Insert("DeleteFromKey2CurlyBracketsA", 							DeleteFromKey2CurlyBracketsA);
-	ДанныеСтруктура.Insert("DeleteFromKey3CurlyBracketsA", 							DeleteFromKey3CurlyBracketsA);
-	ДанныеСтруктура.Insert("DeleteFromKeyCurlyBracketsB", 							DeleteFromKeyCurlyBracketsB);
-	ДанныеСтруктура.Insert("DeleteFromKey2CurlyBracketsB", 							DeleteFromKey2CurlyBracketsB);
-	ДанныеСтруктура.Insert("DeleteFromKey3CurlyBracketsB", 							DeleteFromKey3CurlyBracketsB);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode1A",		 							ArbitraryKeyCode1A);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode2A",		 							ArbitraryKeyCode2A);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode3A",		 							ArbitraryKeyCode3A);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode1B",		 							ArbitraryKeyCode1B);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode2B",		 							ArbitraryKeyCode2B);
-	ДанныеСтруктура.Insert("ArbitraryKeyCode3B",		 							ArbitraryKeyCode3B);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode1A",		 					ExecuteArbitraryKeyCode1A);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode2A",		 					ExecuteArbitraryKeyCode2A);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode3A",		 					ExecuteArbitraryKeyCode3A);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode1B",		 					ExecuteArbitraryKeyCode1B);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode2B",		 					ExecuteArbitraryKeyCode2B);
-	ДанныеСтруктура.Insert("ExecuteArbitraryKeyCode3B",		 					ExecuteArbitraryKeyCode3B);
-	ДанныеСтруктура.Insert("CollapseTableA",		 								CollapseTableA);
-	ДанныеСтруктура.Insert("CollapseTableB",		 								CollapseTableB);
-
-	ДанныеСтруктура.Insert("ValueTableConditionsOutputRows", 									ConditionsOutputRows.Unload());
-	ДанныеСтруктура.Insert("ValueTableConditionsProhibitOutputRows", 							ConditionsProhibitOutputRows.Unload());
-	ДанныеСтруктура.Insert("ValueTableSettingsFileA", 										SettingsFileA.Unload());
-	ДанныеСтруктура.Insert("ValueTableSettingsFileB", 										SettingsFileB.Unload());
-	ДанныеСтруктура.Insert("ValueTableParameterListA", 									ParameterListA.Unload());
-	ДанныеСтруктура.Insert("ValueTableParameterListB", 									ParameterListB.Unload());	
+	DataStructure.Insert("NumberFirstRowFileA",									NumberFirstRowFileA);
+	DataStructure.Insert("NumberFirstRowFileB",									NumberFirstRowFileB);
+	DataStructure.Insert("ColumnNumberKeyFromFileA",							ColumnNumberKeyFromFileA);	
+	DataStructure.Insert("ColumnNumberKey2FromFileA",							ColumnNumberKey2FromFileA);
+	DataStructure.Insert("ColumnNumberKey3FromFileA",							ColumnNumberKey3FromFileA);
+	DataStructure.Insert("ColumnNumberKeyFromFileB",							ColumnNumberKeyFromFileB);
+	DataStructure.Insert("ColumnNumberKey2FromFileB",							ColumnNumberKey2FromFileB);
+	DataStructure.Insert("ColumnNumberKey3FromFileB",							ColumnNumberKey3FromFileB);
+	DataStructure.Insert("ColumnNameKeyFromFileA",								ColumnNameKeyFromFileA);	
+	DataStructure.Insert("ColumnNameKey2FromFileA",								ColumnNameKey2FromFileA);	
+	DataStructure.Insert("ColumnNameKey3FromFileA",								ColumnNameKey3FromFileA);	
+	DataStructure.Insert("ColumnNameKeyFromFileB",								ColumnNameKeyFromFileB);	
+	DataStructure.Insert("ColumnNameKey2FromFileB",								ColumnNameKey2FromFileB);
+	DataStructure.Insert("ColumnNameKey3FromFileB",								ColumnNameKey3FromFileB);
+	DataStructure.Insert("ElementNameWithDataFileA",							ElementNameWithDataFileA);	
+	DataStructure.Insert("ElementNameWithDataFileB",							ElementNameWithDataFileB);
+	DataStructure.Insert("ParentNodeNameFileA",									ParentNodeNameFileA);
+	DataStructure.Insert("ParentNodeNameFileB",									ParentNodeNameFileB);
+	DataStructure.Insert("DataStorageMethodInXMLFileA",							DataStorageMethodInXMLFileA);
+	DataStructure.Insert("DataStorageMethodInXMLFileB",							DataStorageMethodInXMLFileB);
+	DataStructure.Insert("CastKeyToStringA",									CastKeyToStringA);
+	DataStructure.Insert("CastKey2ToStringA",									CastKey2ToStringA);
+	DataStructure.Insert("CastKey3ToStringA",									CastKey3ToStringA);
+	DataStructure.Insert("CastKeyToStringB",									CastKeyToStringB);
+	DataStructure.Insert("CastKey2ToStringB",									CastKey2ToStringB);
+	DataStructure.Insert("CastKey3ToStringB",									CastKey3ToStringB);
+	DataStructure.Insert("KeyLengthWhenCastingToStringA",						KeyLengthWhenCastingToStringA);
+	DataStructure.Insert("KeyLength2WhenCastingToStringA",						KeyLength2WhenCastingToStringA);
+	DataStructure.Insert("KeyLength3WhenCastingToStringA",						KeyLength3WhenCastingToStringA);
+	DataStructure.Insert("KeyLengthWhenCastingToStringB",						KeyLengthWhenCastingToStringB);
+	DataStructure.Insert("KeyLength2WhenCastingToStringB",						KeyLength2WhenCastingToStringB);
+	DataStructure.Insert("KeyLength3WhenCastingToStringB",						KeyLength3WhenCastingToStringB);
+	DataStructure.Insert("UseAsKeyUniqueIdentifierA", 							UseAsKeyUniqueIdentifierA);
+	DataStructure.Insert("UseAsKey2UniqueIdentifierA", 							UseAsKey2UniqueIdentifierA);
+	DataStructure.Insert("UseAsKey3UniqueIdentifierA", 							UseAsKey3UniqueIdentifierA);
+	DataStructure.Insert("UseAsKeyUniqueIdentifierB", 							UseAsKeyUniqueIdentifierB);
+	DataStructure.Insert("UseAsKey2UniqueIdentifierB", 							UseAsKey2UniqueIdentifierB);
+	DataStructure.Insert("UseAsKey3UniqueIdentifierB", 							UseAsKey3UniqueIdentifierB);
+	DataStructure.Insert("CastKeyToUpperCaseA", 								CastKeyToUpperCaseA);
+	DataStructure.Insert("CastKey2ToUpperCaseА", 								CastKey2ToUpperCaseA);
+	DataStructure.Insert("CastKey3ToUpperCaseА", 								CastKey3ToUpperCaseA);
+	DataStructure.Insert("CastKeyToUpperCaseБ", 								CastKeyToUpperCaseB);
+	DataStructure.Insert("CastKey2ToUpperCaseБ", 								CastKey2ToUpperCaseB);
+	DataStructure.Insert("CastKey3ToUpperCaseБ", 								CastKey3ToUpperCaseB);
+	DataStructure.Insert("DeleteFromKeyCurlyBracketsA", 						DeleteFromKeyCurlyBracketsA);
+	DataStructure.Insert("DeleteFromKey2CurlyBracketsA", 						DeleteFromKey2CurlyBracketsA);
+	DataStructure.Insert("DeleteFromKey3CurlyBracketsA", 						DeleteFromKey3CurlyBracketsA);
+	DataStructure.Insert("DeleteFromKeyCurlyBracketsB", 						DeleteFromKeyCurlyBracketsB);
+	DataStructure.Insert("DeleteFromKey2CurlyBracketsB", 						DeleteFromKey2CurlyBracketsB);
+	DataStructure.Insert("DeleteFromKey3CurlyBracketsB", 						DeleteFromKey3CurlyBracketsB);
+	DataStructure.Insert("ArbitraryKeyCode1A",		 							ArbitraryKeyCode1A);
+	DataStructure.Insert("ArbitraryKeyCode2A",		 							ArbitraryKeyCode2A);
+	DataStructure.Insert("ArbitraryKeyCode3A",		 							ArbitraryKeyCode3A);
+	DataStructure.Insert("ArbitraryKeyCode1B",		 							ArbitraryKeyCode1B);
+	DataStructure.Insert("ArbitraryKeyCode2B",		 							ArbitraryKeyCode2B);
+	DataStructure.Insert("ArbitraryKeyCode3B",		 							ArbitraryKeyCode3B);
+	DataStructure.Insert("ExecuteArbitraryKeyCode1A",		 					ExecuteArbitraryKeyCode1A);
+	DataStructure.Insert("ExecuteArbitraryKeyCode2A",		 					ExecuteArbitraryKeyCode2A);
+	DataStructure.Insert("ExecuteArbitraryKeyCode3A",		 					ExecuteArbitraryKeyCode3A);
+	DataStructure.Insert("ExecuteArbitraryKeyCode1B",		 					ExecuteArbitraryKeyCode1B);
+	DataStructure.Insert("ExecuteArbitraryKeyCode2B",		 					ExecuteArbitraryKeyCode2B);
+	DataStructure.Insert("ExecuteArbitraryKeyCode3B",		 					ExecuteArbitraryKeyCode3B);
+	DataStructure.Insert("VisibilityAttributeA1",								VisibilityAttributeA1);
+	DataStructure.Insert("VisibilityAttributeA2",								VisibilityAttributeA2);
+	DataStructure.Insert("VisibilityAttributeA3",								VisibilityAttributeA3);
+	DataStructure.Insert("VisibilityAttributeA4",								VisibilityAttributeA4);
+	DataStructure.Insert("VisibilityAttributeA5",								VisibilityAttributeA5);
+	DataStructure.Insert("VisibilityAttributeB1",								VisibilityAttributeB1);
+	DataStructure.Insert("VisibilityAttributeB2",								VisibilityAttributeB2);
+	DataStructure.Insert("VisibilityAttributeB3",								VisibilityAttributeB3);
+	DataStructure.Insert("VisibilityAttributeB4",								VisibilityAttributeB4);
+	DataStructure.Insert("VisibilityAttributeB5",								VisibilityAttributeB5);
 	
-	If СохранятьТабличныеДокументы Then
+	DataStructure.Insert("CollapseTableA",		 								CollapseTableA);
+	DataStructure.Insert("CollapseTableB",		 								CollapseTableB);
+
+	DataStructure.Insert("ValueTableConditionsOutputRows", 						ConditionsOutputRows.Unload());
+	DataStructure.Insert("ValueTableConditionsProhibitOutputRows", 				ConditionsProhibitOutputRows.Unload());
+	DataStructure.Insert("ValueTableSettingsFileA", 							SettingsFileA.Unload());
+	DataStructure.Insert("ValueTableSettingsFileB", 							SettingsFileB.Unload());
+	DataStructure.Insert("ValueTableParameterListA", 							ParameterListA.Unload());
+	DataStructure.Insert("ValueTableParameterListB", 							ParameterListB.Unload());	
+	
+	If SaveSpreadsheetDocuments Then
 		
 		If BaseTypeA = 4 Then
-			TableAValueStorage = New ValueStorage(ТаблицаА);
+			TableAValueStorage = New ValueStorage(TableA);
 			
-			If ДанныеСтруктура.Property("TableAValueStorage") Then
-				ДанныеСтруктура.TableAValueStorage = TableAValueStorage;
+			If DataStructure.Property("TableAValueStorage") Then
+				DataStructure.TableAValueStorage = TableAValueStorage;
 			Else
-				ДанныеСтруктура.Insert("TableAValueStorage", TableAValueStorage);
+				DataStructure.Insert("TableAValueStorage", TableAValueStorage);
 			EndIf;
 		EndIf;
 		
 		If BaseTypeB = 4 Then
-			TableBValueStorage = New ValueStorage(ТаблицаБ);
+			TableBValueStorage = New ValueStorage(TableB);
 			
-			If ДанныеСтруктура.Property("TableBValueStorage") Then
-				ДанныеСтруктура.TableBValueStorage = TableBValueStorage;
+			If DataStructure.Property("TableBValueStorage") Then
+				DataStructure.TableBValueStorage = TableBValueStorage;
 			Else
-				ДанныеСтруктура.Insert("TableBValueStorage", TableBValueStorage);
+				DataStructure.Insert("TableBValueStorage", TableBValueStorage);
 			EndIf;
 		EndIf;
 		
 	EndIf;
 	
-	Return ДанныеСтруктура;
+	Return DataStructure;
 	
 EndFunction
 
-Procedure УстановитьПараметры(Query, ИдентификаторБазы)
-	For Each Parameter In ThisObject["ParameterList" + ИдентификаторБазы] Do
+Procedure SetParameters(Query, BaseID)
+	
+	For Each Parameter In ThisObject["ParameterList" + BaseID] Do
 		If TypeOf(Parameter.ParameterValue) <> Type("Undefined") Then
 			If Parameter.ParameterName = "ValidFrom" Or Parameter.ParameterName = "ValidTo" Then
 				Continue;
 			EndIf;
 			Query.SetParameter(Parameter.ParameterName, Parameter.ParameterValue);			
 		EndIf;
-	EndDo;       	
+	EndDo;
+	       	
 EndProcedure
 
-Procedure ЗаполнитьПеременныеРЗначениямиПоУмолчанию()
+Procedure FillVariablesPWithDefaultValues()
 	
 	Р1 = Undefined;
 	Р2 = Undefined;
@@ -4158,9 +4520,9 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 	UploadFileFormat = Upper(UploadFileFormat);
 	
 	If IsBlankString(UploadFileFormat) Then
-		ТекстОшибки = "Not указан формат файла выгрузки";
+		ErrorText = "Not указан формат файла выгрузки";
 		UserMessage = New UserMessage;
-		UserMessage.Text = ТекстОшибки;
+		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.UploadFileFormat";
 		UserMessage.Message();
 		Return Undefined;
@@ -4170,9 +4532,9 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		ПутьКВременномуФайлу = GetTempFileName(UploadFileFormat);
 	Else
 		If IsBlankString(PathToDownloadFile) Then
-			ТекстОшибки = "Not заполнен путь к файлу выгрузки (на сервере)";
+			ErrorText = "Not заполнен путь к файлу выгрузки (на сервере)";
 			UserMessage = New UserMessage;
-			UserMessage.Text = ТекстОшибки;
+			UserMessage.Text = ErrorText;
 			UserMessage.Field = "Object.PathToDownloadFile";
 			UserMessage.Message();
 			Return Undefined;
@@ -4182,9 +4544,9 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 	EndIf;
 	
 	If Result.Count() = 0 Then
-		ТекстОшибки = "None данных для выгрузки";
+		ErrorText = "None данных для выгрузки";
 		UserMessage = New UserMessage;
-		UserMessage.Text = ТекстОшибки;
+		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.Result";
 		UserMessage.Message();
 		Return Undefined;
@@ -4194,42 +4556,57 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		DeleteFiles(ПутьКВременномуФайлу);	
 	Except EndTry;
 	
-	Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ начата");
+	Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ начата");
 	
 	If UploadFileFormat = "CSV" Then
 		
 		РазделительКолонок = ";";
 		TextWriter = New TextWriter(ПутьКВременномуФайлу, TextEncoding.UTF8);
-		TextWriter.Write(
-			"№ строки;Столбец ключа 1;"
-				+ ?(ЧислоСтолбцовВКлюче > 1, "Столбец ключа 2;", "")
-				+ ?(ЧислоСтолбцовВКлюче > 2, "Столбец ключа 3;", "")
-				+ "Number записей А;Number записей Б;А1;А2;А3;А4;А5;Б1;Б2;Б3;Б4;Б5"
-			);
+		СписокЗаголовковСтрокой = "№ строки" + РазделительКолонок
+				+ ?(VisibilityKey1, "Ключ 1" + РазделительКолонок, "")
+				+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "Ключ 2" + РазделительКолонок, "")
+				+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "Ключ 3" + РазделительКолонок, "")
+				+ ?(VisibilityNumberOfRecordsA, "Число записей А" + РазделительКолонок, "")
+				+ ?(VisibilityNumberOfRecordsB, "Число записей Б" + РазделительКолонок, "");
+		
+		For AttributesCounter = 1 По NumberOfRequisites Цикл 
+			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
+				СписокЗаголовковСтрокой = СписокЗаголовковСтрокой + РазделительКолонок + СтрЗаменить(ViewsHeadersAttributes["A" + AttributesCounter], РазделительКолонок,",");
+			EndIf;
+		EndDo;
+		
+		For AttributesCounter = 1 По NumberOfRequisites Цикл 
+			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
+				СписокЗаголовковСтрокой = СписокЗаголовковСтрокой + РазделительКолонок + СтрЗаменить(ViewsHeadersAttributes["B" + AttributesCounter], РазделительКолонок,",");
+			EndIf;
+		EndDo;
+		
+		СписокЗаголовковСтрокой = СтрЗаменить(СписокЗаголовковСтрокой, "" + РазделительКолонок + РазделительКолонок, РазделительКолонок);
+		TextWriter.Write(СписокЗаголовковСтрокой);
 			
-		СчетчикСтрок = 0;
+		RowsCounter = 0;
 		For Each СтрокаТЧ In Result Do
 			
-			СчетчикСтрок = СчетчикСтрок + 1;
+			RowsCounter = RowsCounter + 1;
 			
 			TextWriter.Write(
 				Chars.LF
-					+ СтрокаТЧ.LineNumber + РазделительКолонок
-					+ СтрокаТЧ.Key + РазделительКолонок
-					+ ?(ЧислоСтолбцовВКлюче > 1, "" + СтрокаТЧ.Ключ2 + РазделительКолонок, "")
-					+ ?(ЧислоСтолбцовВКлюче > 2, "" + СтрокаТЧ.Key3 + РазделительКолонок, "")
-					+ СтрокаТЧ.NumberOfRecordsA + РазделительКолонок
-					+ СтрокаТЧ.NumberOfRecordsB + РазделительКолонок
-					+ СтрокаТЧ.AttributeA1 + РазделительКолонок
-					+ СтрокаТЧ.AttributeA2 + РазделительКолонок
-					+ СтрокаТЧ.AttributeA3 + РазделительКолонок
-					+ СтрокаТЧ.AttributeA4 + РазделительКолонок
-					+ СтрокаТЧ.AttributeA5 + РазделительКолонок
-					+ СтрокаТЧ.AttributeB1 + РазделительКолонок
-					+ СтрокаТЧ.AttributeB2 + РазделительКолонок
-					+ СтрокаТЧ.AttributeB3 + РазделительКолонок
-					+ СтрокаТЧ.AttributeB4 + РазделительКолонок
-					+ СтрокаТЧ.AttributeB5
+					+ "" + СтрокаТЧ.LineNumber + РазделительКолонок
+					+ ?(VisibilityKey1, "" + СтрокаТЧ.Key1 + РазделительКолонок, "")
+					+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "" + СтрокаТЧ.Key2 + РазделительКолонок, "")
+					+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "" + СтрокаТЧ.Key3 + РазделительКолонок, "")
+					+ ?(VisibilityNumberOfRecordsA, "" + СтрокаТЧ.NumberOfRecordsA + РазделительКолонок, "")
+					+ ?(VisibilityNumberOfRecordsB, "" + СтрокаТЧ.NumberOfRecordsB + РазделительКолонок, "")
+					+ ?(VisibilityAttributeA1, "" + СтрокаТЧ.AttributeA1 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeA2, "" + СтрокаТЧ.AttributeA2 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeA3, "" + СтрокаТЧ.AttributeA3 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeA4, "" + СтрокаТЧ.AttributeA4 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeA5, "" + СтрокаТЧ.AttributeA5 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeB1, "" + СтрокаТЧ.AttributeB1 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeB2, "" + СтрокаТЧ.AttributeB2 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeB3, "" + СтрокаТЧ.AttributeB3 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeB4, "" + СтрокаТЧ.AttributeB4 + РазделительКолонок, "")
+					+ ?(VisibilityAttributeB5, "" + СтрокаТЧ.AttributeB5 + РазделительКолонок, "")
 			);
 		
 		EndDo; 
@@ -4244,34 +4621,48 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		UploadFileFormat = "PDF" Or
 		UploadFileFormat = "TXT" Or
 		UploadFileFormat = "XLSX" Then
-		
-		НомерКолонкиЧислоЗаписейА = ?(ЧислоСтолбцовВКлюче > 1, ?(ЧислоСтолбцовВКлюче > 2, 5, 4), 3);
+				
+		//НомерКолонкиЧислоЗаписейА = ?(ЧислоСтолбцовВКлюче > 1 И VisibilityKey2, ?(ЧислоСтолбцовВКлюче > 2 И VisibilityKey3, 5, 4), 3);
+		ЧислоВыгружаемыхКлючей = ?(VisibilityKey1, 1, 0) + ?(ЧислоСтолбцовВКлюче > 1 И VisibilityKey2, 1, 0) + ?(ЧислоСтолбцовВКлюче > 2 И VisibilityKey3, 1, 0);
+		НомерКолонкиСПервымВыгружаемымРеквизитом = ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + ?(VisibilityNumberOfRecordsB, 1, 0) + 2;		
 		
 		SpreadsheetDocument = New SpreadsheetDocument;
 		SpreadsheetDocument.PageOrientation = PageOrientation.Landscape;
 		SpreadsheetDocument.FitToPage = True;
 		
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, 1, "№ строки",,7);
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, 2, "Key 1");
-		If ЧислоСтолбцовВКлюче > 1 Then
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, 3, "Key 2");
+		SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, 1, "№ строки",,7);
+		If VisibilityKey1 Then
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, 2, "Key 1");
 		EndIf;
-		If ЧислоСтолбцовВКлюче > 2 Then
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, 4, "Key 3");
+		If NumberColumnsInKey > 1 AND VisibilityKey2 Then			
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + 2, "Ключ 2");			
+		EndIf;
+		If NumberColumnsInKey > 2 AND VisibilityKey3 Then
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + ?(VisibilityKey2, 1, 0) + 2, "Ключ 3");			
 		EndIf;
 		
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА,  		"Rows А",, 7);
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 1,  	"Rows Б",, 7);
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 2,  	"А1");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 3,  	"А2");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 4,  	"А3");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 5,  	"А4");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 6,  	"А5");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 7,  	"Б1");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 8,  	"Б2");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 9,  	"Б3");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 10, 	"Б4");
-		УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, 1, НомерКолонкиЧислоЗаписейА + 11, 	"Б5");
+		Если VisibilityNumberOfRecordsA Тогда
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ЧислоВыгружаемыхКлючей + 2,  		"Число записей А",, 7);
+		EndIf; 
+		
+		Если VisibilityNumberOfRecordsB Тогда
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + 2,  	"Число записей Б",, 7);
+		EndIf;
+		
+		СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = 0;
+		For AttributesCounter = 1 По NumberOfRequisites Цикл 
+			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, ViewsHeadersAttributes["A" + AttributesCounter]);
+				СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+			EndIf;
+		EndDo;
+		
+		For AttributesCounter = 1 По NumberOfRequisites Цикл 
+			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, ViewsHeadersAttributes["B" + AttributesCounter]);
+				СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+			EndIf;
+		EndDo;
 		
 		РазмерыКолонок = New Structure;
 		РазмерыКолонок.Insert("К1", 0);
@@ -4287,74 +4678,96 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		РазмерыКолонок.Insert("Б3", 0);
 		РазмерыКолонок.Insert("Б4", 0);
 		РазмерыКолонок.Insert("Б5", 0);
-		СчетчикСтрок = 0;
+		RowsCounter = 0;
 		For Each СтрокаТЧ In Result Do
 			
-			МаксДлинаК1 = Max(РазмерыКолонок.К1,StrLen(СтрокаТЧ.Key));
-			РазмерыКолонок.К1 = МаксДлинаК1;
-			If ЧислоСтолбцовВКлюче > 1 Then
-				МаксДлинаК2 = Max(РазмерыКолонок.К2,StrLen(СтрокаТЧ.Ключ2));
-				РазмерыКолонок.К2 = МаксДлинаК2;
+			РазмерыКолонок.K1 = Max(2, РазмерыКолонок.K1, StrLen(СтрокаТЧ.Key1));
+			If NumberColumnsInKey > 1 And VisibilityKey2 Then
+				РазмерыКолонок.К2 = Макс(2,РазмерыКолонок.K2, StrLen(СтрокаТЧ.Key2));
 			EndIf;
-			If ЧислоСтолбцовВКлюче > 2 Then
-				МаксДлинаК3 = Max(РазмерыКолонок.К3,StrLen(СтрокаТЧ.Key3));
-				РазмерыКолонок.К3 = МаксДлинаК3;
+			If NumberColumnsInKey > 2 And VisibilityKey3 Then				
+				РазмерыКолонок.К3 = Max(2, РазмерыКолонок.К3, StrLen(СтрокаТЧ.Key3));
 			EndIf;
 			
-			МаксДлинаА1 = Max(РазмерыКолонок.А1,StrLen(СтрокаТЧ.AttributeA1));
-			РазмерыКолонок.А1 = МаксДлинаА1;
-			МаксДлинаА2 = Max(РазмерыКолонок.А2,StrLen(СтрокаТЧ.AttributeA2));
-			РазмерыКолонок.А2 = МаксДлинаА2;
-			МаксДлинаА3 = Max(РазмерыКолонок.А3,StrLen(СтрокаТЧ.AttributeA3));
-			РазмерыКолонок.А3 = МаксДлинаА3;
-			МаксДлинаА4 = Max(РазмерыКолонок.А4,StrLen(СтрокаТЧ.AttributeA4));
-			РазмерыКолонок.А4 = МаксДлинаА4;
-			МаксДлинаА5 = Max(РазмерыКолонок.А5,StrLen(СтрокаТЧ.AttributeA5));
-			РазмерыКолонок.А5 = МаксДлинаА5;
-			МаксДлинаБ1 = Max(РазмерыКолонок.Б1,StrLen(СтрокаТЧ.AttributeB1));
-			РазмерыКолонок.Б1 = МаксДлинаБ1;
-			МаксДлинаБ2 = Max(РазмерыКолонок.Б2,StrLen(СтрокаТЧ.AttributeB2));
-			РазмерыКолонок.Б2 = МаксДлинаБ2;
-			МаксДлинаБ3 = Max(РазмерыКолонок.Б3,StrLen(СтрокаТЧ.AttributeB3));
-			РазмерыКолонок.Б3 = МаксДлинаБ3;
-			МаксДлинаБ4 = Max(РазмерыКолонок.Б4,StrLen(СтрокаТЧ.AttributeB4));
-			РазмерыКолонок.Б4 = МаксДлинаБ4;
-			МаксДлинаБ5 = Max(РазмерыКолонок.Б5,StrLen(СтрокаТЧ.AttributeB5));
-			РазмерыКолонок.Б5 = МаксДлинаБ5;
+			РазмерыКолонок.A1 = Макс(2,РазмерыКолонок.А1,StrLen(СтрокаТЧ.AttributeA1));
+			РазмерыКолонок.A2 = Макс(2,РазмерыКолонок.А2,StrLen(СтрокаТЧ.AttributeA2));
+			РазмерыКолонок.A3 = Макс(2,РазмерыКолонок.А3,StrLen(СтрокаТЧ.AttributeA3));
+			РазмерыКолонок.A4 = Макс(2,РазмерыКолонок.А4,StrLen(СтрокаТЧ.AttributeA4));
+			РазмерыКолонок.A5 = Макс(2,РазмерыКолонок.А5,StrLen(СтрокаТЧ.AttributeA5));
+			РазмерыКолонок.B1 = Макс(2,РазмерыКолонок.Б1,StrLen(СтрокаТЧ.AttributeB1));
+			РазмерыКолонок.B2 = Макс(2,РазмерыКолонок.Б2,StrLen(СтрокаТЧ.AttributeB2));
+			РазмерыКолонок.B3 = Макс(2,РазмерыКолонок.Б3,StrLen(СтрокаТЧ.AttributeB3));
+			РазмерыКолонок.B4 = Макс(2,РазмерыКолонок.Б4,StrLen(СтрокаТЧ.AttributeB4));
+			РазмерыКолонок.B5 = Макс(2,РазмерыКолонок.Б5,StrLen(СтрокаТЧ.AttributeB5));
 			
-			СчетчикСтрок = СчетчикСтрок + 1;
+			RowsCounter = RowsCounter + 1;
 			
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, 1, СтрокаТЧ.LineNumber, 1, 7);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, 2, СтрокаТЧ.Key,, МаксДлинаК1);
-			If ЧислоСтолбцовВКлюче > 1 Then
-				УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, 3, СтрокаТЧ.Ключ2,, МаксДлинаК2);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 1, СтрокаТЧ.LineNumber, 1, 7);
+			If VisibilityKey1 Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, 2, СтрокаТЧ.Key1,, РазмерыКолонок.K1);
 			EndIf;
-			If ЧислоСтолбцовВКлюче > 2 Then
-				УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, 4, СтрокаТЧ.Key3,, МаксДлинаК3);
+			If NumberColumnsInKey > 1 And VisibilityKey2 Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument
+					, RowsCounter + 1
+					, ?(VisibilityKey1, 1, 0) + 2
+					, СтрокаТЧ.Key2
+					,
+					, РазмерыКолонок.K2);
+			EndIf;
+			If NumberColumnsInKey > 2 And VisibilityKey3 Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument
+					, RowsCounter + 1
+					, ?(VisibilityKey1, 1, 0) + ?(VisibilityKey2, 1, 0) + 2
+					, СтрокаТЧ.Key3
+					,
+					, РазмерыКолонок.K3);
 			EndIf;
 				
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА,		СтрокаТЧ.ЧислоЗаписейА, 1, 7);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 1, СтрокаТЧ.ЧислоЗаписейБ, 1, 7);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 2, СтрокаТЧ.AttributeA1,, МаксДлинаА1);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 3,	СтрокаТЧ.AttributeA2,, МаксДлинаА2);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 4,	СтрокаТЧ.AttributeA3,, МаксДлинаА3);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 5, СтрокаТЧ.AttributeA4,, МаксДлинаА4);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 6, СтрокаТЧ.AttributeA5,, МаксДлинаА5);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 7, СтрокаТЧ.AttributeB1,, МаксДлинаБ1);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 8, СтрокаТЧ.AttributeB2,, МаксДлинаБ2);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 9, СтрокаТЧ.AttributeB3,, МаксДлинаБ3);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 10,СтрокаТЧ.AttributeB4,, МаксДлинаБ4);
-			УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, СчетчикСтрок + 1, НомерКолонкиЧислоЗаписейА + 11,СтрокаТЧ.AttributeB5,, МаксДлинаБ5);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА,		СтрокаТЧ.ЧислоЗаписейА, 1, 7);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 1, СтрокаТЧ.ЧислоЗаписейБ, 1, 7);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 2, СтрокаТЧ.AttributeA1,, МаксДлинаА1);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 3,	СтрокаТЧ.AttributeA2,, МаксДлинаА2);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 4,	СтрокаТЧ.AttributeA3,, МаксДлинаА3);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 5, СтрокаТЧ.AttributeA4,, МаксДлинаА4);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 6, СтрокаТЧ.AttributeA5,, МаксДлинаА5);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 7, СтрокаТЧ.AttributeB1,, МаксДлинаБ1);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 8, СтрокаТЧ.AttributeB2,, МаксДлинаБ2);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 9, СтрокаТЧ.AttributeB3,, МаксДлинаБ3);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 10,СтрокаТЧ.AttributeB4,, МаксДлинаБ4);
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиЧислоЗаписейА + 11,СтрокаТЧ.AttributeB5,, МаксДлинаБ5);
 		
+			Если VisibilityNumberOfRecordsA Тогда
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ЧислоВыгружаемыхКлючей + 2,	СтрокаТЧ.ЧислоЗаписейА, 1, 7);
+			EndIf;
+			
+			Если VisibilityNumberOfRecordsB Тогда
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ЧислоВыгружаемыхКлючей + ?(VisibilityNumberOfRecordsA, 1, 0) + 2, СтрокаТЧ.ЧислоЗаписейБ, 1, 7);
+			EndIf;
+			
+			СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = 0;
+			For CounterAttributes = 1 По NumberOfRequisites Цикл 
+				Если ThisObject["VisibilityAttributeA" + CounterAttributes] Тогда
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, СтрокаТЧ["AttributeA" + CounterAttributes],, РазмерыКолонок["A" + CounterAttributes]);
+					СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+				EndIf;
+			EndDo;
+			
+			For CounterAttributes = 1 По NumberOfRequisites Цикл 
+				Если ThisObject["VisibilityAttributeB" + CounterAttributes] Тогда
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, НомерКолонкиСПервымВыгружаемымРеквизитом + СмещениеОтКолонкиСПервымВыгружаемымРеквизитом, СтрокаТЧ["AttributeB" + CounterAttributes],, РазмерыКолонок["B" + CounterAttributes]);
+					СмещениеОтКолонкиСПервымВыгружаемымРеквизитом = СмещениеОтКолонкиСПервымВыгружаемымРеквизитом + 1;
+				EndIf;
+			EndDo;
+			
 		EndDo; 
 		
 		SpreadsheetDocument.Write(ПутьКВременномуФайлу, SpreadsheetDocumentFileType[UploadFileFormat]);
 		
 	Else
 		
-		ТекстОшибки = "Format файла выгрузки """ + UploadFileFormat + """ не предусмотрен";
+		ErrorText = "Format файла выгрузки """ + UploadFileFormat + """ не предусмотрен";
 		UserMessage = New UserMessage;
-		UserMessage.Text = ТекстОшибки;
+		UserMessage.Text = ErrorText;
 		UserMessage.Field = "Object.UploadFileFormat";
 		UserMessage.Message();
 		Return Undefined;
@@ -4374,18 +4787,18 @@ Function ВыгрузитьРезультатВФайлНаСервере(Для
 		
 	Else
 		
-		Message(Format(CurrentDate(), "ДЛФ=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ завершена (число строк: " + СчетчикСтрок + ")");
+		Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + ПутьКВременномуФайлу + """ формата """ + UploadFileFormat + """ завершена (число строк: " + RowsCounter + ")");
 		Return Undefined;
 		
 	EndIf;
 	
 EndFunction
 
-Procedure УстановитьЗначениеЯчейкиТабличногоДокумента(SpreadsheetDocument, LineNumber, НомерКолонки, ЗначениеЯчейки, пТипЗначения = 0, ColumnWidth = 6)
+Procedure SetCellValueSpreadsheetDocument(SpreadsheetDocument, LineNumber, NumberColumn, CellValue, vTypeValues = 0, ColumnWidth = 6)
 	
-	If пТипЗначения = 0 Then
+	If vTypeValues = 0 Then
 		ValueType = New TypeDescription("String");
-	ElsIf пТипЗначения = 1 Then
+	ElsIf vTypeValues = 1 Then
 		ValueType = New TypeDescription("Number");
 	EndIf;
 	
@@ -4393,39 +4806,39 @@ Procedure УстановитьЗначениеЯчейкиТабличногоД
 		SpreadsheetDocument = New SpreadsheetDocument;
 	EndIf;
 	
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).ContainsValue = 	True;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).ValueType = 		ValueType;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).Value = 			ЗначениеЯчейки;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).ColumnWidth = 	ColumnWidth;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).ContainsValue = True;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).ValueType = 	ValueType;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).Value = 		CellValue;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).ColumnWidth = 	ColumnWidth;
 	Line = New Line(SpreadsheetDocumentCellLineType.Solid, 1);
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).TopBorder = Line;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).BottomBorder = Line;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).LeftBorder = Line;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).RightBorder = Line;
-	SpreadsheetDocument.Region(LineNumber,НомерКолонки).HorizontalAlign = HorizontalAlign.Left;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).TopBorder = Line;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).BottomBorder = Line;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).LeftBorder = Line;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).RightBorder = Line;
+	SpreadsheetDocument.Region(LineNumber,NumberColumn).HorizontalAlign = HorizontalAlign.Left;
 	
 EndProcedure
 
-Procedure ОбновитьДанныеПериода() Export
+Procedure RefreshDataPeriod() Export
 	
 	CurrentDate = BegOfDay(CurrentDate());
-	ТочкаОтсчетаДатыНачала = BegOfDay(CurrentDate) + 24 * 3600;
+	StartingPointDateBeginning = BegOfDay(CurrentDate) + 24 * 3600;
 	
-	//Умолчания
+	//Defaults
 	ValidFrom = CurrentDate;
 	ValidTo = EndOfDay(CurrentDate);
 	
-	//Absolute период
+	//Absolute period
 	If PeriodType = 0 Then
 		
 	Else
 		
-		If DiscretenessOfRelativePeriod = "год" Then
-			ValidFrom = AddMonth(ТочкаОтсчетаДатыНачала, -1 * 12 * RelativePeriodValue);
-		ElsIf DiscretenessOfRelativePeriod = "месяц" Then
-			ValidFrom = AddMonth(ТочкаОтсчетаДатыНачала, -1 * RelativePeriodValue);
-		ElsIf DiscretenessOfRelativePeriod = "день" Then
-			ValidFrom = ТочкаОтсчетаДатыНачала - 24 * 3600 * RelativePeriodValue;
+		If DiscretenessOfRelativePeriod = "year" Then
+			ValidFrom = AddMonth(StartingPointDateBeginning, -1 * 12 * RelativePeriodValue);
+		ElsIf DiscretenessOfRelativePeriod = "month" Then
+			ValidFrom = AddMonth(StartingPointDateBeginning, -1 * RelativePeriodValue);
+		ElsIf DiscretenessOfRelativePeriod = "day" Then
+			ValidFrom = StartingPointDateBeginning - 24 * 3600 * RelativePeriodValue;
 		EndIf;
 		
 		//Last Х
@@ -4433,17 +4846,17 @@ Procedure ОбновитьДанныеПериода() Export
 
 			ValidTo = EndOfDay(CurrentDate);
 			
-		//First X из последних Y
+		//First X of the last Y
 		ElsIf PeriodType = 2 Then
 			
-			ТочкаОтсчетаДатыОкончания = ValidFrom - 1;
+			StartingPointDatesEnds = ValidFrom - 1;
 			
-			If DiscretenessOfSlaveRelativePeriod = "год" Then
-				ValidTo = AddMonth(ТочкаОтсчетаДатыОкончания, 1 * 12 * ValueOfSlaveRelativePeriod);
-			ElsIf DiscretenessOfSlaveRelativePeriod = "месяц" Then
-				ValidTo = AddMonth(ТочкаОтсчетаДатыОкончания, 1 * ValueOfSlaveRelativePeriod);
-			ElsIf DiscretenessOfSlaveRelativePeriod = "день" Then
-				ValidTo = ТочкаОтсчетаДатыОкончания + 24 * 3600 * ValueOfSlaveRelativePeriod;
+			If DiscretenessOfSlaveRelativePeriod = "year" Then
+				ValidTo = AddMonth(StartingPointDatesEnds, 1 * 12 * ValueOfSlaveRelativePeriod);
+			ElsIf DiscretenessOfSlaveRelativePeriod = "month" Then
+				ValidTo = AddMonth(StartingPointDatesEnds, 1 * ValueOfSlaveRelativePeriod);
+			ElsIf DiscretenessOfSlaveRelativePeriod = "day" Then
+				ValidTo = StartingPointDatesEnds + 24 * 3600 * ValueOfSlaveRelativePeriod;
 			EndIf;
 			
 		Else
@@ -4459,30 +4872,30 @@ Procedure ОбновитьДанныеПериода() Export
 		
 EndProcedure
 
-Function НайтиПодчиненныйУзелXMLФайлаПоИмени(CurrentNode, ИмяИскомогоУзла)
+Function FindSlaveNodeXMLFileByName(CurrentNode, SearchNodeName)
 	
-	//Ветка для корневого элемента
-	If CurrentNode.NodeName = ИмяИскомогоУзла Then
+	//Branch for root element
+	If CurrentNode.NodeName = SearchNodeName Then
 					
 		Return CurrentNode;
 		
 	EndIf;
 	
-	For Each ПодчиненныйУзел In CurrentNode.ChildNodes Do
+	For Each SlaveNode In CurrentNode.ChildNodes Do
 					
-		If ПодчиненныйУзел.NodeName = ИмяИскомогоУзла Then
+		If SlaveNode.NodeName = SearchNodeName Then
 					
-			НайденныйУзел = ПодчиненныйУзел;
+			FoundNode = SlaveNode;
 			
 		Else 
 		
-			НайденныйУзел = НайтиПодчиненныйУзелXMLФайлаПоИмени(ПодчиненныйУзел, ИмяИскомогоУзла); 
+			FoundNode = FindSlaveNodeXMLFileByName(SlaveNode, SearchNodeName); 
 			
 		EndIf;
 		
-		If НайденныйУзел <> Undefined Then
+		If FoundNode <> Undefined Then
 			
-			Return НайденныйУзел
+			Return FoundNode
 			
 		EndIf;
 		
@@ -4491,15 +4904,17 @@ Function НайтиПодчиненныйУзелXMLФайлаПоИмени(Cur
 	Return Undefined;
 	
 EndFunction
+
 #EndRegion
 
-ЧислоРеквизитов = 5;
-КодПриведенияРеквизитаКТипуЧисло = "РТек = Number(РТек);";
-ПредставленияЗаголовковРеквизитов = New Map;
+NumberOfRequisites = 5;
+CodeCastingAttributeToTypeNumber = "РТек = Number(РТек);";
+ViewsHeadersAttributes = New Map;
 
-For СчетчикРеквизитов = 1 To ЧислоРеквизитов Do
+For AttributesCounter = 1 To NumberOfRequisites Do
 
-	ПредставленияЗаголовковРеквизитов.Insert("А" + СчетчикРеквизитов , "Attribute А" + СчетчикРеквизитов);
-	ПредставленияЗаголовковРеквизитов.Insert("Б" + СчетчикРеквизитов , "Attribute Б" + СчетчикРеквизитов);
+	ViewsHeadersAttributes.Insert("A" + AttributesCounter , "Attribute A" + AttributesCounter);
+	ViewsHeadersAttributes.Insert("B" + AttributesCounter , "Attribute B" + AttributesCounter);
 
-EndDo; 
+EndDo;
+ 

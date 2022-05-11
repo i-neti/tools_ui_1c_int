@@ -267,10 +267,10 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="07cf2c58-1c60-4ae8-ae23-21cd14763003">
-    <name>ФормаРедактированияСобытий</name>
+    <name>EditEventsForm</name>
     <synonym>
       <key>en</key>
-      <value>Edit event</value>
+      <value>Edit events</value>
     </synonym>
     <synonym>
       <key>ru</key>
@@ -280,7 +280,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="3376bf75-4d23-48a0-8561-1485bed7076a">
-    <name>ФормаРедактированияВыражения</name>
+    <name>EditExpressionForm</name>
     <synonym>
       <key>en</key>
       <value>Edit expression</value>
@@ -293,7 +293,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="b4bfd7cf-a2b9-4108-b01b-009bea7b6f6e">
-    <name>ФормаРедактированияСвязи</name>
+    <name>EditLinkForm</name>
     <synonym>
       <key>en</key>
       <value>Edit link</value>
@@ -306,7 +306,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="b1345a33-7fd7-40ce-aaa7-e86397830298">
-    <name>ФормаСохраненияНастройки</name>
+    <name>SaveSettingForm</name>
     <synonym>
       <key>en</key>
       <value>Save setting</value>
@@ -319,7 +319,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="d783052e-b6ab-4654-85b2-f5e7fb9353d8">
-    <name>ФормаВыбораНастройки</name>
+    <name>SelectSettingForm</name>
     <synonym>
       <key>en</key>
       <value>Select setting</value>
@@ -332,7 +332,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <templates uuid="3905729a-8e19-4bcb-aad1-b2a72358d193">
-    <name>МакетСохраненияНастроек</name>
+    <name>SaveSettingsTemplate</name>
+    <synonym>
+      <key>en</key>
+      <value>Save settings template</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Макет сохранения настроек</value>
