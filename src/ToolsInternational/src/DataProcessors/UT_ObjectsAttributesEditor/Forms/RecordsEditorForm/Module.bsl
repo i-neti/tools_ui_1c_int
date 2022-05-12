@@ -5,7 +5,7 @@ Var mCloseFormWithoutQuestion;
 Var mRegistersTableCurrRow;
 
 &AtClient
-Var mOldRegistersTableCurrRow;
+Var mRegistersTableCurrRowOld;
 
 &AtClient
 Var mLastUUID;
@@ -66,7 +66,7 @@ EndProcedure
 &AtClient
 Procedure OnOpen(Cancel)
 	mRegistersTableCurrRow = Undefined;
-	mOldRegistersTableCurrRow = Undefined;
+	mRegistersTableCurrRowOld = Undefined;
 
 	AttachIdleHandler("vAfterOpen", 0.1, True);
 EndProcedure
@@ -118,7 +118,7 @@ EndProcedure
 &AtClient
 Procedure _Refresh(Command)
 	mRegistersTableCurrRow = Undefined;
-	mOldRegistersTableCurrRow = Undefined;
+	mRegistersTableCurrRowOld = Undefined;
 
 	vClearRecordSets();
 
@@ -712,7 +712,7 @@ EndProcedure
 Procedure _TabRegistersOnActivateRow(Item)
 	CurrRow = Item.CurrentRow;
 	If CurrRow <> mRegistersTableCurrRow Then
-		mOldRegistersTableCurrRow = mRegistersTableCurrRow;
+		mRegistersTableCurrRowOld = mRegistersTableCurrRow;
 		mRegistersTableCurrRow = CurrRow;
 		AttachIdleHandler("vOnActivateRegistersTableRow", 0.1, True);
 	EndIf;
@@ -720,8 +720,8 @@ EndProcedure
 
 &AtClient
 Procedure vOnActivateRegistersTableRow() Export
-	If mOldRegistersTableCurrRow <> Undefined Then
-		CurrData = _TabRegisters.FindByID(mOldRegistersTableCurrRow);
+	If mRegistersTableCurrRowOld <> Undefined Then
+		CurrData = _TabRegisters.FindByID(mRegistersTableCurrRowOld);
 		If CurrData <> Undefined Then
 			AttributeName = vGetAttributeName(CurrData.FullName);
 		EndIf;
