@@ -522,7 +522,7 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 		Return Undefined;
 	EndIf;
 	
-	Template = ОбработкаОбъект.GetTemplate("ФормаПредварительногоПросмотра");
+	Template = ОбработкаОбъект.GetTemplate("PreviewForm");
 	SpreadsheetDocument = New SpreadsheetDocument;
 	
 	//Key 1
@@ -1025,9 +1025,9 @@ Procedure ОбновитьВидимостьДоступностьЭлемент
 	For СчетчикОпераций = 1 To 7 Do 
 		
 		If СчетчикОпераций = Object.RelationalOperation Then
-			ThisForm["Операция" + СчетчикОпераций] = ThisForm["АктивнаяОперация" + СчетчикОпераций];			
+			ThisForm["Операция" + СчетчикОпераций] = ThisForm["ActiveOperation" + СчетчикОпераций];			
 		Else
-			ThisForm["Операция" + СчетчикОпераций] = ThisForm["НеактивнаяОперация" + СчетчикОпераций];			
+			ThisForm["Операция" + СчетчикОпераций] = ThisForm["InactiveOperation" + СчетчикОпераций];			
 		EndIf;
 		
 	EndDo;		
@@ -1742,35 +1742,35 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 				
 	Else		
 	
-		МакетКартинкаАктивнаяОперация1 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация1");
-		МакетКартинкаНеактивнаяОперация1 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация1");
-		МакетКартинкаАктивнаяОперация2 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация2");
-		МакетКартинкаНеактивнаяОперация2 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация2");
-		МакетКартинкаАктивнаяОперация3 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация3");
-		МакетКартинкаНеактивнаяОперация3 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация3");
-		МакетКартинкаАктивнаяОперация4 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация4");
-		МакетКартинкаНеактивнаяОперация4 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация4");
-		МакетКартинкаАктивнаяОперация5 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация5");
-		МакетКартинкаНеактивнаяОперация5 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация5");
-		МакетКартинкаАктивнаяОперация6 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация6");
-		МакетКартинкаНеактивнаяОперация6 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация6");
-		МакетКартинкаАктивнаяОперация7 		= FormAttributeToValue("Object").GetTemplate("КартинкаАктивнаяОперация7");
-		МакетКартинкаНеактивнаяОперация7 	= FormAttributeToValue("Object").GetTemplate("КартинкаНеактивнаяОперация7");
+		TemplatePictureActiveOperation1 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation1");
+		TemplatePictureInactiveOperation1 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation1");
+		TemplatePictureActiveOperation2 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation2");
+		TemplatePictureInactiveOperation2 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation2");
+		TemplatePictureActiveOperation3 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation3");
+		TemplatePictureInactiveOperation3 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation3");
+		TemplatePictureActiveOperation4 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation4");
+		TemplatePictureInactiveOperation4 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation4");
+		TemplatePictureActiveOperation5 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation5");
+		TemplatePictureInactiveOperation5 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation5");
+		TemplatePictureActiveOperation6 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation6");
+		TemplatePictureInactiveOperation6 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation6");
+		TemplatePictureActiveOperation7 	= FormAttributeToValue("Object").GetTemplate("PictureActiveOperation7");
+		TemplatePictureInactiveOperation7 	= FormAttributeToValue("Object").GetTemplate("PictureInactiveOperation7");
 			
-		АктивнаяОперация1 	= PutToTempStorage(МакетКартинкаАктивнаяОперация1, UUID);
-		НеактивнаяОперация1 = PutToTempStorage(МакетКартинкаНеактивнаяОперация1, UUID);
-		АктивнаяОперация2 	= PutToTempStorage(МакетКартинкаАктивнаяОперация2, UUID);
-		НеактивнаяОперация2 = PutToTempStorage(МакетКартинкаНеактивнаяОперация2, UUID);
-		АктивнаяОперация3 	= PutToTempStorage(МакетКартинкаАктивнаяОперация3, UUID);
-		НеактивнаяОперация3 = PutToTempStorage(МакетКартинкаНеактивнаяОперация3, UUID);
-		АктивнаяОперация4 	= PutToTempStorage(МакетКартинкаАктивнаяОперация4, UUID);
-		НеактивнаяОперация4 = PutToTempStorage(МакетКартинкаНеактивнаяОперация4, UUID);
-		АктивнаяОперация5 	= PutToTempStorage(МакетКартинкаАктивнаяОперация5, UUID);
-		НеактивнаяОперация5 = PutToTempStorage(МакетКартинкаНеактивнаяОперация5, UUID);
-		АктивнаяОперация6 	= PutToTempStorage(МакетКартинкаАктивнаяОперация6, UUID);
-		НеактивнаяОперация6 = PutToTempStorage(МакетКартинкаНеактивнаяОперация6, UUID);
-		АктивнаяОперация7 	= PutToTempStorage(МакетКартинкаАктивнаяОперация7, UUID);
-		НеактивнаяОперация7 = PutToTempStorage(МакетКартинкаНеактивнаяОперация7, UUID); 
+		ActiveOperation1 	= PutToTempStorage(TemplatePictureActiveOperation1, UUID);
+		InactiveOperation1 	= PutToTempStorage(TemplatePictureInactiveOperation1, UUID);
+		ActiveOperation2 	= PutToTempStorage(TemplatePictureActiveOperation2, UUID);
+		InactiveOperation2 	= PutToTempStorage(TemplatePictureInactiveOperation2, UUID);
+		ActiveOperation3 	= PutToTempStorage(TemplatePictureActiveOperation3, UUID);
+		InactiveOperation3 	= PutToTempStorage(TemplatePictureInactiveOperation3, UUID);
+		ActiveOperation4 	= PutToTempStorage(TemplatePictureActiveOperation4, UUID);
+		InactiveOperation4 	= PutToTempStorage(TemplatePictureInactiveOperation4, UUID);
+		ActiveOperation5 	= PutToTempStorage(TemplatePictureActiveOperation5, UUID);
+		InactiveOperation5 	= PutToTempStorage(TemplatePictureInactiveOperation5, UUID);
+		ActiveOperation6 	= PutToTempStorage(TemplatePictureActiveOperation6, UUID);
+		InactiveOperation6 	= PutToTempStorage(TemplatePictureInactiveOperation6, UUID);
+		ActiveOperation7 	= PutToTempStorage(TemplatePictureActiveOperation7, UUID);
+		InactiveOperation7 	= PutToTempStorage(TemplatePictureInactiveOperation7, UUID); 
 		
 	EndIf;
 
@@ -2026,6 +2026,41 @@ Procedure ConnectionToExternalBaseBPathToFileStartChoiceEnd(SelectedFiles, Addit
 		
 	EndIf;
 
+EndProcedure
+
+&AtClient
+Procedure SettingsFileBAggregateFunctionCalculationTotalClearing(Item, StandardProcessing)
+	
+	StandardProcessing = Ложь;
+	пТекущаяСтрока = Items.SettingsFileB.CurrentData;
+	If пТекущаяСтрока <> Undefined Then
+		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure SettingsFileAAggregateFunctionCalculationTotalClearing(Item, StandardProcessing)
+	
+	StandardProcessing = Ложь;
+	пТекущаяСтрока = Items.SettingsFileA.CurrentData;
+	If пТекущаяСтрока <> Undefined Then
+		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	EndIf;
+
+EndProcedure
+
+
+&AtClient
+Procedure SettingsFileAOnChange(Item)
+	
+	пТекущаяСтрока = Items.SettingsFileA.CurrentData;
+	If пТекущаяСтрока <> Undefined Then
+		If ПустаяСтрока(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
+			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+		EndIf;
+	EndIf;
+	
 EndProcedure
 
 &AtClient

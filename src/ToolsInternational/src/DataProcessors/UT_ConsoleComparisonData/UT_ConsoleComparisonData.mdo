@@ -3983,119 +3983,179 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <templates uuid="64cb0057-bee2-49a0-8308-6e6f877fb3b6">
-    <name>КартинкаАктивнаяОперация1</name>
+    <name>PictureActiveOperation1</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 1</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция1</value>
+      <value>Картинка активная операция 1</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="729943a2-444e-4bbd-9063-27fc41efec14">
-    <name>КартинкаАктивнаяОперация2</name>
+    <name>PictureActiveOperation2</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 2</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция2</value>
+      <value>Картинка активная операция 2</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="735145aa-db5f-498e-b9ee-f25714eccf9b">
-    <name>КартинкаАктивнаяОперация3</name>
+    <name>PictureActiveOperation3</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 3</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция3</value>
+      <value>Картинка активная операция 3</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="c3e1b73a-6d9a-4956-a8e6-f72c88a68697">
-    <name>КартинкаАктивнаяОперация4</name>
+    <name>PictureActiveOperation4</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 4</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция4</value>
+      <value>Картинка активная операция 4</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="715d65d6-cb1f-4fcb-9b88-c77ec9f5242f">
-    <name>КартинкаАктивнаяОперация5</name>
+    <name>PictureActiveOperation5</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 5</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция5</value>
+      <value>Картинка активная операция 5</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="16f460a1-1605-463a-bbe2-57a64b1c3bb9">
-    <name>КартинкаАктивнаяОперация6</name>
+    <name>PictureActiveOperation6</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 6</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция6</value>
+      <value>Картинка активная операция 6</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="9aff04a3-5ec6-4083-b79c-1ed0b6f93768">
-    <name>КартинкаАктивнаяОперация7</name>
+    <name>PictureActiveOperation7</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation 7</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка активная операция7</value>
+      <value>Картинка активная операция 7</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="ac472a59-6bf6-47b9-ad17-4f8ed3c420b6">
-    <name>КартинкаНеактивнаяОперация1</name>
+    <name>PictureInactiveOperation1</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation1</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция1</value>
+      <value>Картинка неактивная операция 1 </value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="54183e5a-1726-4489-8628-5a60af44fb3e">
-    <name>КартинкаНеактивнаяОперация2</name>
+    <name>PictureInactiveOperation2</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 2</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция2</value>
+      <value>Картинка неактивная операция 2</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="e48ad614-d35e-4dee-ac2f-e8f6729e81ca">
-    <name>КартинкаНеактивнаяОперация3</name>
+    <name>PictureInactiveOperation3</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 3</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция3</value>
+      <value>Картинка неактивная операция 3</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="91394118-78a7-4218-a5a2-e0f29b6cd98a">
-    <name>КартинкаНеактивнаяОперация4</name>
+    <name>PictureInactiveOperation4</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 4</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция4</value>
+      <value>Картинка неактивная операция 4</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="17e1f96f-ef66-4096-a735-793589a5070a">
-    <name>КартинкаНеактивнаяОперация5</name>
+    <name>PictureInactiveOperation5</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 5</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция5</value>
+      <value>Картинка неактивная операция 5</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="9f560828-936d-4d5b-abb4-a96074155f70">
-    <name>КартинкаНеактивнаяОперация6</name>
+    <name>PictureInactiveOperation6</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 6</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция6</value>
+      <value>Картинка неактивная операция 6</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="4f7f8d12-0748-4779-b443-e04fb5c5e220">
-    <name>КартинкаНеактивнаяОперация7</name>
+    <name>PictureInactiveOperation7</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture inactive operation 7</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Картинка неактивная операция7</value>
+      <value>Картинка неактивная операция 7</value>
     </synonym>
     <templateType>BinaryData</templateType>
   </templates>
   <templates uuid="d380c569-d30c-4f0a-8dc2-db61da9ad6d9">
-    <name>ФормаПредварительногоПросмотра</name>
+    <name>PreviewForm</name>
+    <synonym>
+      <key>en</key>
+      <value>Preview form</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Предварительный просмотр</value>
