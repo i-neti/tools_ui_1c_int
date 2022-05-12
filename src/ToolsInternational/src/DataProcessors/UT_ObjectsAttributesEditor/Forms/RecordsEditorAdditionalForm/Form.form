@@ -6,16 +6,16 @@
   </title>
   <title>
     <key>ru</key>
-    <value>Редактор дополнительных движений</value>
+    <value>Дополнительный редактор движений</value>
   </title>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаОсновное</name>
+    <name>MainGroup</name>
     <id>33</id>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаОсновное1</name>
+      <name>MainGroup1</name>
       <id>117</id>
       <items xsi:type="form:FormField">
-        <name>мОбъектСсылка</name>
+        <name>mObjectRef</name>
         <id>1</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -24,15 +24,15 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>мОбъектСсылка</segments>
+            <segments>mObjectRef</segments>
           </paths>
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>мОбъектСсылкаПриИзменении</name>
+          <name>mObjectRefOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>мОбъектСсылкаРасширеннаяПодсказка</name>
+          <name>mObjectRefExtendedTooltip</name>
           <id>3</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -47,7 +47,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>мОбъектСсылкаКонтекстноеМеню</name>
+          <name>mObjectRefContextMenu</name>
           <id>2</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -64,11 +64,11 @@
         <extInfo xsi:type="form:InputFieldExtInfo">
           <handlers>
             <event>StartChoice</event>
-            <name>мОбъектСсылкаНачалоВыбора</name>
+            <name>mObjectRefStartChoice</name>
           </handlers>
           <handlers>
             <event>Clearing</event>
-            <name>мОбъектСсылкаОчистка</name>
+            <name>mObjectRefClearing</name>
           </handlers>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -83,7 +83,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ЗаписьВРежимеЗагрузки</name>
+        <name>_WriteInLoadingMode</name>
         <id>103</id>
         <titleTextColor xsi:type="core:ColorRef">
           <color>Style.FieldSelectionBackColor</color>
@@ -102,12 +102,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ЗаписьВРежимеЗагрузки</segments>
+            <segments>_WriteInLoadingMode</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>_ЗаписьВРежимеЗагрузкиРасширеннаяПодсказка</name>
+          <name>_WriteInLoadingModeExtendedTooltip</name>
           <id>105</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -122,7 +122,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ЗаписьВРежимеЗагрузкиКонтекстноеМеню</name>
+          <name>_WriteInLoadingModeContextMenu</name>
           <id>104</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -144,7 +144,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ГруппаОсновное1РасширеннаяПодсказка</name>
+        <name>MainGroup1ExtendedTooltip</name>
         <id>118</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -168,10 +168,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаОсновное2</name>
+      <name>MainGroup2</name>
       <id>119</id>
       <items xsi:type="form:FormField">
-        <name>_ЗадаватьВопросПриЗакрытии</name>
+        <name>_AskQuestionOnClose</name>
         <id>114</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -180,12 +180,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ЗадаватьВопросПриЗакрытии</segments>
+            <segments>_AskQuestionOnClose</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>_ЗадаватьВопросПриЗакрытииРасширеннаяПодсказка</name>
+          <name>_AskQuestionOnCloseExtendedTooltip</name>
           <id>116</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -200,7 +200,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ЗадаватьВопросПриЗакрытииКонтекстноеМеню</name>
+          <name>_AskQuestionOnCloseContextMenu</name>
           <id>115</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -217,7 +217,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>_БыстрыйВызовСервера</name>
+        <name>_FastServerCall</name>
         <id>111</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -226,12 +226,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_БыстрыйВызовСервера</segments>
+            <segments>_FastServerCall</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>_БыстрыйВызовСервераРасширеннаяПодсказка</name>
+          <name>_FastServerCallExtendedTooltip</name>
           <id>113</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -246,7 +246,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_БыстрыйВызовСервераКонтекстноеМеню</name>
+          <name>_FastServerCallContextMenu</name>
           <id>112</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -268,7 +268,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ГруппаОсновное2РасширеннаяПодсказка</name>
+        <name>MainGroup2ExtendedTooltip</name>
         <id>120</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -297,15 +297,23 @@
       <common>true</common>
     </userVisible>
     <title>
-      <key>ru</key>
-      <value>Группа основное</value>
+      <key>en</key>
+      <value>Main group</value>
     </title>
+    <title>
+      <key>ru</key>
+      <value>Main group</value>
+    </title>
+    <toolTip>
+      <key>en</key>
+      <value>Main group</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Группа основное</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаОсновноеРасширеннаяПодсказка</name>
+      <name>MainGroupExtendedTooltip</name>
       <id>34</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -330,10 +338,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаРегистры</name>
+    <name>RegistersGroup</name>
     <id>35</id>
     <items xsi:type="form:Table">
-      <name>_ТабРегистры</name>
+      <name>_TabRegisters</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -341,11 +349,11 @@
         <common>true</common>
       </userVisible>
       <dataPath xsi:type="form:DataPath">
-        <segments>_ТабРегистры</segments>
+        <segments>_TabRegisters</segments>
       </dataPath>
       <titleLocation>None</titleLocation>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыЗаписать</name>
+        <name>_TabRegistersWrite</name>
         <id>17</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -354,11 +362,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.Записать</segments>
+            <segments>_TabRegisters.Write</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыЗаписатьРасширеннаяПодсказка</name>
+          <name>_TabRegistersWriteExtendedTooltip</name>
           <id>19</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -373,7 +381,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыЗаписатьКонтекстноеМеню</name>
+          <name>_TabRegistersWriteContextMenu</name>
           <id>18</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -389,7 +397,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыИзменен</name>
+        <name>_TabRegistersChanged</name>
         <id>100</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -398,11 +406,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.Изменен</segments>
+            <segments>_TabRegisters.Changed</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыИзмененРасширеннаяПодсказка</name>
+          <name>_TabRegistersChangedExtendedTooltip</name>
           <id>102</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -417,7 +425,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыИзмененКонтекстноеМеню</name>
+          <name>_TabRegistersChangedContextMenu</name>
           <id>101</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -442,7 +450,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыЕстьЗаписи</name>
+        <name>_TabRegistersRecordsExists</name>
         <id>26</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -451,11 +459,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.ЕстьЗаписи</segments>
+            <segments>_TabRegisters.RecordsExists</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыЕстьЗаписиРасширеннаяПодсказка</name>
+          <name>_TabRegistersRecordsExistsExtendedTooltip</name>
           <id>28</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -470,7 +478,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыЕстьЗаписиКонтекстноеМеню</name>
+          <name>_TabRegistersRecordsExistsContextMenu</name>
           <id>27</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -495,7 +503,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыЧислоЗаписей</name>
+        <name>_TabRegistersRecordCount</name>
         <id>69</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -504,11 +512,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.ЧислоЗаписей</segments>
+            <segments>_TabRegisters.RecordCount</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыЧислоЗаписейРасширеннаяПодсказка</name>
+          <name>_TabRegistersRecordCountExtendedTooltip</name>
           <id>71</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -523,7 +531,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыЧислоЗаписейКонтекстноеМеню</name>
+          <name>_TabRegistersRecordCountContextMenu</name>
           <id>70</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -556,7 +564,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыВидРегистра</name>
+        <name>_TabRegistersRegisterType</name>
         <id>72</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -565,11 +573,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.ВидРегистра</segments>
+            <segments>_TabRegisters.RegisterType</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыВидРегистраРасширеннаяПодсказка</name>
+          <name>_TabRegistersRegisterTypeExtendedTooltip</name>
           <id>74</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -584,7 +592,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыВидРегистраКонтекстноеМеню</name>
+          <name>_TabRegistersRegisterTypeContextMenu</name>
           <id>73</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -609,7 +617,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыИмя</name>
+        <name>_TabRegistersName</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -618,11 +626,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.Имя</segments>
+            <segments>_TabRegisters.Name</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыИмяРасширеннаяПодсказка</name>
+          <name>_TabRegistersNameExtendedTooltip</name>
           <id>22</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -637,7 +645,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыИмяКонтекстноеМеню</name>
+          <name>_TabRegistersNameContextMenu</name>
           <id>21</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -662,7 +670,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыПредставление</name>
+        <name>_TabRegistersPresentation</name>
         <id>23</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -671,11 +679,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.Представление</segments>
+            <segments>_TabRegisters.Presentation</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыПредставлениеРасширеннаяПодсказка</name>
+          <name>_TabRegistersPresentationExtendedTooltip</name>
           <id>25</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -690,7 +698,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыПредставлениеКонтекстноеМеню</name>
+          <name>_TabRegistersPresentationContextMenu</name>
           <id>24</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -715,7 +723,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ТабРегистрыПолноеИмя</name>
+        <name>_TabRegistersFullName</name>
         <id>108</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -724,11 +732,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТабРегистры.ПолноеИмя</segments>
+            <segments>_TabRegisters.FullName</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ТабРегистрыПолноеИмяРасширеннаяПодсказка</name>
+          <name>_TabRegistersFullNameExtendedTooltip</name>
           <id>110</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -743,7 +751,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыПолноеИмяКонтекстноеМеню</name>
+          <name>_TabRegistersFullNameContextMenu</name>
           <id>109</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -768,10 +776,10 @@
         </extInfo>
       </items>
       <autoCommandBar>
-        <name>_ТабРегистрыКоманднаяПанель</name>
+        <name>_TabRegistersCommandBar</name>
         <id>6</id>
         <items xsi:type="form:Button">
-          <name>_ТабРегистрыСортироватьСписокПоВозрастанию</name>
+          <name>_TabRegistersSortListAsc</name>
           <id>59</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -779,7 +787,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыСортироватьСписокПоВозрастаниюРасширеннаяПодсказка</name>
+            <name>_TabRegistersSortListAscExtendedTooltip</name>
             <id>60</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -793,7 +801,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Item._ТабРегистры.StandardCommand.SortListAsc</commandName>
+          <commandName>Form.Item._TabRegisters.StandardCommand.SortListAsc</commandName>
           <representation>Auto</representation>
           <onlyInAllActions>false</onlyInAllActions>
           <autoMaxWidth>true</autoMaxWidth>
@@ -802,7 +810,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ТабРегистрыСортироватьСписокПоУбыванию</name>
+          <name>_TabRegistersSortListDesc</name>
           <id>61</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -810,7 +818,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыСортироватьСписокПоУбываниюРасширеннаяПодсказка</name>
+            <name>_TabRegistersSortListDescExtendedTooltip</name>
             <id>62</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -824,7 +832,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Item._ТабРегистры.StandardCommand.SortListDesc</commandName>
+          <commandName>Form.Item._TabRegisters.StandardCommand.SortListDesc</commandName>
           <representation>Auto</representation>
           <onlyInAllActions>false</onlyInAllActions>
           <autoMaxWidth>true</autoMaxWidth>
@@ -833,7 +841,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ТабРегистрыНайти</name>
+          <name>_TabRegistersFind</name>
           <id>63</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -841,7 +849,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыНайтиРасширеннаяПодсказка</name>
+            <name>_TabRegistersFindExtendedTooltip</name>
             <id>64</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -855,7 +863,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Item._ТабРегистры.StandardCommand.Find</commandName>
+          <commandName>Form.Item._TabRegisters.StandardCommand.Find</commandName>
           <representation>Picture</representation>
           <onlyInAllActions>false</onlyInAllActions>
           <autoMaxWidth>true</autoMaxWidth>
@@ -867,7 +875,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ТабРегистрыОтменитьПоиск</name>
+          <name>_TabRegistersCancelSearch</name>
           <id>65</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -875,7 +883,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыОтменитьПоискРасширеннаяПодсказка</name>
+            <name>_TabRegistersCancelSearchExtendedTooltip</name>
             <id>66</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -889,7 +897,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Item._ТабРегистры.StandardCommand.CancelSearch</commandName>
+          <commandName>Form.Item._TabRegisters.StandardCommand.CancelSearch</commandName>
           <representation>Picture</representation>
           <onlyInAllActions>false</onlyInAllActions>
           <autoMaxWidth>true</autoMaxWidth>
@@ -901,7 +909,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>_ТабРегистры_ОткрытьВНовомОкне</name>
+          <name>_TabRegisters_OpenInNewWindow</name>
           <id>129</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -909,7 +917,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистры_ОткрытьВНовомОкнеРасширеннаяПодсказка</name>
+            <name>_TabRegisters_OpenInNewWindowExtendedTooltip</name>
             <id>130</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -923,7 +931,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ОткрытьВНовомОкне</commandName>
+          <commandName>Form.Command._OpenInNewWindow</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -931,10 +939,10 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>_ТабРегистрыГруппа1</name>
+          <name>_TabRegistersGroup1</name>
           <id>67</id>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_УстановитьФлажки</name>
+            <name>_TabRegisters_CheckAll</name>
             <id>125</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -942,7 +950,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_УстановитьФлажкиРасширеннаяПодсказка</name>
+              <name>_TabRegisters_CheckAllExtendedTooltip</name>
               <id>126</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -956,7 +964,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._УстановитьФлажки</commandName>
+            <commandName>Form.Command._CheckAll</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -964,7 +972,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_УстановитьФлажкиДляИзмененных</name>
+            <name>_TabRegisters_CheckChangedRows</name>
             <id>127</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -972,7 +980,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_УстановитьФлажкиДляИзмененныхРасширеннаяПодсказка</name>
+              <name>_TabRegisters_CheckChangedRowsExtendedTooltip</name>
               <id>128</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -986,7 +994,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._УстановитьФлажкиДляИзмененных</commandName>
+            <commandName>Form.Command._CheckChangedRows</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -994,7 +1002,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_СнятьФлажки</name>
+            <name>_TabRegisters_UncheckAll</name>
             <id>123</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1002,7 +1010,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_СнятьФлажкиРасширеннаяПодсказка</name>
+              <name>_TabRegisters_UncheckAllExtendedTooltip</name>
               <id>124</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1016,7 +1024,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._СнятьФлажки</commandName>
+            <commandName>Form.Command._UncheckAll</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -1024,7 +1032,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_СортироватьРегистрыСтандартно</name>
+            <name>_TabRegisters_SortRegistersByDefault</name>
             <id>106</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1032,7 +1040,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_СортироватьРегистрыСтандартноРасширеннаяПодсказка</name>
+              <name>_TabRegisters_SortRegistersByDefaultExtendedTooltip</name>
               <id>107</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1046,7 +1054,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._СортироватьРегистрыСтандартно</commandName>
+            <commandName>Form.Command._SortRegistersByDefault</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -1060,7 +1068,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыГруппа1РасширеннаяПодсказка</name>
+            <name>_TabRegistersGroup1ExtendedTooltip</name>
             <id>68</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1077,10 +1085,10 @@
           <extInfo xsi:type="form:ButtonGroupExtInfo"/>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>_ТабРегистрыГруппа2</name>
+          <name>_TabRegistersGroup2</name>
           <id>121</id>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_Обновить</name>
+            <name>_TabRegisters_Refresh</name>
             <id>29</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1088,7 +1096,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_ОбновитьРасширеннаяПодсказка</name>
+              <name>_TabRegisters_RefreshExtendedTooltip</name>
               <id>30</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1102,7 +1110,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._Обновить</commandName>
+            <commandName>Form.Command._Refresh</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -1111,7 +1119,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_Записать</name>
+            <name>_TabRegisters_Write</name>
             <id>31</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1119,7 +1127,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_ЗаписатьРасширеннаяПодсказка</name>
+              <name>_TabRegisters_WriteExtendedTooltip</name>
               <id>32</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1133,7 +1141,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._Записать</commandName>
+            <commandName>Form.Command._Write</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -1142,7 +1150,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>_ТабРегистры_ОчиститьДвижения</name>
+            <name>_TabRegisters_ClearRecords</name>
             <id>133</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1150,7 +1158,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>_ТабРегистры_ОчиститьДвиженияРасширеннаяПодсказка</name>
+              <name>_TabRegisters_ClearRecordsExtendedTooltip</name>
               <id>134</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1164,7 +1172,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._ОчиститьДвижения</commandName>
+            <commandName>Form.Command._ClearRecords</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -1178,7 +1186,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ТабРегистрыГруппа2РасширеннаяПодсказка</name>
+            <name>_TabRegistersGroup2ExtendedTooltip</name>
             <id>122</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1204,7 +1212,7 @@
       </autoCommandBar>
       <handlers>
         <event>OnActivateRow</event>
-        <name>_ТабРегистрыПриАктивизацииСтроки</name>
+        <name>_TabRegistersOnActivateRow</name>
       </handlers>
       <searchStringAddition>
         <visible>true</visible>
@@ -1212,10 +1220,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>_ТабРегистрыСтрокаПоиска</name>
+        <name>_TabRegistersSearchString</name>
         <id>8</id>
         <extendedTooltip>
-          <name>_ТабРегистрыСтрокаПоискаРасширеннаяПодсказка</name>
+          <name>_TabRegistersSearchStringExtendedTooltip</name>
           <id>10</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1230,7 +1238,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыСтрокаПоискаКонтекстноеМеню</name>
+          <name>_TabRegistersSearchStringContextMenu</name>
           <id>9</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1249,10 +1257,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>_ТабРегистрыСостояниеПросмотра</name>
+        <name>_TabRegistersViewStatus</name>
         <id>11</id>
         <extendedTooltip>
-          <name>_ТабРегистрыСостояниеПросмотраРасширеннаяПодсказка</name>
+          <name>_TabRegistersViewStatusExtendedTooltip</name>
           <id>13</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1267,7 +1275,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыСостояниеПросмотраКонтекстноеМеню</name>
+          <name>_TabRegistersViewStatusContextMenu</name>
           <id>12</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1288,10 +1296,10 @@
         <userVisible>
           <common>true</common>
         </userVisible>
-        <name>_ТабРегистрыУправлениеПоиском</name>
+        <name>_TabRegistersSearchControl</name>
         <id>14</id>
         <extendedTooltip>
-          <name>_ТабРегистрыУправлениеПоискомРасширеннаяПодсказка</name>
+          <name>_TabRegistersSearchControlExtendedTooltip</name>
           <id>16</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1306,7 +1314,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТабРегистрыУправлениеПоискомКонтекстноеМеню</name>
+          <name>_TabRegistersSearchControlContextMenu</name>
           <id>15</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1321,7 +1329,7 @@
         </extInfo>
       </searchControlAddition>
       <extendedTooltip>
-        <name>_ТабРегистрыРасширеннаяПодсказка</name>
+        <name>_TabRegistersExtendedTooltip</name>
         <id>7</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1336,7 +1344,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>_ТабРегистрыКонтекстноеМеню</name>
+        <name>_TabRegistersContextMenu</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1372,15 +1380,23 @@
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Document records</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Движения документа</value>
     </title>
+    <toolTip>
+      <key>en</key>
+      <value>Registers group</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Группа регистры</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаРегистрыРасширеннаяПодсказка</name>
+      <name>RegistersGroupExtendedTooltip</name>
       <id>36</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -1406,11 +1422,15 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаНаборЗаписей</name>
+    <name>RecordSetGroup</name>
     <id>79</id>
     <items xsi:type="form:FormField">
-      <name>_ПолноеИмяРегистра</name>
+      <name>_RegisterFullName</name>
       <id>81</id>
+      <title>
+        <key>en</key>
+        <value>Register name</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Имя регистра</value>
@@ -1422,11 +1442,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Items._ТабРегистры.CurrentData.ПолноеИмя</segments>
+          <segments>Items._TabRegisters.CurrentData.FullName</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>_ПолноеИмяРегистраРасширеннаяПодсказка</name>
+        <name>_RegisterFullNameExtendedTooltip</name>
         <id>83</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1441,7 +1461,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>_ПолноеИмяРегистраКонтекстноеМеню</name>
+        <name>_RegisterFullNameContextMenu</name>
         <id>82</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1466,10 +1486,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаТипЗначения</name>
+      <name>ValueTypeGroup</name>
       <id>135</id>
       <items xsi:type="form:FormField">
-        <name>_ТипЗначенияТекущегоПоля</name>
+        <name>_CurrentFieldValueType</name>
         <id>137</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1478,7 +1498,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ТипЗначенияТекущегоПоля</segments>
+            <segments>_CurrentFieldValueType</segments>
           </paths>
         </dataPath>
         <toolTip>
@@ -1486,7 +1506,7 @@
           <value>Тип данных для значения в текущем поле - отображается по команде &quot;Показать тип значения&quot;</value>
         </toolTip>
         <extendedTooltip>
-          <name>_ТипЗначенияТекущегоПоляРасширеннаяПодсказка</name>
+          <name>_CurrentFieldValueTypeExtendedTooltip</name>
           <id>139</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1501,7 +1521,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ТипЗначенияТекущегоПоляКонтекстноеМеню</name>
+          <name>_CurrentFieldValueTypeContextMenu</name>
           <id>138</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1529,10 +1549,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаТипЗначенияКП</name>
+        <name>ValueTypeBTNGroup</name>
         <id>140</id>
         <items xsi:type="form:Button">
-          <name>_ПоказатьТипЗначения</name>
+          <name>_ShowValueType</name>
           <id>142</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1540,7 +1560,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>_ПоказатьТипЗначенияРасширеннаяПодсказка</name>
+            <name>_ShowValueTypeExtendedTooltip</name>
             <id>143</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1554,7 +1574,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command._ПоказатьТипЗначения</commandName>
+          <commandName>Form.Command._ShowValueType</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -1567,7 +1587,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ГруппаТипЗначенияКПРасширеннаяПодсказка</name>
+          <name>ValueTypeBTNGroupExtendedTooltip</name>
           <id>141</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1592,15 +1612,23 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Current field value data type</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Тип данных для значения в текущем поле</value>
       </title>
+      <toolTip>
+        <key>en</key>
+        <value>Value type group</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Группа тип значения</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаТипЗначенияРасширеннаяПодсказка</name>
+        <name>ValueTypeGroupExtendedTooltip</name>
         <id>136</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1628,10 +1656,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаЗаполнениеЗначений</name>
+      <name>FillingValuesGroup</name>
       <id>90</id>
       <items xsi:type="form:FormField">
-        <name>_ЗначениеДляЗаполнения</name>
+        <name>_ValueToFill</name>
         <id>92</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1640,11 +1668,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ЗначениеДляЗаполнения</segments>
+            <segments>_ValueToFill</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>_ЗначениеДляЗаполненияРасширеннаяПодсказка</name>
+          <name>_ValueToFillExtendedTooltip</name>
           <id>94</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1659,7 +1687,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ЗначениеДляЗаполненияКонтекстноеМеню</name>
+          <name>_ValueToFillContextMenu</name>
           <id>93</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1676,11 +1704,11 @@
         <extInfo xsi:type="form:InputFieldExtInfo">
           <handlers>
             <event>StartChoice</event>
-            <name>_ЗначениеДляЗаполненияНачалоВыбора</name>
+            <name>_ValueToFillStartChoice</name>
           </handlers>
           <handlers>
             <event>Clearing</event>
-            <name>_ЗначениеДляЗаполненияОчистка</name>
+            <name>_ValueToFillClearing</name>
           </handlers>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -1694,7 +1722,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:Button">
-        <name>_ЗаполнитьДанныеТекущейКолонки</name>
+        <name>_FillCurrentColumnData</name>
         <id>95</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1702,7 +1730,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>_ЗаполнитьДанныеТекущейКолонкиРасширеннаяПодсказка</name>
+          <name>_FillCurrentColumnDataExtendedTooltip</name>
           <id>96</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1717,7 +1745,7 @@
           </extInfo>
         </extendedTooltip>
         <type>UsualButton</type>
-        <commandName>Form.Command._ЗаполнитьДанныеТекущейКолонки</commandName>
+        <commandName>Form.Command._FillCurrentColumnData</commandName>
         <representation>Auto</representation>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -1725,7 +1753,7 @@
         <representationInContextMenu>Auto</representationInContextMenu>
       </items>
       <items xsi:type="form:FormField">
-        <name>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки</name>
+        <name>_ProcessOnlySelectedRowsOnFilling</name>
         <id>97</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1734,12 +1762,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки</segments>
+            <segments>_ProcessOnlySelectedRowsOnFilling</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтрокиРасширеннаяПодсказка</name>
+          <name>_ProcessOnlySelectedRowsOnFillingExtendedTooltip</name>
           <id>99</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1754,7 +1782,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтрокиКонтекстноеМеню</name>
+          <name>_ProcessOnlySelectedRowsOnFillingContextMenu</name>
           <id>98</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1776,15 +1804,23 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Filling register records table columns</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Заполнение колонок таблиц движений</value>
       </title>
+      <toolTip>
+        <key>en</key>
+        <value>Filling values</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Заполнение значений</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаЗаполнениеЗначенийРасширеннаяПодсказка</name>
+        <name>FillingValuesGroupExtendedTooltip</name>
         <id>91</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1803,6 +1839,10 @@
         <group>HorizontalIfPossible</group>
         <behavior>Collapsible</behavior>
         <collapsedRepresentationTitle>
+          <key>en</key>
+          <value>Filling data table columns</value>
+        </collapsedRepresentationTitle>
+        <collapsedRepresentationTitle>
           <key>ru</key>
           <value>Заполнение колонок таблиц данных</value>
         </collapsedRepresentationTitle>
@@ -1816,13 +1856,13 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницыНаборыЗаписей</name>
+      <name>RecordSetsPages</name>
       <id>75</id>
       <items xsi:type="form:FormGroup">
-        <name>СтрПример</name>
+        <name>StrExample</name>
         <id>77</id>
         <items xsi:type="form:Table">
-          <name>_ПримерДвижений</name>
+          <name>_RecordsExample</name>
           <id>39</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1830,11 +1870,11 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_ПримерДвижений</segments>
+            <segments>_RecordsExample</segments>
           </dataPath>
           <titleLocation>None</titleLocation>
           <items xsi:type="form:FormField">
-            <name>_ПримерДвиженийРегистратор</name>
+            <name>_RecordsExampleRecorder</name>
             <id>52</id>
             <title>
               <key>en</key>
@@ -1847,11 +1887,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>_ПримерДвижений.Регистратор</segments>
+                <segments>_RecordsExample.Recorder</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>_ПримерДвиженийРегистраторРасширеннаяПодсказка</name>
+              <name>_RecordsExampleRecorderExtendedTooltip</name>
               <id>54</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1866,7 +1906,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_ПримерДвиженийРегистраторКонтекстноеМеню</name>
+              <name>_RecordsExampleRecorderContextMenu</name>
               <id>53</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1891,7 +1931,7 @@
             </extInfo>
           </items>
           <autoCommandBar>
-            <name>_ПримерДвиженийКоманднаяПанель</name>
+            <name>_RecordsExampleCommandBar</name>
             <id>41</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1906,10 +1946,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_ПримерДвиженийСтрокаПоиска</name>
+            <name>_RecordsExampleSearchString</name>
             <id>43</id>
             <extendedTooltip>
-              <name>_ПримерДвиженийСтрокаПоискаРасширеннаяПодсказка</name>
+              <name>_RecordsExampleSearchStringExtendedTooltip</name>
               <id>45</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1924,7 +1964,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_ПримерДвиженийСтрокаПоискаКонтекстноеМеню</name>
+              <name>_RecordsExampleSearchStringContextMenu</name>
               <id>44</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1943,10 +1983,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_ПримерДвиженийСостояниеПросмотра</name>
+            <name>_RecordsExampleViewStatus</name>
             <id>46</id>
             <extendedTooltip>
-              <name>_ПримерДвиженийСостояниеПросмотраРасширеннаяПодсказка</name>
+              <name>_RecordsExampleViewStatusExtendedTooltip</name>
               <id>48</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1961,7 +2001,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_ПримерДвиженийСостояниеПросмотраКонтекстноеМеню</name>
+              <name>_RecordsExampleViewStatusContextMenu</name>
               <id>47</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1982,10 +2022,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>_ПримерДвиженийУправлениеПоиском</name>
+            <name>_RecordsExampleSearchControl</name>
             <id>49</id>
             <extendedTooltip>
-              <name>_ПримерДвиженийУправлениеПоискомРасширеннаяПодсказка</name>
+              <name>_RecordsExampleSearchControlExtendedTooltip</name>
               <id>51</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2000,7 +2040,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>_ПримерДвиженийУправлениеПоискомКонтекстноеМеню</name>
+              <name>_RecordsExampleSearchControlContextMenu</name>
               <id>50</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2015,7 +2055,7 @@
             </extInfo>
           </searchControlAddition>
           <extendedTooltip>
-            <name>_ПримерДвиженийРасширеннаяПодсказка</name>
+            <name>_RecordsExampleExtendedTooltip</name>
             <id>42</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2030,7 +2070,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_ПримерДвиженийКонтекстноеМеню</name>
+            <name>_RecordsExampleContextMenu</name>
             <id>40</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2065,15 +2105,23 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Str example</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Стр пример</value>
         </title>
+        <toolTip>
+          <key>en</key>
+          <value>Str example</value>
+        </toolTip>
         <toolTip>
           <key>ru</key>
           <value>Стр пример</value>
         </toolTip>
         <extendedTooltip>
-          <name>СтрПримерРасширеннаяПодсказка</name>
+          <name>StrExampleExtendedTooltip</name>
           <id>78</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2099,15 +2147,23 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Страницы наборы записей</value>
+        <key>en</key>
+        <value>Record sets pages</value>
       </title>
+      <title>
+        <key>ru</key>
+        <value>Record sets pages</value>
+      </title>
+      <toolTip>
+        <key>en</key>
+        <value>Record sets pages</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Страницы наборы записей</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницыНаборыЗаписейРасширеннаяПодсказка</name>
+        <name>RecordSetsPagesExtendedTooltip</name>
         <id>76</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -2132,15 +2188,23 @@
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Record set editor</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Редактор набора записей</value>
     </title>
+    <toolTip>
+      <key>en</key>
+      <value>Record set group</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Группа набор записей</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаНаборЗаписейРасширеннаяПодсказка</name>
+      <name>RecordSetGroupExtendedTooltip</name>
       <id>80</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -2177,19 +2241,19 @@
   </autoCommandBar>
   <handlers>
     <event>ChoiceProcessing</event>
-    <name>ОбработкаВыбора</name>
+    <name>ChoiceProcessing</name>
   </handlers>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>BeforeClose</event>
-    <name>ПередЗакрытием</name>
+    <name>BeforeClose</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <autoTitle>true</autoTitle>
@@ -2202,7 +2266,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ObjectsAttributesEditor</types>
@@ -2216,7 +2280,7 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>мОбъектСсылка</name>
+    <name>mObjectRef</name>
     <title>
       <key>en</key>
       <value>Document</value>
@@ -2237,10 +2301,10 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПутьКФормам</name>
+    <name>FormsPath</name>
     <title>
       <key>en</key>
-      <value>Path to forms</value>
+      <value>Forms path</value>
     </title>
     <title>
       <key>ru</key>
@@ -2259,7 +2323,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ТабРегистры</name>
+    <name>_TabRegisters</name>
     <title>
       <key>en</key>
       <value>Registers table</value>
@@ -2279,7 +2343,7 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Записать</name>
+      <name>Write</name>
       <title>
         <key>en</key>
         <value>Write</value>
@@ -2300,7 +2364,7 @@
       </edit>
     </columns>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>en</key>
         <value>Name</value>
@@ -2322,7 +2386,7 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>en</key>
         <value>Presentation</value>
@@ -2344,10 +2408,10 @@
       </edit>
     </columns>
     <columns>
-      <name>ЕстьЗаписи</name>
+      <name>RecordsExists</name>
       <title>
         <key>en</key>
-        <value>Has records</value>
+        <value>Records exists</value>
       </title>
       <title>
         <key>ru</key>
@@ -2365,10 +2429,10 @@
       </edit>
     </columns>
     <columns>
-      <name>ЧислоЗаписей</name>
+      <name>RecordCount</name>
       <title>
         <key>en</key>
-        <value>Records count</value>
+        <value>Record count</value>
       </title>
       <title>
         <key>ru</key>
@@ -2390,10 +2454,10 @@
       </edit>
     </columns>
     <columns>
-      <name>ВидРегистра</name>
+      <name>RegisterType</name>
       <title>
         <key>en</key>
-        <value>Recorder type</value>
+        <value>Register type</value>
       </title>
       <title>
         <key>ru</key>
@@ -2412,7 +2476,7 @@
       </edit>
     </columns>
     <columns>
-      <name>ПолноеИмя</name>
+      <name>FullName</name>
       <title>
         <key>en</key>
         <value>Full name</value>
@@ -2434,10 +2498,10 @@
       </edit>
     </columns>
     <columns>
-      <name>ЕстьРеквизитФормы</name>
+      <name>FormAttributeExists</name>
       <title>
         <key>en</key>
-        <value>Has form attribute</value>
+        <value>Form attribute exists</value>
       </title>
       <title>
         <key>ru</key>
@@ -2455,7 +2519,7 @@
       </edit>
     </columns>
     <columns>
-      <name>Изменен</name>
+      <name>Changed</name>
       <title>
         <key>en</key>
         <value>Changed</value>
@@ -2477,7 +2541,7 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ПримерДвижений</name>
+    <name>_RecordsExample</name>
     <title>
       <key>en</key>
       <value>Records example</value>
@@ -2497,7 +2561,7 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Регистратор</name>
+      <name>Recorder</name>
       <title>
         <key>en</key>
         <value>Recorder</value>
@@ -2520,7 +2584,7 @@
     </columns>
   </attributes>
   <attributes>
-    <name>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки</name>
+    <name>_ProcessOnlySelectedRowsOnFilling</name>
     <title>
       <key>en</key>
       <value>Process only selected rows</value>
@@ -2540,14 +2604,14 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки</segments>
+      <segments>_ProcessOnlySelectedRowsOnFilling</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ЗначениеДляЗаполнения</name>
+    <name>_ValueToFill</name>
     <title>
       <key>en</key>
-      <value>Value for filling</value>
+      <value>Value to fill</value>
     </title>
     <title>
       <key>ru</key>
@@ -2575,7 +2639,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>мОбъектСсылкаПредыдущий</name>
+    <name>mObjectRefPrevious</name>
     <title>
       <key>en</key>
       <value>Document</value>
@@ -2596,7 +2660,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ЗаписьВРежимеЗагрузки</name>
+    <name>_WriteInLoadingMode</name>
     <title>
       <key>en</key>
       <value>Write in loading mode (checks disabled)</value>
@@ -2617,7 +2681,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_БыстрыйВызовСервера</name>
+    <name>_FastServerCall</name>
     <title>
       <key>en</key>
       <value>Fast server call</value>
@@ -2637,11 +2701,11 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_БыстрыйВызовСервера</segments>
+      <segments>_FastServerCall</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ЗадаватьВопросПриЗакрытии</name>
+    <name>_AskQuestionOnClose</name>
     <title>
       <key>en</key>
       <value>Ask question on close</value>
@@ -2661,11 +2725,11 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>_ЗадаватьВопросПриЗакрытии</segments>
+      <segments>_AskQuestionOnClose</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>_ОписаниеРазработки</name>
+    <name>_DevelopmentDescription</name>
     <title>
       <key>en</key>
       <value>Development description</value>
@@ -2684,7 +2748,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ПолноеИмяДокумента</name>
+    <name>_DocumentFullName</name>
     <title>
       <key>en</key>
       <value>Document full name </value>
@@ -2706,7 +2770,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_ТипЗначенияТекущегоПоля</name>
+    <name>_CurrentFieldValueType</name>
     <title>
       <key>en</key>
       <value>Data type</value>
@@ -2728,7 +2792,7 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>_Обновить</name>
+    <name>_Refresh</name>
     <title>
       <key>en</key>
       <value>Refresh</value>
@@ -2738,6 +2802,10 @@
       <value>Обновить</value>
     </title>
     <id>1</id>
+    <toolTip>
+      <key>en</key>
+      <value>Refresh</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Обновить</value>
@@ -2750,14 +2818,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_Обновить</name>
+        <name>_Refresh</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_Записать</name>
+    <name>_Write</name>
     <title>
       <key>en</key>
       <value>Write ...</value>
@@ -2767,6 +2835,10 @@
       <value>Записать...</value>
     </title>
     <id>2</id>
+    <toolTip>
+      <key>en</key>
+      <value>Write...</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Записать...</value>
@@ -2779,14 +2851,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_Записать</name>
+        <name>_Write</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОбновитьНабор</name>
+    <name>_RefreshSet</name>
     <title>
       <key>en</key>
       <value>Refresh</value>
@@ -2796,6 +2868,10 @@
       <value>Обновить</value>
     </title>
     <id>3</id>
+    <toolTip>
+      <key>en</key>
+      <value>Refresh record set</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Обновить набор записей</value>
@@ -2808,14 +2884,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОбновитьНабор</name>
+        <name>_RefreshSet</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ЗаписатьНабор</name>
+    <name>_WriteSet</name>
     <title>
       <key>en</key>
       <value>Write...</value>
@@ -2825,6 +2901,10 @@
       <value>Записать...</value>
     </title>
     <id>4</id>
+    <toolTip>
+      <key>en</key>
+      <value>Write record set...</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Записать набор записей...</value>
@@ -2837,14 +2917,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаписатьНабор</name>
+        <name>_WriteSet</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ЗаполнитьДанныеТекущейКолонки</name>
+    <name>_FillCurrentColumnData</name>
     <title>
       <key>en</key>
       <value>Fill current column data</value>
@@ -2854,6 +2934,10 @@
       <value>Заполнить данные текущей колонки</value>
     </title>
     <id>5</id>
+    <toolTip>
+      <key>en</key>
+      <value>Fill current column data</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Заполнить данные текущей колонки</value>
@@ -2866,23 +2950,27 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ЗаполнитьДанныеТекущейКолонки</name>
+        <name>_FillCurrentColumnData</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПереключитьАктивностьЗаписей</name>
+    <name>_SwitchRecordsActivity</name>
     <title>
       <key>en</key>
-      <value>Switch records active</value>
+      <value>Switch records activity</value>
     </title>
     <title>
       <key>ru</key>
       <value>Переключить активность записей</value>
     </title>
     <id>6</id>
+    <toolTip>
+      <key>en</key>
+      <value>Switch records activity</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Переключить активность записей</value>
@@ -2895,13 +2983,13 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПереключитьАктивностьЗаписей</name>
+        <name>_SwitchRecordsActivity</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_СортироватьРегистрыСтандартно</name>
+    <name>_SortRegistersByDefault</name>
     <title>
       <key>en</key>
       <value>By weight</value>
@@ -2911,6 +2999,10 @@
       <value>По весу</value>
     </title>
     <id>7</id>
+    <toolTip>
+      <key>en</key>
+      <value>Order list by significance</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Упорядочить список по значимости</value>
@@ -2923,23 +3015,27 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_СортироватьРегистрыСтандартно</name>
+        <name>_SortRegistersByDefault</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_СнятьФлажки</name>
+    <name>_UncheckAll</name>
     <title>
       <key>en</key>
       <value>Uncheck all</value>
     </title>
     <title>
       <key>ru</key>
-      <value>Снять флажки</value>
+      <value>Uncheck all</value>
     </title>
     <id>8</id>
+    <toolTip>
+      <key>en</key>
+      <value>Uncheck all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Снять флажки</value>
@@ -2952,13 +3048,13 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_СнятьФлажки</name>
+        <name>_UncheckAll</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_УстановитьФлажки</name>
+    <name>_CheckAll</name>
     <title>
       <key>en</key>
       <value>Check all</value>
@@ -2968,6 +3064,10 @@
       <value>Установить флажки</value>
     </title>
     <id>9</id>
+    <toolTip>
+      <key>en</key>
+      <value>Check all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Установить флажки</value>
@@ -2980,13 +3080,13 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_УстановитьФлажки</name>
+        <name>_CheckAll</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_УстановитьФлажкиДляИзмененных</name>
+    <name>_CheckChangedRows</name>
     <title>
       <key>en</key>
       <value>Changed</value>
@@ -2996,6 +3096,10 @@
       <value>Измененные</value>
     </title>
     <id>10</id>
+    <toolTip>
+      <key>en</key>
+      <value>Check changed rows</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Отметить измененные</value>
@@ -3008,14 +3112,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_УстановитьФлажкиДляИзмененных</name>
+        <name>_CheckChangedRows</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОткрытьВНовомОкне</name>
+    <name>_OpenInNewWindow</name>
     <title>
       <key>en</key>
       <value>Open in new window ...</value>
@@ -3025,6 +3129,10 @@
       <value>Открыть в новом окне...</value>
     </title>
     <id>11</id>
+    <toolTip>
+      <key>en</key>
+      <value>Open in new window</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Открыть в новом окне</value>
@@ -3037,14 +3145,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОткрытьВНовомОкне</name>
+        <name>_OpenInNewWindow</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОткрытьОбъект</name>
+    <name>_OpenObject</name>
     <title>
       <key>en</key>
       <value>Open object ...</value>
@@ -3054,6 +3162,10 @@
       <value>Открыть объект...</value>
     </title>
     <id>12</id>
+    <toolTip>
+      <key>en</key>
+      <value>Open current object in the special form</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Открыть текущий объект в спец. форме</value>
@@ -3066,14 +3178,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОткрытьОбъект</name>
+        <name>_OpenObject</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ОчиститьДвижения</name>
+    <name>_ClearRecords</name>
     <title>
       <key>en</key>
       <value>Clear records ....</value>
@@ -3083,6 +3195,10 @@
       <value>Очистить движения...</value>
     </title>
     <id>14</id>
+    <toolTip>
+      <key>en</key>
+      <value>Clear records for selected rows...</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Очистить движения для выделнных строк...</value>
@@ -3095,14 +3211,14 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ОчиститьДвижения</name>
+        <name>_ClearRecords</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПоказатьТипЗначения</name>
+    <name>_ShowValueType</name>
     <title>
       <key>en</key>
       <value>Show</value>
@@ -3112,6 +3228,10 @@
       <value>Показать</value>
     </title>
     <id>13</id>
+    <toolTip>
+      <key>en</key>
+      <value>Show the value type in the current field</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Показать тип значения в текущем поле</value>
@@ -3125,7 +3245,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПоказатьТипЗначения</name>
+        <name>_ShowValueType</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

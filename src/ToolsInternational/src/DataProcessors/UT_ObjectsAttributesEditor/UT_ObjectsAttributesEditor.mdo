@@ -49,8 +49,12 @@
   <forms uuid="eb722fa3-3e31-43f4-b5f9-234695bb00ba">
     <name>RecordsEditorAdditionalForm</name>
     <synonym>
-      <key>ru</key>
+      <key>en</key>
       <value>Records editor additional form</value>
+    </synonym>
+    <synonym>
+      <key>ru</key>
+      <value>Форма редактор движений дополнительная</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
