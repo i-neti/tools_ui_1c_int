@@ -1346,7 +1346,7 @@ EndFunction
 Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined, ExternalDataSets=Undefined) Export
 	
 	ImmediatelyOpenConsole = False;
-#If ThickClientOrdinaryApplication Или ThickClientManagedApplication Then
+#If ThickClientOrdinaryApplication or ThickClientManagedApplication Then
 	ImmediatelyOpenConsole = True;
 #EndIf
 
