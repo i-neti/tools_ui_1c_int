@@ -1353,7 +1353,7 @@ Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined
 	AllRefsType = UT_CommonCached.AllRefsTypeDescription();
 	SerializeObject = SerializeObjectForDebugToStructure(ObjectForDebugging, DcsSettingsOrHTTPConnection, ExternalDataSets);
 	If AllRefsType.ContainsType(TypeOf(ObjectForDebugging)) Then
-		DebugObjectType = "DataBaseOobject";
+		DebugObjectType = "DataBaseObject";
 	ElsIf TypeOf(ObjectForDebugging) = Type("HTTPRequest") Then
 		DebugObjectType = "HTTPRequest";
 	ElsIf TypeOf(ObjectForDebugging) = Type("Query") Then
