@@ -239,7 +239,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_ВыгрузкаЗагрузкаДанныхXMLСФильтрами</name>
+		<name>DataProcessor.UT_ExportImportDataXMLWithFilters</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
