@@ -365,7 +365,7 @@ EndFunction
 Procedure PrepareMomentInTimeColumnsSelection(vtData, TempTableName, stNewFieldExpressions,
 	AdditionalSources, AdditionalQueries)
 	
-	//DataProcessor = FormAttributeToValue("Объект");
+	//DataProcessor = FormAttributeToValue("Object");
 
 	arPointInTimeColumnNames = New Array;
 	//arPointColumnNamesFields = New Array;
@@ -1289,7 +1289,7 @@ EndFunction
 //
 Function ExecuteBatch(Query, QuerySchema)
 	
-	//DataProcessor = FormAttributeToValue("Объект");
+	//DataProcessor = FormAttributeToValue("Object");
 
 	arBatchResult = New Array;
 	For Each SchemaQuery In QuerySchema.QueryBatch Do
@@ -5335,7 +5335,7 @@ Procedure UT_EditValue(Command)
 	EndIf;
 
 	If ColumnValue = "<ValueStorage>" Then
-		CommonClientModule.EditValueStorage(ЭтотОбъект, CurData[ColumnName
+		CommonClientModule.EditValueStorage(ThisObject, CurData[ColumnName
 			+ ContainerAttributeSuffix].Хранилище);
 	Else
 		CommonClientModule.EditObject(ColumnValue);

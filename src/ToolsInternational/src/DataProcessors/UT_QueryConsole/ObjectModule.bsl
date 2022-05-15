@@ -1366,20 +1366,20 @@ Function GetCommandTable()
 	Commands.Coluumns.Add("ID", New TypeDescription("String"));
 	Commands.Coluumns.Add("StartupOption", New TypeDescription("String"));
 	Commands.Coluumns.Add("ShowNotification", New TypeDescription("Boolean"));
-	Commands.Coluumns.Add("Modificator", New TypeDescription("String"));
+	Commands.Coluumns.Add("Modifier", New TypeDescription("String"));
 
 	Return Commands;
 
 EndFunction
 
 Procedure AddCommand(CommandTable, Presentation, ID, StartupOption, ShowNotification = False,
-	Modificator = "")
+	Modifier = "")
 	NewCommand = CommandTable.Add();
 	NewCommand.Presentation = Presentation;
 	NewCommand.ID = ID;
 	NewCommand.StartupOption = StartupOption;
 	NewCommand.ShowNotification = ShowNotification;
-	NewCommand.Modificator = Modificator;
+	NewCommand.Modifier = Modifier;
 EndProcedure
 
 #EndRegion
