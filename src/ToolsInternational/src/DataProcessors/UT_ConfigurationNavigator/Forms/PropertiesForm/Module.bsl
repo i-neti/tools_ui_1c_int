@@ -1139,28 +1139,28 @@ Procedure vFillValuesTypeOfCharacteristic(MDObject, TreeNode)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьПредопределенныеЭлементыОбъекта(MDObject, TreeNode)
+Procedure vFillPredefinedObjectItems(MDObject, TreeNode)
 	If Metadata.Catalogs.Contains(MDObject) Then
-		Менеджер = Catalogs;
+		Manager = Catalogs;
 	ElsIf Metadata.ChartsOfCalculationTypes.Contains(MDObject) Then
-		Менеджер = ChartsOfCalculationTypes;
+		Manager = ChartsOfCalculationTypes;
 	ElsIf Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Then
-		Менеджер = ChartsOfCharacteristicTypes;
+		Manager = ChartsOfCharacteristicTypes;
 	ElsIf Metadata.ChartsOfAccounts.Contains(MDObject) Then
-		Менеджер = ChartsOfAccounts;
+		Manager = ChartsOfAccounts;
 	Else
 		Return;
 	EndIf;
 
-	Менеджер = Менеджер[MDObject.Name];
+	Manager = Manager[MDObject.Name];
 
 	Query = New Query;
-	Query.Text = "ВЫБРАТЬ Ref, Presentation КАК Title ИЗ " + MDObject.FullName() + " ГДЕ Predefined";
+	Query.Text = "SELCECT Ref, Presentation AS Title FROM " + MDObject.FullName() + " WHERE Predefined";
 
 	Try
 		ValueTable = Query.Execute().Unload();
 	Except
-		// при отсутствии прав доступа
+		// when the access rights is absence 
 		ValueTable = New ValueTable;
 	EndTry;
 
@@ -1170,7 +1170,7 @@ Procedure вЗаполнитьПредопределенныеЭлементыО
 
 		For Each Itm In ValueTable Do
 			TreeRow = TreeSection.GetItems().Add();
-			TreeRow.Name = Менеджер.ПолучитьИмяПредопределенного(Itm.Ref);
+			TreeRow.Name = Manager.GetPredefinedNames(Itm.Ref);
 			TreeRow.Synonym = Itm.Title;
 			TreeRow.Comment = "";
 			TreeRow.StringType = "Ref";
@@ -1180,11 +1180,11 @@ Procedure вЗаполнитьПредопределенныеЭлементыО
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьСвойствоКоллекцияОбъекта(MDObject, TreeNode, ИмяКоллекции, Sort = True,
-	ПолеСортировки = "Name")
-	If MDObject[ИмяКоллекции].Count() <> 0 Then
+Procedure vFillPropertyCollectionObject(MDObject, TreeNode, CollectionName, Sort = True,
+	SortField = "Name")
+	If MDObject[CollectionName].Count() <> 0 Then
 		Table = vCreatePropertiesTable();
-		For Each Itm In MDObject[ИмяКоллекции] Do
+		For Each Itm In MDObject[CollectionName] Do
 			Row = Table.Add();
 			Row.Name = Itm.Name;
 			Row.Synonym = Itm.Presentation();
@@ -1193,11 +1193,11 @@ Procedure вЗаполнитьСвойствоКоллекцияОбъекта(M
 		EndDo;
 
 		If Sort Then
-			Table.Sort(ПолеСортировки);
+			Table.Sort(SortField);
 		EndIf;
 
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = ИмяКоллекции + " (" + Table.Count() + ")";
+		TreeSection.Name = CollectionName + " (" + Table.Count() + ")";
 		For Each Itm In Table Do
 			TreeRow = TreeSection.GetItems().Add();
 			FillPropertyValues(TreeRow, Itm);
@@ -1206,12 +1206,12 @@ Procedure вЗаполнитьСвойствоКоллекцияОбъекта(M
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьВладельцевОбъекта(MDObject, TreeNode)
-	вЗаполнитьСвойствоКоллекцияОбъекта(MDObject, TreeNode, "Owners");
+Procedure vFillObjectOwners(MDObject, TreeNode)
+	vFillPropertyCollectionObject(MDObject, TreeNode, "Owners");
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьГрафыЖурнала(MDObject, TreeNode)
+Procedure FillColumnsOfJournal(MDObject, TreeNode)
 	If MDObject.Columns.Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
 		TreeSection.Name = "Columns";
@@ -1225,7 +1225,7 @@ Procedure вЗаполнитьГрафыЖурнала(MDObject, TreeNode)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьДвиженияОбъекта(MDObject, TreeNode)
+Procedure vFillObjectRecords(MDObject, TreeNode)
 	If MDObject.RegisterRecords.Count() <> 0 Then
 
 		Table = vCreatePropertiesTable();
@@ -1248,12 +1248,12 @@ Procedure вЗаполнитьДвиженияОбъекта(MDObject, TreeNode)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьИсточникиСобытия(MDObject, TreeNode)
-	МассивТипов = MDObject.Src.Types();
-	If МассивТипов.Count() <> 0 Then
+Procedure vFillEventSource(MDObject, TreeNode)
+	TypesArray = MDObject.Src.Types();
+	If TypesArray.Count() <> 0 Then
 
 		Table = vCreatePropertiesTable();
-		For Each Type In МассивТипов Do
+		For Each Type In TypesArray Do
 			Itm = Metadata.FindByType(Type);
 
 			Row = Table.Add();
@@ -1274,12 +1274,12 @@ Procedure вЗаполнитьИсточникиСобытия(MDObject, TreeNod
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьПараметрыКоманды(MDObject, TreeNode)
-	МассивТипов = MDObject.CommandParameterType.Types();
-	If МассивТипов.Count() <> 0 Then
+Procedure vFillParametersOfCommand(MDObject, TreeNode)
+	TypesArray = MDObject.CommandParameterType.Types();
+	If TypesArray.Count() <> 0 Then
 
 		Table = vCreatePropertiesTable();
-		For Each Type In МассивТипов Do
+		For Each Type In TypesArray Do
 			Itm = Metadata.FindByType(Type);
 
 			Row = Table.Add();
@@ -1291,7 +1291,7 @@ Procedure вЗаполнитьПараметрыКоманды(MDObject, TreeNod
 		Table.Sort("StringType");
 
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = "Parameters команды (" + Table.Count() + ")";
+		TreeSection.Name = Nstr("ru = 'Параметры команды (';en = 'Command parameters ('") + Table.Count() + ")";
 		For Each Row In Table Do
 			TreeRow = TreeSection.GetItems().Add();
 			FillPropertyValues(TreeRow, Row);
@@ -1300,11 +1300,11 @@ Procedure вЗаполнитьПараметрыКоманды(MDObject, TreeNod
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьРегистраторовОбъекта(MDObject, TreeNode)
+Procedure vFillObjectRecorders(MDObject, TreeNode)
 	TableOfResults = vGetRecorderTable(MDObject.FullName());
 	If TableOfResults.Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = "Recorders (" + TableOfResults.Count() + ")";
+		TreeSection.Name = Nstr("ru = 'Регистраторы (';en = 'Recorders ('") + TableOfResults.Count() + ")";
 		For Each Itm In TableOfResults Do
 			TreeRow = TreeSection.GetItems().Add();
 			FillPropertyValues(TreeRow, Itm);
@@ -1313,12 +1313,12 @@ Procedure вЗаполнитьРегистраторовОбъекта(MDObject,
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьПодпискиОбъекта(MDObject, TreeNode)
+Procedure vFillEventSubscriptionsOfObject(MDObject, TreeNode)
 	If _ShowEventSubscriptions Then
 		TableOfResults = vGetEventSubscriptionsTable(MDObject.FullName());
 		If TableOfResults.Count() <> 0 Then
 			TreeSection = TreeNode.GetItems().Add();
-			TreeSection.Name = "EventSubscriptions (" + TableOfResults.Count() + ")";
+			TreeSection.Name = Nstr("ru = 'ПодпискиНаСобытия (';en = 'EventSubscriptions ('") + TableOfResults.Count() + ")";
 			For Each Itm In TableOfResults Do
 				TreeRow = TreeSection.GetItems().Add();
 				FillPropertyValues(TreeRow, Itm);
@@ -1329,12 +1329,12 @@ Procedure вЗаполнитьПодпискиОбъекта(MDObject, TreeNode)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode)
+Procedure vFillSubsytemOfObject(MDObject, TreeNode)
 	If _ShowObjectsSubsytems Then
 		TableOfResults = vGetSubSystemTable(MDObject.FullName());
 		If TableOfResults.Count() <> 0 Then
 			TreeSection = TreeNode.GetItems().Add();
-			TreeSection.Name = "Subsystems (" + TableOfResults.Count() + ")";
+			TreeSection.Name = Nstr("ru = 'Подсистемы (';en = 'Subsystems ('") + TableOfResults.Count() + ")";
 			For Each Itm In TableOfResults Do
 				TreeRow = TreeSection.GetItems().Add();
 				FillPropertyValues(TreeRow, Itm);
@@ -1345,12 +1345,12 @@ Procedure вЗаполнитьПодсистемыОбъекта(MDObject, TreeN
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode)
+Procedure vFillCommonObjectCommand(MDObject, TreeNode)
 	If _ShowCommonObjectCommands Then
 		TableOfResults = vGetCommonCommandsTable(MDObject.FullName());
 		If TableOfResults.Count() <> 0 Then
 			TreeSection = TreeNode.GetItems().Add();
-			TreeSection.Name = "CommonCommands (" + TableOfResults.Count() + ")";
+			TreeSection.Name = Nstr("ru = 'ОбщиеКоманды (';en = 'CommonCommands ('") + TableOfResults.Count() + ")";			
 			For Each Itm In TableOfResults Do
 				TreeRow = TreeSection.GetItems().Add();
 				FillPropertyValues(TreeRow, Itm);
@@ -1361,12 +1361,12 @@ Procedure вЗаполнитьОбщиеКомандыОбъекта(MDObject, T
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode)
+Procedure vFillOtherObjectCommand(MDObject, TreeNode)
 	If _ShowExternalObjectCommands Then
 		TableOfResults = vGetExternalCommandsTable(MDObject.FullName());
 		If TableOfResults.Count() <> 0 Then
 			TreeSection = TreeNode.GetItems().Add();
-			TreeSection.Name = "ЧужиеКоманды (" + TableOfResults.Count() + ")";
+			TreeSection.Name = Nstr("ru = 'ЧужиеКоманды (';en = 'OtherCommands ('") + TableOfResults.Count() + ")";			
 			For Each Itm In TableOfResults Do
 				TreeRow = TreeSection.GetItems().Add();
 				FillPropertyValues(TreeRow, Itm);
@@ -1377,10 +1377,10 @@ Procedure вЗаполнитьЧужиеКомандыОбъекта(MDObject, T
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode)
+Procedure vFillStandartObjectsAttributes(MDObject, TreeNode)
 	If MDObject.StandardAttributes.Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = "StandardAttributes";
+		TreeSection.Name = Nstr("ru = 'СтандартныеРеквизиты';en = 'StandardAttributes'");
 		For Each Itm In MDObject.StandardAttributes Do
 			TreeRow = TreeSection.GetItems().Add();
 			TreeRow.Name = Itm.Name;
@@ -1392,7 +1392,7 @@ Procedure вЗаполнитьСтандартныеРеквизитыОбъек
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьСпецСвойствоОбъекта(MDObject, TreeNode, PropertyName)
+Procedure vFillObjectSpecialProperties(MDObject, TreeNode, PropertyName)
 	If MDObject[PropertyName].Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
 		TreeSection.Name = PropertyName;
@@ -1445,16 +1445,16 @@ Procedure vFullInCatalogProperty(FullName)
 
 	PropertiesList = "Autonumbering, Hierarchical, HierarchyType, FoldersOnTop, CodeType, CodeLength, DescriptionLength, CheckUnique, CodeSeries, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
-	вЗаполнитьВладельцевОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
+	vFillObjectOwners(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
-	вЗаполнитьПредопределенныеЭлементыОбъекта(MDObject, TreeNode);
+	vFillPredefinedObjectItems(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1474,15 +1474,15 @@ Procedure vFullInDocumentProperty(FullName)
 
 	PropertiesList = "Autonumbering, NumberLength, RealTimePosting, Posting, CheckUnique, NumberPeriodicity, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
-	вЗаполнитьДвиженияОбъекта(MDObject, TreeNode);
+	vFillObjectRecords(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1498,12 +1498,12 @@ Procedure vFullInDocumentJournalProperty(FullName)
 	TreeNode.Comment = MDObject.Comment;
 	TreeNode.StringType = FullName;
 
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
-	вЗаполнитьГрафыЖурнала(MDObject, TreeNode);
-	вЗаполнитьСвойствоКоллекцияОбъекта(MDObject, TreeNode, "RegisteredDocuments");
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
+	FillColumnsOfJournal(MDObject, TreeNode);
+	vFillPropertyCollectionObject(MDObject, TreeNode, "RegisteredDocuments");
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1523,16 +1523,16 @@ Procedure vFullInChartOfCharacteristicTypesProperty(FullName)
 
 	PropertiesList = "Autonumbering, Hierarchical, FoldersOnTop, CodeLength, DescriptionLength, CheckUnique, CodeSeries, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
 	vFillValuesTypeOfCharacteristic(MDObject, TreeNode);
-	вЗаполнитьПредопределенныеЭлементыОбъекта(MDObject, TreeNode);
+	vFillPredefinedObjectItems(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1552,15 +1552,15 @@ Procedure vFullInChartOfCalculationTypesProperty(FullName)
 
 	PropertiesList = "CodeLength, DescriptionLength, CodeType, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
-	вЗаполнитьПредопределенныеЭлементыОбъекта(MDObject, TreeNode);
+	vFillPredefinedObjectItems(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1580,17 +1580,17 @@ Procedure vFullInChartOfAccountsProperty(FullName)
 
 	PropertiesList = "AutoOrderByCode, CodeLength, DescriptionLength, OrderLength, CheckUnique, CodeMask, CodeSeries, DataLockFields, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
-	вЗаполнитьСпецСвойствоОбъекта(MDObject, TreeNode, "AccountingFlags");
-	вЗаполнитьСпецСвойствоОбъекта(MDObject, TreeNode, "ExtDimensionAccountingFlags");
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
+	vFillObjectSpecialProperties(MDObject, TreeNode, "AccountingFlags");
+	vFillObjectSpecialProperties(MDObject, TreeNode, "ExtDimensionAccountingFlags");
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
-	вЗаполнитьПредопределенныеЭлементыОбъекта(MDObject, TreeNode);
+	vFillPredefinedObjectItems(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1608,14 +1608,14 @@ Procedure vFullInInformationRegisterProperty(FullName)
 
 	PropertiesList = "InformationRegisterPeriodicity, WriteMode, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Dimensions", False);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Resources", True);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Attributes", True);
-	вЗаполнитьРегистраторовОбъекта(MDObject, TreeNode);
+	vFillObjectRecorders(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1633,14 +1633,14 @@ Procedure vFullInAccumulationRegisterProperty(FullName)
 
 	PropertiesList = "RegisterType, EnableTotalsSplitting, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Dimensions", False);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Resources", True);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Attributes", True);
-	вЗаполнитьРегистраторовОбъекта(MDObject, TreeNode);
+	vFillObjectRecorders(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1658,14 +1658,14 @@ Procedure vFullInAccountingRegisterProperty(FullName)
 
 	PropertiesList = "Correspondence, ChartOfAccounts, EnableTotalsSplitting, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Dimensions", False);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Resources", True);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Attributes", True);
-	вЗаполнитьРегистраторовОбъекта(MDObject, TreeNode);
+	vFillObjectRecorders(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1683,14 +1683,14 @@ Procedure vFullInCalculationRegisterProperty(FullName)
 
 	PropertiesList = "BasePeriod, ActionPeriod, Periodicity, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Dimensions", False);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Resources", True);
 	vFillObjectGroupOfProperties(MDObject, TreeNode, "Attributes", True);
-	вЗаполнитьРегистраторовОбъекта(MDObject, TreeNode);
+	vFillObjectRecorders(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1710,12 +1710,12 @@ Procedure vFullInBusinessProcessProperty(FullName)
 
 	PropertiesList = "Autonumbering, NumberLength, Task, NumberType, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1735,12 +1735,12 @@ Procedure vFullInTaskProperty(FullName)
 
 	PropertiesList = "Autonumbering, Addressing, NumberLength, DescriptionLength, CheckUnique, NumberType, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1760,7 +1760,7 @@ Procedure vFullInExchangePlanProperty(FullName)
 
 	PropertiesList = "CodeLength, DescriptionLength, CodeAllowedLength, DataLockControlMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСтандартныеРеквизитыОбъекта(MDObject, TreeNode);
+	vFillStandartObjectsAttributes(MDObject, TreeNode);
 	vFillObjectAttrebutes(MDObject, TreeNode);
 	vFillObjectTabularSection(MDObject, TreeNode);
 
@@ -1788,10 +1788,10 @@ Procedure vFullInExchangePlanProperty(FullName)
 	EndIf;
 
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1815,10 +1815,10 @@ Procedure vFullInEnumProperty(FullName)
 	EndDo;
 
 	vFillObjectCommands(MDObject, TreeNode);
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1836,7 +1836,7 @@ Procedure vFullInCommonModuleProperty(FullName)
 
 	PropertiesList = "ExternalConnection, ServerCall, Global, ClientOrdinaryApplication, ClientManagedApplication, ReturnValuesReuse, Privileged, Server";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -1852,12 +1852,12 @@ Procedure vFullInConstantProperty(FullName)
 	TreeNode.Comment = MDObject.Comment;
 	TreeNode.StringType = FullName;
 
-	МассивТипов = MDObject.Type.Types();
-	If МассивТипов.Count() <> 0 Then
+	TypesArray = MDObject.Type.Types();
+	If TypesArray.Count() <> 0 Then
 		StructureOfTypes = vCreateStructureOfTypes();
 
 		Table = vCreatePropertiesTable();
-		For Each Itm In МассивТипов Do
+		For Each Itm In TypesArray Do
 			Row = Table.Add();
 			Row.Name = vTypeNameToString(StructureOfTypes, Itm, MDObject.Type);
 			Row.Synonym = Itm;
@@ -1873,9 +1873,9 @@ Procedure vFullInConstantProperty(FullName)
 		EndDo;
 	EndIf;
 
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 	
-	// проверка прав
+	// check the rights
 	If Not AccessRight("Read", MDObject) Then
 		Return;
 	EndIf;
@@ -1885,20 +1885,20 @@ Procedure vFullInConstantProperty(FullName)
 	Items._TextConstantValue.ReadOnly = Not MDObject.Type.ContainsType(Type("String"));
 	Items._UseTextWhenWritingConstants.ReadOnly = Items._TextConstantValue.ReadOnly;
 
-	пСтрук = вПрочитатьКонстанту(_FullName);
-	If пСтрук.Cancel Then
-		_TypeOfConstantValue = пСтрук.ПричинаОтказа;
+	pStruct = vGetConstant(_FullName);
+	If pStruct.Cancel Then
+		_TypeOfConstantValue = pStruct.ReasonForRefusal;
 	Else
-		_ConstantValue = пСтрук.Value;
-		_TypeOfConstantValue = пСтрук.ValueType;
-		If TypeOf(пСтрук.Value) = Type("String") Then
-			_TextConstantValue = пСтрук.Value;
+		_ConstantValue = pStruct.Value;
+		_TypeOfConstantValue = pStruct.ValueType;
+		If TypeOf(pStruct.Value) = Type("String") Then
+			_TextConstantValue = pStruct.Value;
 		Else
-			_TextConstantValue = пСтрук.Text;
+			_TextConstantValue = pStruct.Text;
 		EndIf;
 	EndIf;
 
-	If пСтрук.ReadOnly Then
+	If pStruct.ReadOnly Then
 		Items._TextConstantValue.ReadOnly = True;
 		Items._ConstantValue.ReadOnly = True;
 		Items._RecordConstant.Enabled = False;
@@ -1920,12 +1920,12 @@ Procedure vFullInSessionParameterProperty(FullName)
 	TreeNode.Comment = MDObject.Comment;
 	TreeNode.StringType = FullName;
 
-	МассивТипов = MDObject.Type.Types();
-	If МассивТипов.Count() <> 0 Then
+	TypesArray = MDObject.Type.Types();
+	If TypesArray.Count() <> 0 Then
 		StructureOfTypes = vCreateStructureOfTypes();
 
 		Table = vCreatePropertiesTable();
-		For Each Itm In МассивТипов Do
+		For Each Itm In TypesArray Do
 			Row = Table.Add();
 			Row.Name = vTypeNameToString(StructureOfTypes, Itm, MDObject.Type);
 			Row.Synonym = Itm;
@@ -1934,16 +1934,16 @@ Procedure vFullInSessionParameterProperty(FullName)
 		Table.Sort("Name");
 
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = "Types (" + Table.Count() + ")";
+		TreeSection.Name = NStr("ru = 'Типы (';en = 'Types ('") + Table.Count() + ")";
 		For Each Row In Table Do
 			TreeRow = TreeSection.GetItems().Add();
 			FillPropertyValues(TreeRow, Row);
 		EndDo;
 	EndIf;
 
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 	
-	// проверка прав
+	// checking the rights
 	If Not AccessRight("Receive", MDObject) Then
 		Return;
 	EndIf;
@@ -1953,20 +1953,20 @@ Procedure vFullInSessionParameterProperty(FullName)
 	Items._TextConstantValue.ReadOnly = Not MDObject.Type.ContainsType(Type("String"));
 	Items._UseTextWhenWritingConstants.ReadOnly = Items._TextConstantValue.ReadOnly;
 
-	пСтрук = вПрочитатьКонстанту(_FullName);
-	If пСтрук.Cancel Then
-		_TypeOfConstantValue = пСтрук.ПричинаОтказа;
+	pStruct = vGetConstant(_FullName);
+	If pStruct.Cancel Then
+		_TypeOfConstantValue = pStruct.ReasonForRefusal;
 	Else
-		_ConstantValue = пСтрук.Value;
-		_TypeOfConstantValue = пСтрук.ValueType;
-		If TypeOf(пСтрук.Value) = Type("String") Then
-			_TextConstantValue = пСтрук.Value;
+		_ConstantValue = pStruct.Value;
+		_TypeOfConstantValue = pStruct.ValueType;
+		If TypeOf(pStruct.Value) = Type("String") Then
+			_TextConstantValue = pStruct.Value;
 		Else
-			_TextConstantValue = пСтрук.Text;
+			_TextConstantValue = pStruct.Text;
 		EndIf;
 	EndIf;
 
-	If пСтрук.ReadOnly Then
+	If pStruct.ReadOnly Then
 		Items._TextConstantValue.ReadOnly = True;
 		Items._ConstantValue.ReadOnly = True;
 		Items._RecordConstant.Enabled = False;
@@ -1974,7 +1974,7 @@ Procedure vFullInSessionParameterProperty(FullName)
 
 	Items._UseTextWhenWritingConstants.ReadOnly = Items._TextConstantValue.ReadOnly;
 
-	Items._ConstantValue.Title = "Value параметра";
+	Items._ConstantValue.Title =  NStr("ru = 'Значение параметра';en = 'Parameter value'");
 EndProcedure
 
 &AtServer
@@ -1992,8 +1992,8 @@ Procedure vFullInCommonCommandProperty(FullName)
 
 	PropertiesList = "Group, ModifiesData, ShowInChart, ToolTip, ParameterUsageMode";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьПараметрыКоманды(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillParametersOfCommand(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -2011,8 +2011,8 @@ Procedure vFullInEventSubscriptionProperty(FullName)
 
 	PropertiesList = "Handler, Event";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьИсточникиСобытия(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillEventSource(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
@@ -2030,8 +2030,8 @@ Procedure vFullInSubSystemProperty(FullName)
 
 	PropertiesList = "IncludeInCommandInterface, Explanation";
 	vFillPropertiesOfObject(MDObject, TreeNode, PropertiesList);
-	вЗаполнитьСвойствоКоллекцияОбъекта(MDObject, TreeNode, "Subsystems");
-	вЗаполнитьСвойствоКоллекцияОбъекта(MDObject, TreeNode, "Content", True, "StringType");
+	vFillPropertyCollectionObject(MDObject, TreeNode, "Subsystems");
+	vFillPropertyCollectionObject(MDObject, TreeNode, "Content", True, "StringType");
 EndProcedure
 
 &AtServer
@@ -2047,12 +2047,12 @@ Procedure vFullInDefinedTypeProperty(FullName)
 	TreeNode.Comment = MDObject.Comment;
 	TreeNode.StringType = FullName;
 
-	МассивТипов = MDObject.Type.Types();
-	If МассивТипов.Count() <> 0 Then
+	TypesArray = MDObject.Type.Types();
+	If TypesArray.Count() <> 0 Then
 		StructureOfTypes = vCreateStructureOfTypes();
 
 		Table = vCreatePropertiesTable();
-		For Each Itm In МассивТипов Do
+		For Each Itm In TypesArray Do
 			Row = Table.Add();
 			Row.Name = vTypeNameToString(StructureOfTypes, Itm, MDObject.Type);
 			Row.Synonym = Itm;
@@ -2061,105 +2061,105 @@ Procedure vFullInDefinedTypeProperty(FullName)
 		Table.Sort("Name");
 
 		TreeSection = TreeNode.GetItems().Add();
-		TreeSection.Name = "Types (" + Table.Count() + ")";
+		TreeSection.Name = NsTR("ru = 'Типы (';en = 'Types ('") + Table.Count() + ")";
 		For Each Row In Table Do
 			TreeRow = TreeSection.GetItems().Add();
 			FillPropertyValues(TreeRow, Row);
 		EndDo;
 	EndIf;
 
-	вЗаполнитьОбщиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьЧужиеКомандыОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодпискиОбъекта(MDObject, TreeNode);
-	вЗаполнитьПодсистемыОбъекта(MDObject, TreeNode);
+	vFillCommonObjectCommand(MDObject, TreeNode);
+	vFillOtherObjectCommand(MDObject, TreeNode);
+	vFillEventSubscriptionsOfObject(MDObject, TreeNode);
+	vFillSubsytemOfObject(MDObject, TreeNode);
 EndProcedure
 
 &AtServer
 Procedure vFullInTotalControlPage(FullName)
 	Try
-		пСтрук = вПолучитьСвойстваРегистраДляУправленияИтогами(FullName);
+		pStruct = vGetRegisterPropertiesToManageTotals(FullName);
 	Except
 		Return;
 	EndTry;
 
-	If Not пСтрук.ЕстьДанные Then
+	If Not pStruct.ЕстьДанные Then
 		Return;
 	EndIf;
 
 	Items.ManagingTotalsPage.Visible = True;
 
-	_AggregateMode = пСтрук.РежимАгрегатов;
-	_UseAggregates = пСтрук.ИспользованиеАгрегатов;
-	_UseTotals = пСтрук.ИспользованиеИтогов;
-	_UseCurrentTotals = пСтрук.ИспользованиеТекущихИтогов;
-	_DividingTotalsMode = пСтрук.РежимРазделенияИтогов;
-	_MinimumPeriodOfCalculatedTotals = пСтрук.МинимальныйПериодРассчитанныхИтогов;
-	_MaximumPeriodOfCalculatedTotals = пСтрук.МаксимальныйПериодРассчитанныхИтогов;
+	_AggregateMode = pStruct.РежимАгрегатов;
+	_UseAggregates = pStruct.ИспользованиеАгрегатов;
+	_UseTotals = pStruct.ИспользованиеИтогов;
+	_UseCurrentTotals = pStruct.ИспользованиеТекущихИтогов;
+	_DividingTotalsMode = pStruct.РежимРазделенияИтогов;
+	_MinimumPeriodOfCalculatedTotals = pStruct.МинимальныйПериодРассчитанныхИтогов;
+	_MaximumPeriodOfCalculatedTotals = pStruct.МаксимальныйПериодРассчитанныхИтогов;
 
-	Items._AggregateMode.Visible = Not пСтрук.ЭтоРегистрБУ;
-	Items._AggregateMode.Enabled = пСтрук.ЕстьРежимАгрегатов;
-	Items._UseAggregates.Visible = Not пСтрук.ЭтоРегистрБУ;
-	Items._UseAggregates.Enabled = пСтрук.ЕстьРежимАгрегатов And _AggregateMode;
+	Items._AggregateMode.Visible = Not pStruct.ЭтоРегистрБУ;
+	Items._AggregateMode.Enabled = pStruct.ЕстьРежимАгрегатов;
+	Items._UseAggregates.Visible = Not pStruct.ЭтоРегистрБУ;
+	Items._UseAggregates.Enabled = pStruct.ЕстьРежимАгрегатов And _AggregateMode;
 
 	Items._UseTotals.Enabled = Not _AggregateMode;
-	Items._UseCurrentTotals.Enabled = пСтрук.ЕстьТекущиеИтоги And Not _AggregateMode;
+	Items._UseCurrentTotals.Enabled = pStruct.ЕстьТекущиеИтоги And Not _AggregateMode;
 
 	Items._RecalculateTotals.Enabled = Not _AggregateMode;
-	Items._RecalculateCurrentTotals.Enabled = пСтрук.ЕстьТекущиеИтоги And Not _AggregateMode;
+	Items._RecalculateCurrentTotals.Enabled = pStruct.ЕстьТекущиеИтоги And Not _AggregateMode;
 
 	Items.RecalculateTotalsForPeriodGroup.Enabled = Not _AggregateMode;
-	Items.CalculatedTotalsGroup.Enabled = Not пСтрук.ОборотныйРегистр And Not _AggregateMode;
+	Items.CalculatedTotalsGroup.Enabled = Not pStruct.ОборотныйРегистр And Not _AggregateMode;
 
 EndProcedure
 
 &AtServerNoContext
-Function вПолучитьСвойстваРегистраДляУправленияИтогами(FullName)
-	пСтрук = New Structure("ЕстьДанные, ЭтоРегистрБУ, ОборотныйРегистр", False, False, False);
+Function vGetRegisterPropertiesToManageTotals(FullName)
+	pStruct = New Structure("ЕстьДанные, ЭтоРегистрБУ, ОборотныйРегистр", False, False, False);
 
 	MDObject = Metadata.FindByFullName(FullName);
 	If MDObject = Undefined Then
-		Return пСтрук;
+		Return pStruct;
 	EndIf;
 
-	пСтрук.ЕстьДанные = True;
-	пСтрук.Insert("Name", MDObject.Name);
+	pStruct.ЕстьДанные = True;
+	pStruct.Insert("Name", MDObject.Name);
 
 	пПустаяДата = '00010101';
-	пСтрук.Insert("Дата1", пПустаяДата);
-	пСтрук.Insert("Дата2", пПустаяДата);
+	pStruct.Insert("Дата1", пПустаяДата);
+	pStruct.Insert("Дата2", пПустаяДата);
 
 	If Metadata.AccountingRegisters.Contains(MDObject) Then
-		пСтрук.ЭтоРегистрБУ = True;
-		пСтрук.Insert("ЕстьПериодИтогов", True);
-		пСтрук.Insert("ЕстьРежимАгрегатов", False);
-		пСтрук.Insert("ЕстьТекущиеИтоги", True);
-		пМенеджер = AccountingRegisters[пСтрук.Name];
+		pStruct.ЭтоРегистрБУ = True;
+		pStruct.Insert("ЕстьПериодИтогов", True);
+		pStruct.Insert("ЕстьРежимАгрегатов", False);
+		pStruct.Insert("ЕстьТекущиеИтоги", True);
+		пМенеджер = AccountingRegisters[pStruct.Name];
 	Else
-		пСтрук.ОборотныйРегистр = (MDObject.RegisterType = Metadata.ObjectProperties.AccumulationRegisterType.Turnovers);
-		пСтрук.Insert("ЕстьПериодИтогов", Not пСтрук.ОборотныйРегистр);
-		пСтрук.Insert("ЕстьРежимАгрегатов", пСтрук.ОборотныйРегистр);
-		пСтрук.Insert("ЕстьТекущиеИтоги", Not пСтрук.ОборотныйРегистр);
-		пМенеджер = AccumulationRegisters[пСтрук.Name];
+		pStruct.ОборотныйРегистр = (MDObject.RegisterType = Metadata.ObjectProperties.AccumulationRegisterType.Turnovers);
+		pStruct.Insert("ЕстьПериодИтогов", Not pStruct.ОборотныйРегистр);
+		pStruct.Insert("ЕстьРежимАгрегатов", pStruct.ОборотныйРегистр);
+		pStruct.Insert("ЕстьТекущиеИтоги", Not pStruct.ОборотныйРегистр);
+		пМенеджер = AccumulationRegisters[pStruct.Name];
 	EndIf;
 
-	If пСтрук.ЕстьПериодИтогов Then
-		пСтрук.Insert("Дата1", пМенеджер.GetMinTotalsPeriod());
-		пСтрук.Insert("Дата2", пМенеджер.GetMaxTotalsPeriod());
+	If pStruct.ЕстьПериодИтогов Then
+		pStruct.Insert("Дата1", пМенеджер.GetMinTotalsPeriod());
+		pStruct.Insert("Дата2", пМенеджер.GetMaxTotalsPeriod());
 	EndIf;
 
-	пСтрук.Insert("РежимАгрегатов", ?(пСтрук.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesMode(), False));
-	пСтрук.Insert("ИспользованиеАгрегатов", ?(пСтрук.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesUsing(),
+	pStruct.Insert("РежимАгрегатов", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesMode(), False));
+	pStruct.Insert("ИспользованиеАгрегатов", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesUsing(),
 		False));
-	пСтрук.Insert("ИспользованиеТекущихИтогов", ?(пСтрук.ЕстьТекущиеИтоги,
+	pStruct.Insert("ИспользованиеТекущихИтогов", ?(pStruct.ЕстьТекущиеИтоги,
 		пМенеджер.GetPresentTotalsUsing(), False));
-	пСтрук.Insert("ИспользованиеИтогов", пМенеджер.GetTotalsUsing());
-	пСтрук.Insert("РежимРазделенияИтогов", пМенеджер.GetTotalsSplittingMode());
-	пСтрук.Insert("МинимальныйПериодРассчитанныхИтогов", ?(пСтрук.ОборотныйРегистр, пПустаяДата,
+	pStruct.Insert("ИспользованиеИтогов", пМенеджер.GetTotalsUsing());
+	pStruct.Insert("РежимРазделенияИтогов", пМенеджер.GetTotalsSplittingMode());
+	pStruct.Insert("МинимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
 		пМенеджер.GetMinTotalsPeriod()));
-	пСтрук.Insert("МаксимальныйПериодРассчитанныхИтогов", ?(пСтрук.ОборотныйРегистр, пПустаяДата,
+	pStruct.Insert("МаксимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
 		пМенеджер.GetMaxTotalsPeriod()));
 
-	Return пСтрук;
+	Return pStruct;
 EndFunction
 
 
@@ -2334,22 +2334,22 @@ EndProcedure
 &AtClient
 Procedure вОбработатьКомандуУправленияИтогами(РезультатВопроса, CommandName) Export
 	If РезультатВопроса = DialogReturnCode.Yes Then
-		пСтрук = вПолучитьНовыеНастройкиУправленияИтогами();
-		пСтрук.Insert("CommandName", CommandName);
+		pStruct = вПолучитьНовыеНастройкиУправленияИтогами();
+		pStruct.Insert("CommandName", CommandName);
 
-		пРезультат = вВыполнитКомандуУправленияИтогами(_FullName, CommandName, пСтрук);
+		пРезультат = вВыполнитКомандуУправленияИтогами(_FullName, CommandName, pStruct);
 		_UpdateTotalsManagement(Undefined);
 	EndIf;
 EndProcedure
 
 &AtClient
 Function вПолучитьНовыеНастройкиУправленияИтогами()
-	пСтрук = New Structure;
-	пСтрук.Insert("ПериодПересчетаИтогов", _PeriodRecalculationTotals);
-	пСтрук.Insert("МинимальныйПериодРассчитанныхИтогов", _MinimumPeriodOfCalculatedTotals);
-	пСтрук.Insert("МаксимальныйПериодРассчитанныхИтогов", _MaximumPeriodOfCalculatedTotals);
+	pStruct = New Structure;
+	pStruct.Insert("ПериодПересчетаИтогов", _PeriodRecalculationTotals);
+	pStruct.Insert("МинимальныйПериодРассчитанныхИтогов", _MinimumPeriodOfCalculatedTotals);
+	pStruct.Insert("МаксимальныйПериодРассчитанныхИтогов", _MaximumPeriodOfCalculatedTotals);
 
-	Return пСтрук;
+	Return pStruct;
 EndFunction
 
 &AtClient
@@ -2539,8 +2539,8 @@ Procedure _OpenAccessRightsObject(Command)
 			пИдентификаторПользователя = вПолучитьИдентификаторПользователя(CurData.Name);
 
 			If Not IsBlankString(пИдентификаторПользователя) Then
-				пСтрук = New Structure("РежимРаботы, ИдентификаторПользователяИБ", 0, пИдентификаторПользователя);
-				OpenForm(PathToForms + "UserForm", пСтрук, , , , , ,
+				pStruct = New Structure("РежимРаботы, ИдентификаторПользователяИБ", 0, пИдентификаторПользователя);
+				OpenForm(PathToForms + "UserForm", pStruct, , , , , ,
 					FormWindowOpeningMode.LockOwnerWindow);
 			EndIf;
 		EndIf;
@@ -2618,9 +2618,9 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 	For Each П In InfoBaseUsers.GetUsers() Do
 		For Each Р In П.Roles Do
 			If Р.Name = пРольМД.Name Then
-				пСтрук = New Structure("Name, FullName");
-				FillPropertyValues(пСтрук, П);
-				пРезультат.Users.Add(пСтрук);
+				pStruct = New Structure("Name, FullName");
+				FillPropertyValues(pStruct, П);
+				пРезультат.Users.Add(pStruct);
 			EndIf;
 		EndDo;
 	EndDo;
@@ -2641,7 +2641,7 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 	пТабОбъекты.Columns.Add("FullName", New TypeDescription("String"));
 	пТабОбъекты.Columns.Add("MDObject", New TypeDescription("MetadataObject"));
 
-	пСтрук = New Structure("
+	pStruct = New Structure("
 							 |SessionParameters,
 							 |CommonCommands,
 							 |ExchangePlans,
@@ -2656,16 +2656,16 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 							 |CalculationRegisters
 							 |");
 
-	For Each Itm In пСтрук Do
+	For Each Itm In pStruct Do
 		For Each MDObject In Metadata[Itm.Key] Do
 			NewLine = пТабОбъекты.Add();
 			NewLine.FullName = MDObject.FullName();
 			NewLine.MDObject = MDObject;
 
-			пСтрук = New Structure("Commands");
-			FillPropertyValues(пСтрук, MDObject);
+			pStruct = New Structure("Commands");
+			FillPropertyValues(pStruct, MDObject);
 
-			If пСтрук.Commands <> Undefined Then
+			If pStruct.Commands <> Undefined Then
 				For Each пКоманда In MDObject.Commands Do
 					NewLine = пТабОбъекты.Add();
 					NewLine.FullName = пКоманда.FullName();
@@ -2676,20 +2676,20 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 	EndDo;
 
 	For Each Row In пТабОбъекты Do
-		пСтрук = New Structure(пПоляРезультата);
+		pStruct = New Structure(пПоляРезультата);
 
 		пПолноеИмя = Row.MDObject.FullName();
 		If StrFind(пПолноеИмя, ".Command.") <> 0 Then
 			Поз1 = StrFind(пПолноеИмя, ".", SearchDirection.FromEnd);
-			пСтрук.Kind = "ЧужаяКоманда";
-			пСтрук.Name = Mid(пПолноеИмя, Поз1 + 1);
+			pStruct.Kind = "ЧужаяКоманда";
+			pStruct.Name = Mid(пПолноеИмя, Поз1 + 1);
 		Else
 			Поз1 = StrFind(пПолноеИмя, ".");
-			пСтрук.Kind = Left(пПолноеИмя, Поз1 - 1);
-			пСтрук.Name = Mid(пПолноеИмя, Поз1 + 1);
+			pStruct.Kind = Left(пПолноеИмя, Поз1 - 1);
+			pStruct.Name = Mid(пПолноеИмя, Поз1 + 1);
 		EndIf;
 
-		pRightsList = DescriptionOfAccessRights[пСтрук.Kind];
+		pRightsList = DescriptionOfAccessRights[pStruct.Kind];
 
 		If pRightsList = Undefined Then
 			Continue;
@@ -2699,18 +2699,18 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 
 		If AccessRight(pRight, Row.MDObject, пРольМД) Then
 
-			пСтрук.FullName = пПолноеИмя;
-			пСтрук.Presentation = Row.MDObject.Presentation();
+			pStruct.FullName = пПолноеИмя;
+			pStruct.Presentation = Row.MDObject.Presentation();
 
-			пПоле = пОбъектыСОгрничением[пСтрук.Kind];
+			пПоле = пОбъектыСОгрничением[pStruct.Kind];
 			If пПоле <> Undefined Then
-				пСтрук.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
-			ElsIf пСтрук.Kind = "InformationRegister" And Row.MDObject.Dimensions.Count() <> 0 Then
+				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
+			ElsIf pStruct.Kind = "InformationRegister" And Row.MDObject.Dimensions.Count() <> 0 Then
 				пПоле = Row.MDObject.Dimensions[0].Name;
-				пСтрук.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
+				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
 			EndIf;
 
-			пРезультат.AvailableObjects.Add(пСтрук);
+			пРезультат.AvailableObjects.Add(pStruct);
 		EndIf;
 	EndDo;
 
@@ -3065,7 +3065,7 @@ Procedure _OpenSubordinateObject(Command)
 EndProcedure
 &AtClient
 Procedure _ReadConstant(Command)
-	пРезультат = вПрочитатьКонстанту(_FullName);
+	пРезультат = vGetConstant(_FullName);
 	If Not пРезультат.Cancel Then
 		_ConstantValue = пРезультат.Value;
 		_TypeOfConstantValue = пРезультат.ValueType;
@@ -3139,17 +3139,17 @@ Function вЗаписатьКонстанту()
 EndFunction
 
 &AtServerNoContext
-Function вПрочитатьКонстанту(Val FullName)
+Function vGetConstant(Val FullName)
 	SetPrivilegedMode(True);
 
-	пРезультат = New Structure("Cancel, ПричинаОтказа, ReadOnly, Text, Value, ValueType", False, "", False,
+	пРезультат = New Structure("Cancel, ReasonForRefusal, ReadOnly, Text, Value, ValueType", False, "", False,
 		"");
 
 	пОбъектМД = Metadata.FindByFullName(FullName);
 	If пОбъектМД = Undefined Then
 		пРезультат.Cancel = True;
 		пРезультат.ReadOnly = True;
-		пРезультат.ПричинаОтказа = "Not удалость найти объект метаданных!";
+		пРезультат.ReasonForRefusal = "Not удалость найти объект метаданных!";
 		Return пРезультат;
 	EndIf;
 
@@ -3171,7 +3171,7 @@ Function вПрочитатьКонстанту(Val FullName)
 		Except
 			Message(BriefErrorDescription(ErrorInfo()));
 			пРезультат.Cancel = True;
-			пРезультат.ПричинаОтказа = ErrorDescription();
+			пРезультат.ReasonForRefusal = ErrorDescription();
 			Return пРезультат;
 		EndTry;
 
@@ -3182,13 +3182,13 @@ Function вПрочитатьКонстанту(Val FullName)
 				пОбъектМД.Type);
 		Except
 			пРезультат.Cancel = True;
-			пРезультат.ПричинаОтказа = "значение не установлено!";
+			пРезультат.ReasonForRefusal = "значение не установлено!";
 		EndTry;
 
 	Else
 		пРезультат.Cancel = True;
 		пРезультат.ReadOnly = True;
-		пРезультат.ПричинаОтказа = пВидОбъекта + " не поддерживается!";
+		пРезультат.ReasonForRefusal = пВидОбъекта + " не поддерживается!";
 		Return пРезультат;
 	EndIf;
 
