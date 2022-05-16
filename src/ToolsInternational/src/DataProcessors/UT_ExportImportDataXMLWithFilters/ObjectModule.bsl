@@ -396,7 +396,7 @@ Procedure Initializing() Export
 	MetadataTree.Columns.Add("MetadataObjectName");
 	MetadataTree.Columns.Add("MDObject");
 	MetadataTree.Columns.Add("FullMetadataName");
-	MetadataTree.Columns.Add("ComposerSettings");
+	MetadataTree.Columns.Add("BuilderSettings");
 	MetadataTree.Columns.Add("UseFilter");
 	MetadataTree.Columns.Add("PictureIndex");
 	//MetadataTree.Columns.Add("TreeIndex");
@@ -913,462 +913,467 @@ Function GetQueryTextForRegister(MetadataName, MetadataObject, AdditionalFilters
 
 EndFunction
 
-// Для внутреннего использования
+// Internal
 //
-Function ПолучитьТекстЗапросаПоСтроке(СтрокаДереваМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки = "",
-	СтрокаПолейДляВыборки1 = "", ТаблицаОтбора1) Export
+Function GetQueryTextByRow(MetadataTreeRow, AdditionalFilters, FieldsForSelectionString = "",
+	FieldsForSelectionString1 = "", FilterTable1) Export
 
-	ОбъектМетаданных  = СтрокаДереваМетаданных.Metadata;
-	ИмяМетаданных     = ОбъектМетаданных.ПолноеИмя();
+	MetadataObject  = MetadataTreeRow.Metadata;
+	MetadataName     = MetadataObject.FullName();
 
-	If Metadata.РегистрыСведений.Содержит(ОбъектМетаданных) Then
+	If Metadata.InformationRegisters.Contains(MetadataObject) Then
 
-		ТекстЗапроса = GetQueryTextForInformationRegister(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы,
-			СтрокаПолейДляВыборки, СтрокаПолейДляВыборки1, ТаблицаОтбора1);
-		Return ТекстЗапроса;
+		QueryText = GetQueryTextForInformationRegister(MetadataName, MetadataObject, AdditionalFilters,
+			FieldsForSelectionString, FieldsForSelectionString1, FilterTable1);
+		Return QueryText;
 
-	ElsIf Metadata.РегистрыНакопления.Содержит(ОбъектМетаданных) Или Metadata.РегистрыБухгалтерии.Содержит(
-		ОбъектМетаданных) Then
+	ElsIf Metadata.AccumulationRegisters.Contains(MetadataObject) Or Metadata.AccountingRegisters.Contains(
+		MetadataObject) Then
 
-		ТекстЗапроса = GetQueryTextForRegister(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы,
-			СтрокаПолейДляВыборки, ТаблицаОтбора1);
-		Return ТекстЗапроса;
+		QueryText = GetQueryTextForRegister(MetadataName, MetadataObject, AdditionalFilters,
+			FieldsForSelectionString, FilterTable1);
+		Return QueryText;
 
 	EndIf;
 
-	ЕстьОграничениеПоДатам = (ValueIsFilled(StartDate) Или ValueIsFilled(EndDate))
-		И UseFilterByDateForAllObjects;
+	RestrictionByDateExists = (ValueIsFilled(StartDate) Or ValueIsFilled(EndDate))
+		And UseFilterByDateForAllObjects;
 
-	If Не ValueIsFilled(СтрокаПолейДляВыборки) Then
-		СтрокаПолейДляВыборки = "ТаблицаОбъекта_" + СтрокаДереваМетаданных.ПолноеИмяМетаданных + ".*";
+	If Not ValueIsFilled(FieldsForSelectionString) Then
+		FieldsForSelectionString = "ObjectTable_" + MetadataTreeRow.MetadataFullName + ".*";
 	EndIf;
 
-	ТекстЗапроса = "ВЫБРАТЬ Разрешенные " + СтрокаПолейДляВыборки + " ИЗ " + ИмяМетаданных + " КАК ТаблицаОбъекта_"
-		+ СтрокаДереваМетаданных.ПолноеИмяМетаданных;
+	QueryText = "SELECT Allowed " + FieldsForSelectionString + " FROM " + MetadataName + " AS ObjectTable_"
+		+ MetadataTreeRow.MetadataFullName;
 	
-	// возможно нужно ограничение по датам установить
-	Первая=True;
+	// Setting of a restriction by dates might be required.
+	First=True;
 
-	If ЕстьОграничениеПоДатам Then
+	If RestrictionByDateExists Then
 
-		If ЕстьДопОтборы И Не UseFilterByDateForAllObjects Then
+		If AdditionalFilters And Not UseFilterByDateForAllObjects Then
 
-			Return ТекстЗапроса;
+			Return QueryText;
 
 		EndIf;
 
-		ДопОграничениеПоДате = "";
+		AdditionalRestrictionByDate = "";
 		
-		// можно ли для данного объекта МД строить ограничения по датам
-		If Metadata.Документы.Содержит(ОбъектМетаданных) Then
+		// Checking of possibility to apply restrictions by dates for the metadata object.
+		If Metadata.Documents.Contains(MetadataObject) Then
 
-			ДопОграничениеПоДате = GetRestrictionByDateStringForQuery(ОбъектМетаданных, "Документ");
-			Первая=False;
+			AdditionalRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "Document");
+			First=False;
 
-		ElsIf Metadata.РегистрыБухгалтерии.Содержит(ОбъектМетаданных) Или Metadata.РегистрыНакопления.Содержит(
-			ОбъектМетаданных) Then
+		ElsIf Metadata.AccountingRegisters.Contains(MetadataObject) Or Metadata.AccumulationRegisters.Contains(
+			MetadataObject) Then
 
-			ДопОграничениеПоДате = GetRestrictionByDateStringForQuery(ОбъектМетаданных, "Регистр");
-			Первая=False;
+			AdditionalRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "Register");
+			First=False;
 
 		EndIf;
 
-		ТекстЗапроса = ТекстЗапроса + Символы.ПС + ДопОграничениеПоДате;
+		QueryText = QueryText + Chars.LF + AdditionalRestrictionByDate;
 	EndIf;
 
-	For Each Строка Из ТаблицаОтбора1 Do
-		If СтрокаДереваМетаданных.ПолноеИмяМетаданных = Строка.имяреквизита
-			И СтрокаДереваМетаданных.Родитель.Metadata = Строка.ИмяОбъектаМетаданных Then
-			For Each СтрокаЭлементы Из Строка.Отбор.Элементы Do
-				If СтрокаЭлементы.Использование Then
+	For Each Row In FilterTable1 Do
+		If MetadataTreeRow.MetadataFullName = Row.AttributeName
+			And MetadataTreeRow.Parent.Metadata = Row.MetadataObjectName Then
+			For Each ItemsRow In Row.Filter.Items Do
+				If ItemsRow.Use Then
 
-					If Не Первая Then
-						ТекстЗапроса = ТекстЗапроса + Символы.ПС + " И " + GetComparisonTypeForQuery(Строка,
-							СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+					If Not First Then
+						QueryText = QueryText + Chars.LF + " AND " + GetComparisonTypeForQuery(Row,
+							ItemsRow, ItemsRow.ComparisonType);
 					Else
-						ТекстЗапроса = ТекстЗапроса + Символы.ПС + " ГДЕ " + GetComparisonTypeForQuery(Строка,
-							СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+						QueryText = QueryText + Chars.LF + " WHERE " + GetComparisonTypeForQuery(Row,
+							ItemsRow, ItemsRow.ComparisonType);
 					EndIf;
-					Первая=False;
+					First=False;
 				EndIf;
 			EndDo;
-			Прервать;
+			Break;
 		EndIf;
 	EndDo;
-	Return ТекстЗапроса;
+	Return QueryText;
 
 EndFunction
-Function GetComparisonTypeForQuery(Строка, СтрокаЭлементы, ВидСравнения)
+Function GetComparisonTypeForQuery(Row, ItemsRow, ComparisonType)
 	
-	//Строка.ИмяРеквизита+GetComparisonTypeForQuery(СтрокаЭлементы.ВидСравнения)+"&"+Строка(СтрокаЭлементы.ЛевоеЗначение)+ Символы.ПС
+	//Row.AttributeName+GetComparisonTypeForQuery(ItemsRow.ComparisonType)+"&"+String(ItemsRow.LeftValue)+ Chars.LF
 
-	ЛевоеЗначение=StrReplace(Строка(СтрокаЭлементы.ЛевоеЗначение), ".", "_");
+	LeftValue=StrReplace(String(ItemsRow.LeftValue), ".", "_");
 
-	If ВидСравнения = ВидСравненияКомпоновкиданных.Больше Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + ">&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.БольшеИлиРавно Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + ">=&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВИерархии Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " В ИЕРАРХИИ(&"
-			+ ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСписке Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " В (&"
-			+ ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСпискеПоИерархии Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " В ИЕРАРХИИ(&"
-			+ ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Меньше Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + "<&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.МеньшеИлиРавно Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + "<=&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВИерархии Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение
-			+ " В ИЕРАРХИИ(&" + ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСписке Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " В (&"
-			+ ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСпискеПоИерархии Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение
-			+ " В ИЕРАРХИИ(&" + ЛевоеЗначение + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеРавно Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + "<>&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеСодержит Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение
-			+ " ПОДОБНО &" + ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Подобно Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " ПОДОБНО &"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеПодобно Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение
-			+ " ПОДОБНО &" + ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Равно Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + "=&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Содержит Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " ПОДОБНО &"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НачинаетсяС Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + ">=&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеНачинаетсяС Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + "<&"
-			+ ЛевоеЗначение + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Заполнено Then
-		ВозвращЗначение="ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение + " ЕСТЬ NULL "
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НЕЗаполнено Then
-		ВозвращЗначение=" НЕ " + "ТаблицаОбъекта_" + Строка.ИмяРеквизита + "." + СтрокаЭлементы.ЛевоеЗначение
-			+ " ЕСТЬ NULL " + Символы.ПС;
+	If ComparisonType = DataCompositionComparisonType.Greater Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + ">&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.GreaterOrEqual Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + ">=&" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InHierarchy Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " IN HIERARCHY(&"
+			+ LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InList Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " IN (&"
+			+ LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InListByHierarchy Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " IN HIERARCHY(&"
+			+ LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Less Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + "<&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.LessOrEqual Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + "<=&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInHierarchy Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue
+			+ " IN HIERARCHY(&" + LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.НеВСписке Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " IN (&"
+			+ LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInListByHierarchy Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue
+			+ " IN HIERARCHY(&" + LeftValue + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotEqual Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + "<>&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotContains Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue
+			+ " LIKE &" + LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Like Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " LIKE &"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotLike Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue
+			+ " LIKE &" + LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Equal Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + "=&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Contains Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " LIKE &"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.BeginsWith Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + ">=&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotBeginsWith Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + "<&"
+			+ LeftValue + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Filled Then
+		ReturnValue="ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue + " IS NULL "
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotFilled Then
+		ReturnValue=" NOT " + "ObjectTable_" + Row.AttributeName + "." + ItemsRow.LeftValue
+			+ " IS NULL " + Chars.LF;
 	EndIf;
 
-	Return ВозвращЗначение;
+	Return ReturnValue;
 
 EndFunction
 
-Function GetComparisonTypeForQueryКонстанта(Строка, СтрокаЭлементы, ВидСравнения)
+Function GetComparisonTypeForQueryConstant(Row, ItemsRow, ComparisonType)
 	
-	//Строка.ИмяРеквизита+GetComparisonTypeForQuery(СтрокаЭлементы.ВидСравнения)+"&"+Строка(СтрокаЭлементы.ЛевоеЗначение)+ Символы.ПС
-	If ВидСравнения = ВидСравненияКомпоновкиданных.Больше Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + ">&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.БольшеИлиРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + ">=&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВИерархии Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " В ИЕРАРХИИ(&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСписке Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " В (&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСпискеПоИерархии Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " В ИЕРАРХИИ(&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Меньше Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + "<&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.МеньшеИлиРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + "<=&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВИерархии Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " В ИЕРАРХИИ(&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСписке Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение"" В (&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСпискеПоИерархии Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " В ИЕРАРХИИ(&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + "<>&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеСодержит Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Подобно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеПодобно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Равно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + "=&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Содержит Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НачинаетсяС Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + ">=&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеНачинаетсяС Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + "<&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Заполнено Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ЕСТЬ NULL " + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НЕЗаполнено Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + ".Значение" + " ЕСТЬ NULL " + Символы.ПС;
+	//Row.AttributeName+GetComparisonTypeForQuery(ItemsRow.ComparisonType)+"&"+String(ItemsRow.LeftValue)+ Chars.LF
+	If ComparisonType = DataCompositionComparisonType.Greater Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + ">&" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.GreaterOrEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + ">=&" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InHierarchy Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " IN HIERARCHY(&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InList Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " IN (&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InListByHierarchy Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " IN HIERARCHY(&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Less Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + "<&" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.LessOrEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + "<=&" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInHierarchy Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + ".Value" + " IN HIERARCHY(&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInList Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + ".Value"" IN (&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInListByHierarchy Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + ".Value" + " IN HIERARCHY(&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + "<>&" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.НеСодержит Then
+		ReturnValue=" НЕ " + String(ItemsRow.LeftValue) + ".Value" + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Like Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotLike Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Equal Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + "=&" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Contains Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.BeginsWith Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + ">=&" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotBeginsWith Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + "<&" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Filled Then
+		ReturnValue=String(ItemsRow.LeftValue) + ".Value" + " IS NULL " + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotFilled Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + ".Value" + " IS NULL " + Chars.LF;
 	EndIf;
 
-	Return ВозвращЗначение;
+	Return ReturnValue;
 
 EndFunction
 
-Function GetComparisonTypeForQueryРегистр(Строка, СтрокаЭлементы, ВидСравнения)
+Function GetComparisonTypeForQueryRegister(Row, ItemsRow, ComparisonType)
 	
-	//Строка.ИмяРеквизита+GetComparisonTypeForQuery(СтрокаЭлементы.ВидСравнения)+"&"+Строка(СтрокаЭлементы.ЛевоеЗначение)+ Символы.ПС
-	If ВидСравнения = ВидСравненияКомпоновкиданных.Больше Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ">&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.БольшеИлиРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ">=&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВИерархии Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " В ИЕРАРХИИ(&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСписке Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " В (&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + ")"
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.ВСпискеПоИерархии Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " В ИЕРАРХИИ(&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Меньше Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + "<&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.МеньшеИлиРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + "<=&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВИерархии Then
-		ВозвращЗначение=" НЕ " + СтрокаЭлементы.ЛевоеЗначение + " В ИЕРАРХИИ(&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСписке Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + " В (&" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеВСпискеПоИерархии Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + " В ИЕРАРХИИ(&" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + ")" + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеРавно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + "<>&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеСодержит Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Подобно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " ПОДОБНО &" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеПодобно Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + " ПОДОБНО &" + Строка(
-			СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Равно Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + "=&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Содержит Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " ПОДОБНО &" + Строка(СтрокаЭлементы.ЛевоеЗначение)
-			+ Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НачинаетсяС Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + ">=&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НеНачинаетсяС Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + "<&" + Строка(СтрокаЭлементы.ЛевоеЗначение) + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.Заполнено Then
-		ВозвращЗначение=Строка(СтрокаЭлементы.ЛевоеЗначение) + " ЕСТЬ NULL " + Символы.ПС;
-	ElsIf ВидСравнения = ВидСравненияКомпоновкиданных.НЕЗаполнено Then
-		ВозвращЗначение=" НЕ " + Строка(СтрокаЭлементы.ЛевоеЗначение) + " ЕСТЬ NULL " + Символы.ПС;
+	//Row.AttributeName+GetComparisonTypeForQuery(ItemsRow.ComparisonType)+"&"+String(ItemsRow.LeftValue)+ Chars.LF
+	If ComparisonType = DataCompositionComparisonType.Greater Then
+		ReturnValue=String(ItemsRow.LeftValue) + ">&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.GreaterOrEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + ">=&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InHierarchy Then
+		ReturnValue=String(ItemsRow.LeftValue) + " IN HIERARCHY(&" + String(ItemsRow.LeftValue)
+			+ ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InList Then
+		ReturnValue=String(ItemsRow.LeftValue) + " IN (&" + String(ItemsRow.LeftValue) + ")"
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.InListByHierarchy Then
+		ReturnValue=String(ItemsRow.LeftValue) + " IN HIERARCHY(&" + String(ItemsRow.LeftValue)
+			+ ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Less Then
+		ReturnValue=String(ItemsRow.LeftValue) + "<&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.LessOrEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + "<=&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInHierarchy Then
+		ReturnValue=" NOT " + ItemsRow.LeftValue + " IN HIERARCHY(&" + String(ItemsRow.LeftValue)
+			+ ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInList Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + " IN (&" + String(ItemsRow.LeftValue)
+			+ ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotInListByHierarchy Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + " IN HIERARCHY(&" + String(
+			ItemsRow.LeftValue) + ")" + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotEqual Then
+		ReturnValue=String(ItemsRow.LeftValue) + "<>&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotContains Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Like Then
+		ReturnValue=String(ItemsRow.LeftValue) + " LIKE &" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotLike Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + " LIKE &" + String(
+			ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Equal Then
+		ReturnValue=String(ItemsRow.LeftValue) + "=&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Contains Then
+		ReturnValue=String(ItemsRow.LeftValue) + " LIKE &" + String(ItemsRow.LeftValue)
+			+ Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.BeginsWith Then
+		ReturnValue=String(ItemsRow.LeftValue) + ">=&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotBeginsWith Then
+		ReturnValue=String(ItemsRow.LeftValue) + "<&" + String(ItemsRow.LeftValue) + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.Filled Then
+		ReturnValue=String(ItemsRow.LeftValue) + " IS NULL " + Chars.LF;
+	ElsIf ComparisonType = DataCompositionComparisonType.NotFilled Then
+		ReturnValue=" NOT " + String(ItemsRow.LeftValue) + " IS NULL " + Chars.LF;
 	EndIf;
 
-	Return ВозвращЗначение;
+	Return ReturnValue;
 
 EndFunction
 
 
 
-// Для внутреннего использования
+// Internal
 //
-Function ПодготовитьПостроительДляВыгрузки(СтрокаДереваМетаданных, СтрокаПолейДляВыборки = "",
-	СтрокаПолейДляВыборки1 = "", ТаблицаОтбора1) Export
+Function PrepareBuilderForExport(MetadataTreeRow, FieldsForSelectionString = "",
+	FieldsForSelectionString1 = "", FilterTable1) Export
 
-	ЕстьДопОтборы = (СтрокаДереваМетаданных.НастройкиПостроителя <> Undefined);
+	AdditionalFilters = (MetadataTreeRow.BuilderSettings <> Undefined);
 
-	ИтоговыйТекстЗапроса = ПолучитьТекстЗапросаПоСтроке(СтрокаДереваМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки,
-		СтрокаПолейДляВыборки1, ТаблицаОтбора1);
+	FinalQueryText = GetQueryTextByRow(MetadataTreeRow, AdditionalFilters, FieldsForSelectionString,
+		FieldsForSelectionString1, FilterTable1);
 
-	ПостроительОтчета = New ПостроительОтчета;
+	ReportBuilder = New ReportBuilder;
 
-	ПостроительОтчета.Текст = ИтоговыйТекстЗапроса;
+	ReportBuilder.Text = FinalQueryText;
 
-	ПостроительОтчета.ЗаполнитьНастройки();
+	ReportBuilder.FillSettings();
 
-	ПостроительОтчета.Отбор.Сбросить();
-	If ЕстьДопОтборы Then
+	ReportBuilder.Filter.Reset();
+	If AdditionalFilters Then
 
-		ПостроительОтчета.УстановитьНастройки(СтрокаДереваМетаданных.НастройкиПостроителя);
+		ReportBuilder.SetSettings(MetadataTreeRow.BuilderSettings);
 
 	EndIf;
 
-	ПостроительОтчета.Параметры.Вставить("StartDate", StartDate);
-	ПостроительОтчета.Параметры.Вставить("EndDate", EndDate);
+	ReportBuilder.Parameters.Insert("StartDate", StartDate);
+	ReportBuilder.Parameters.Insert("EndDate", EndDate);
 
-	For Each СтрокаТабл Из ТаблицаОтбора1 Do
-		If СтрокаДереваМетаданных.Metadata.Имя = СтрокаТабл.ИмяРеквизита И СтрокаТабл.ИмяОбъектаМетаданных
-			= СтрокаДереваМетаданных.Родитель.Metadata Then
-			For Each СтрокаЭлемент Из СтрокаТабл.Отбор.Элементы Do
+	For Each TableRow In FilterTable1 Do
+		If MetadataTreeRow.Metadata.Name = TableRow.AttributeName And TableRow.MetadataObjectName
+			= MetadataTreeRow.Parent.Metadata Then
+			For Each ItemRow In TableRow.Filter.Items Do
 
-				ЛевоеЗначение=StrReplace(Строка(СтрокаЭлемент.ЛевоеЗначение), ".", "_");
+				LeftValue=StrReplace(String(ItemRow.LeftValue), ".", "_");
 
-				If СтрокаЭлемент.ВидСравнения = ВидСравненияКомпоновкиДанных.Содержит Или СтрокаЭлемент.ВидСравнения
-					= ВидСравненияКомпоновкиДанных.НеСодержит Then
-					ПостроительОтчета.Параметры.Вставить(ЛевоеЗначение, "%" + СтрокаЭлемент.ПравоеЗначение + "%");
+				If ItemRow.ComparisonType = DataCompositionComparisonType.Contains Or ItemRow.ComparisonType
+					= DataCompositionComparisonType.NotContains Then
+					ReportBuilder.Parameters.Insert(LeftValue, "%" + ItemRow.RightValue + "%");
 				Else
-					If Строка(TypeOf(СтрокаЭлемент.ПравоеЗначение)) = "Стандартная дата начала" Then
-						ПостроительОтчета.Параметры.Вставить(ЛевоеЗначение, СтрокаЭлемент.ПравоеЗначение.Дата);
+					If String(TypeOf(ItemRow.RightValue)) = NStr("ru = 'Стандартная дата начала'; en = 'Standard beginning date'") Then
+						ReportBuilder.Parameters.Insert(LeftValue, ItemRow.RightValue.Date);
 					Else
-						ПостроительОтчета.Параметры.Вставить(ЛевоеЗначение, СтрокаЭлемент.ПравоеЗначение);
+						ReportBuilder.Parameters.Insert(LeftValue, ItemRow.RightValue);
 					EndIf;
 				EndIf;
 
 			EndDo;
-			Прервать;
+			Break;
 		EndIf;
 	EndDo;
-	Return ПостроительОтчета;
+	Return ReportBuilder;
 
 EndFunction
 
-Function ПолучитьРезультатЗапросаСОграничениями(СтрокаДереваМетаданных, ТаблицаОтбора1)
+Function GetQueryResultWithRestrictions(MetadataTreeRow, FilterTable1)
 
-	ПостроительОтчета = ПодготовитьПостроительДляВыгрузки(СтрокаДереваМетаданных, , , ТаблицаОтбора1);
+	ReportBuilder = PrepareBuilderForExport(MetadataTreeRow, , , FilterTable1);
 
-	ПостроительОтчета.Выполнить();
-	РезультатЗапроса = ПостроительОтчета.Результат;
+	ReportBuilder.Execute();
+	QueryResult = ReportBuilder.Result;
 
-	Return РезультатЗапроса;
+	Return QueryResult;
 
 EndFunction
 
-Procedure WriteObjectTypeData(СтрокаДереваМетаданных, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов = False, ТаблицаОтбора1)
+Procedure WriteObjectTypeData(MetadataTreeRow, XMLWriter, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly = False, FilterTable1)
 
-	РезультатЗапроса = ПолучитьРезультатЗапросаСОграничениями(СтрокаДереваМетаданных, ТаблицаОтбора1);
+	QueryResult = GetQueryResultWithRestrictions(MetadataTreeRow, FilterTable1);
 
-	QueryAndWriter(РезультатЗапроса, ЗаписьXML, True, ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов);
+	QueryAndWriter(QueryResult, XMLWriter, True, ObjectsExportedWithErrors, InvalidCharsCheckOnly);
 
 EndProcedure
 
-// Procedure исполняет переданный запрос и записывает полученные через запрос объекты
+// Executes the passed query and writes the objects received using the query.
 //
-// Параметры
-//   Запрос - запрос для исполнения, результат содержит выборку объектов для записи
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   ЗапросВерхнегоУровня - признак необходимости анимации процесса
+// Parameters:
+//   QueryResult - a result of executed query, contains a selection of objects for write.
+//   XMLWriter - an object used to write infobase objects.
+//   UpperLevelQuery - indicates whether process animation is required.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
 //
-Procedure QueryAndWriter(РезультатЗапроса, ЗаписьXML, ЗапросВерхнегоУровня = False, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов)
+Procedure QueryAndWriter(QueryResult, XMLWriter, UpperLevelQuery = False, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly)
 	
-	// универсальная Procedure выгрузки ссылочных объектов Procedure
-	ОбработкаРезультатаЗапроса(РезультатЗапроса, ЗаписьXML, True, ЗапросВерхнегоУровня, ОбъектыВыгруженныеСОшибками,
-		ТолькоПроверкаНедопустимыхСимволов);
+	// Universal procedure of exporting reference objects.
+	QueryResultProcessing(QueryResult, XMLWriter, True, UpperLevelQuery, ObjectsExportedWithErrors,
+		InvalidCharsCheckOnly);
 
 EndProcedure
 
-Procedure ExecuteAuxiliaryActionsForXMLWriter(ВсегоОбработаноОбъектов, ЗаписьXML,
-	ТолькоПроверкаНедопустимыхСимволов)
+Procedure ExecuteAuxiliaryActionsForXMLWriter(TotalObjectsProcessed, XMLWriter,
+	InvalidCharsCheckOnly)
 
-	If Не ТолькоПроверкаНедопустимыхСимволов Then
+	If Not InvalidCharsCheckOnly Then
 		Return;
 	EndIf;
 
-	If ВсегоОбработаноОбъектов > 1000 Then
+	If TotalObjectsProcessed > 1000 Then
 		
 		//@skip-warning
-		СтрокаРезультата = ЗаписьXML.Закрыть();
-		СтрокаРезультата = Undefined;
-		ЗаписьXML = Undefined;
+		ResultString = XMLWriter.Close();
+		ResultString = Undefined;
+		XMLWriter = Undefined;
 
-		ЗаписьXML = CreateXMLRecordObjectForCheck();
+		XMLWriter = CreateXMLRecordObjectForCheck();
 
 	EndIf;
 
 EndProcedure
 
-Function СсылкаВыгружена(Ссылка)
+Function RefIsExported(Ref)
 
-	Return mExportedObjects.Найти(Ссылка, "Ссылка") <> Undefined;
+	Return mExportedObjects.Find(Ref, "Ref") <> Undefined;
 
 EndFunction
 
-Procedure ДобавитьСсылкуКВыгруженным(Ссылка)
+Procedure AddRefInExportedTable(Ref)
 
-	СтрокаДобавления = mExportedObjects.Добавить();
-	СтрокаДобавления.Ссылка = Ссылка;
+	AddingRow = mExportedObjects.Add();
+	AddingRow.Ref = Ref;
 
 EndProcedure
 
-// Procedure записывает содержащиеся в выборке результата запроса объекты и необходимые "по ссылке" объекты ИБ
+// Writes an object contained in the query result selection and infobase objects required "by reference".
 //
-// Параметры
-//   РезультатЗапроса - результат запроса
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   ЭтоЗапросПоОбъекту - If True, выборка должна содержать объекты, на которые может быть ссылка,
-//             If False, выгружать, как объект не нужно, только обработать возможные ссылки на др. объекты ИБ
+// Parameters:
+//   QueryResult - a query result.
+//   XMLWriter - an object used to write infobase objects.
+//   IsQueryByObject - if True, selection must contain objects with references to them, if False, it 
+//             is not necessary to export it as an object, just process possible references to other infobase objects.
+//   UpperLevelQuery - indicates whether process animation is required.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
 //
-Procedure ОбработкаРезультатаЗапроса(РезультатЗапроса, ЗаписьXML, ЭтоЗапросПоОбъекту = False,
-	ЗапросВерхнегоУровня = False, ОбъектыВыгруженныеСОшибками = Undefined, ТолькоПроверкаНедопустимыхСимволов = False)
+Procedure QueryResultProcessing(QueryResult, XMLWriter, IsQueryByObject = False,
+	UpperLevelQuery = False, ObjectsExportedWithErrors = Undefined, InvalidCharsCheckOnly = False)
 
-	ВыборкаИзРезультатовЗапроса = РезультатЗапроса.Выбрать();
+	QueryResultsSelection = QueryResult.Select();
 
-	ВсегоОбработаноОбъектов = 0;
-//	ОбработаноОбъектов = 0;
+	TotalObjectsProcessed = 0;
+//	ProcessedObjectsCount = 0;
 
-	While ВыборкаИзРезультатовЗапроса.Следующий() Do
+	While QueryResultsSelection.Next() Do
 
-		If ЭтоЗапросПоОбъекту Then
+		If IsQueryByObject Then
 			
-			// выгрузка ссылочных объектов
-			Ссылка = ВыборкаИзРезультатовЗапроса.Ссылка;
-			If СсылкаВыгружена(Ссылка) Then
+			// Reference objects export.
+			Ref = QueryResultsSelection.Ref;
+			If RefIsExported(Ref) Then
 
-				Продолжить;
+				Continue;
 
 			EndIf;
 
-			ДобавитьСсылкуКВыгруженным(Ссылка);
+			AddRefInExportedTable(Ref);
 
-			ВсегоОбработаноОбъектов = TotalProcessedRecords();
+			TotalObjectsProcessed = TotalProcessedRecords();
 
 		EndIf;
 
 		If mChildObjectsExportExistence Then
 		
-			// перебираем колонки запроса в поисках ссылочных значений, которые, возможно, нужно выгрузить
-			For Each КолонкаЗапроса Из РезультатЗапроса.Колонки Do
+			// Search for reference values in the query columns.
+			For Each QueryColumn In QueryResult.Columns Do
 
-				ЗначениеКолонки = ВыборкаИзРезультатовЗапроса[КолонкаЗапроса.Имя];
+				ColumnValue = QueryResultsSelection[QueryColumn.Имя];
 
-				If TypeOf(ЗначениеКолонки) = mTypeQueryResult Then
+				If TypeOf(ColumnValue) = mTypeQueryResult Then
 
-					ОбработкаРезультатаЗапроса(ЗначениеКолонки, ЗаписьXML, , , ОбъектыВыгруженныеСОшибками,
-						ТолькоПроверкаНедопустимыхСимволов);
+					QueryResultProcessing(ColumnValue, XMLWriter, , , ObjectsExportedWithErrors,
+						InvalidCharsCheckOnly);
 
 				Else
 
-					ЗаписатьЗначениеПриНеобходимости(ЗначениеКолонки, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-						ТолькоПроверкаНедопустимыхСимволов);
+					WriteValueIfNecessary(ColumnValue, XMLWriter, ObjectsExportedWithErrors,
+						InvalidCharsCheckOnly);
 
 				EndIf;
 
@@ -1376,56 +1381,56 @@ Procedure ОбработкаРезультатаЗапроса(Результа�
 
 		EndIf;
 
-		If ЭтоЗапросПоОбъекту Then
+		If IsQueryByObject Then
 
-			Объект = Ссылка.ПолучитьОбъект();
+			Object = Ref.GetObject();
 
 			Try
 
-				ExecuteAuxiliaryActionsForXMLWriter(ВсегоОбработаноОбъектов, ЗаписьXML,
-					ТолькоПроверкаНедопустимыхСимволов);
+				ExecuteAuxiliaryActionsForXMLWriter(TotalObjectsProcessed, XMLWriter,
+					InvalidCharsCheckOnly);
 
-				Serializer.ЗаписатьXML(ЗаписьXML, Объект);
+				Serializer.WriteXML(XMLWriter, Object);
 
-				MetadataОбъекта = Объект.Metadata();
+				ObjectMetadata = Object.Metadata();
 
-				If ЭтоMetadataСПредопределеннымиЭлементами(MetadataОбъекта) И Объект.Предопределенный Then
+				If IsMetadataWithPredefinedItems(ObjectMetadata) And Object.Predefined Then
 
-					НоваяСтрока = PredefinedItemsTable.Добавить();
-					НоваяСтрока.ИмяТаблицы = MetadataОбъекта.ПолноеИмя();
-					НоваяСтрока.Ссылка = XMLСтрока(Ссылка);
-					НоваяСтрока.ИмяПредопределенныхДанных = Объект.ИмяПредопределенныхДанных;
+					NewRow = PredefinedItemsTable.Add();
+					NewRow.TableName = ObjectMetadata.FullName();
+					NewRow.Ref = XMLString(Ref);
+					NewRow.PredefinedDataName = Object.PredefinedDataName;
 
 				EndIf;
 
-				If ExportDocumentWithItsRecords И Metadata.Документы.Содержит(MetadataОбъекта) Then
+				If ExportDocumentWithItsRecords And Metadata.Documents.Contains(ObjectMetadata) Then
 					
-					// выгрузка движений документа
-					For Each Движение Из Объект.Движения Do
+					// Export document register records.
+					For Each Record In Object.RegisterRecords Do
 
-						Движение.Прочитать();
+						Record.Read();
 
-						If mChildObjectsExportExistence И Движение.Количество() > 0 Then
+						If mChildObjectsExportExistence And Record.Count() > 0 Then
 
-							ТипРегистра = Тип(Движение);
+							RegisterType = Type(Record);
 
-							ArrayКолонок = mRegisterRecordsColumnsMap.Получить(ТипРегистра);
+							ColumnArray = mRegisterRecordsColumnsMap.Get(RegisterType);
 
-							If ArrayКолонок = Undefined Then
+							If ColumnArray = Undefined Then
 
-								ТаблицаДвижений = Движение.Выгрузить();
-								РегистрБухгалтерии = Metadata.РегистрыБухгалтерии.Содержит(Движение.Metadata());
-								ArrayКолонок = ПолучитьArrayКолонокДвижения(ТаблицаДвижений, РегистрБухгалтерии);
-								mRegisterRecordsColumnsMap.Вставить(ТипРегистра, ArrayКолонок);
+								RecordsTable = Record.Unload();
+								AccountingRegister = Metadata.AccountingRegisters.Contains(Record.Metadata());
+								ColumnArray = GetRecordsColumnsArray(RecordsTable, AccountingRegister);
+								mRegisterRecordsColumnsMap.Insert(RegisterType, ColumnArray);
 
 							EndIf;
 
-							ВыгрузитьПодчиненныеЗначенияНабора(ЗаписьXML, Движение, ArrayКолонок,
-								ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов);
+							ExportSetChildValues(XMLWriter, Record, ColumnArray,
+								ObjectsExportedWithErrors, InvalidCharsCheckOnly);
 
 						EndIf;
 
-						Serializer.ЗаписатьXML(ЗаписьXML, Движение);
+						Serializer.WriteXML(XMLWriter, Record);
 
 					EndDo;
 
@@ -1433,24 +1438,25 @@ Procedure ОбработкаРезультатаЗапроса(Результа�
 
 			Except
 
-				СтрокаОписанияОшибки = ErrorDescription();
-				//не смогли записать в XML
-				// возможно проблема с недопустимыми символами в XML
-				If ТолькоПроверкаНедопустимыхСимволов Then
+				ErrorDescriptionString = ErrorDescription();
+				// Failed to write to XML.
+				// Perhaps an issue with invalid characters in XML.
+				If InvalidCharsCheckOnly Then
 
-					If ОбъектыВыгруженныеСОшибками.Получить(Ссылка) = Undefined Then
-						ОбъектыВыгруженныеСОшибками.Вставить(Ссылка, СтрокаОписанияОшибки);
+					If ObjectsExportedWithErrors.Get(Ref) = Undefined Then
+						ObjectsExportedWithErrors.Insert(Ref, ErrorDescriptionString);
 					EndIf;
 
 				Else
 
-					ИтоговаяСтрокаСообщения = Нстр("ru = 'При выгрузке объекта %1(%2) возникла ошибка:
-												   |%3'");
-					ИтоговаяСтрокаСообщения = SubstituteParametersToString(ИтоговаяСтрокаСообщения, Объект, TypeOf(
-						Объект), СтрокаОписанияОшибки);
-					UserMessage(ИтоговаяСтрокаСообщения);
+					FinalMessageString = NStr("ru = 'При выгрузке объекта %1(%2) возникла ошибка:
+												   |%3';
+											  |en = 'An error %3 occured while exporting an object %1(%2).'");
+					FinalMessageString = SubstituteParametersToString(FinalMessageString, Object, TypeOf(
+						Object), ErrorDescriptionString);
+					UserMessage(FinalMessageString);
 
-					Raise ИтоговаяСтрокаСообщения;
+					Raise FinalMessageString;
 
 				EndIf;
 
@@ -1462,30 +1468,30 @@ Procedure ОбработкаРезультатаЗапроса(Результа�
 
 EndProcedure
 
-Procedure ВыгрузитьПодчиненныеЗначенияНабора(ЗаписьXML, Движение, ArrayКолонок, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов)
+Procedure ExportSetChildValues(XMLWriter, Record, ColumnArray, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly)
 
-	For Each ЗаписьИзНабора Из Движение Do
+	For Each RecordFromSet In Record Do
 
-		For Each Колонка Из ArrayКолонок Do
+		For Each Column In ColumnArray Do
 
-			If Колонка = "СубконтоДт" Или Колонка = "СубконтоКт" Then
+			If Column = "ExtDimensionsDr" Or Column = "ExtDimensionsCr" Then
 
-				Значение = ЗаписьИзНабора[Колонка];
-				For Each КлючИЗначение Из Значение Do
+				Value = RecordFromSet[Column];
+				For Each KeyValue In Value Do
 
-					If ValueIsFilled(КлючИЗначение.Значение) Then
-						ЗаписатьЗначениеПриНеобходимости(КлючИЗначение.Значение, ЗаписьXML,
-							ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов);
+					If ValueIsFilled(KeyValue.Value) Then
+						WriteValueIfNecessary(KeyValue.Value, XMLWriter,
+							ObjectsExportedWithErrors, InvalidCharsCheckOnly);
 					EndIf;
 
 				EndDo;
 
 			Else
 
-				СохраненноеЗначение = ЗаписьИзНабора[Колонка];
-				ЗаписатьЗначениеПриНеобходимости(СохраненноеЗначение, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-					ТолькоПроверкаНедопустимыхСимволов);
+				SavedValue = RecordFromSet[Column];
+				WriteValueIfNecessary(SavedValue, XMLWriter, ObjectsExportedWithErrors,
+					InvalidCharsCheckOnly);
 
 			EndIf;
 
@@ -1495,182 +1501,187 @@ Procedure ВыгрузитьПодчиненныеЗначенияНабора(�
 
 EndProcedure
 
-Function ПолучитьArrayКолонокДвижения(ТаблицаДвижений, РегистрБухгалтерии = False)
+Function GetRecordsColumnsArray(RecordsTable, AccountingRegister = False)
 
-	ArrayКолонок = New Array;
-	For Each КолонкаТаблицы Из ТаблицаДвижений.Колонки Do
+	ColumnArray = New Array;
+	For Each TableColumn In RecordsTable.Columns Do
 
-		If КолонкаТаблицы.Имя = "МоментВремени" Или Найти(КолонкаТаблицы.Имя, "ВидСубконтоДт") = 1 Или Найти(
-			КолонкаТаблицы.Имя, "ВидСубконтоКт") = 1 Then
+		If TableColumn.Name = "PointInTime" Or Find(TableColumn.Name, "ExtDimensionTypeDr") = 1 Or Find(
+			TableColumn.Name, "ExtDimensionTypeCr") = 1 Then
 
-			Продолжить;
+			Continue;
 
 		EndIf;
 
-		If Найти(КолонкаТаблицы.Имя, "СубконтоДт") = 1 И РегистрБухгалтерии Then
+		If Find(TableColumn.Name, "ExtDimensionsDr") = 1 And AccountingRegister Then
 
-			If ArrayКолонок.Найти("СубконтоДт") = Undefined Then
-				ArrayКолонок.Добавить("СубконтоДт");
+			If ColumnArray.Find("ExtDimensionsDr") = Undefined Then
+				ColumnArray.Add("ExtDimensionsDr");
 			EndIf;
 
-			Продолжить;
+			Continue;
 
 		EndIf;
 
-		If Найти(КолонкаТаблицы.Имя, "СубконтоКт") = 1 И РегистрБухгалтерии Then
+		If Find(TableColumn.Name, "ExtDimensionsCr") = 1 And AccountingRegister Then
 
-			If ArrayКолонок.Найти("СубконтоКт") = Undefined Then
-				ArrayКолонок.Добавить("СубконтоКт");
+			If ColumnArray.Find("ExtDimensionsCr") = Undefined Then
+				ColumnArray.Add("ExtDimensionsCr");
 			EndIf;
 
-			Продолжить;
+			Continue;
 
 		EndIf;
 
-		ArrayКолонок.Добавить(КолонкаТаблицы.Имя);
+		ColumnArray.Add(TableColumn.Name);
 
 	EndDo;
 
-	Return ArrayКолонок;
+	Return ColumnArray;
 
 EndFunction
 
-// Procedure анализирует необходимость записи объекта "по ссылке" и осуществляет запись
+// Analyzes whether it is necessary to write the object "by reference" and writes it.
 //
-// Параметры
-//   АнализируемоеЗначение - анализируемое значение
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
+// Parameters:
+//   ValueToAnalyze - a value to analyze.
+//   XMLWriter - an object used to write infobase objects.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
 //
-Procedure ЗаписатьЗначениеПриНеобходимости(АнализируемоеЗначение, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов)
+Procedure WriteValueIfNecessary(ValueToAnalyze, XMLWriter, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly)
 
-	If Не ValueIsFilled(АнализируемоеЗначение) Then
+	If Not ValueIsFilled(ValueToAnalyze) Then
 		Return;
 	EndIf;
 
-	ОбъектМД = RefTypes.Получить(TypeOf(АнализируемоеЗначение));
+	MDObject = RefTypes.Get(TypeOf(ValueToAnalyze));
 
-	If ОбъектМД = Undefined Then
-		Return; // это не ссылка
+	If MDObject = Undefined Then
+		Return; // It is not a reference
 	EndIf;
 
-	If СсылкаВыгружена(АнализируемоеЗначение) Then
-		Return; // объект уже был выгружен
+	If RefIsExported(ValueToAnalyze) Then
+		Return; // The object has already been exported
 	EndIf;
 	
-	// Проверка того, что данный тип входит в список выгружаемых дополнительно
-	СтрокаТаблицы = FullExportContent.Найти(ОбъектМД, "ОбъектМД");
-	If СтрокаТаблицы <> Undefined Then
+	// Checking whether this type is included in the list to export additionally.
+	TableRow = FullExportContent.Find(MDObject, "MDObject");
+	If TableRow <> Undefined Then
 		Return;
 	EndIf;
 
-	СтрокаТаблицы = AuxiliaryExportContent.Найти(ОбъектМД, "ОбъектМД");
-	If СтрокаТаблицы <> Undefined Then
+	TableRow = AuxiliaryExportContent.Find(MDObject, "MDObject");
+	If TableRow <> Undefined Then
 
-		ДопЗапрос = New Запрос("ВЫБРАТЬ * ИЗ " + СтрокаТаблицы.СтрокаДерева.ЭлементОписания.ДляЗапроса + ОбъектМД.Имя
-			+ " КАК ТаблицаОбъекта_" + " ГДЕ Ссылка = &Ссылка");
-		ДопЗапрос.УстановитьПараметр("Ссылка", АнализируемоеЗначение);
-		РезультатЗапроса = ДопЗапрос.Выполнить();
-		QueryAndWriter(РезультатЗапроса, ЗаписьXML, , ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов);
+		AddlQuery = New Query("SELECT * FROM " + TableRow.TreeRow.Detail.ForQuery + MDObject.Name
+			+ " AS ObjectTable_" + " WHERE Ref = &Ref");
+		AddlQuery.SetParameter("Ref", ValueToAnalyze);
+		QueryResult = AddlQuery.Execute();
+		QueryAndWriter(QueryResult, XMLWriter, , ObjectsExportedWithErrors, InvalidCharsCheckOnly);
 
 	EndIf;
 
 EndProcedure
 
-// Procedure записывает значение константы
+// Writes the constant value.
 //
-// Параметры
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   МД_Константа - описание метаданного - выгружаемой константы
+// Parameters:
+//   XMLWriter - an object used to write infobase objects.
+//   MD_Constant - metadata details - a constant to export.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
+//   FilterTable1 - a filter table.
 //
-Procedure WriteConstant(ЗаписьXML, МД_Константа, ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов,
-	ТаблицаОтбора1)
-	ТекстЗапроса= "ВЫБРАТЬ
-				  |	АвтоматическиНастраиватьРазрешенияВПрофиляхБезопасности.Значение КАК Значение
-				  |ИЗ
-				  |	Константа.АвтоматическиНастраиватьРазрешенияВПрофиляхБезопасности КАК АвтоматическиНастраиватьРазрешенияВПрофиляхБезопасности
+Procedure WriteConstant(XMLWriter, MD_Constant, ObjectsExportedWithErrors, InvalidCharsCheckOnly,
+	FilterTable1)
+	QueryText= "SELECT
+				  |	AutomaticallyConfigurePermissionsInSecurityProfiles.Value AS Value
+				  |FROM
+				  |	Constant.AutomaticallyConfigurePermissionsInSecurityProfiles КАК AutomaticallyConfigurePermissionsInSecurityProfiles
 				  |";
 
-	Первая=True;
-	Найдено=False;
+	First=True;
+	Found=False;
 
-	For Each Строка Из ТаблицаОтбора1 Do
-		If МД_Константа.ИМЯ = Строка.имяреквизита Then
-			Найдено=True;
-			For Each СтрокаЭлементы Из Строка.Отбор.Элементы Do
-				If СтрокаЭлементы.Использование Then
-					If Не Первая Then
-						ТекстЗапроса = ТекстЗапроса + Символы.ПС + " И " + GetComparisonTypeForQueryКонстанта(Строка,
-							СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+	For Each Row In FilterTable1 Do
+		If MD_Constant.Name = Row.AttributeName Then
+			Found=True;
+			For Each ItemsRow In Row.Filter.Items Do
+				If ItemsRow.Use Then
+					If Not First Then
+						QueryText = QueryText + Chars.LF + " AND " + GetComparisonTypeForQueryConstant(Row,
+							ItemsRow, ItemsRow.ComparisonType);
 					Else
-						ТекстЗапроса = ТекстЗапроса + Символы.ПС + " ГДЕ " + GetComparisonTypeForQueryКонстанта(
-							Строка, СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+						QueryText = QueryText + Chars.LF + " WHERE " + GetComparisonTypeForQueryConstant(
+							Row, ItemsRow, ItemsRow.ComparisonType);
 					EndIf;
-					Первая=False;
+					First=False;
 				EndIf;
 			EndDo;
-			Прервать;
+			Break;
 		EndIf;
 	EndDo;
-	Выгружать=False;
-	If Не найдено Then
-		МенеджерЗначения = Константы[МД_Константа.Имя].СоздатьМенеджерЗначения();
-		МенеджерЗначения.Прочитать();
-		ЗаписатьЗначениеПриНеобходимости(МенеджерЗначения.Значение, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-			ТолькоПроверкаНедопустимыхСимволов);
-		Выгружать=True;
+	NeedToExport=False;
+	If Not Found Then
+		ValueManager = Constants[MD_Constant.Name].CreateValueManager();
+		ValueManager.Read();
+		WriteValueIfNecessary(ValueManager.Value, XMLWriter, ObjectsExportedWithErrors,
+			InvalidCharsCheckOnly);
+		NeedToExport=True;
 	Else
 
-		Запрос=New запрос;
-		Запрос.Текст=Текстзапроса;
+		Query=New Query;
+		Query.Text=QueryText;
 
-		For Each Строка Из ТаблицаОтбора1 Do
-			If МД_Константа.ИМЯ = Строка.имяреквизита Then
-				Найдено=True;
-				For Each СтрокаЭлементы Из Строка.Отбор.Элементы Do
-					If СтрокаЭлементы.Использование Then
-						Запрос.УстановитьПараметр(Строка.имяреквизита, СтрокаЭлементы.ПравоеЗначение);
+		For Each Row In FilterTable1 Do
+			If MD_Constant.Name = Row.AttributeName Then
+				Found=True;
+				For Each ItemsRow In Row.Filter.Items Do
+					If ItemsRow.Use Then
+						Query.SetParameter(Row.AttributeName, ItemsRow.RightValue);
 					EndIf;
 				EndDo;
-				Прервать;
+				Break;
 			EndIf;
 		EndDo;
-		Выборка1=Запрос.Выполнить().Выбрать();
+		Selection1=Query.Execute().Select();
 
-		While Выборка1.Следующий() Do
-			МенеджерЗначения = Константы[МД_Константа.Имя].СоздатьМенеджерЗначения();
-			МенеджерЗначения.Прочитать();
-			If Выборка1.Значение = МенеджерЗначения.Значение Then
-				ЗаписатьЗначениеПриНеобходимости(МенеджерЗначения.Значение, ЗаписьXML, ОбъектыВыгруженныеСОшибками,
-					ТолькоПроверкаНедопустимыхСимволов);
-				Выгружать=True;
+		While Selection1.Next() Do
+			ValueManager = Constants[MD_Constant.Name].CreateValueManager();
+			ValueManager.Read();
+			If Selection1.Value = ValueManager.Value Then
+				WriteValueIfNecessary(ValueManager.Value, XMLWriter, ObjectsExportedWithErrors,
+					InvalidCharsCheckOnly);
+				NeedToExport=True;
 			EndIf;
 		EndDo;
 
 	EndIf;	
-	// собственно выгрузка
 
-	ВсегоОбработаноОбъектов = TotalProcessedRecords();
+	TotalObjectsProcessed = TotalProcessedRecords();
 	Try
-		If Выгружать Then
-			ExecuteAuxiliaryActionsForXMLWriter(ВсегоОбработаноОбъектов, ЗаписьXML,
-				ТолькоПроверкаНедопустимыхСимволов);
-			Serializer.ЗаписатьXML(ЗаписьXML, МенеджерЗначения);
+		If NeedToExport Then
+			ExecuteAuxiliaryActionsForXMLWriter(TotalObjectsProcessed, XMLWriter,
+				InvalidCharsCheckOnly);
+			Serializer.WriteXML(XMLWriter, ValueManager);
 		EndIf;
 	Except
-		СтрокаОписанияОшибки = ErrorDescription();
-		//не смогли записать в XML
-		// возможно проблема с недопустимыми символами в XML
-		If ТолькоПроверкаНедопустимыхСимволов Then
-			ОбъектыВыгруженныеСОшибками.Вставить(МенеджерЗначения, СтрокаОписанияОшибки);
+		ErrorDescriptionString = ErrorDescription();
+		// Failed to write to XML.
+		// Perhaps an issue with invalid characters in XML.
+		If InvalidCharsCheckOnly Then
+			ObjectsExportedWithErrors.Insert(ValueManager, ErrorDescriptionString);
 		Else
-			ИтоговаяСтрокаСообщения = Нстр("ru = 'При выгрузке константы %1 возникла ошибка:
-										   |%2'");
-			ИтоговаяСтрокаСообщения = SubstituteParametersToString(ИтоговаяСтрокаСообщения, МД_Константа.Имя,
-				СтрокаОписанияОшибки);
+			FinalMessageString = NStr("ru = 'При выгрузке константы %1 возникла ошибка:
+										   |%2';
+									  |en = 'An error %2 occured while importing a constant %1.'");
+			FinalMessageString = SubstituteParametersToString(FinalMessageString, MD_Constant.Name,
+				ErrorDescriptionString);
 
-			UserMessage(ИтоговаяСтрокаСообщения);
-			Raise ИтоговаяСтрокаСообщения;
+			UserMessage(FinalMessageString);
+			Raise FinalMessageString;
 		EndIf;
 
 	EndTry;
@@ -1774,10 +1785,10 @@ Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, Мен
 						EndIf;
 
 						If Не Первая Then
-							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " И " + GetComparisonTypeForQueryРегистр(
+							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " И " + GetComparisonTypeForQueryRegister(
 								Строка, СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
 						Else
-							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " " + GetComparisonTypeForQueryРегистр(
+							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " " + GetComparisonTypeForQueryRegister(
 								Строка, СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
 						EndIf;
 						Первая=False;
@@ -1831,7 +1842,7 @@ Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, Мен
 	EndIf;
 
 	ТаблицаДвижений = РезультатЗапросаПоСоставу.Выгрузить();
-	ArrayКолонок = ПолучитьArrayКолонокДвижения(ТаблицаДвижений, РегистрБухгалтерии);
+	ArrayКолонок = GetRecordsColumnsArray(ТаблицаДвижений, РегистрБухгалтерии);
 	
 	// выгрузка регистров осуществляется через его набор записей
 	НаборЗаписей = МенеджерНабораЗаписей.СоздатьНаборЗаписей();
@@ -1853,7 +1864,7 @@ Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, Мен
 		СтрокаПолейОтбора1 =СтрокаПолейОтбора1 + "ТаблицаОбъекта_" + ИмяОбъекта + "1." + ЭлементОтбора.Имя;
 	EndDo;
 
-	ПостроительОтчета = ПодготовитьПостроительДляВыгрузки(СтрокаДереваМетаданных, СтрокаПолейОтбора, СтрокаПолейОтбора1,
+	ПостроительОтчета = PrepareBuilderForExport(СтрокаДереваМетаданных, СтрокаПолейОтбора, СтрокаПолейОтбора1,
 		ТаблицаОтбора1);
 	ПостроительОтчета.Выполнить();
 	РезультатЗапросаПоЗначениямОтбора = ПостроительОтчета.Результат;
@@ -1880,7 +1891,7 @@ Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, Мен
 		If mChildObjectsExportExistence Then
 		
 			// проверяем все записанные в наборе значения на необходимость записи "по ссылке"
-			ВыгрузитьПодчиненныеЗначенияНабора(ЗаписьXML, НаборЗаписей, ArrayКолонок, ОбъектыВыгруженныеСОшибками,
+			ExportSetChildValues(ЗаписьXML, НаборЗаписей, ArrayКолонок, ОбъектыВыгруженныеСОшибками,
 				ТолькоПроверкаНедопустимыхСимволов);
 
 		EndIf;
@@ -3141,7 +3152,7 @@ Procedure ImportPredefinedItemsTable(ЧтениеXML)
 
 						Выборка.Следующий();
 
-						СсылкаВБазе = XMLСтрока(Выборка.Ссылка);
+						СсылкаВБазе = XMLString(Выборка.Ссылка);
 						СсылкаВФайле = ВременнаяСтрока.Ссылка;
 
 						If ThisObject.PredefinedItemsImportMode = 1 Then
@@ -3272,7 +3283,7 @@ Procedure ReplacePredefinedItemsRefs(ИмяФайла)
 
 EndProcedure
 
-Function ЭтоMetadataСПредопределеннымиЭлементами(ОбъектМетаданных)
+Function IsMetadataWithPredefinedItems(ОбъектМетаданных)
 
 	Return Metadata.Справочники.Содержит(ОбъектМетаданных) Или Metadata.ПланыСчетов.Содержит(ОбъектМетаданных)
 		Или Metadata.ПланыВидовХарактеристик.Содержит(ОбъектМетаданных) Или Metadata.ПланыВидовРасчета.Содержит(
