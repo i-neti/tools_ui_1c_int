@@ -6,7 +6,7 @@ Var ProcessedConstantsCount Export;
 Var ProcessedRecordSetsCount Export;
 Var mRegisterRecordsColumnsMap;
 
-// array of metadata tree rows with Export attribute
+// array of metadata tree rows with ExportData attribute
 Var FullExportContent Export;
 // array of metadata tree rows with export by reference
 Var AuxiliaryExportContent;
@@ -1623,13 +1623,13 @@ Procedure WriteConstant(XMLWriter, MD_Constant, ObjectsExportedWithErrors, Inval
 			Break;
 		EndIf;
 	EndDo;
-	NeedToExport=False;
+	ExportData=False;
 	If Not Found Then
 		ValueManager = Constants[MD_Constant.Name].CreateValueManager();
 		ValueManager.Read();
 		WriteValueIfNecessary(ValueManager.Value, XMLWriter, ObjectsExportedWithErrors,
 			InvalidCharsCheckOnly);
-		NeedToExport=True;
+		ExportData=True;
 	Else
 
 		Query=New Query;
@@ -1654,7 +1654,7 @@ Procedure WriteConstant(XMLWriter, MD_Constant, ObjectsExportedWithErrors, Inval
 			If Selection1.Value = ValueManager.Value Then
 				WriteValueIfNecessary(ValueManager.Value, XMLWriter, ObjectsExportedWithErrors,
 					InvalidCharsCheckOnly);
-				NeedToExport=True;
+				ExportData=True;
 			EndIf;
 		EndDo;
 
@@ -1662,7 +1662,7 @@ Procedure WriteConstant(XMLWriter, MD_Constant, ObjectsExportedWithErrors, Inval
 
 	TotalObjectsProcessed = TotalProcessedRecords();
 	Try
-		If NeedToExport Then
+		If ExportData Then
 			ExecuteAuxiliaryActionsForXMLWriter(TotalObjectsProcessed, XMLWriter,
 				InvalidCharsCheckOnly);
 			Serializer.WriteXML(XMLWriter, ValueManager);
@@ -1690,255 +1690,273 @@ Procedure WriteConstant(XMLWriter, MD_Constant, ObjectsExportedWithErrors, Inval
 
 EndProcedure
 
-// Procedure записывает наборы записей регистра (накопления, бухгалтерии...)
+// Writes a set of register records (accumulation register, accounting register, and other).
 //
-// Параметры
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   СтрокаДереваМетаданных - строка дерева метаданных, соответствующая регистру
+// Parameters:
+//   XMLWriter - an object used to write infobase objects.
+//   MetadataTreeRow - a row of the metadata tree matching the register.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
+//   AccountingRegister - a flag defining whether it is an accounting register.
+//   FilterTable1 - a filter table.
 //
-Procedure WriteRegister(ЗаписьXML, СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов, РегистрБухгалтерии = False, ТаблицаОтбора1)
+Procedure WriteRegister(XMLWriter, MetadataTreeRow, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly, AccountingRegister = False, FilterTable1)
 
-	МенеджерНабораЗаписей = СтрокаДереваМетаданных.ЭлементОписания.Менеджер[СтрокаДереваМетаданных.ОбъектМД.Имя];
+	RecordSetManager = MetadataTreeRow.Detail.Manager[MetadataTreeRow.MDObject.Name];
 
-	ИмяТаблицыДляЗапроса = СтрокаДереваМетаданных.ЭлементОписания.ДляЗапроса;
+	TableNameForQuery = MetadataTreeRow.Detail.ForQuery;
 
-	ЗаписьЧерезНаборЗаписей(ЗаписьXML, МенеджерНабораЗаписей, ИмяТаблицыДляЗапроса,
-		СтрокаДереваМетаданных.ОбъектМД.Имя, СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками,
-		ТолькоПроверкаНедопустимыхСимволов, РегистрБухгалтерии, ТаблицаОтбора1);
+	WriteViaRecordSet(XMLWriter, RecordSetManager, TableNameForQuery,
+		MetadataTreeRow.MDObject.Name, MetadataTreeRow, ObjectsExportedWithErrors,
+		InvalidCharsCheckOnly, AccountingRegister, FilterTable1);
 
 EndProcedure
 
-// Procedure записывает наборы записей регистра (накопления, бухгалтерии...)
+// Writes a set of register records (accumulation register, accounting register, and other).
 //
-// Параметры
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   СтрокаДереваМетаданных - строка дерева метаданных, соответствующая регистру
+// Parameters:
+//   XMLWriter - an object used to write infobase objects.
+//   MetadataTreeRow - a row of the metadata tree matching the register.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
+//   FilterTable1 - a filter table.
 //
-Procedure WriteRecalculation(ЗаписьXML, СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов, ТаблицаОтбора1)
+Procedure WriteRecalculation(XMLWriter, MetadataTreeRow, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly, FilterTable1)
 
-	ИмяРегистраРасчета = СтрокаДереваМетаданных.Родитель.Родитель.ОбъектМД.Имя;
-	МенеджерСтрокой = StrReplace(СтрокаДереваМетаданных.ЭлементОписания.Менеджер, "%i", ИмяРегистраРасчета);
-	МенеджерПерерасчета = Вычислить(МенеджерСтрокой);
-	МенеджерПерерасчета = МенеджерПерерасчета[СтрокаДереваМетаданных.ОбъектМД.Имя];
-	СтрокаДляЗапроса = StrReplace(СтрокаДереваМетаданных.ЭлементОписания.ДляЗапроса, "%i", ИмяРегистраРасчета);
+	CalculationRegisterName = MetadataTreeRow.Parent.Parent.MDObject.Name;
+	ManagerByString = StrReplace(MetadataTreeRow.Detail.Manager, "%i", CalculationRegisterName);
+	RecalculationManager = Eval(ManagerByString);
+	RecalculationManager = RecalculationManager[MetadataTreeRow.MDObject.Name];
+	StringForQuery = StrReplace(MetadataTreeRow.Detail.ForQuery, "%i", CalculationRegisterName);
 
-	ЗаписьЧерезНаборЗаписей(ЗаписьXML, МенеджерПерерасчета, СтрокаДляЗапроса, СтрокаДереваМетаданных.ОбъектМД.Имя,
-		СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов, , ТаблицаОтбора1);
+	WriteViaRecordSet(XMLWriter, RecalculationManager, StringForQuery, MetadataTreeRow.MDObject.Name,
+		MetadataTreeRow, ObjectsExportedWithErrors, InvalidCharsCheckOnly, , FilterTable1);
 
 EndProcedure
 
-// Procedure записывает последовательности документов
+// Writes document sequences.
 //
-// Параметры
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   СтрокаДереваМетаданных - строка дерева метаданных, соответствующая регистру
+// Parameters:
+//   XMLWriter - an object used to write infobase objects.
+//   MetadataTreeRow - a row of the metadata tree matching the register.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
+//   FilterTable1 - a filter table.
 //
-Procedure WriteSequence(ЗаписьXML, СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками,
-	ТолькоПроверкаНедопустимыхСимволов, ТаблицаОтбора1)
+Procedure WriteSequence(XMLWriter, MetadataTreeRow, ObjectsExportedWithErrors,
+	InvalidCharsCheckOnly, FilterTable1)
 
-	МенеджерНабораЗаписей = СтрокаДереваМетаданных.ЭлементОписания.Менеджер[СтрокаДереваМетаданных.ОбъектМД.Имя];
+	RecordSetManager = MetadataTreeRow.Detail.Manager[MetadataTreeRow.MDObject.Name];
 
-	ЗаписьЧерезНаборЗаписей(ЗаписьXML, МенеджерНабораЗаписей, СтрокаДереваМетаданных.ЭлементОписания.ДляЗапроса,
-		СтрокаДереваМетаданных.ОбъектМД.Имя, СтрокаДереваМетаданных, ОбъектыВыгруженныеСОшибками,
-		ТолькоПроверкаНедопустимыхСимволов, , ТаблицаОтбора1);
+	WriteViaRecordSet(XMLWriter, RecordSetManager, MetadataTreeRow.Detail.ForQuery,
+		MetadataTreeRow.MDObject.Name, MetadataTreeRow, ObjectsExportedWithErrors,
+		InvalidCharsCheckOnly, , FilterTable1);
 
 EndProcedure
 
-// Procedure записывает данные, доступ к которым осуществляется через набор записей
+// Writes data, which is accessed using the record set.
 //
-// Параметры
-//   ЗаписьXML - объект, через которых происходит запись объектов ИБ
-//   СтрокаДереваМетаданных - строка дерева метаданных, соответствующая регистру
+// Parameters:
+//   XMLWriter - an object used to write infobase objects.
+//   RecordSetManager - a manager of the information register.
+//   ForQuery - a flag defines whether it is a detail for query.
+//   ObjectName - an object name.
+//   MetadataTreeRow - a row of the metadata tree matching the register.
+//   ObjectsExportedWithErrors - a map of an object types and an export errors.
+//   InvalidCharsCheckOnly - a flag of checking only invalid chars.
+//   AccountingRegister - a flag defining whether it is an accounting register.
+//   FilterTable1 - a filter table.
 //
-Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, МенеджерНабораЗаписей, ДляЗапроса, ИмяОбъекта,
-	СтрокаДереваМетаданных = Undefined, ОбъектыВыгруженныеСОшибками, ТолькоПроверкаНедопустимыхСимволов,
-	РегистрБухгалтерии = False, ТаблицаОтбора1)
+Procedure WriteViaRecordSet(XMLWriter, RecordSetManager, ForQuery, ObjectName,
+	MetadataTreeRow = Undefined, ObjectsExportedWithErrors, InvalidCharsCheckOnly,
+	AccountingRegister = False, FilterTable1)
 	
-	// получить состав колонок записи регистра и проверить наличие хотя бы одной записи
-	If ДляЗапроса = "РегистрБухгалтерии." Then
-		ИмяТаблицыДляЗапроса = ДляЗапроса + ИмяОбъекта + ".ДвиженияССубконто";
+	// Getting content of the register record columns and checking for records.
+	If ForQuery = "AccountingRegister." Then
+		TableNameForQuery = ForQuery + ObjectName + ".RecordsWithExtDimensions";
 	Else
-		ИмяТаблицыДляЗапроса = ДляЗапроса + ИмяОбъекта;
+		TableNameForQuery = ForQuery + ObjectName;
 	EndIf;
 
-	Первая=True;
-	Запрос= New Запрос;
+	First=True;
+	Query= New Query;
 
-	If ДляЗапроса = "РегистрБухгалтерии." Then
+	If ForQuery = "AccountingRegister." Then
 
-		УсловиеЗапроса="";
-		//  ограничения
-		For Each Строка Из ТаблицаОтбора1 Do
-			If ИмяОбъекта = Строка.имяреквизита И СтрокаДереваМетаданных.ИмяОбъектаМетаданных
-				= Строка.ИмяОбъектаМетаданных Then
-				For Each СтрокаЭлементы Из Строка.Отбор.Элементы Do
-					If СтрокаЭлементы.Использование Then
+		QueryCondition="";
+		//  Conditions
+		For Each Row In FilterTable1 Do
+			If ObjectName = Row.AttributeName And MetadataTreeRow.MetadataObjectName
+				= Row.MetadataObjectName Then
+				For Each ItemsRow In Row.Filter.Items Do
+					If ItemsRow.Use Then
 
-						If Строка(TypeOf(СтрокаЭлементы.ПравоеЗначение)) = "Стандартная дата начала" Then
-							Запрос.УстановитьПараметр(Строка(СтрокаЭлементы.ЛевоеЗначение),
-								СтрокаЭлементы.ПравоеЗначение.Дата);
+						If String(TypeOf(ItemsRow.RightValue)) = NStr("ru = 'Стандартная дата начала'; en = 'Standard beginning date'") Then
+							Query.SetParameter(String(ItemsRow.LeftValue),
+								ItemsRow.RightValue.Date);
 						Else
-							Запрос.УстановитьПараметр(Строка(СтрокаЭлементы.ЛевоеЗначение),
-								СтрокаЭлементы.ПравоеЗначение);
+							Query.SetParameter(String(ItemsRow.LeftValue),
+								ItemsRow.RightValue);
 						EndIf;
 
-						If Не Первая Then
-							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " И " + GetComparisonTypeForQueryRegister(
-								Строка, СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+						If Not First Then
+							QueryCondition = QueryCondition + Chars.LF + " AND " + GetComparisonTypeForQueryRegister(
+								Row, ItemsRow, ItemsRow.ComparisonType);
 						Else
-							УсловиеЗапроса = УсловиеЗапроса + Символы.ПС + " " + GetComparisonTypeForQueryRegister(
-								Строка, СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+							QueryCondition = QueryCondition + Chars.LF + " " + GetComparisonTypeForQueryRegister(
+								Row, ItemsRow, ItemsRow.ComparisonType);
 						EndIf;
-						Первая=False;
+						First=False;
 					EndIf;
 				EndDo;
-				Прервать;
+				Break;
 			EndIf;
 		EndDo;
-		ТекстЗапроса="ВЫБРАТЬ РАЗРЕШЕННЫЕ ПЕРВЫЕ  1 * ИЗ " + ИмяТаблицыДляЗапроса + "(, , " + УсловиеЗапроса
-			+ ", ,  )  КАК ТаблицаОбъекта_" + ИмяОбъекта;
+		QueryText="SELECT ALLOWED TOP  1 * FROM " + TableNameForQuery + "(, , " + QueryCondition
+			+ ", ,  )  AS ObjectTable_" + ObjectName;
 
 	Else
 
-		ТекстЗапроса = "ВЫБРАТЬ РАЗРЕШЕННЫЕ ПЕРВЫЕ  1 *   ИЗ " + ИмяТаблицыДляЗапроса + " КАК ТаблицаОбъекта_"
-			+ ИмяОбъекта;
+		QueryText = "SELECT ALLOWED TOP  1 *   FROM " + TableNameForQuery + " AS ObjectTable_"
+			+ ObjectName;
 
-		For Each Строка Из ТаблицаОтбора1 Do
-			If ИмяОбъекта = Строка.имяреквизита И СтрокаДереваМетаданных.ИмяОбъектаМетаданных
-				= Строка.ИмяОбъектаМетаданных Then
-				For Each СтрокаЭлементы Из Строка.Отбор.Элементы Do
-					If СтрокаЭлементы.Использование Then
+		For Each Row In FilterTable1 Do
+			If ObjectName = Row.AttributeName And MetadataTreeRow.MetadataObjectName
+				= Row.MetadataObjectName Then
+				For Each ItemsRow In Row.Filter.Items Do
+					If ItemsRow.Use Then
 
-						If Строка(TypeOf(СтрокаЭлементы.ПравоеЗначение)) = "Стандартная дата начала" Then
-							Запрос.УстановитьПараметр(Строка(СтрокаЭлементы.ЛевоеЗначение),
-								СтрокаЭлементы.ПравоеЗначение.Дата);
+						If String(TypeOf(ItemsRow.RightValue)) = NStr("ru = 'Стандартная дата начала'; en = 'Standard beginning date'") Then
+							Query.SetParameter(String(ItemsRow.LeftValue),
+								ItemsRow.RightValue.Date);
 						Else
-							Запрос.УстановитьПараметр(Строка(СтрокаЭлементы.ЛевоеЗначение),
-								СтрокаЭлементы.ПравоеЗначение);
+							Query.SetParameter(String(ItemsRow.LeftValue),
+								ItemsRow.RightValue);
 						EndIf;
 
-						If Не Первая Then
-							ТекстЗапроса = ТекстЗапроса + Символы.ПС + " И " + GetComparisonTypeForQuery(Строка,
-								СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+						If Not First Then
+							QueryText = QueryText + Chars.LF + " AND " + GetComparisonTypeForQuery(Row,
+								ItemsRow, ItemsRow.ComparisonType);
 						Else
-							ТекстЗапроса = ТекстЗапроса + Символы.ПС + " ГДЕ " + GetComparisonTypeForQuery(Строка,
-								СтрокаЭлементы, СтрокаЭлементы.ВидСравнения);
+							QueryText = QueryText + Chars.LF + " WHERE " + GetComparisonTypeForQuery(Row,
+								ItemsRow, ItemsRow.ComparisonType);
 						EndIf;
-						Первая=False;
+						First=False;
 					EndIf;
 				EndDo;
-				Прервать;
+				Break;
 			EndIf;
 		EndDo;
 
 	EndIf;
-	Запрос.Текст=ТекстЗапроса;
+	Query.Text=QueryText;
 
-	РезультатЗапросаПоСоставу = Запрос.Выполнить();
-	If РезультатЗапросаПоСоставу.Пустой() Then
+	ContentQueryResult = Query.Execute();
+	If ContentQueryResult.IsEmpty() Then
 		Return;
 	EndIf;
 
-	ТаблицаДвижений = РезультатЗапросаПоСоставу.Выгрузить();
-	ArrayКолонок = GetRecordsColumnsArray(ТаблицаДвижений, РегистрБухгалтерии);
+	RecordsTable = ContentQueryResult.Unload();
+	ColumnArray = GetRecordsColumnsArray(RecordsTable, AccountingRegister);
 	
-	// выгрузка регистров осуществляется через его набор записей
-	НаборЗаписей = МенеджерНабораЗаписей.СоздатьНаборЗаписей();
+	// Registers are exported via its record set.
+	RecordSet = RecordSetManager.CreateRecordSet();
 
-	Отбор = НаборЗаписей.Отбор;
-	СтрокаПолейОтбора = "";
-	For Each ЭлементОтбора Из Отбор Do
-		If Не IsBlankString(СтрокаПолейОтбора) Then
-			СтрокаПолейОтбора = СтрокаПолейОтбора + ",";
+	Filter = RecordSet.Filter;
+	FilterFieldsString = "";
+	For Each FilterItem In Filter Do
+		If Not IsBlankString(FilterFieldsString) Then
+			FilterFieldsString = FilterFieldsString + ",";
 		EndIf;
-		СтрокаПолейОтбора =СтрокаПолейОтбора + "ТаблицаОбъекта_" + ИмяОбъекта + "." + ЭлементОтбора.Имя;
+		FilterFieldsString =FilterFieldsString + "ObjectTable_" + ObjectName + "." + FilterItem.Name;
 	EndDo;
 
-	СтрокаПолейОтбора1 = "";
-	For Each ЭлементОтбора Из Отбор Do
-		If Не IsBlankString(СтрокаПолейОтбора1) Then
-			СтрокаПолейОтбора1 = СтрокаПолейОтбора1 + ",";
+	FilterFieldsString1 = "";
+	For Each FilterItem In Filter Do
+		If Not IsBlankString(FilterFieldsString1) Then
+			FilterFieldsString1 = FilterFieldsString1 + ",";
 		EndIf;
-		СтрокаПолейОтбора1 =СтрокаПолейОтбора1 + "ТаблицаОбъекта_" + ИмяОбъекта + "1." + ЭлементОтбора.Имя;
+		FilterFieldsString1 =FilterFieldsString1 + "ObjectTable_" + ObjectName + "1." + FilterItem.Name;
 	EndDo;
 
-	ПостроительОтчета = PrepareBuilderForExport(СтрокаДереваМетаданных, СтрокаПолейОтбора, СтрокаПолейОтбора1,
-		ТаблицаОтбора1);
-	ПостроительОтчета.Выполнить();
-	РезультатЗапросаПоЗначениямОтбора = ПостроительОтчета.Результат;
-	ВыборкаИзРезультата = РезультатЗапросаПоЗначениямОтбора.Выбрать();
+	ReportBuilder = PrepareBuilderForExport(MetadataTreeRow, FilterFieldsString, FilterFieldsString1,
+		FilterTable1);
+	ReportBuilder.Execute();
+	FilterValuesQueryResult = ReportBuilder.Result;
+	ResultSelection = FilterValuesQueryResult.Select();
 
-	КоличествоПолейОтбора = НаборЗаписей.Отбор.Количество();
+	FilterFieldsCount = RecordSet.Filter.Count();
 	
-	// читаем наборы записей с различным составом отбора и записываем их
-	While ВыборкаИзРезультата.Следующий() Do
+	// Reading record sets with different filter content and writing them.
+	While ResultSelection.Next() Do
 		
-		// Отбор устанавливаем для регистров, у которых есть хотя бы один отбор (измерение)
-		If КоличествоПолейОтбора <> 0 Then
+		// Setting a filter for registers with at least one filter (dimension).
+		If FilterFieldsCount <> 0 Then
 
-			For Each Колонка Из РезультатЗапросаПоЗначениямОтбора.Колонки Do
-				Отбор[Колонка.Имя].Значение = ВыборкаИзРезультата[Колонка.Имя];
-				Отбор[Колонка.Имя].ВидСравнения = ВидСравнения.Равно;
-				Отбор[Колонка.Имя].Использование = True;
+			For Each Column In FilterValuesQueryResult.Columns Do
+				Filter[Column.Name].Value = ResultSelection[Column.Name];
+				Filter[Column.Name].ComparisonType = ComparisonType.Equal;
+				Filter[Column.Name].Use = True;
 			EndDo;
 
 		EndIf;
 
-		НаборЗаписей.Прочитать();
+		RecordSet.Read();
 
 		If mChildObjectsExportExistence Then
 		
-			// проверяем все записанные в наборе значения на необходимость записи "по ссылке"
-			ExportSetChildValues(ЗаписьXML, НаборЗаписей, ArrayКолонок, ОбъектыВыгруженныеСОшибками,
-				ТолькоПроверкаНедопустимыхСимволов);
+			// Checking whether values written to the set need to be written by reference.
+			ExportSetChildValues(XMLWriter, RecordSet, ColumnArray, ObjectsExportedWithErrors,
+				InvalidCharsCheckOnly);
 
 		EndIf;
 
-		ВсегоОбработаноОбъектов = TotalProcessedRecords();
+		TotalObjectsProcessed = TotalProcessedRecords();
 		Try
 
-			ExecuteAuxiliaryActionsForXMLWriter(ВсегоОбработаноОбъектов, ЗаписьXML,
-				ТолькоПроверкаНедопустимыхСимволов);
+			ExecuteAuxiliaryActionsForXMLWriter(TotalObjectsProcessed, XMLWriter,
+				InvalidCharsCheckOnly);
 
-			Serializer.ЗаписатьXML(ЗаписьXML, НаборЗаписей);
+			Serializer.WriteXML(XMLWriter, RecordSet);
 
 		Except
 
-			СтрокаОписанияОшибки = ErrorDescription();
-			//не смогли записать в XML
-			// возможно проблема с недопустимыми символами в XML
-			If ТолькоПроверкаНедопустимыхСимволов Then
+			ErrorDescriptionString = ErrorDescription();
+			// Failed to write to XML.
+			// Perhaps an issue with invalid characters in XML.
+			If InvalidCharsCheckOnly Then
 
-				НовыйНабор = МенеджерНабораЗаписей.СоздатьНаборЗаписей();
+				NewSet = RecordSetManager.CreateRecordSet();
 
-				For Each СтрокаОтбора Из НаборЗаписей.Отбор Do
+				For Each FilterRow In RecordSet.Filter Do
 
-					СтрокаОтбораФормы = НовыйНабор.Отбор.Найти(СтрокаОтбора.Имя);
+					FormFilterRow = NewSet.Filter.Find(FilterRow.Name);
 
-					If СтрокаОтбораФормы = Undefined Then
-						Продолжить;
+					If FormFilterRow = Undefined Then
+						Continue;
 					EndIf;
 
-					СтрокаОтбораФормы.Использование = СтрокаОтбора.Использование;
-					СтрокаОтбораФормы.ВидСравнения = СтрокаОтбора.ВидСравнения;
-					СтрокаОтбораФормы.Значение = СтрокаОтбора.Значение;
+					FormFilterRow.Use = FilterRow.Use;
+					FormFilterRow.ComparisonType = FilterRow.ComparisonType;
+					FormFilterRow.Value = FilterRow.Value;
 
 				EndDo;
 
-				ОбъектыВыгруженныеСОшибками.Вставить(НовыйНабор, СтрокаОписанияОшибки);
+				ObjectsExportedWithErrors.Insert(NewSet, ErrorDescriptionString);
 
 			Else
 
-				ИтоговаяСтрокаСообщения = Нстр("ru = 'При выгрузке регистра %1%2 возникла ошибка:
-											   |%3'");
-				ИтоговаяСтрокаСообщения = SubstituteParametersToString(ИтоговаяСтрокаСообщения, ДляЗапроса, ИмяОбъекта,
-					СтрокаОписанияОшибки);
+				FinalMessageString = NStr("ru = 'При выгрузке регистра %1%2 возникла ошибка:
+											   |%3';
+									  	  |en = 'An error %3 occured while importing a register %1%2.'");
+				FinalMessageString = SubstituteParametersToString(FinalMessageString, ForQuery, ObjectName,
+					ErrorDescriptionString);
 
-				UserMessage(ИтоговаяСтрокаСообщения);
+				UserMessage(FinalMessageString);
 
-				Raise ИтоговаяСтрокаСообщения;
+				Raise FinalMessageString;
 
 			EndIf;
 
@@ -1950,155 +1968,154 @@ Procedure ЗаписьЧерезНаборЗаписей(ЗаписьXML, Мен
 
 EndProcedure
 
-// Procedure рекурсивно обрабатывает строку дерева метаданных, образуя списки полной и вспомогательной выгрузки
+// Recursively processes the metadata tree row creating lists of full and auxiliary exports.
 //
-// Параметры
-//   FullExportContent - список полной выгрузки
-//   AuxiliaryExportContent - список вспомогательной выгрузки
-//   СтрокаДЗ - обрабатываемая строка дерева метаданных
+// Parameters:
+//   FullExportContent - a full export list.
+//   AuxiliaryExportContent - an auxiliary export list.
+//   VTRow - a metadata tree row to be processed.
 //
-Procedure AddObjectsToExport(FullExportContent, AuxiliaryExportContent, СтрокаДЗ)
+Procedure AddObjectsToExport(FullExportContent, AuxiliaryExportContent, VTRow)
 
-	If (СтрокаДЗ.ЭлементОписания <> Undefined) И СтрокаДЗ.ЭлементОписания.Выгружаемый Then
+	If (VTRow.Detail <> Undefined) And VTRow.Detail.ToExport Then
 
-		СтрокаДобавления = Undefined;
+		AddedRow = Undefined;
 
-		If СтрокаДЗ.Выгружать Then
+		If VTRow.ExportData Then
 
-			СтрокаДобавления = FullExportContent.Добавить();
+			AddedRow = FullExportContent.Add();
 
-		ElsIf СтрокаДЗ.ВыгружатьПриНеобходимости Then
+		ElsIf VTRow.ExportIfNecessary Then
 
-			СтрокаДобавления = AuxiliaryExportContent.Добавить();
+			AddedRow = AuxiliaryExportContent.Add();
 
 		EndIf;
 
-		If СтрокаДобавления <> Undefined Then
+		If AddedRow <> Undefined Then
 
-			СтрокаДобавления.ОбъектМД = СтрокаДЗ.ОбъектМД;
-			СтрокаДобавления.СтрокаДерева = СтрокаДЗ;
+			AddedRow.MDObject = VTRow.MDObject;
+			AddedRow.TreeRow = VTRow;
 
 		EndIf;
 
 	EndIf;
 
-	For Each ПодчиненнаяСтрокаДЗ Из СтрокаДЗ.Строки Do
-		AddObjectsToExport(FullExportContent, AuxiliaryExportContent, ПодчиненнаяСтрокаДЗ);
+	For Each VTChildRow In VTRow.Rows Do
+		AddObjectsToExport(FullExportContent, AuxiliaryExportContent, VTChildRow);
 	EndDo;
 
 EndProcedure
 
-// Procedure заполняет строку дерева метаданных, попутно заполняя соответствие ссылочных типов объектам метаданных
+// Fills in the metadata tree row filling mapping between reference types and metadata objects.
 //
-// Параметры
-//   ОбъектМД - описание объекта метаданных
-//   ЭлементДЗ - заполняемая строка дерева метаданных
-//   ЭлементОписания - описание класса, к которому принадлежит объект метаданных (свойства, подчиненные классы)
+// Parameters:
+//   MDObject - metadata object details.
+//   VTItem - a metadata tree row to be filled.
+//   Detail - details of the class, to which the metadata object belongs (properties, subordinate classes).
 //
-Procedure BuildObjectSubtree(ОбъектМД, ЭлементДЗ, ЭлементОписания)
+Procedure BuildObjectSubtree(MDObject, VTItem, Detail)
 
-	ЭлементДЗ.Metadata = ОбъектМД;
-	ЭлементДЗ.ОбъектМД   = ОбъектМД;
-	ЭлементДЗ.ПолноеИмяМетаданных = ОбъектМД.Имя;
-	ЭлементДЗ.ИмяОбъектаМетаданных= ЭлементОписания.Класс;
+	VTItem.Metadata = MDObject;
+	VTItem.MDObject   = MDObject;
+	VTItem.MetadataFullName = MDObject.Name;
+	VTItem.MetadataObjectName= Detail.Class;
 
-	ЭлементДЗ.ЭлементОписания = ЭлементОписания;
-	ЭлементДЗ.Выгружать = False;
-	ЭлементДЗ.ВыгружатьПриНеобходимости = True;
-	ЭлементДЗ.ИндексКартинки = ЭлементОписания.ИндексКартинки;
-	//ЭлементДЗ.ИндексВДереве=НомерСтрокидерева;
-	//НомерСтрокидерева=НомерСтрокидерева+1;
+	VTItem.Detail = Detail;
+	VTItem.ExportData = False;
+	VTItem.ExportIfNecessary = True;
+	VTItem.PictureIndex = Detail.PictureIndex;
+	//VTItem.IndexInTree=TreeRowNo;
+	//TreeRowNo=TreeRowNo+1;
 
-	If ЭлементОписания.Менеджер <> Undefined Then
+	If Detail.Manager <> Undefined Then
 		
-		// заполнение соответствия ссылочных типов объектам метаданных
-		If ОбъектОбразуетСсылочныйТип(ОбъектМД) Then
-			RefTypes[TypeOf(ЭлементОписания.Менеджер[ОбъектМД.Имя].ПустаяСсылка())] = ОбъектМД;
+		// Filling mapping between reference types and metadata objects.
+		If ObjectFormsRefType(MDObject) Then
+			RefTypes[TypeOf(Detail.Manager[MDObject.Name].EmptyRef())] = MDObject;
 		EndIf;
 
-		If Metadata.РегистрыНакопления.Содержит(ОбъектМД) Или Metadata.РегистрыБухгалтерии.Содержит(ОбъектМД) Then
+		If Metadata.AccumulationRegisters.Contains(MDObject) Or Metadata.AccountingRegisters.Contains(MDObject) Then
 
-			RegistersUsingTotals.Добавить(ЭлементДЗ);
+			RegistersUsingTotals.Add(VTItem);
 
 		EndIf;
 
 	EndIf;		
 		
-	// подчиненные ветви
-	For Each ПодчиненныйКласс Из ЭлементОписания.Строки Do
+	// child branches
+	For Each ChildClass In Detail.Rows Do
 
-		If Не ПодчиненныйКласс.Выгружаемый Then
-			Продолжить;
+		If Not ChildClass.ToExport Then
+			Continue;
 		EndIf;
 
-		ВеткаКласса = ЭлементДЗ.Строки.Добавить();
-		ВеткаКласса.Metadata = ПодчиненныйКласс.Класс;
-		ВеткаКласса.Выгружать = False;
-		ВеткаКласса.ВыгружатьПриНеобходимости = True;
-		ВеткаКласса.ПолноеИмяМетаданных = ПодчиненныйКласс.Класс;
-		ВеткаКласса.ИндексКартинки = ПодчиненныйКласс.ИндексКартинки;
+		ClassBranch = VTItem.Rows.Add();
+		ClassBranch.Metadata = ChildClass.Class;
+		ClassBranch.ExportData = False;
+		ClassBranch.ExportIfNecessary = True;
+		ClassBranch.MetadataFullName = ChildClass.Class;
+		ClassBranch.PictureIndex = ChildClass.PictureIndex;
 
-		ПодчиненныеОбъектыДанногоКласса = ОбъектМД[ПодчиненныйКласс.Класс];
+		ClassChildObjects = MDObject[ChildClass.Class];
 
-		For Each ПодчиненныйОбъектМД Из ПодчиненныеОбъектыДанногоКласса Do
-			ПодчиненныйЭлементДЗ = ВеткаКласса.Строки.Добавить();
-			BuildObjectSubtree(ПодчиненныйОбъектМД, ПодчиненныйЭлементДЗ, ПодчиненныйКласс);
+		For Each MDChildObject In ClassChildObjects Do
+			VTChildItem = ClassBranch.Rows.Add();
+			BuildObjectSubtree(MDChildObject, VTChildItem, ChildClass);
 		EndDo;
 
 	EndDo;
 
 EndProcedure
 
-// Procedure удаляет из дерева метаданных строки, соответствующие метаданным, заведомо не попадающим в выгрузку
+// Deletes the rows with metadata not included in the data exported.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных, подчиненные которой рассматриваются
-//        с точки зрения удаления из списка потенциально выгружаемых
+// Parameters:
+//   VTItem - a metadata tree row whose child items are considered to be deleted from the list of 
+//        potentially exported data.
 //
-Procedure CollapseObjectSubtree(ЭлементДЗ)
+Procedure CollapseObjectSubtree(VTItem)
 
-	УдаляемыеВеткиКлассов = New Array;
-	For Each ВеткаКласса Из ЭлементДЗ.Строки Do
+	ClassBranchesToDelete = New Array;
+	For Each ClassBranch In VTItem.Rows Do
 
-		УдаляемыеПодчиненныеМД = New Array;
+		ChildMDToDelete = New Array;
 
-		For Each ПодчиненныйОбъектМД Из ВеткаКласса.Строки Do
-			CollapseObjectSubtree(ПодчиненныйОбъектМД);
-			If (ПодчиненныйОбъектМД.Строки.Количество()) = 0 И (Не ПодчиненныйОбъектМД.ЭлементОписания.Выгружаемый) Then
+		For Each ChildMDObject In ClassBranch.Rows Do
+			CollapseObjectSubtree(ChildMDObject);
+			If (ChildMDObject.Rows.Count()) = 0 And (Not ChildMDObject.Detail.ToExport) Then
 
-				УдаляемыеПодчиненныеМД.Добавить(ВеткаКласса.Строки.Индекс(ПодчиненныйОбъектМД));
+				ChildMDToDelete.Add(ClassBranch.Rows.Index(ChildMDObject));
 
 			EndIf;
 
 		EndDo;
 
-		Для Сч = 1 По УдаляемыеПодчиненныеМД.Количество() Do
-			ВеткаКласса.Строки.Удалить(УдаляемыеПодчиненныеМД[УдаляемыеПодчиненныеМД.Количество() - Сч]);
+		For Counter = 1 To ChildMDToDelete.Count() Do
+			ClassBranch.Rows.Delete(ChildMDToDelete[ChildMDToDelete.Count() - Counter]);
 		EndDo;
 
-		If ВеткаКласса.Строки.Количество() = 0 Then
-			УдаляемыеВеткиКлассов.Добавить(ЭлементДЗ.Строки.Индекс(ВеткаКласса));
+		If ClassBranch.Rows.Count() = 0 Then
+			ClassBranchesToDelete.Add(VTItem.Rows.Index(ClassBranch));
 		EndIf;
 
 	EndDo;
 
-	Для Сч = 1 По УдаляемыеВеткиКлассов.Количество() Do
-		ЭлементДЗ.Строки.Удалить(УдаляемыеВеткиКлассов[УдаляемыеВеткиКлассов.Количество() - Сч]);
+	For Counter = 1 To ClassBranchesToDelete.Count() Do
+		VTItem.Rows.Delete(ClassBranchesToDelete[ClassBranchesToDelete.Count() - Counter]);
 	EndDo;
 
 EndProcedure
 
-// Procedure проставляет признак Выгрузка строкам дерева метаданных, подчиненных данной, вычисляет и 
-//      выставляет признак выгрузки "по ссылке" другим объектам, ссылки на которые может или должен
-//      содержать объект, соответствующий данной строке
+// Sets the ExportData flag for metadata tree rows child to current, calculates and 
+//      sets the ExportData flag for other objects whose references the object matching this row contains.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure УстановитьВыгружатьПодчиненным(ЭлементДЗ)
-	For Each ПодчиненнаяСтрока Из ЭлементДЗ.Строки Do
-		ПодчиненнаяСтрока.Выгружать = ЭлементДЗ.Выгружать;
-		УстановитьВыгружатьПодчиненным(ПодчиненнаяСтрока);
+Procedure SetExportDataToChildRows(VTItem)
+	For Each ChildRow In VTItem.Rows Do
+		ChildRow.ExportData = VTItem.ExportData;
+		SetExportDataToChildRows(ChildRow);
 	EndDo;
 EndProcedure
 
@@ -2144,7 +2161,7 @@ Procedure ОбработкаИзмененияСостоянияВыгружат
 		ЭлементДЗ.Выгружать = 0;
 	EndIf;
 	// Изменяем состояние "вниз"
-	УстановитьВыгружатьПодчиненным(ЭлементДЗ);
+	SetExportDataToChildRows(ЭлементДЗ);
 	// Изменяем состояние "вверх"
 	ОбновитьСостояниеВыгружать(ЭлементДЗ.Родитель);
 EndProcedure
@@ -2970,7 +2987,7 @@ EndProcedure
 // Function определяет имеет ли переданный объект метаданных ссылочный тип
 //
 // Return - True, If переданный объект метаданных имеет ссылочный тип, False - противном случае
-Function ОбъектОбразуетСсылочныйТип(ОбъектМД) Export
+Function ObjectFormsRefType(ОбъектМД) Export
 
 	If ОбъектМД = Undefined Then
 		Return False;
@@ -3419,7 +3436,7 @@ Function XMLТипСсылки(Знач Значение)
 		Ссылка = Значение;
 	EndIf;
 
-	If ОбъектОбразуетСсылочныйТип(ОбъектМетаданных) Then
+	If ObjectFormsRefType(ОбъектМетаданных) Then
 
 		Return XDTOSerializer.XMLTypeOf(Ссылка).ИмяТипа;
 
