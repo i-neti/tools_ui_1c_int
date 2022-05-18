@@ -2107,7 +2107,7 @@ Procedure CollapseObjectSubtree(VTItem)
 EndProcedure
 
 // Sets the ExportData flag for metadata tree rows child to current, calculates and 
-//      sets the ExportData flag for other objects whose references the object matching this row contains.
+// sets the ExportData flag for other objects whose references the object matching this row contains.
 //
 // Parameters:
 //   VTItem - a metadata tree row.
@@ -2119,135 +2119,135 @@ Procedure SetExportDataToChildRows(VTItem)
 	EndDo;
 EndProcedure
 
-// Procedure проставляет признак Выгрузка строке дерева метаданных на основании этого признака подчиненных строк,
-// затем вызывает себя же для родителя, обеспечивая отработку до корня дерева
+// Sets the ExportData flag for the metadata tree row based on this flag of child rows, 
+// then calls itself for the parent ensuring processing to the tree root.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure ОбновитьСостояниеВыгружать(ЭлементДЗ)
-	If ЭлементДЗ = Undefined Then
+Procedure UpdateExportDataState(VTItem)
+	If VTItem = Undefined Then
 		Return;
 	EndIf;
-	If (ЭлементДЗ.ЭлементОписания <> Undefined) И ЭлементДЗ.ЭлементОписания.Выгружаемый Then
-		Return; // обновляем вверх или до корня, или до первого встретившегося выгружаемого
+	If (VTItem.Detail <> Undefined) And VTItem.Detail.ToExport Then
+		Return; // Updating up to a root or to the first item to be exported.
 	EndIf;
-	Состояние = Undefined;
-	For Each ПодчиненныйЭлементДЗ Из ЭлементДЗ.Строки Do
-		If Состояние = Undefined Then
-			Состояние = ПодчиненныйЭлементДЗ.Выгружать;
+	State = Undefined;
+	For Each VTChildItem In VTItem.Rows Do
+		If State = Undefined Then
+			State = VTChildItem.ExportData;
 		Else
-			If Не Состояние = ПодчиненныйЭлементДЗ.Выгружать Then
-				Состояние = 2;
-				Прервать;
+			If Not State = VTChildItem.ExportData Then
+				State = 2;
+				Break;
 			EndIf;
 		EndIf;
 	EndDo;
 
-	If Состояние <> Undefined Then
-		ЭлементДЗ.Выгружать = Состояние;
-		ОбновитьСостояниеВыгружать(ЭлементДЗ.Родитель);
+	If State <> Undefined Then
+		VTItem.ExportData = State;
+		UpdateExportDataState(VTItem.Parent);
 	EndIf;
 EndProcedure
 
-// Procedure обрабатывает состояние признака Выгрузка, проставляя признаки Выгрузка и ВыгружатьПриНеобходимости
-// связанным ветвям дерева
+// Processes a state of an ExportData flag - sets a Export and ExportIfNecessary flag for a related tree branches.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure ОбработкаИзмененияСостоянияВыгружать(ЭлементДЗ) Export
-	If ЭлементДЗ.Выгружать = 2 Then
-		ЭлементДЗ.Выгружать = 0;
+Procedure ExportDataStateChangeProcessing(VTItem) Export
+	If VTItem.ExportData = 2 Then
+		VTItem.ExportData = 0;
 	EndIf;
-	// Изменяем состояние "вниз"
-	SetExportDataToChildRows(ЭлементДЗ);
-	// Изменяем состояние "вверх"
-	ОбновитьСостояниеВыгружать(ЭлементДЗ.Родитель);
+	// Changing "down"
+	SetExportDataToChildRows(VTItem);
+	// Changing "up"
+	UpdateExportDataState(VTItem.Parent);
 EndProcedure
 
-// Procedure проставляет признак Выгрузка строкам дерева метаданных, подчиненных данной, вычисляет и 
-//      выставляет признак выгрузки "по ссылке" другим объектам, ссылки на которые может или должен
-//      содержать объект, соответствующий данной строке
+// Sets the ExportData flag for metadata tree rows child to current,  
+// calculates and sets the export by reference flag for other objects 
+// whose references the object matching this row must contain. 
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure УстановитьВыгружатьПриНеобходимостиПодчиненным(ЭлементДЗ)
+Procedure SetExportIfNecessaryToChildRows(VTItem)
 
-	For Each ПодчиненнаяСтрока Из ЭлементДЗ.Строки Do
-		ПодчиненнаяСтрока.ВыгружатьПриНеобходимости = ЭлементДЗ.ВыгружатьПриНеобходимости;
-		УстановитьВыгружатьПриНеобходимостиПодчиненным(ПодчиненнаяСтрока);
+	For Each ChildRow In VTItem.Rows Do
+		ChildRow.ExportIfNecessary = VTItem.ExportIfNecessary;
+		SetExportIfNecessaryToChildRows(ChildRow);
 	EndDo;
 
 EndProcedure
 
-// Procedure проставляет признак Выгрузка строке дерева метаданных на основании этого признака подчиненных строк,
-// затем вызывает себя же для родителя, обеспечивая отработку до корня дерева
+// Sets the ExportData flag for the metadata tree row based on this flag of child 
+// rows, then it calls itself for the parent ensuring processing to the tree root.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure ОбновитьСостояниеВыгружатьПриНеобходимости(ЭлементДЗ)
+Procedure UpdateExportIfNecessaryState(VTItem)
 
-	If ЭлементДЗ = Undefined Then
+	If VTItem = Undefined Then
 		Return;
 	EndIf;
 
-	If (ЭлементДЗ.ЭлементОписания <> Undefined) И ЭлементДЗ.ЭлементОписания.Выгружаемый Then
-		Return; // обновляем вверх или до корня, или до первого встретившегося выгружаемого
+	If (VTItem.Detail <> Undefined) And VTItem.Detail.ToExport Then
+		Return; // Updating up to a root or to the first item to be exported.
 	EndIf;
 
-	Состояние = Undefined;
-	For Each ПодчиненныйЭлементДЗ Из ЭлементДЗ.Строки Do
+	State = Undefined;
+	For Each VTChildItem In VTItem.Rows Do
 
-		If Состояние = Undefined Then
-			Состояние = ПодчиненныйЭлементДЗ.ВыгружатьПриНеобходимости;
+		If State = Undefined Then
+			State = VTChildItem.ExportIfNecessary;
 		Else
-			If Не Состояние = ПодчиненныйЭлементДЗ.ВыгружатьПриНеобходимости Then
-				Состояние = 2;
-				Прервать;
+			If Not State = VTChildItem.ExportIfNecessary Then
+				State = 2;
+				Break;
 			EndIf;
 		EndIf;
 
 	EndDo;
 
-	If Состояние <> Undefined Then
-		ЭлементДЗ.ВыгружатьПриНеобходимости = Состояние;
-		ОбновитьСостояниеВыгружатьПриНеобходимости(ЭлементДЗ.Родитель);
+	If State <> Undefined Then
+		VTItem.ExportIfNecessary = State;
+		UpdateExportIfNecessaryState(VTItem.Parent);
 	EndIf;
 
 EndProcedure
 
-// Procedure обрабатывает состояние признака Выгрузка, проставляя признаки Выгрузка и ВыгружатьПриНеобходимости
-// связанным ветвям дерева
+// Processes the status of the ExportData flag, setting the ExportData and ExportIfNecessary 
+// flags for related branches of the tree.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure ОбработкаИзмененияСостоянияВыгружатьПриНеобходимости(ЭлементДЗ) Export
+Procedure ExportIfNecessaryStateChangeProcessing(VTItem) Export
 
-	If ЭлементДЗ.ВыгружатьПриНеобходимости = 2 Then
-		ЭлементДЗ.ВыгружатьПриНеобходимости = 0;
+	If VTItem.ExportIfNecessary = 2 Then
+		VTItem.ExportIfNecessary = 0;
 	EndIf;
 	
-	// Изменяем состояние "вниз"
-	УстановитьВыгружатьПриНеобходимостиПодчиненным(ЭлементДЗ);
-	// Изменяем состояние "вверх"
-	ОбновитьСостояниеВыгружатьПриНеобходимости(ЭлементДЗ.Родитель);
+	// Changing "down"
+	SetExportIfNecessaryToChildRows(VTItem);
+	// Changing "up"
+	UpdateExportIfNecessaryState(VTItem.Parent);
 
 EndProcedure
 
-// Function определяет, являются ли объекты данного класса метаданных типизированными
+// Determines whether objects of this metadata class are typed ones.
 //
-// Параметры
-//   Описание - Описание класса
-// Return - True, If объекты данного класса метаданных типизированы, False в противном случае
+// Parameters:
+//   Details - class details.
+//   
+// Return value - True if objects of this metadata class are typed ones.
 //
-Function КлассМДТипизированный(Описание)
+Function MDClassTyped(Details)
 
-	For Each Свойство Из Описание.Свойства Do
-		If Свойство.Значение = "Тип" Then
+	For Each Property In Details.Properties Do
+		If Property.Value = "Type" Then
 			Return True;
 		EndIf;
 	EndDo;
@@ -2255,87 +2255,90 @@ Function КлассМДТипизированный(Описание)
 
 EndFunction
 
-// Function определяет, являются ли тип ссылочным
+// Determines whether the type is a reference one.
 //
-// Параметры
-//   Тип - исследуемый тип
-// Return - True, If тип ссылочный, False в противном случае
+// Parameters:
+//   Type - a type to check.
+//   
+// Return value - True, if type is a reference one.
 //
-Function СсылочныйТип(Тип)
+Function RefType(Type)
 
-	MetadataТипа = RefTypes.Получить(Тип);
-	Return MetadataТипа <> Undefined;
+	TypeMetadata = RefTypes.Get(Type);
+	Return TypeMetadata <> Undefined;
 
 EndFunction
 
-// Procedure добавляет в Array New элемент, If он является уникальным
+// Adds a new item to the array if it is unique.
 //
-// Параметры
-//   Array - исследуемый тип
-//   Элемент - добавляемый элемент
+// Parameters:
+//   Array - an array to add an item.
+//   Item - an item to be added.
 //
-Procedure ДобавитьВArrayIfУникальный(Array, Элемент)
+Procedure AddToArrayIfUnique(Array, Item)
 
-	If Array.Найти(Элемент) = Undefined Then
-		Array.Добавить(Элемент);
+	If Array.Find(Item) = Undefined Then
+		Array.Add(Item);
 	EndIf;
 
 EndProcedure
 
-// Function возвращает Array типов, которые могут иметь поля записи объекта метаданных, соответствующего строке дерева
+// Returns an array of types that can have record fields of a metadata object matching the tree row.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
-// Return - Array потенциально используемых соответствующей записью типов
+// Parameters:
+//   VTItem - a metadata tree row.
+//   
+// Return value - an array of types potentially used by the matching record.
 //
-Function ПолучитьВсеТипы(ЭлементДЗ)
+Function GetAllTypes(VTItem)
 
-	ОбъектМД = ЭлементДЗ.ОбъектМД;
-	If TypeOf(ОбъектМД) <> Тип("ОбъектМетаданных") И TypeOf(ОбъектМД) <> Тип("ОбъектМетаданныхКонфигурация") Then
+	MDObject = VTItem.MDObject;
+	If TypeOf(MDObject) <> Type("MetadataObject") And TypeOf(MDObject) <> Type("ConfigurationMetadataObject") Then
 
-		Raise (Нстр("ru = 'Внутренняя ошибка обработки выгрузки'"));
+		Raise (NStr("ru = 'Внутренняя ошибка обработки выгрузки'; en = 'Export internal error'"));
 
 	EndIf;
 
-	Return ПолучитьТипыИспользуемыеОМД(ОбъектМД, ЭлементДЗ.ЭлементОписания);
+	Return GetMDOTypes(MDObject, VTItem.Detail);
 
 EndFunction
 
-// Function возвращает Array типов, которые могут иметь поля записи объекта метаданных
+// Returns an array of types that can have metadata object record fields.
 //
-// Параметры
-//   ОбъектМД - описание метаданного
-//   ЭлементОписания - описание класса объекта метаданного
-// Return - Array потенциально используемых соответствующей записью типов
+// Parameters:
+//   MDObject - metadata details.
+//   Detail - details of the metadata object class.
+//   
+// Return value - an array of types potentially used by the matching record.
 //
-Function ПолучитьТипыИспользуемыеОМД(ОбъектМД, ЭлементОписания)
+Function GetMDOTypes(MDObject, Detail)
 
-	ВсеТипы = New Array;
+	AllTypes = New Array;
 
-	For Each Свойство Из ЭлементОписания.Свойства Do
+	For Each Property In Detail.Properties Do
 
-		ЗначениеСвойства = ОбъектМД[Свойство.Значение];
-		If TypeOf(ЗначениеСвойства) = Тип("КоллекцияЗначенийСвойстваОбъектаМетаданных")
-			И ЗначениеСвойства.Количество() > 0 Then
+		PropertyValue = MDObject[Property.Value];
+		If TypeOf(PropertyValue) = Type("MetadataObjectPropertyValueCollection")
+			И PropertyValue.Count() > 0 Then
 
-			For Each СтрокаКоллекции Из ЗначениеСвойства Do
+			For Each CollectionRow In PropertyValue Do
 
-				СсылочныйТипКлючИЗначение = MetadataObjectsAndRefTypesMap[СтрокаКоллекции];
+				RefTypeKeyValue = MetadataObjectsAndRefTypesMap[CollectionRow];
 
-				If СсылочныйТипКлючИЗначение <> Undefined Then
+				If RefTypeKeyValue <> Undefined Then
 
-					ДобавитьВArrayIfУникальный(ВсеТипы, СсылочныйТипКлючИЗначение);
+					AddToArrayIfUnique(AllTypes, RefTypeKeyValue);
 
 				EndIf;
 
 			EndDo;
 
-		ElsIf TypeOf(ЗначениеСвойства) = Тип("ОбъектМетаданных") Then
+		ElsIf TypeOf(PropertyValue) = Type("MetadataObject") Then
 
-			For Each СсылочныйТипКлючИЗначение Из RefTypes Do
+			For Each RefTypeKeyValue In RefTypes Do
 
-				If ЗначениеСвойства = СсылочныйТипКлючИЗначение.Значение Then
-					ДобавитьВArrayIfУникальный(ВсеТипы, СсылочныйТипКлючИЗначение.Ключ);
+				If PropertyValue = RefTypeKeyValue.Value Then
+					AddToArrayIfUnique(AllTypes, RefTypeKeyValue.Key);
 				EndIf;
 
 			EndDo;
@@ -2344,28 +2347,28 @@ Function ПолучитьТипыИспользуемыеОМД(ОбъектМД
 
 	EndDo;
 
-	If КлассМДТипизированный(ЭлементОписания) Then
+	If MDClassTyped(Detail) Then
 
-		ОписаниеТипа = ОбъектМД.Тип;
-		For Each ОдинТип Из ОписаниеТипа.Типы() Do
+		TypeDescription = MDObject.Тип;
+		For Each OneType In TypeDescription.Types() Do
 
-			If СсылочныйТип(ОдинТип) Then
-				ДобавитьВArrayIfУникальный(ВсеТипы, ОдинТип);
+			If RefType(OneType) Then
+				AddToArrayIfUnique(AllTypes, OneType);
 			EndIf;
 
 		EndDo;
 
 	Else
 
-		If Metadata.РегистрыСведений.Содержит(ОбъектМД) Или Metadata.РегистрыНакопления.Содержит(ОбъектМД)
-			Или Metadata.РегистрыБухгалтерии.Содержит(ОбъектМД) Или Metadata.РегистрыРасчета.Содержит(ОбъектМД) Then
+		If Metadata.InformationRegisters.Contains(MDObject) Or Metadata.AccumulationRegisters.Contains(MDObject)
+			Or Metadata.AccountingRegisters.Contains(MDObject) Or Metadata.CalculationRegisters.Contains(MDObject) Then
 			
-			// какой-то из регистров, ищем в возможных регистраторах
-			For Each ДокументМД Из Metadata.Документы Do
+			// Searching for some registers in possible recorders.
+			For Each MDDocument In Metadata.Documents Do
 
-				If ДокументМД.Движения.Содержит(ОбъектМД) Then
+				If MDDocument.RegisterRecords.Contains(MDObject) Then
 
-					ДобавитьВArrayIfУникальный(ВсеТипы, TypeOf(Документы[ДокументМД.Имя].ПустаяСсылка()));
+					AddToArrayIfUnique(AllTypes, TypeOf(Documents[MDDocument.Name].EmptyRef()));
 
 				EndIf;
 
@@ -2375,664 +2378,667 @@ Function ПолучитьТипыИспользуемыеОМД(ОбъектМД
 
 	EndIf;
 
-	For Each ПодчиненныйКласс Из ЭлементОписания.Строки Do
+	For Each ChildClass In Detail.Rows Do
 
-		For Each ПодчиненныйОбъектМД Из ОбъектМД[ПодчиненныйКласс.Класс] Do
+		For Each MDChildObject In MDObject[ChildClass.Class] Do
 
-			ТипыПодчиненного = ПолучитьТипыИспользуемыеОМД(ПодчиненныйОбъектМД, ПодчиненныйКласс);
-			For Each ОдинТип Из ТипыПодчиненного Do
-				ДобавитьВArrayIfУникальный(ВсеТипы, ОдинТип);
+			ChildTypes = GetMDOTypes(MDChildObject, ChildClass);
+			For Each OneType In ChildTypes Do
+				AddToArrayIfUnique(AllTypes, OneType);
 			EndDo;
 
 		EndDo;
 
 	EndDo;
 
-	Return ВсеТипы;
+	Return AllTypes;
 
 EndFunction
 
-// Function возвращает строку дерева метаданных, соответствующую переданному объекту метаданных
-// Поиск осуществляется среди строк, подчиненных переданной
+// Returns the metadata tree row matching the passed metadata object.
+// Rows child to the passed row are searched.
 //
-// Параметры
-//   СтрокаДЗ - строка дерева метаданных, от которой осуществляется поиск
-//   ОбъектМД - описание метаданного
-// Return - строка дерева метаданных
+// Parameters:
+//   VTRow - a metadata tree row from which the search is started.
+//   MDObject - metadata details.
+//   
+// Return value - a metadata tree row.
 //
-Function ЭлементДЗПоОбъектуМДИСтроке(СтрокаДЗ, ОбъектМД)
+Function VTItemByMDObjectAndRow(VTRow, MDObject)
 
-	Return СтрокаДЗ.Строки.Найти(ОбъектМД, "ОбъектМД", True);
+	Return VTRow.Rows.Find(MDObject, "MDObject", True);
 
 EndFunction
 
-// Function возвращает строку дерева метаданных, соответствующую переданному объекту метаданных
-// Поиск осуществляется по всему дереву метаданных
+// Returns the metadata tree row matching the passed metadata object.
+// The entire metadata tree is searched.
 //
-// Параметры
-//   ОбъектМД - описание метаданного
-// Return - строка дерева метаданных
+// Parameters:
+//   MDObject - metadata details.
+//   
+// Return value - a metadata tree row.
 //
-Function ЭлементДЗПоОбъектуМД(ОбъектМД)
-	For Each СтрокаДЗ Из MetadataTree.Строки Do
-		ЭлементДЗ = ЭлементДЗПоОбъектуМДИСтроке(СтрокаДЗ, ОбъектМД);
-		If ЭлементДЗ <> Undefined Then
-			Return ЭлементДЗ;
+Function VTItemByMDObject(MDObject)
+	For Each VTRow In MetadataTree.Rows Do
+		VTItem = VTItemByMDObjectAndRow(VTRow, MDObject);
+		If VTItem <> Undefined Then
+			Return VTItem;
 		EndIf;
 	EndDo;
 	Return Undefined;
 EndFunction
 
-// Procedure определяет, на какие объект может ссылаться запись, соответствующая объекту метаданных, отображаемому
-// данной строкой дерева метаданных и проставляет им признак ВыгружатьПриНеобходимости
+// Determines, to which objects the record matching the metadata object displayed by 
+// this metadata tree row can refer, and sets the ExportIfNecessary flag for them.
 //
-// Параметры
-//   ЭлементДЗ - строка дерева метаданных
+// Parameters:
+//   VTItem - a metadata tree row.
 //
-Procedure УстановкаСостоянияВыгружатьПриНеобходимости(ЭлементДЗ)
+Procedure SetExportIfNecessaryState(VTItem)
 
-	ОбновитьСостояниеВыгружатьПриНеобходимости(ЭлементДЗ.Родитель);
-	If ЭлементДЗ.Выгружать <> 1 И ЭлементДЗ.ВыгружатьПриНеобходимости <> 1 Then
+	UpdateExportIfNecessaryState(VTItem.Parent);
+	If VTItem.ExportData <> 1 And VTItem.ExportIfNecessary <> 1 Then
 		Return;
 	EndIf;
-	If ЭлементДЗ.ОбъектМД = Undefined Then
+	If VTItem.MDObject = Undefined Then
 		Return;
 	EndIf;
 
-	ВсеТипы = ПолучитьВсеТипы(ЭлементДЗ);
-	For Each СсылочныйТип Из ВсеТипы Do
+	AllTypes = GetAllTypes(VTItem);
+	For Each RefType In AllTypes Do
 
-		ТипИОбъект = RefTypes.Получить(СсылочныйТип);
-		If ТипИОбъект = Undefined Then
+		TypeAndObject = RefTypes.Get(RefType);
+		If TypeAndObject = Undefined Then
 
-			ТекстИсключения = Нстр("ru = 'Внутренняя ошибка. Неполное заполнение структуры ссылочных типов %1'");
-			ТекстИсключения = SubstituteParametersToString(ТекстИсключения, СсылочныйТип);
-			Raise (ТекстИсключения);
-
-		EndIf;
-
-		ОбъектМД = ТипИОбъект;
-		СтрокаДЗ = ЭлементДЗПоОбъектуМД(ОбъектМД);
-		If СтрокаДЗ = Undefined Then
-
-			ТекстИсключения = Нстр(
-				"ru = 'Внутренняя ошибка. Неполное заполнение дерева метаданных. Отсутствует объект, образующий тип %1'");
-			ТекстИсключения = SubstituteParametersToString(ТекстИсключения, СсылочныйТип);
-			Raise (ТекстИсключения);
+			ExceptionText = NStr("ru = 'Внутренняя ошибка. Неполное заполнение структуры ссылочных типов %1'; en = 'Internal error. Incomplete structure of reference types %1.'");
+			ExceptionText = SubstituteParametersToString(ExceptionText, RefType);
+			Raise (ExceptionText);
 
 		EndIf;
 
-		If СтрокаДЗ.Выгружать = 1 Или СтрокаДЗ.ВыгружатьПриНеобходимости = 1 Then
+		MDObject = TypeAndObject;
+		VTRow = VTItemByMDObject(MDObject);
+		If VTRow = Undefined Then
 
-			Продолжить;
+			ExceptionText = NStr(
+				"ru = 'Внутренняя ошибка. Неполное заполнение дерева метаданных. Отсутствует объект, образующий тип %1';
+				|en = 'Internal error. Incomplete metadata tree. Object of type %1 is missing.'");
+			ExceptionText = SubstituteParametersToString(ExceptionText, RefType);
+			Raise (ExceptionText);
 
 		EndIf;
 
-		СтрокаДЗ.ВыгружатьПриНеобходимости = 1;
-		УстановкаСостоянияВыгружатьПриНеобходимости(СтрокаДЗ);
+		If VTRow.ExportData = 1 Or VTRow.ExportIfNecessary = 1 Then
+
+			Continue;
+
+		EndIf;
+
+		VTRow.ExportIfNecessary = 1;
+		SetExportIfNecessaryState(VTRow);
 
 	EndDo;
 
 EndProcedure
 
-// Function определяет общее количество произведенных записей констант + объектного типа + наборов записей
+// Determines a total number of records of constants, object types, and record sets.
 //
-// Return - общее количество произведенных записей
+// Return value - a total number of records.
+//
 Function TotalProcessedRecords()
 
-	Return mExportedObjects.Количество() + ProcessedConstantsCount + ProcessedRecordSetsCount;
+	Return mExportedObjects.Count() + ProcessedConstantsCount + ProcessedRecordSetsCount;
 
 EndFunction
 
-// Procedure производит заполнение дерева описания классов объектов метаданных
-//
-// Параметры
+// Fills in a tree of metadata object classes.
 //
 Procedure FillMetadataDetails()
 
-	СтэкДереваЗначенийСтроки = New Array;
-	MetadataDetails = New ДеревоЗначений;
-	MetadataDetails.Колонки.Добавить("Выгружаемый", New TypeDescription("Булево"));
-	MetadataDetails.Колонки.Добавить("ДляЗапроса", New TypeDescription("Строка"));
-	MetadataDetails.Колонки.Добавить("Класс", New TypeDescription("Строка", , New КвалификаторыСтроки(100,
-		ДопустимаяДлина.Varенная)));
-	MetadataDetails.Колонки.Добавить("Менеджер");
-	MetadataDetails.Колонки.Добавить("Свойства", New TypeDescription("СписокЗначений"));
-	MetadataDetails.Колонки.Добавить("ИндексКартинки");
-	СтэкДереваЗначенийСтроки.Вставить(0, MetadataDetails.Строки);
+	RowValuesTreeStack = New Array;
+	MetadataDetails = New ValueTree;
+	MetadataDetails.Columns.Add("ToExport", New TypeDescription("Boolean"));
+	MetadataDetails.Columns.Add("ForQuery", New TypeDescription("String"));
+	MetadataDetails.Columns.Add("Class", New TypeDescription("String", , New StringQualifiers(100,
+		AllowedLength.Variable)));
+	MetadataDetails.Columns.Add("Manager");
+	MetadataDetails.Columns.Add("Properties", New TypeDescription("ValueList"));
+	MetadataDetails.Columns.Add("PictureIndex");
+	RowValuesTreeStack.Insert(0, MetadataDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Конфигурации";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.ИндексКартинки = 0;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Configurations";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.PictureIndex = 0;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Константы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Константы";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = Константы;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.ИндексКартинки = 1;
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.Constants
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Constants";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = Constants;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.PictureIndex = 1;
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.Справочники
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Справочники";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = Справочники;
-	ОписаниеКласса.ДляЗапроса  = "Справочник.";
-	ОписаниеКласса.Свойства.Добавить("Владельцы");
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.ИндексКартинки = 3;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Catalogs
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Catalogs";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = Catalogs;
+	ClassDetails.ForQuery  = "Catalog.";
+	ClassDetails.Properties.Add("Owners");
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.PictureIndex = 3;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Справочники.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("Использование");
+	// Configurations.Catalogs.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("Use");
 	//////////////////////////////////
-	// Конфигурации.Справочники.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Использование");
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Catalogs.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Use");
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Справочники.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.Catalogs.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.Документы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Документы";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = Документы;
-	ОписаниеКласса.ДляЗапроса  = "Документ.";
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.Свойства.Добавить("Движения");
-	ОписаниеКласса.ИндексКартинки = 7;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Documents
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Documents";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = Documents;
+	ClassDetails.ForQuery  = "Document.";
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.Properties.Add("RegisterRecords");
+	ClassDetails.PictureIndex = 7;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Документы.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.Documents.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.Документы.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Documents.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Документы.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.Documents.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.Последовательности
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Последовательности";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = Последовательности;
-	ОписаниеКласса.ДляЗапроса  = "Последовательность.";
-	ОписаниеКласса.Свойства.Добавить("Документы");
-	ОписаниеКласса.Свойства.Добавить("Движения");
-	ОписаниеКласса.ИндексКартинки = 5;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Sequences
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Sequences";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = Sequences;
+	ClassDetails.ForQuery  = "Sequence.";
+	ClassDetails.Properties.Add("Documents");
+	ClassDetails.Properties.Add("RegisterRecords");
+	ClassDetails.PictureIndex = 5;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Последовательности.Измерения
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Измерения";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("СоответствиеДокументам");
-	ОписаниеКласса.Свойства.Добавить("СоответствиеДвижениям");
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.Sequences.Dimensions
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Dimensions";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("DocumentMap");
+	ClassDetails.Properties.Add("RegisterRecordsMap");
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовХарактеристик
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ПланыВидовХарактеристик";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = ПланыВидовХарактеристик;
-	ОписаниеКласса.ДляЗапроса  = "ПланВидовХарактеристик.";
-	ОписаниеКласса.Свойства.Добавить("ДополнительныеЗначенияХарактеристик");
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.ИндексКартинки = 9;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfCharacteristicTypes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "ChartsOfCharacteristicTypes";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = ChartsOfCharacteristicTypes;
+	ClassDetails.ForQuery  = "ChartOfCharacteristicTypes.";
+	ClassDetails.Properties.Add("CharacteristicExtValues");
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.PictureIndex = 9;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовХарактеристик.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("Использование");
+	// Configurations.ChartsOfCharacteristicTypes.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("Use");
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовХарактеристик.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Использование");
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfCharacteristicTypes.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Use");
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовХарактеристик.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.ChartsOfCharacteristicTypes.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.ПланыСчетов
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ПланыСчетов";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = ПланыСчетов;
-	ОписаниеКласса.ДляЗапроса  = "ПланСчетов.";
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.Свойства.Добавить("ВидыСубконто");
-	ОписаниеКласса.ИндексКартинки = 11;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfAccounts
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "ChartsOfAccounts";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = ChartsOfAccounts;
+	ClassDetails.ForQuery  = "ChartOfAccounts.";
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.Properties.Add("ExtDimensionTypes");
+	ClassDetails.PictureIndex = 11;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыСчетов.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.ChartsOfAccounts.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.ПланыСчетов.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfAccounts.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыСчетов.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.ChartsOfAccounts.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовРасчета
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ПланыВидовРасчета";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = ПланыВидовРасчета;
-	ОписаниеКласса.ДляЗапроса  = "ПланВидовРасчета.";
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.Свойства.Добавить("ЗависимостьОтВидовРасчета");
-	ОписаниеКласса.Свойства.Добавить("БазовыеВидыРасчета");
-	ОписаниеКласса.Свойства.Добавить("ИспользованиеПериодаДействия");
-	ОписаниеКласса.ИндексКартинки = 13;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfCalculationTypes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "ChartsOfCalculationTypes";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = ChartsOfCalculationTypes;
+	ClassDetails.ForQuery  = "ChartOfCalculationTypes.";
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.Properties.Add("DependenceOnCalculationTypes");
+	ClassDetails.Properties.Add("BaseCalculationTypes");
+	ClassDetails.Properties.Add("ActionPeriodUse");
+	ClassDetails.PictureIndex = 13;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовРасчета.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.ChartsOfCalculationTypes.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовРасчета.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ChartsOfCalculationTypes.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыВидовРасчета.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.ChartsOfCalculationTypes.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.РегистрыСведений
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "РегистрыСведений";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = РегистрыСведений;
-	ОписаниеКласса.ДляЗапроса  = "РегистрСведений.";
-	ОписаниеКласса.ИндексКартинки = 15;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.InformationRegisters
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "InformationRegisters";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = InformationRegisters;
+	ClassDetails.ForQuery  = "InformationRegister.";
+	ClassDetails.PictureIndex = 15;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.РегистрыСведений.Ресурсы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Ресурсы";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.InformationRegisters.Resources
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Resources";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыСведений.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.InformationRegisters.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыСведений.Измерения
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Измерения";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.InformationRegisters.Dimensions
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Dimensions";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.РегистрыНакопления
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "РегистрыНакопления";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = РегистрыНакопления;
-	ОписаниеКласса.ДляЗапроса  = "РегистрНакопления.";
-	ОписаниеКласса.ИндексКартинки = 17;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.AccumulationRegisters
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "AccumulationRegisters";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = AccumulationRegisters;
+	ClassDetails.ForQuery  = "AccumulationRegister.";
+	ClassDetails.PictureIndex = 17;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.РегистрыНакопления.Ресурсы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Ресурсы";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.AccumulationRegisters.Resources
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Resources";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыНакопления.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.AccumulationRegisters.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыНакопления.Измерения
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Измерения";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.AccumulationRegisters.Dimensions
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Dimensions";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.РегистрыБухгалтерии
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "РегистрыБухгалтерии";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = РегистрыБухгалтерии;
-	ОписаниеКласса.ДляЗапроса  = "РегистрБухгалтерии.";
-	ОписаниеКласса.Свойства.Добавить("ПланСчетов");
-	ОписаниеКласса.Свойства.Добавить("Корреспонденция");
-	ОписаниеКласса.ИндексКартинки = 19;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.AccountingRegisters
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "AccountingRegisters";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = AccountingRegisters;
+	ClassDetails.ForQuery  = "AccountingRegister.";
+	ClassDetails.Properties.Add("ChartOfAccounts");
+	ClassDetails.Properties.Add("Correspondence");
+	ClassDetails.PictureIndex = 19;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.РегистрыБухгалтерии.Измерения
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Измерения";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.AccountingRegisters.Dimensions
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Dimensions";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыБухгалтерии.Ресурсы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Ресурсы";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.AccountingRegisters.Resources
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Resources";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыБухгалтерии.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.AccountingRegisters.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "РегистрыРасчета";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = РегистрыРасчета;
-	ОписаниеКласса.ДляЗапроса  = "РегистрРасчета.";
-	ОписаниеКласса.Свойства.Добавить("Периодичность");
-	ОписаниеКласса.Свойства.Добавить("ПериодДействия");
-	ОписаниеКласса.Свойства.Добавить("БазовыйПериод");
-	ОписаниеКласса.Свойства.Добавить("График");
-	ОписаниеКласса.Свойства.Добавить("ЗначениеГрафика");
-	ОписаниеКласса.Свойства.Добавить("ДатаГрафика");
-	ОписаниеКласса.Свойства.Добавить("ПланВидовРасчета");
-	ОписаниеКласса.ИндексКартинки = 21;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.CalculationRegisters
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "CalculationRegisters";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = CalculationRegisters;
+	ClassDetails.ForQuery  = "CalculationRegister.";
+	ClassDetails.Properties.Add("Periodicity");
+	ClassDetails.Properties.Add("ActionPeriod");
+	ClassDetails.Properties.Add("BasePeriod");
+	ClassDetails.Properties.Add("Schedule");
+	ClassDetails.Properties.Add("ScheduleValue");
+	ClassDetails.Properties.Add("ScheduleDate");
+	ClassDetails.Properties.Add("ChartOfCalculationTypes");
+	ClassDetails.PictureIndex = 21;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета.Ресурсы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Ресурсы";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.CalculationRegisters.Resources
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Resources";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("СвязьСГрафиком");
+	// Configurations.CalculationRegisters.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("ScheduleLink");
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета.Измерения
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Измерения";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("БазовоеИзмерение");
-	ОписаниеКласса.Свойства.Добавить("СвязьСГрафиком");
+	// Configurations.CalculationRegisters.Dimensions
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Dimensions";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("BaseDimension");
+	ClassDetails.Properties.Add("ScheduleLink");
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета.Перерасчеты
-	//ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	//ОписаниеКласса.Класс = "Перерасчеты";
-	//ОписаниеКласса.Выгружаемый = True;
-	//ОписаниеКласса.Менеджер  = "РегистрыРасчета.%i.Перерасчеты";
-	//ОписаниеКласса.ДляЗапроса  = "РегистрРасчета.%i.";
-	//СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.CalculationRegisters.Recalculations
+	//ClassDetails = RowValuesTreeStack[0].Add();
+	//ClassDetails.Class = "Recalculations";
+	//ClassDetails.ToExport = True;
+	//ClassDetails.Manager  = "CalculationRegisters.%i.Recalculations";
+	//ClassDetails.ForQuery  = "CalculationRegister.%i.";
+	//RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.РегистрыРасчета.Перерасчеты.Измерения
-	//ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	//ОписаниеКласса.Класс = "Измерения";
-	//ОписаниеКласса.Выгружаемый = False;
-	//ОписаниеКласса.Свойства.Добавить("ДанныеВедущихРегистров");
-	//ОписаниеКласса.Свойства.Добавить("ИзмерениеРегистра");
-	//СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.CalculationRegisters.Recalculations.Dimensions
+	//ClassDetails = RowValuesTreeStack[0].Add();
+	//ClassDetails.Class = "Dimensions";
+	//ClassDetails.ToExport = False;
+	//ClassDetails.Properties.Add("LeadingRegisterData");
+	//ClassDetails.Properties.Add("RegisterDimension");
+	//RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.БизнесПроцессы
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "БизнесПроцессы";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = БизнесПроцессы;
-	ОписаниеКласса.ДляЗапроса  = "БизнесПроцесс.";
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.Свойства.Добавить("Задача");
-	ОписаниеКласса.ИндексКартинки = 23;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.BusinessProcesses
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "BusinessProcesses";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = BusinessProcesses;
+	ClassDetails.ForQuery  = "BusinessProcess.";
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.Properties.Add("Task");
+	ClassDetails.PictureIndex = 23;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.БизнесПроцессы.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.BusinessProcesses.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.БизнесПроцессы.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.BusinessProcesses.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.БизнесПроцессы.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.BusinessProcesses.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	//////////////////////////////////
-	// Конфигурации.Задачи
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Задачи";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = Задачи;
-	ОписаниеКласса.ДляЗапроса  = "Задача.";
-	ОписаниеКласса.Свойства.Добавить("Адресация");
-	ОписаниеКласса.Свойства.Добавить("ОсновнойРеквизитАдресации");
-	ОписаниеКласса.Свойства.Добавить("ТекущийИсполнитель");
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.ИндексКартинки = 25;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Tasks
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Tasks";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = Задачи;
+	ClassDetails.ForQuery  = "Task.";
+	ClassDetails.Properties.Add("Addressing");
+	ClassDetails.Properties.Add("MainAddressingAttribute");
+	ClassDetails.Properties.Add("CurrentPerformer");
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.PictureIndex = 25;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Задачи.РеквизитыАдресации
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "РеквизитыАдресации";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	ОписаниеКласса.Свойства.Добавить("ИзмерениеАдресации");
+	// Configurations.Tasks.AddressingAttributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "AddressingAttributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	ClassDetails.Properties.Add("AddressingDimension");
 	//////////////////////////////////
-	// Конфигурации.Задачи.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.Tasks.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.Задачи.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.Tasks.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.Задачи.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.Tasks.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 	
 	//////////////////////////////////
-	// Конфигурации.ПланыОбмена
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ПланыОбмена";
-	ОписаниеКласса.Выгружаемый = True;
-	ОписаниеКласса.Менеджер = ПланыОбмена;
-	ОписаниеКласса.ДляЗапроса  = "ПланОбмена.";
-	ОписаниеКласса.Свойства.Добавить("ВводитсяНаОсновании");
-	ОписаниеКласса.ИндексКартинки = 27;
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ExchangePlans
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "ExchangePlans";
+	ClassDetails.ToExport = True;
+	ClassDetails.Manager = ExchangePlans;
+	ClassDetails.ForQuery  = "ExchangePlan.";
+	ClassDetails.Properties.Add("BasedOn");
+	ClassDetails.PictureIndex = 27;
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыОбмена.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
+	// Configurations.ExchangePlans.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
 	//////////////////////////////////
-	// Конфигурации.ПланыОбмена.ТабличныеЧасти
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "ТабличныеЧасти";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	СтэкДереваЗначенийСтроки.Вставить(0, ОписаниеКласса.Строки);
+	// Configurations.ExchangePlans.TabularSections
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "TabularSections";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	RowValuesTreeStack.Insert(0, ClassDetails.Rows);
 	//////////////////////////////////
-	// Конфигурации.ПланыОбмена.ТабличныеЧасти.Реквизиты
-	ОписаниеКласса = СтэкДереваЗначенийСтроки[0].Добавить();
-	ОписаниеКласса.Класс = "Реквизиты";
-	ОписаниеКласса.Выгружаемый = False;
-	ОписаниеКласса.ДляЗапроса  = "";
-	ОписаниеКласса.Свойства.Добавить("Тип");
-	СтэкДереваЗначенийСтроки.Удалить(0);
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	// Configurations.ExchangePlans.TabularSections.Attributes
+	ClassDetails = RowValuesTreeStack[0].Add();
+	ClassDetails.Class = "Attributes";
+	ClassDetails.ToExport = False;
+	ClassDetails.ForQuery  = "";
+	ClassDetails.Properties.Add("Type");
+	RowValuesTreeStack.Delete(0);
+	RowValuesTreeStack.Delete(0);
 
-	СтэкДереваЗначенийСтроки.Удалить(0);
+	RowValuesTreeStack.Delete(0);
 
 EndProcedure
 
-// Function определяет имеет ли переданный объект метаданных ссылочный тип
+// Determines whether the passed metadata object has a reference type.
 //
-// Return - True, If переданный объект метаданных имеет ссылочный тип, False - противном случае
-Function ObjectFormsRefType(ОбъектМД) Export
+// Return value - True, if the passed metadata object has a reference type
+//
+Function ObjectFormsRefType(MDObject) Export
 
-	If ОбъектМД = Undefined Then
+	If MDObject = Undefined Then
 		Return False;
 	EndIf;
 
-	If Metadata.Справочники.Содержит(ОбъектМД) Или Metadata.Документы.Содержит(ОбъектМД)
-		Или Metadata.ПланыВидовХарактеристик.Содержит(ОбъектМД) Или Metadata.ПланыСчетов.Содержит(ОбъектМД)
-		Или Metadata.ПланыВидовРасчета.Содержит(ОбъектМД) Или Metadata.ПланыОбмена.Содержит(ОбъектМД)
-		Или Metadata.БизнесПроцессы.Содержит(ОбъектМД) Или Metadata.Задачи.Содержит(ОбъектМД) Then
+	If Metadata.Catalogs.Contains(MDObject) Or Metadata.Documents.Contains(MDObject)
+		Or Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Or Metadata.ChartsOfAccounts.Contains(MDObject)
+		Or Metadata.ChartsOfCalculationTypes.Contains(MDObject) Or Metadata.ExchangePlans.Contains(MDObject)
+		Or Metadata.BusinessProcesses.Contains(MDObject) Or Metadata.Tasks.Contains(MDObject) Then
 		Return True;
 	EndIf;
 
 	Return False;
 EndFunction
 
-// Procedure определяет, какие типы объектов следует выгружать для сохранения ссылочной целостности
+// Determines which object types are to be exported to maintain referential integrity.
 //
-// Параметры
-//   Выгрузка - Array строк - совокупность выгружаемых объектов
-Procedure RecalculateDataToExportByRef(Выгрузка)
+// Parameters:
+//   DataToExport - an array of strings - a combination of objects to be exported.
+//
+Procedure RecalculateDataToExportByRef(DataToExport)
 	
-	// сброс всех флажков ВыгружатьПриНеобходимости
-	СтрокаКонфигурации = MetadataTree.Строки[0];
-	СтрокаКонфигурации.ВыгружатьПриНеобходимости = 0;
-	ОбработкаИзмененияСостоянияВыгружатьПриНеобходимости(СтрокаКонфигурации);
+	// Clearing all ExportIfNecessary flags.
+	ConfigurationRow = MetadataTree.Rows[0];
+	ConfigurationRow.ExportIfNecessary = 0;
+	ExportIfNecessaryStateChangeProcessing(ConfigurationRow);
 	
-	// обработка переданного набора объектов
-	For Each Выгружаемый Из Выгрузка Do
+	// Processing of the passed object set.
+	For Each ToExport In DataToExport Do
 
-		УстановкаСостоянияВыгружатьПриНеобходимости(Выгружаемый.СтрокаДерева);
+		SetExportIfNecessaryState(ToExport.TreeRow);
 
 	EndDo;
 
 EndProcedure
 
-// Procedure, при необходимости, устанавливает отсутствие необходимости использования итогов
+// Disables the use of register totals
 //
-// Параметры
 Procedure RemoveTotalsUsage() Export
 
 	If AllowResultsUsageEditingRights Then
 
-		For Each Регистр_СДЗ Из RegistersUsingTotals Do
+		For Each Register_WithVT In RegistersUsingTotals Do
 
-			Регистр_СДЗ.ЭлементОписания.Менеджер[Регистр_СДЗ.ОбъектМД.Имя].УстановитьИспользованиеИтогов(False);
+			Register_WithVT.Detail.Manager[Register_WithVT.MDObject.Name].SetTotalsUsing(False);
 
 		EndDo;
 
@@ -3040,16 +3046,15 @@ Procedure RemoveTotalsUsage() Export
 
 EndProcedure
 
-// Procedure, при необходимости, устанавливает необходимость использования итогов
+// Enables the use of register totals
 //
-// Параметры
 Procedure RestoreTotalsUsage() Export
 
 	If AllowResultsUsageEditingRights Then
 
-		For Each Регистр_СДЗ Из RegistersUsingTotals Do
+		For Each Register_WithVT In RegistersUsingTotals Do
 
-			Регистр_СДЗ.ЭлементОписания.Менеджер[Регистр_СДЗ.ОбъектМД.Имя].УстановитьИспользованиеИтогов(True);
+			Register_WithVT.Detail.Manager[Register_WithVT.MDObject.Name].SetTotalsUsing(True);
 
 		EndDo;
 
@@ -3057,143 +3062,138 @@ Procedure RestoreTotalsUsage() Export
 
 EndProcedure
 
-// Возвращает текущее значение версии обработки
+// Returns a current data processor version.
 //
-// Параметры:
-//  Нет.
-// 
-// Возвращаемое значение:
-//  Текущее значение версии обработки
-//
-Function ВерсияОбъекта() Export
+Function ObjectVersion() Export
 
 	Return "2.1.8";
 
 EndFunction
 
-Procedure UserMessage(Текст)
+Procedure UserMessage(Text)
 
-	Сообщение = New СообщениеПользователю;
-	Сообщение.Текст = Текст;
-	Сообщение.Сообщить();
+	Message = New UserMessage;
+	Message.Text = Text;
+	Message.Message();
 
 EndProcedure
 
 Procedure InitializePredefinedItemsTable()
 
-	PredefinedItemsTable = New ТаблицаЗначений;
-	PredefinedItemsTable.Колонки.Добавить("ИмяТаблицы");
-	PredefinedItemsTable.Колонки.Добавить("Ссылка");
-	PredefinedItemsTable.Колонки.Добавить("ИмяПредопределенныхДанных");
+	PredefinedItemsTable = New ValueTable;
+	PredefinedItemsTable.Columns.Add("TableName");
+	PredefinedItemsTable.Columns.Add("Ref");
+	PredefinedItemsTable.Columns.Add("PredefinedDataName");
 
 EndProcedure
 
-Procedure ExportPredefinedItemsTable(ЗаписьXML)
+Procedure ExportPredefinedItemsTable(XMLWriter)
 
-	ЗаписьXML.ЗаписатьНачалоЭлемента("PredefinedData");
+	XMLWriter.WriteStartElement("PredefinedData");
 
-	If PredefinedItemsTable.Количество() > 0 Then
+	If PredefinedItemsTable.Count() > 0 Then
 
-		PredefinedItemsTable.Сортировать("ИмяТаблицы");
+		PredefinedItemsTable.Sort("TableName");
 
-		ИмяПредыдущейТаблицы = "";
+		PreviousTableName = "";
 
-		For Each Элемент Из PredefinedItemsTable Do
+		For Each Item In PredefinedItemsTable Do
 
-			If ИмяПредыдущейТаблицы <> Элемент.ИмяТаблицы Then
-				If Не IsBlankString(ИмяПредыдущейТаблицы) Then
-					ЗаписьXML.ЗаписатьКонецЭлемента();
+			If PreviousTableName <> Item.TableName Then
+				If Not IsBlankString(PreviousTableName) Then
+					XMLWriter.WriteEndElement();
 				EndIf;
-				ЗаписьXML.ЗаписатьНачалоЭлемента(Элемент.ИмяТаблицы);
+				XMLWriter.WriteStartElement(Item.TableName);
 			EndIf;
 
-			ЗаписьXML.ЗаписатьНачалоЭлемента("item");
-			ЗаписьXML.ЗаписатьАтрибут("Ссылка", Элемент.Ссылка);
-			ЗаписьXML.ЗаписатьАтрибут("ИмяПредопределенныхДанных", Элемент.ИмяПредопределенныхДанных);
-			ЗаписьXML.ЗаписатьКонецЭлемента();
+			XMLWriter.WriteStartElement("item");
+			XMLWriter.WriteAttribute("Ref", Item.Ref);
+			XMLWriter.WriteAttribute("PredefinedDataName", Item.PredefinedDataName);
+			XMLWriter.WriteEndElement();
 
-			ИмяПредыдущейТаблицы = Элемент.ИмяТаблицы;
+			PreviousTableName = Item.TableName;
 
 		EndDo;
 
-		ЗаписьXML.ЗаписатьКонецЭлемента();
+		XMLWriter.WriteEndElement();
 
 	EndIf;
 
-	ЗаписьXML.ЗаписатьКонецЭлемента();
+	XMLWriter.WriteEndElement();
 
 EndProcedure
 
-Procedure ImportPredefinedItemsTable(ЧтениеXML)
+Procedure ImportPredefinedItemsTable(XMLReader)
 
-	ЧтениеXML.Пропустить(); // При первом чтении пропускам основной блок данных
-	ЧтениеXML.Прочитать();
+	XMLReader.Skip(); // Skipping the main data block on the first reading.
+	XMLReader.Read();
 
 	InitializePredefinedItemsTable();
-	ВременнаяСтрока = PredefinedItemsTable.Добавить();
+	TempRow = PredefinedItemsTable.Add();
 
-	RefsReplacementMap = New Соответствие;
+	RefsReplacementMap = New Map;
 
-	While ЧтениеXML.Прочитать() Do
+	While XMLReader.Read() Do
 
-		If ЧтениеXML.ТипУзла = ТипУзлаXML.НачалоЭлемента Then
+		If XMLReader.NodeType = ТипУзлаXML.НачалоЭлемента Then
 
-			If ЧтениеXML.ЛокальноеИмя <> "item" Then
-
-				ВременнаяСтрока.ИмяТаблицы = ЧтениеXML.ЛокальноеИмя;
-
-				ТекстЗапроса = "ВЫБРАТЬ 
-							   |	Таблица.Ссылка КАК Ссылка
-							   |ИЗ
-							   |	" + ВременнаяСтрока.ИмяТаблицы + " КАК Таблица
-																	 |ГДЕ
-																	 |	Таблица.ИмяПредопределенныхДанных = &ИмяПредопределенныхДанных";
-				Запрос = New Запрос(ТекстЗапроса);
+			If XMLReader.LocalName <> "item" Then
+				
+				TempRow.TableName = XMLReader.LocalName;
+				
+				QueryText = 
+				"SELECT
+				|	Table.Ref AS Ref
+				|FROM
+				|	" + TempRow.TableName + " AS Table
+				|WHERE
+				|	Table.PredefinedDataName = &PredefinedDataName";
+				Query = New Query(QueryText);
 
 			Else
 
-				While ЧтениеXML.ПрочитатьАтрибут() Do
-
-					ВременнаяСтрока[ЧтениеXML.ЛокальноеИмя] = ЧтениеXML.Значение;
-
+				While XMLReader.ReadAttribute() Do
+					
+					TempRow[XMLReader.LocalName] = XMLReader.Value;
+					
 				EndDo;
-
-				Запрос.УстановитьПараметр("ИмяПредопределенныхДанных", ВременнаяСтрока.ИмяПредопределенныхДанных);
-
-				РезультатЗапроса = Запрос.Выполнить();
-				If Не РезультатЗапроса.Пустой() Then
-
-					Выборка = РезультатЗапроса.Выбрать();
-
-					If Выборка.Количество() = 1 Then
-
-						Выборка.Следующий();
-
-						СсылкаВБазе = XMLString(Выборка.Ссылка);
-						СсылкаВФайле = ВременнаяСтрока.Ссылка;
+				
+				Query.SetParameter("PredefinedDataName", TempRow.PredefinedDataName);
+				
+				QueryResult = Query.Execute();
+				If Not QueryResult.IsEmpty() Then
+					
+					Selection = QueryResult.Select();
+					
+					If Selection.Count() = 1 Then
+						
+						Selection.Next();
+						
+						RefInBase = XMLString(Selection.Ref);
+						RefInFile = TempRow.Ref;
 
 						If ThisObject.PredefinedItemsImportMode = 1 Then
 
-							ОбъектУдаляемый=Выборка.Ссылка.ПолучитьОбъект();
-							ОбъектУдаляемый.Удалить();
+							ObjectToDelete=Selection.Ref.GetObject();
+							ObjectToDelete.Delete();
 
 						Else
 
-							If СсылкаВБазе <> СсылкаВФайле Then
+							If RefInBase <> RefInFile Then
 
-								XMLТип = XMLТипСсылки(Выборка.Ссылка);
+								XMLType = XMLRefType(Selection.Ref);
 
-								СоответствиеТипа = RefsReplacementMap.Получить(XMLТип);
+								TypeMap = RefsReplacementMap.Get(XMLType);
 
-								If СоответствиеТипа = Undefined Then
+								If TypeMap = Undefined Then
 
-									СоответствиеТипа = New Соответствие;
-									СоответствиеТипа.Вставить(СсылкаВФайле, СсылкаВБазе);
-									RefsReplacementMap.Вставить(XMLТип, СоответствиеТипа);
+									TypeMap = New Map;
+									TypeMap.Insert(RefInFile, RefInBase);
+									RefsReplacementMap.Insert(XMLType, TypeMap);
 
 								Else
 
-									СоответствиеТипа.Вставить(СсылкаВФайле, СсылкаВБазе);
+									TypeMap.Insert(RefInFile, RefInBase);
 
 								EndIf;
 
@@ -3203,12 +3203,11 @@ Procedure ImportPredefinedItemsTable(ЧтениеXML)
 
 					Else
 
-						ТекстИсключения = НСтр(
-							"ru = 'Обнаружено дублирование предопределенных элементов %1 в таблице %2!'");
-						ТекстИсключения = StrReplace(ТекстИсключения, "%1", ВременнаяСтрока.ИмяПредопределенныхДанных);
-						ТекстИсключения = StrReplace(ТекстИсключения, "%2", ВременнаяСтрока.ИмяТаблицы);
-
-						Raise ТекстИсключения;
+						ExceptionText = NStr("ru = 'Обнаружено дублирование предопределенных элементов %1 в таблице %2.'; en = 'Duplicate predefined items %1 are found in table %2.'");
+						ExceptionText = StrReplace(ExceptionText, "%1", TempRow.PredefinedDataName);
+						ExceptionText = StrReplace(ExceptionText, "%2", TempRow.TableName);
+						
+						Raise ExceptionText;
 
 					EndIf;
 
@@ -3220,317 +3219,315 @@ Procedure ImportPredefinedItemsTable(ЧтениеXML)
 
 	EndDo;
 
-	ЧтениеXML.Закрыть();
+	XMLReader.Close();
 
 EndProcedure
 
-Procedure ReplacePredefinedItemsRefs(ИмяФайла)
+Procedure ReplacePredefinedItemsRefs(FileName)
 
-	ПотокЧтения = New ЧтениеТекста(ИмяФайла);
-
-	ВременныйФайл = GetTempFileName("xml");
-
-	ПотокЗаписи = New ЗаписьТекста(ВременныйФайл);
+	ReaderStream = New TextReader(FileName);
 	
-	// Константы для разбора текста
-	НачалоТипа = "xsi:type=""v8:";
-	ДлинаНачалаТипа = StrLen(НачалоТипа);
-	КонецТипа = """>";
-	ДлинаКонцаТипа = StrLen(КонецТипа);
-
-	ИсходнаяСтрока = ПотокЧтения.ПрочитатьСтроку();
-	While ИсходнаяСтрока <> Undefined Do
-
-		ОстатокСтроки = Undefined;
-
-		ТекущаяПозиция = 1;
-		ПозицияТипа = Найти(ИсходнаяСтрока, НачалоТипа);
-		While ПозицияТипа > 0 Do
-
-			ПотокЗаписи.Записать(Сред(ИсходнаяСтрока, ТекущаяПозиция, ПозицияТипа - 1 + ДлинаНачалаТипа));
-
-			ОстатокСтроки = Сред(ИсходнаяСтрока, ТекущаяПозиция + ПозицияТипа + ДлинаНачалаТипа - 1);
-			ТекущаяПозиция = ТекущаяПозиция + ПозицияТипа + ДлинаНачалаТипа - 1;
-
-			ПозицияКонцаТипа = Найти(ОстатокСтроки, КонецТипа);
-			If ПозицияКонцаТипа = 0 Then
-				Прервать;
+	TempFile = GetTempFileName("xml");
+	
+	WriteStream = New TextWriter(TempFile);
+	
+	// Constants for parsing the text.
+	TypeBeginning = "xsi:type=""v8:";
+	TypeBeginningLength = StrLen(TypeBeginning);
+	TypeEnd = """>";
+	TypeEndLength = StrLen(TypeEnd);
+	
+	InitialLine = ReaderStream.ReadLine();
+	While InitialLine <> Undefined Do
+		
+		LineBalance = Undefined;
+		
+		CurrentPosition = 1;
+		TypePosition = StrFind(InitialLine, TypeBeginning);
+		While TypePosition > 0 Do
+			
+			WriteStream.Write(Mid(InitialLine, CurrentPosition, TypePosition - 1 + TypeBeginningLength));
+			
+			LineBalance = Mid(InitialLine, CurrentPosition + TypePosition + TypeBeginningLength - 1);
+			CurrentPosition = CurrentPosition + TypePosition + TypeBeginningLength - 1;
+			
+			TypeEndPosition = Find(LineBalance, TypeEnd);
+			If TypeEndPosition = 0 Then
+				Break;
 			EndIf;
-
-			ИмяТипа = Лев(ОстатокСтроки, ПозицияКонцаТипа - 1);
-			СоответствиеЗамены = RefsReplacementMap.Получить(ИмяТипа);
-			If СоответствиеЗамены = Undefined Then
-				ПозицияТипа = Найти(ОстатокСтроки, НачалоТипа);
-				Продолжить;
+			
+			TypeName = Left(LineBalance, TypeEndPosition - 1);
+			ReplacementMap = RefsReplacementMap.Get(TypeName);
+			If ReplacementMap = Undefined Then
+				TypePosition = Find(LineBalance, TypeBeginning);
+				Continue;
 			EndIf;
+			
+			WriteStream.Write(TypeName);
+			WriteStream.Write(TypeEnd);
 
-			ПотокЗаписи.Записать(ИмяТипа);
-			ПотокЗаписи.Записать(КонецТипа);
-
-			ИсходнаяСсылкаXML = Сред(ОстатокСтроки, ПозицияКонцаТипа + ДлинаКонцаТипа, 36);
-
-			НайденнаяСсылкаXML = СоответствиеЗамены.Получить(ИсходнаяСсылкаXML);
-
-			If НайденнаяСсылкаXML = Undefined Then
-				ПотокЗаписи.Записать(ИсходнаяСсылкаXML);
+			SourceRefXML = Mid(LineBalance, TypeEndPosition + TypeEndLength, 36);
+			
+			FoundXMLRef = ReplacementMap.Get(SourceRefXML);
+			
+			If FoundXMLRef = Undefined Then
+				WriteStream.Write(SourceRefXML);
 			Else
-				ПотокЗаписи.Записать(НайденнаяСсылкаXML);
+				WriteStream.Write(FoundXMLRef);
 			EndIf;
-
-			ТекущаяПозиция = ТекущаяПозиция + ПозицияКонцаТипа - 1 + ДлинаКонцаТипа + 36;
-			ОстатокСтроки = Сред(ОстатокСтроки, ПозицияКонцаТипа + ДлинаКонцаТипа + 36);
-			ПозицияТипа = Найти(ОстатокСтроки, НачалоТипа);
-
+			
+			CurrentPosition = CurrentPosition + TypeEndPosition - 1 + TypeEndLength + 36;
+			LineBalance = Mid(LineBalance, TypeEndPosition + TypeEndLength + 36);
+			TypePosition = Find(LineBalance, TypeBeginning);
+			
 		EndDo;
-
-		If ОстатокСтроки <> Undefined Then
-			ПотокЗаписи.ЗаписатьСтроку(ОстатокСтроки);
+		
+		If LineBalance <> Undefined Then
+			WriteStream.WriteLine(LineBalance);
 		Else
-			ПотокЗаписи.ЗаписатьСтроку(ИсходнаяСтрока);
+			WriteStream.WriteLine(InitialLine);
 		EndIf;
-
-		ИсходнаяСтрока = ПотокЧтения.ПрочитатьСтроку();
-
+		
+		InitialLine = ReaderStream.ReadLine();
+		
 	EndDo;
+	
+	ReaderStream.Close();
+	WriteStream.Close();
 
-	ПотокЧтения.Закрыть();
-	ПотокЗаписи.Закрыть();
-
-	ИмяФайла = ВременныйФайл;
+	FileName = TempFile;
 
 EndProcedure
 
-Function IsMetadataWithPredefinedItems(ОбъектМетаданных)
+Function IsMetadataWithPredefinedItems(MetadataObject)
 
-	Return Metadata.Справочники.Содержит(ОбъектМетаданных) Или Metadata.ПланыСчетов.Содержит(ОбъектМетаданных)
-		Или Metadata.ПланыВидовХарактеристик.Содержит(ОбъектМетаданных) Или Metadata.ПланыВидовРасчета.Содержит(
-		ОбъектМетаданных);
+	Return Metadata.Catalogs.Contains(MetadataObject) Or Metadata.ChartsOfAccounts.Contains(MetadataObject)
+		Or Metadata.ChartsOfCharacteristicTypes.Contains(MetadataObject) Or Metadata.ChartsOfCalculationTypes.Contains(
+		MetadataObject);
 
 EndFunction
 
-// Возвращает SerializerXDTO с аннотацией типов.
-//
-// Возвращаемое значение:
-//	SerializerXDTO - Serializer.
+// Returns XDTOSerializer with type annotation.
 //
 Procedure InitializeXDTOSerializerWithTypesAnnotation()
 
-	ТипыСАннотациейСсылок = ПредопределенныеТипыПриВыгрузке();
-
-	If ТипыСАннотациейСсылок.Количество() > 0 Then
-
-		Фабрика = ПолучитьФабрикуСУказаниемТипов(ТипыСАннотациейСсылок);
-		Serializer = New XDTOSerializer(Фабрика);
-
+	TypesWithRefsAnnotation = PredefinedTypesOnExport();
+	
+	If TypesWithRefsAnnotation.Count() > 0 Then
+		
+		Factory = GetFactoryWithTypes(TypesWithRefsAnnotation);
+		Serializer = New XDTOSerializer(Factory);
+		
 	Else
-
+		
 		Serializer = XDTOSerializer;
-
+		
 	EndIf;
 
 EndProcedure
 
-Function ПредопределенныеТипыПриВыгрузке()
+Function PredefinedTypesOnExport()
 
-	Типы = New Array;
-
-	For Each ОбъектМетаданных Из Metadata.Справочники Do
-		Типы.Добавить(ОбъектМетаданных);
+	Types = New Array;
+	
+	For Each MetadataObject In Metadata.Catalogs Do
+		Types.Add(MetadataObject);
 	EndDo;
-
-	For Each ОбъектМетаданных Из Metadata.ПланыСчетов Do
-		Типы.Добавить(ОбъектМетаданных);
+	
+	For Each MetadataObject In Metadata.ChartsOfAccounts Do
+		Types.Add(MetadataObject);
 	EndDo;
-
-	For Each ОбъектМетаданных Из Metadata.ПланыВидовХарактеристик Do
-		Типы.Добавить(ОбъектМетаданных);
+	
+	For Each MetadataObject In Metadata.ChartsOfCharacteristicTypes Do
+		Types.Add(MetadataObject);
 	EndDo;
-
-	For Each ОбъектМетаданных Из Metadata.ПланыВидовРасчета Do
-		Типы.Добавить(ОбъектМетаданных);
+	
+	For Each MetadataObject In Metadata.ChartsOfCalculationTypes Do
+		Types.Add(MetadataObject);
 	EndDo;
-
-	Return Типы;
+	
+	Return Types;
 
 EndFunction
 
-// Возвращает фабрику с указанием типов.
+// Returns a factory specifying types.
 //
-// Параметры:
-//	Типы - ФиксированныйArray (Metadata) - Array типов.
+// Parameters:
+//	Types - FixedArray (Metadata) - an array of types.
 //
-// Возвращаемое значение:
-//	ФабрикаXDTO - фабрика.
+// Returns:
+//	XDTOFactory - a factory.
 //
-Function ПолучитьФабрикуСУказаниемТипов(Знач Типы)
+Function GetFactoryWithTypes(Val Types)
 
-	НаборСхем = ФабрикаXDTO.ExportСхемыXML("http://v8.1c.ru/8.1/data/enterprise/current-config");
-	Схема = НаборСхем[0];
-	Схема.ОбновитьЭлементDOM();
-
-	УказанныеТипы = New Соответствие;
-	For Each Тип Из Типы Do
-		УказанныеТипы.Вставить(XMLТипСсылки(Тип), True);
+	SchemasSet = XDTOFactory.ExportXMLSchema("http://v8.1c.ru/8.1/data/enterprise/current-config");
+	Schema = SchemasSet[0];
+	Schema.UpdateDOMElement();
+	
+	SpecifiedTypes = New Map;
+	For Each Type In Types Do
+		SpecifiedTypes.Insert(XMLRefType(Type), True);
 	EndDo;
+	
+	Namespace = New Map;
+	Namespace.Insert("xs", "http://www.w3.org/2001/XMLSchema");
+	DOMNamespaceResolver = New DOMNamespaceResolver(Namespace);
+	XPathText = "/xs:schema/xs:complexType/xs:sequence/xs:element[starts-with(@type,'tns:')]";
 
-	ПространствоИмен = New Соответствие;
-	ПространствоИмен.Вставить("xs", "http://www.w3.org/2001/XMLSchema");
-	РазыменовательПространствИменDOM = New РазыменовательПространствИменDOM(ПространствоИмен);
-	ТекстXPath = "/xs:schema/xs:complexType/xs:sequence/xs:element[starts-with(@type,'tns:')]";
-
-	Запрос = Схема.ДокументDOM.СоздатьВыражениеXPath(ТекстXPath, РазыменовательПространствИменDOM);
-	Результат = Запрос.Вычислить(Схема.ДокументDOM);
+	Query = Schema.DOMDocument.CreateXPathExpression(XPathText, DOMNamespaceResolver);
+	Result = Query.Evaluate(Schema.DOMDocument);
 
 	While True Do
-
-		УзелПоля = Результат.ПолучитьСледующий();
-		If УзелПоля = Undefined Then
-			Прервать;
+		
+		FieldNode = Result.IterateNext();
+		If FieldNode = Undefined Then
+			Break;
 		EndIf;
-		АтрибутТип = УзелПоля.Атрибуты.ПолучитьИменованныйЭлемент("type");
-		ТипБезNSПрефикса = Сред(АтрибутТип.ТекстовоеСодержимое, StrLen("tns:") + 1);
-
-		If УказанныеТипы.Получить(ТипБезNSПрефикса) = Undefined Then
-			Продолжить;
+		TypeAttribute = FieldNode.Attributes.GetNamedItem("type");
+		TypeWithoutNSPrefix = Mid(TypeAttribute.TextContent, StrLen("tns:") + 1);
+		
+		If SpecifiedTypes.Get(TypeWithoutNSPrefix) = Undefined Then
+			Continue;
 		EndIf;
-
-		УзелПоля.УстановитьАтрибут("nillable", "true");
-		УзелПоля.УдалитьАтрибут("type");
+		
+		FieldNode.SetAttribute("nillable", "true");
+		FieldNode.RemoveAttribute("type");
 	EndDo;
+	
+	XMLWriter = New XMLWriter;
+	SchemaFileName = GetTempFileName("xsd");
+	XMLWriter.OpenFile(SchemaFileName);
+	DOMWriter = New DOMWriter;
+	DOMWriter.Write(Schema.DOMDocument, XMLWriter);
+	XMLWriter.Close();
 
-	ЗаписьXML = New ЗаписьXML;
-	ИмяФайлаСхемы = GetTempFileName("xsd");
-	ЗаписьXML.ОткрытьФайл(ИмяФайлаСхемы);
-	ЗаписьDOM = New ЗаписьDOM;
-	ЗаписьDOM.Записать(Схема.ДокументDOM, ЗаписьXML);
-	ЗаписьXML.Закрыть();
-
-	Фабрика = СоздатьФабрикуXDTO(ИмяФайлаСхемы);
+	Factory = CreateXDTOFactory(SchemaFileName);
 
 	Try
-		УдалитьФайлы(ИмяФайлаСхемы);
+		УдалитьФайлы(SchemaFileName);
 	Except
 	EndTry;
 
-	Return Фабрика;
+	Return Factory;
 
 EndFunction
 
-// Возвращает имя типа, который будет использован в xml файле для указанного объекта метаданных
-// Используется при поиске и замене ссылок при загрузке, при модификации схемы current-config при записи
+// Returns a name of the type that will be used in an XML file for the specified metadata object.
+// Used for reference search and replacement upon import, and for current-config schema editing upon writing.
 // 
-// Параметры:
-//  Значение - Объект метаданных или Ссылка
+// Parameters:
+//  Value - Metadata object or Ref.
 //
-// Возвращаемое значение:
-//  Строка - Строка вида AccountingRegisterRecordSet.Хозрасчетный, описывающая объект метаданных 
+// Returns:
+//  String - a string that describes a metadata object (in format similar to AccountingRegisterRecordSet.SelfFinancing). 
 //
-Function XMLТипСсылки(Знач Значение)
+Function XMLRefType(Val Value)
 
-	If TypeOf(Значение) = Тип("ОбъектМетаданных") Then
-		ОбъектМетаданных = Значение;
-		МенеджерОбъекта = ObjectManagerByFullName(ОбъектМетаданных.ПолноеИмя());
-		Ссылка = МенеджерОбъекта.ПолучитьСсылку();
+	If TypeOf(Value) = Type("MetadataObject") Then
+		MetadataObject = Value;
+		ObjectManager = ObjectManagerByFullName(MetadataObject.FullName());
+		Ref = ObjectManager.GetRef();
 	Else
-		ОбъектМетаданных = Значение.Metadata();
-		Ссылка = Значение;
+		MetadataObject = Value.Metadata();
+		Ref = Value;
 	EndIf;
-
-	If ObjectFormsRefType(ОбъектМетаданных) Then
-
-		Return XDTOSerializer.XMLTypeOf(Ссылка).ИмяТипа;
-
+	
+	If ObjectFormsRefType(MetadataObject) Then
+		
+		Return XDTOSerializer.XMLTypeOf(Ref).TypeName;
+		
 	Else
-
-		ТекстИсключения = НСтр(
-			"ru = 'Ошибка при определении XMLТипа ссылки для объекта %1: объект не является ссылочным!'");
-		ТекстИсключения = StrReplace(ТекстИсключения, "%1", ОбъектМетаданных.ПолноеИмя());
-
-		Raise ТекстИсключения;
-
+		
+		ExceptionText = NStr("ru = 'Ошибка при определении XMLТипа ссылки для объекта %1: объект не является ссылочным.'; en = 'Error determining XML Ref type for object %1: this is not a reference object.'");
+		ExceptionText = StrReplace(ExceptionText, "%1", MetadataObject.FullName());
+		
+		Raise ExceptionText;
+		
 	EndIf;
 
 EndFunction
 
-// Возвращает менеджер объекта по полному имени объекта метаданных.
-// Ограничение: не обрабатываются точки маршрутов бизнес-процессов.
+// Returns an object manager by the passed full name of a metadata object.
+// Restriction: business process route points does not process.
 //
-// Параметры:
-//  ПолноеИмя - Строка - полное имя объекта метаданных. Пример: "Справочник.Организации".
+// Parameters:
+//  FullName - String - full name of a metadata object. Example: "Catalog.Company".
 //
-// Возвращаемое значение:
-//  СправочникМенеджер, ДокументМенеджер.
+// Return value:
+//  CatalogManager, DocumentManager.
 // 
-Function ObjectManagerByFullName(ПолноеИмя)
+Function ObjectManagerByFullName(FullName)
 
-	ЧастиИмени = РазложитьСтрокуВArrayПодстрок(ПолноеИмя);
-
-	If ЧастиИмени.Количество() >= 2 Then
-		КлассОМ = ЧастиИмени[0];
-		ИмяОМ = ЧастиИмени[1];
+	NameParts = ParseStringIntoSubstringsArray(FullName);
+	
+	If NameParts.Count() >= 2 Then
+		MOClass = NameParts[0];
+		MOName = NameParts[1];
 	EndIf;
-
-	If ВРег(КлассОМ) = "СПРАВОЧНИК" Then
-		Менеджер = Справочники;
-	ElsIf ВРег(КлассОМ) = "ПЛАНВИДОВХАРАКТЕРИСТИК" Then
-		Менеджер = ПланыВидовХарактеристик;
-	ElsIf ВРег(КлассОМ) = "ПЛАНСЧЕТОВ" Then
-		Менеджер = ПланыСчетов;
-	ElsIf ВРег(КлассОМ) = "ПЛАНВИДОВРАСЧЕТА" Then
-		Менеджер = ПланыВидовРасчета;
+	
+	If Upper(MOClass) = "CATALOG" Then
+		Manager = Catalogs;
+	ElsIf Upper(MOClass) = "CHARTOFCHARACTERISTICTYPES" Then
+		Manager = ChartsOfCharacteristicTypes;
+	ElsIf Upper(MOClass) = "CHARTOFACCOUNTS" Then
+		Manager = ChartsOfAccounts;
+	ElsIf Upper(MOClass) = "CHARTOFCALCULATIONTYPES" Then
+		Manager = ChartsOfCalculationTypes;
 	EndIf;
-
-	Return Менеджер[ИмяОМ];
+	
+	Return Manager[MOName];
 
 EndFunction
 
-Function РазложитьСтрокуВArrayПодстрок(Знач Стр, Разделитель = ".")
+Function ParseStringIntoSubstringsArray(Val Str, Separator = ".")
 
-	ArrayСтрок = New Array;
-	ДлинаРазделителя = StrLen(Разделитель);
+	RowsArray = New Array;
+	SeparatorLength = StrLen(Separator);
 	While True Do
-		Поз = Найти(Стр, Разделитель);
-		If Поз = 0 Then
-			If (СокрЛП(Стр) <> "") Then
-				ArrayСтрок.Добавить(Стр);
+		Pos = Find(Str, Separator);
+		If Pos = 0 Then
+			If (TrimAll(Str) <> "") Then
+				RowsArray.Add(Str);
 			EndIf;
-			Return ArrayСтрок;
+			Return RowsArray;
 		EndIf;
-		ArrayСтрок.Добавить(Лев(Стр, Поз - 1));
-		Стр = Сред(Стр, Поз + ДлинаРазделителя);
+		RowsArray.Add(Left(Str, Pos - 1));
+		Str = Mid(Str, Pos + SeparatorLength);
 	EndDo;
 
 EndFunction
 
-// Подставляет параметры в строку. Максимально возможное число параметров - 9.
-// Параметры в строке задаются как %<номер параметра>. Нумерация параметров начинается с единицы.
+// Substitutes parameters in a string. The maximum number of parameters is 9.
+// Parameters in the string have the following format: %<parameter number>. The parameter numbering starts from 1.
 //
-// Параметры:
-//  СтрокаПодстановки  - Строка - шаблон строки с параметрами (вхождениями вида "%ИмяПараметра");
-//  Параметр<n>        - Строка - подставляемый параметр.
+// Parameters:
+//  StringPattern  - String - string pattern with parameters formatted as "%<parameter number>", for 
+//                           example, "%1 went to %2".
+//  Parameter<n>   - String - parameter value to insert.
 //
-// Возвращаемое значение:
-//  Строка   - текстовая строка с подставленными параметрами.
+// Returns:
+//  String   - text string with parameters inserted.
 //
-// Пример:
-//  SubstituteParametersToString(НСтр("ru='%1 пошел в %2'"), "Вася", "Зоопарк") = "Вася пошел в Зоопарк".
+// Example:
+//  StringFunctionsClientServer.SubstituteParametersToString(NStr("en='%1 went to %2.'"), "Jane", 
+//  "the zoo") = "Jane went to the zoo."
 //
-Function SubstituteParametersToString(Знач СтрокаПодстановки, Знач Параметр1, Знач Параметр2 = Undefined,
-	Знач Параметр3 = Undefined, Знач Параметр4 = Undefined, Знач Параметр5 = Undefined,
-	Знач Параметр6 = Undefined, Знач Параметр7 = Undefined, Знач Параметр8 = Undefined,
-	Знач Параметр9 = Undefined) Export
+Function SubstituteParametersToString(Val StringPattern,
+	Val Parameter1, Val Parameter2 = Undefined, Val Parameter3 = Undefined,
+	Val Parameter4 = Undefined, Val Parameter5 = Undefined, Val Parameter6 = Undefined,
+	Val Parameter7 = Undefined, Val Parameter8 = Undefined, Val Parameter9 = Undefined) Export
 
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%1", Параметр1);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%2", Параметр2);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%3", Параметр3);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%4", Параметр4);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%5", Параметр5);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%6", Параметр6);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%7", Параметр7);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%8", Параметр8);
-	СтрокаПодстановки = StrReplace(СтрокаПодстановки, "%9", Параметр9);
+	StringPattern = StrReplace(StringPattern, "%1", Parameter1);
+	StringPattern = StrReplace(StringPattern, "%2", Parameter2);
+	StringPattern = StrReplace(StringPattern, "%3", Parameter3);
+	StringPattern = StrReplace(StringPattern, "%4", Parameter4);
+	StringPattern = StrReplace(StringPattern, "%5", Parameter5);
+	StringPattern = StrReplace(StringPattern, "%6", Parameter6);
+	StringPattern = StrReplace(StringPattern, "%7", Parameter7);
+	StringPattern = StrReplace(StringPattern, "%8", Parameter8);
+	StringPattern = StrReplace(StringPattern, "%9", Parameter9);
 
-	Return СтрокаПодстановки;
+	Return StringPattern;
 
 EndFunction
 
@@ -3540,8 +3537,8 @@ UseFilterByDateForAllObjects = True;
 mChildObjectsExportExistence = False;
 //mSavedLastExportsCount = 50;
 
-mTypeQueryResult = Тип("РезультатЗапроса");
-mDeletionDataType = Тип("УдалениеОбъекта");
+mTypeQueryResult = Тип("QueryResult");
+mDeletionDataType = Тип("ObjectDeletion");
 
 mRegisterRecordsColumnsMap = New Соответствие;
 ProcessedConstantsCount = 0;
