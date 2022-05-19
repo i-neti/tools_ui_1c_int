@@ -1,151 +1,157 @@
 &AtClient
-Var ЗакрытиеФормыПодтверждено, ПредставленияЗаголовковРеквизитов;
+Var ClosingFormConfirmed, RepresentationHeadersAttributes;
 
-#Region Процедуры_и_функции
+#Region Procedure_and_functions
 
-#Region Основные
+#Region Main
 &AtServer
-Procedure CompareDataOnServer(СтруктураПараметровОтКлиента, ПредставленияЗаголовковРеквизитов, ТекстОшибок)
+Procedure CompareDataOnServer(StructureParametersFromClient, RepresentationHeadersAttributes, TextErrors)
 
-	//If источник А - файл, хранящийся на клиентском компьютере
+	//If source А - fail, stored on the client computer
 	If Object.BaseTypeA = 3 And Object.ConnectingToExternalBaseADeviceStorageFile = 1 Then
-		//Save пути к исходному файлу
+		//Save source file paths
 		PathToFileAatKlient = Object.ConnectionToExternalBaseAPathToFile;
-		//Creating временного файла на сервере
-		ФайлА = GetFromTempStorage(СтруктураПараметровОтКлиента.АдресВременногоХранилищаФайлаА); 
+		//Creating a temporary file on the serverе
+		FileA = GetFromTempStorage(StructureParametersFromClient.TemporaryStorageAddressFileA); 
 		PathToFileAatServer = GetTempFileName(Object.ConnectionToExternalBaseAFileFormat);
-		ФайлА.Write(PathToFileAatServer);
+		FileA.Write(PathToFileAatServer);
 		Object.ConnectionToExternalBaseAPathToFile = PathToFileAatServer;
 	EndIf;
 	
-	//If источник Б - файл, хранящийся на клиентском компьютере
+	//If source B is a file stored on the client computer
 	If Object.BaseTypeB = 3 And Object.ConnectingToExternalBaseBDeviceStorageFile = 1 Then
-		//Save пути к исходному файлу
+		//Save source file paths
 		PathToFileBatKlient = Object.ConnectionToExternalBaseBPathToFile;
-		//Creating временного файла на сервере
-		ФайлБ = GetFromTempStorage(СтруктураПараметровОтКлиента.АдресВременногоХранилищаФайлаБ); 
+		//Creating a temporary file on the serverе
+		FileB = GetFromTempStorage(StructureParametersFromClient.TemporaryStorageAddressFileB); 
 		PathToFileBatServer = GetTempFileName(Object.ConnectionToExternalBaseBFileFormat);
-		ФайлБ.Write(PathToFileBatServer);
+		FileB.Write(PathToFileBatServer);
 		Object.ConnectionToExternalBaseBPathToFile = PathToFileBatServer;
 	EndIf;
 	
-	//Сравнение
-	ОбработкаОбъект = FormAttributeToValue("Object");
-	ОбработкаОбъект.RefreshDataPeriod();
-	ОбработкаОбъект.CompareDataOnServer(ТекстОшибок);
-	ПредставленияЗаголовковРеквизитов = ОбработкаОбъект.ПредставленияЗаголовковРеквизитов;	
-	ValueToFormAttribute(ОбработкаОбъект, "Object");
+	//Compare
+	ProcessingObject = FormAttributeToValue("Object");
+	ProcessingObject.RefreshDataPeriod();
+	ProcessingObject.CompareDataOnServer(TextErrors);
+	RepresentationHeadersAttributes = ProcessingObject.RepresentationHeadersAttributes;	
+	ValueToFormAttribute(ProcessingObject, "Object");
 	
-	For СчетчикРеквизитов = 1 To NumberOfAttributes Do 
-		Items["ResultAttributeА" + СчетчикРеквизитов].Title = ПредставленияЗаголовковРеквизитов["А" + СчетчикРеквизитов];
-		Items["ResultAttributeБ" + СчетчикРеквизитов].Title = ПредставленияЗаголовковРеквизитов["Б" + СчетчикРеквизитов];
+	For AttributesCounter = 1 To NumberOfAttributes Do 
+		Items["ResultAttributeA" + AttributesCounter].Title = RepresentationHeadersAttributes["A" + AttributesCounter];
+		Items["ResultAttributeB" + AttributesCounter].Title = RepresentationHeadersAttributes["B" + AttributesCounter];
 	EndDo;
 	
-	//If источник А - файл, хранящийся на клиентском компьютере
+	//If source A is a file stored on the client computer
 	If Object.BaseTypeA = 3 And Object.ConnectingToExternalBaseADeviceStorageFile = 1 Then
-		//Delete временного файла на сервере
+		//Delete temporary file on the server
 		Try
 			DeleteFiles(Object.ConnectionToExternalBaseAPathToFile);
 		Except EndTry;
-		//Восстановление пути к исходному файлу
+		//Restore the path to the original file
 		Object.ConnectionToExternalBaseAPathToFile = PathToFileAatKlient;
 	EndIf;
 	
-	//If источник Б - файл, хранящийся на клиентском компьютере
+	//If source B is a file stored on the client computer
 	If Object.BaseTypeB = 3 And Object.ConnectingToExternalBaseBDeviceStorageFile = 1 Then
-		//Delete временного файла на сервере
+		//Delete temporary file on the server
 		Try
 			DeleteFiles(Object.ConnectionToExternalBaseBPathToFile);
 		Except EndTry;
-		//Восстановление пути к исходному файлу
+		//Restore the path to the original file
 		Object.ConnectionToExternalBaseBPathToFile = PathToFileBatKlient;
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиенте()
+Procedure CompareDataOnClient()
 	
-	ТекстОшибок = "";
-	СтруктураПараметровНаКлиенте = New Structure;
-	СтруктураПараметровНаКлиенте.Insert("АдресВременногоХранилищаФайлаА", "");
-	СтруктураПараметровНаКлиенте.Insert("АдресВременногоХранилищаФайлаБ", "");
+	TextErrors = "";
+	StructureParametersOnClient = New Structure;
+	StructureParametersOnClient.Insert("TemporaryStorageAddressFileA", "");
+	StructureParametersOnClient.Insert("TemporaryStorageAddressFileB", "");
 	
-	СравнитьДанныеНаКлиентеПередатьФайлА(СтруктураПараметровНаКлиенте, ТекстОшибок);
+	CompareDataOnClientTransferFileA(StructureParametersOnClient, TextErrors);
 		
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиентеПередатьФайлА(СтруктураПараметровНаКлиенте, ТекстОшибок)
+Procedure CompareDataOnClientTransferFileA(StructureParametersOnClient, TextErrors)
 	
-	//Передача файла А с клиента на сервер
+	// Transfer file A from client to server
 	If Object.BaseTypeA = 3 And Object.ConnectingToExternalBaseADeviceStorageFile = 1 Then
-		АдресВременногоХранилищаФайлаА = "";
-		BeginPutFile(New NotifyDescription("СравнитьДанныеНаКлиентеПередатьФайлАЗавершение", ThisForm, New Structure("СтруктураПараметровНаКлиенте, ТекстОшибок", СтруктураПараметровНаКлиенте, ТекстОшибок)), АдресВременногоХранилищаФайлаА,Object.ConnectionToExternalBaseAPathToFile,False);
+		TemporaryStorageAddressFileA = "";
+		BeginPutFile(New NotifyDescription("CompareDataOnClientTransferFileA_End", ThisForm, New Structure("StructureParametersOnClient, TextErrors", StructureParametersOnClient, TextErrors)), TemporaryStorageAddressFileA,Object.ConnectionToExternalBaseAPathToFile,False);
 	Else
-		СравнитьДанныеНаКлиентеПередатьФайлБ(СтруктураПараметровНаКлиенте, ТекстОшибок);
+		CompareDataOnClientTransferFileB(StructureParametersOnClient, TextErrors);
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиентеПередатьФайлАЗавершение(Result, Address, ВыбранноеИмяФайла, AdditionalParameters) Export
+Procedure CompareDataOnClientTransferFileA_End(Result, Address, SelectedFileName, AdditionalParameters) Export
 	
-	СтруктураПараметровНаКлиенте = AdditionalParameters.СтруктураПараметровНаКлиенте;
-	ТекстОшибок = AdditionalParameters.ТекстОшибок;
+	StructureParametersOnClient = AdditionalParameters.StructureParametersOnClient;
+	TextErrors = AdditionalParameters.TextErrors;
 
 	If Result Then
-		СтруктураПараметровНаКлиенте.АдресВременногоХранилищаФайлаА = Address;
-		СравнитьДанныеНаКлиентеПередатьФайлБ(СтруктураПараметровНаКлиенте, ТекстОшибок);
+		StructureParametersOnClient.TemporaryStorageAddressFileA = Address;
+		CompareDataOnClientTransferFileB(StructureParametersOnClient, TextErrors);
 	Else
-		ТекстОшибок = "Not удалось поместить во временное хранилище файл А: """ + Object.ConnectionToExternalBaseAPathToFile + """";
-		Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибок);
+		TextErrors = StrTemplate(Nstr("ru = 'Не удалось поместить во временное хранилище файл А: ""%1""';en = 'Failed to put file A into temporary storage: ""%1""'")
+			, Object.ConnectionToExternalBaseAPathToFile);
+		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 		Return;
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиентеПередатьФайлБ(СтруктураПараметровНаКлиенте, ТекстОшибок)
+Procedure CompareDataOnClientTransferFileB(StructureParametersOnClient, TextErrors)
 	
-	//Передача файла Б с клиента на сервер
+	// Transfer file B from client to server
 	If Object.BaseTypeB = 3 And Object.ConnectingToExternalBaseBDeviceStorageFile = 1 Then
-		АдресВременногоХранилищаФайлаБ = "";
-		BeginPutFile(New NotifyDescription("СравнитьДанныеНаКлиентеПередатьФайлБЗавершение", ThisForm, New Structure("СтруктураПараметровНаКлиенте, ТекстОшибок", СтруктураПараметровНаКлиенте, ТекстОшибок)), АдресВременногоХранилищаФайлаБ,Object.ConnectionToExternalBaseBPathToFile,False);
+		TemporaryStorageAddressFileB = "";
+		BeginPutFile(New NotifyDescription("CompareDataOnClientTransferFileB_End"
+				, ThisForm
+				, New Structure("StructureParametersOnClient, TextErrors", StructureParametersOnClient, TextErrors))
+			, TemporaryStorageAddressFileB,Object.ConnectionToExternalBaseBPathToFile
+			, False);
 		Return;
 	Else
-		СравнитьДанныеНаКлиентеЗавершение(СтруктураПараметровНаКлиенте, ТекстОшибок);
+		CompareDataOnClientEnd(StructureParametersOnClient, TextErrors);
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиентеПередатьФайлБЗавершение(Result, Address, ВыбранноеИмяФайла, AdditionalParameters) Export
+Procedure CompareDataOnClientTransferFileB_End(Result, Address, SelectedFileName, AdditionalParameters) Export
 	
-	СтруктураПараметровНаКлиенте = AdditionalParameters.СтруктураПараметровНаКлиенте;
-	ТекстОшибок = AdditionalParameters.ТекстОшибок;
+	StructureParametersOnClient = AdditionalParameters.StructureParametersOnClient;
+	TextErrors = AdditionalParameters.TextErrors;
 	
 	If Result Then
-		СтруктураПараметровНаКлиенте.АдресВременногоХранилищаФайлаБ = Address;			
+		StructureParametersOnClient.TemporaryStorageAddressFileB = Address;			
 	Else
-		ТекстОшибок = "Not удалось поместить во временное хранилище файл Б: """ + Object.ConnectionToExternalBaseBPathToFile + """";
-		Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибок);
+		TextErrors = StrTemplate(Nstr("ru = 'Не удалось поместить во временное хранилище файл Б: ""%1""';en = 'Failed to put file B into temporary storage: ""%1""'")
+			, Object.ConnectionToExternalBaseBPathToFile);		
+		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 		Return;
 	EndIf;
 	
-	СравнитьДанныеНаКлиентеЗавершение(СтруктураПараметровНаКлиенте, ТекстОшибок);
+	CompareDataOnClientEnd(StructureParametersOnClient, TextErrors);
 
 EndProcedure
 
 &AtClient
-Procedure СравнитьДанныеНаКлиентеЗавершение(СтруктураПараметровНаКлиенте, ТекстОшибок)
+Procedure CompareDataOnClientEnd(StructureParametersOnClient, TextErrors)
 	
-	CompareDataOnServer(СтруктураПараметровНаКлиенте, ПредставленияЗаголовковРеквизитов, ТекстОшибок);
-	If Not IsBlankString(ТекстОшибок) Then
-		Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибок);
+	CompareDataOnServer(StructureParametersOnClient, RepresentationHeadersAttributes, TextErrors);
+	If Not IsBlankString(TextErrors) Then
+		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 	EndIf; 
 	
-	Items.ГруппаОсновная.CurrentPage = Items.ГруппаРезультатСравнения;
+	Items.GroupMain.CurrentPage = Items.ГруппаРезультатСравнения;
 	ОбновитьВидимостьДоступностьЭлементовФормы();
 
 EndProcedure
@@ -153,9 +159,9 @@ EndProcedure
 &AtServer
 Procedure RefreshDataPeriod()
 	
-	ОбработкаОбъект = FormAttributeToValue("Object");
-	ОбработкаОбъект.RefreshDataPeriod();
-	ValueToFormAttribute(ОбработкаОбъект, "Object");
+	ProcessingObject = FormAttributeToValue("Object");
+	ProcessingObject.RefreshDataPeriod();
+	ValueToFormAttribute(ProcessingObject, "Object");
 			
 EndProcedure
 #EndRegion 
@@ -164,7 +170,7 @@ EndProcedure
 Procedure ПередЗакрытиемЗавершение(Result, AdditionalParameters) Export
 	
 	If Result = DialogReturnCode.Yes Then
-		ЗакрытиеФормыПодтверждено = True;
+		ClosingFormConfirmed = True;
 		Close();
 	EndIf;
 	
@@ -182,7 +188,7 @@ Function ПолучитьДанныеВВидеСтруктуры(Сохраня
 EndFunction
 
 &AtClient
-Procedure ОткрытьКонструкторЗапроса(BaseID)    	
+Procedure OpenQueryConstructor(BaseID)    	
 	
 	QueryText = Object["QueryText" + BaseID];
 		
@@ -224,7 +230,7 @@ Procedure ОткрытьКонструкторЗапроса(BaseID)
 			Application = New COMObject(StrReplace(Object["VersionPlatformExternalBase" + BaseID],".","") + ".Application");
 			Подключение = Application.Connect(ParameterConnections);
 		Except
-			Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": Ошибка при подключении к внешней базе: " + ErrorDescription());
+			Message(Формат(CurrentDate(),"DLF=DT") + ": Ошибка при подключении к внешней базе: " + ErrorDescription());
 			Return;
 		EndTry;
 			
@@ -400,8 +406,8 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 			Подключение = COMConnector.Connect(ParameterConnections);
 		Except
 			ТекстОшибки = "Error при подключении к внешней базе: " + ErrorDescription();
-			Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибки);
-			ТекстОшибок = ТекстОшибок + Chars.LF + ТекстОшибки;
+			Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
+			TextErrors = TextErrors + Chars.LF + ТекстОшибки;
 			Return;
 		EndTry;
 
@@ -414,7 +420,7 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 	Try
 		QueryOptions = Query.FindParameters();
 	Except
-		Message(Формат(ТекущаяДата(),"ДЛФ=DT") + "Error при получении списка параметров: " + ErrorDescription());
+		Message(Формат(CurrentDate(),"DLF=DT") + "Error при получении списка параметров: " + ErrorDescription());
 		Return;
 	EndTry;
 	
@@ -462,17 +468,17 @@ Procedure ЗаполнитьТипыСтолбцовКлючаВоВсехСтр
 EndProcedure
 
 &AtServer
-Function ВыгрузитьРезультатВФайлНаСервере(ДляКлиента, ПредставленияЗаголовковРеквизитов)
+Function ВыгрузитьРезультатВФайлНаСервере(ДляКлиента, RepresentationHeadersAttributes)
 	
 	РеквизитОбъект = FormAttributeToValue("Object");
-	РеквизитОбъект.ПредставленияЗаголовковРеквизитов = ПредставленияЗаголовковРеквизитов;
+	РеквизитОбъект.RepresentationHeadersAttributes = RepresentationHeadersAttributes;
 	АдресФайла = РеквизитОбъект.ВыгрузитьРезультатВФайлНаСервере(ДляКлиента);
 	Return АдресФайла;
 	
 EndFunction
 
 &AtClient
-Procedure КомандаВыгрузитьРезультатВФайлНаКлиентеЗавершениеВопрос(РезультатВопроса, AdditionalParameters) Export
+Procedure CommandUploadResultToFileOnClientEndQuestion(РезультатВопроса, AdditionalParameters) Export
 	
 	If РезультатВопроса = DialogReturnCode.None Then
 		Return;
@@ -483,18 +489,18 @@ Procedure КомандаВыгрузитьРезультатВФайлНаКли
 		Return;
 	EndIf;
 	
-	ДанныеФайла = GetFromTempStorage(АдресФайла, ПредставленияЗаголовковРеквизитов);
+	ДанныеФайла = GetFromTempStorage(АдресФайла, RepresentationHeadersAttributes);
 	ДиалогСохраненияФайла = New FileDialog(FileDialogMode.Save);
 	ДиалогСохраненияФайла.FullFileName = Object.PathToDownloadFile;
 	ДиалогСохраненияФайла.Filter = "*." + Object.UploadFileFormat + "|*." + Object.UploadFileFormat;
 	ДиалогСохраненияФайла.Title = "Выберите каталог"; 
 	
-	ДиалогСохраненияФайла.Show(New NotifyDescription("КомандаВыгрузитьРезультатВФайлНаКлиентеЗавершение", ThisForm, New Structure("ДанныеФайла, ДиалогСохраненияФайла", ДанныеФайла, ДиалогСохраненияФайла)));
+	ДиалогСохраненияФайла.Show(New NotifyDescription("CommandUploadResultToFileOnClientEnd", ThisForm, New Structure("ДанныеФайла, ДиалогСохраненияФайла", ДанныеФайла, ДиалогСохраненияФайла)));
 
 EndProcedure
 
 &AtClient
-Procedure КомандаВыгрузитьРезультатВФайлНаКлиентеЗавершение(SelectedFiles, AdditionalParameters) Export
+Procedure CommandUploadResultToFileOnClientEnd(SelectedFiles, AdditionalParameters) Export
 	
 	ДанныеФайла = AdditionalParameters.ДанныеФайла;
 	ДиалогСохраненияФайла = AdditionalParameters.ДиалогСохраненияФайла;
@@ -516,21 +522,21 @@ EndProcedure
 Function ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере(BaseID, МаксимальноеЧислоСтрок = 0, ТолькоДубликаты = False, Подключение = Undefined)
 
 	ТекстОшибки = "";
-	ОбработкаОбъект = FormAttributeToValue("Object");
+	ProcessingObject = FormAttributeToValue("Object");
 		
-	If Not ОбработкаОбъект.CheckFillingAttributes(BaseID) Then
+	If Not ProcessingObject.CheckFillingAttributes(BaseID) Then
 		Return Undefined;
 	EndIf;
 	
 	Подключение = Undefined;
-	ТЗ = ОбработкаОбъект.ReadDataAndGetValueTable(BaseID, ТекстОшибки, Подключение);
+	ТЗ = ProcessingObject.ReadDataAndGetValueTable(BaseID, ТекстОшибки, Подключение);
 	
 	If ТЗ = Undefined Then
-		Message(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибки);
+		Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
 		Return Undefined;
 	EndIf;
 	
-	Template = ОбработкаОбъект.GetTemplate("PreviewForm");
+	Template = ProcessingObject.GetTemplate("PreviewForm");
 	SpreadsheetDocument = New SpreadsheetDocument;
 	
 	//Key 1
@@ -719,10 +725,10 @@ EndProcedure
 &AtClient
 Procedure ОбновитьИтогиПоРеквизитамТЧ(ИдентификаторБазы)
 	
-	For СчетчикРеквизитов = 1 To NumberOfAttributes Do
+	For AttributesCounter = 1 To NumberOfAttributes Do
 	
-		ИмяРеквизита = "Реквизит" + ИдентификаторБазы + СчетчикРеквизитов;
-		Элементы["Результат" + ИмяРеквизита].ТекстПодвала = ?(Объект["НастройкиФайла" + ИдентификаторБазы].Количество() >= СчетчикРеквизитов И Объект["НастройкиФайла" + ИдентификаторБазы][СчетчикРеквизитов - 1].РассчитыватьИтог, Объект["ЗначениеИтога" + ИмяРеквизита], "");
+		ИмяРеквизита = "Реквизит" + ИдентификаторБазы + AttributesCounter;
+		Элементы["Результат" + ИмяРеквизита].ТекстПодвала = ?(Объект["НастройкиФайла" + ИдентификаторБазы].Количество() >= AttributesCounter И Объект["НастройкиФайла" + ИдентификаторБазы][AttributesCounter - 1].РассчитыватьИтог, Объект["ЗначениеИтога" + ИмяРеквизита], "");
 	
 	EndDo; 
 		
@@ -1104,7 +1110,7 @@ EndProcedure
 &AtClient
 Procedure ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(РежимОтображения = 0)
 	
-	Items.СравнитьДанные.Enabled = Object.RelationalOperation > 0;
+	Items.CompareData.Enabled = Object.RelationalOperation > 0;
 	For СчетчикОпераций = 1 To 7 Do 
 		
 		If СчетчикОпераций = Object.RelationalOperation Then
@@ -1146,14 +1152,14 @@ EndProcedure
 &AtClient
 Procedure ОбновитьВидимостьДоступностьВкладкиУсловияВыводаСтрок()
 	
-	Items.GroupConditionsOutputRows.BgColor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ЦветФонаФормыПоУмолчанию);;
+	Items.GroupConditionsOutputRows.BgColor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
 &AtClient
 Procedure ОбновитьВидимостьДоступностьВкладкиУсловияЗапретаВыводаСтрок()
 	
-	Items.GroupConditionsProhibitOutputRows.BgColor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ЦветФонаФормыПоУмолчанию);;
+	Items.GroupConditionsProhibitOutputRows.BgColor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
@@ -1170,7 +1176,7 @@ EndProcedure
 
 #Region Save
 &AtClient
-Procedure СохранитьНастройкиВФайлНаКлиенте(СохранятьТабличныеДокументы = False)
+Procedure SaveSettingsToFileAtClient(СохранятьТабличныеДокументы = False)
 	
 	Mode = FileDialogMode.Save;
 	ДиалогВыбора = New FileDialog(Mode);
@@ -1179,12 +1185,12 @@ Procedure СохранитьНастройкиВФайлНаКлиенте(Со�
 	ДиалогВыбора.Filter = Filter;
 	ДиалогВыбора.Title = "Укажите файл для сохранения настроек";   
 
-	ДиалогВыбора.Show(New NotifyDescription("СохранитьНастройкиВФайлНаКлиентеЗавершение", ThisForm, New Structure("ДиалогВыбора,СохранятьТабличныеДокументы", ДиалогВыбора, СохранятьТабличныеДокументы)));
+	ДиалогВыбора.Show(New NotifyDescription("SaveSettingsToFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора,СохранятьТабличныеДокументы", ДиалогВыбора, СохранятьТабличныеДокументы)));
 	
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиВФайлНаКлиентеЗавершение(SelectedFiles, AdditionalParameters) Export
+Procedure SaveSettingsToFileAtClientEnd(SelectedFiles, AdditionalParameters) Export
 	
 	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;
 	СохранятьТабличныеДокументы = AdditionalParameters.СохранятьТабличныеДокументы;
@@ -1192,7 +1198,7 @@ Procedure СохранитьНастройкиВФайлНаКлиентеЗав
 	If (SelectedFiles <> Undefined) Then
 		
 		Object.Title = Mid(ДиалогВыбора.FullFileName, StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1);
-		Address = СохранитьНастройкиВФайлНаСервере(СохранятьТабличныеДокументы);
+		Address = SaveSettingsToFileAtServer(СохранятьТабличныеДокументы);
 		BinaryData = GetFromTempStorage(Address);
 		BinaryData.Write(ДиалогВыбора.FullFileName);
 		
@@ -1201,7 +1207,7 @@ Procedure СохранитьНастройкиВФайлНаКлиентеЗав
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиВБазуНаКлиенте(СохранятьТабличныеДокументы = False);
+Procedure SaveSettingsToDatabaseAtClient(СохранятьТабличныеДокументы = False);
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation)  Then
 	
@@ -1252,7 +1258,7 @@ Procedure СохранитьВВыбраннуюОперациюЗавершен
 EndProcedure
 
 &AtServer
-Function СохранитьНастройкиВФайлНаСервере(СохранятьТабличныеДокументы)
+Function SaveSettingsToFileAtServer(СохранятьТабличныеДокументы)
 	
 	PathToFile = GetTempFileName("xml");
 	Data = ПолучитьДанныеВВидеСтруктуры(СохранятьТабличныеДокументы); 
@@ -1281,7 +1287,7 @@ EndProcedure
 
 #Region Load
 &AtClient
-Procedure ОткрытьНастройкиИзФайлаНаКлиенте(Val Оповещение, ЗагружатьТабличныеДокументы = False)
+Procedure OpenSettingsFromFileAtClient(Val Оповещение, ЗагружатьТабличныеДокументы = False)
 
 	Mode = FileDialogMode.Opening;
 	ДиалогВыбора = New FileDialog(Mode);
@@ -1290,12 +1296,12 @@ Procedure ОткрытьНастройкиИзФайлаНаКлиенте(Val �
 	ДиалогВыбора.Filter = Filter;
 	ДиалогВыбора.Title = "Укажите файл с настройками";   
 
-	ДиалогВыбора.Show(New NotifyDescription("ОткрытьНастройкиИзФайлаНаКлиентеЗавершение", ThisForm, New Structure("ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы", ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы)));
+	ДиалогВыбора.Show(New NotifyDescription("OpenSettingsFromFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы", ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы)));
 
 EndProcedure
 
 &AtClient
-Procedure ОткрытьНастройкиИзФайлаНаКлиентеЗавершение(SelectedFiles, AdditionalParameters) Export
+Procedure OpenSettingsFromFileAtClientEnd(SelectedFiles, AdditionalParameters) Export
 	
 	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;
 	Оповещение = AdditionalParameters.Оповещение;	
@@ -1304,7 +1310,7 @@ Procedure ОткрытьНастройкиИзФайлаНаКлиентеЗав
 	If (SelectedFiles <> Undefined) Then
 		
 		Address = PutToTempStorage(New BinaryData(ДиалогВыбора.FullFileName));
-		ОткрытьНастройкиИзФайлаНаСервере(Address, ЗагружатьТабличныеДокументы);
+		OpenSettingsFromFileAtServer(Address, ЗагружатьТабличныеДокументы);
 		ПервыйСимвол = StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1;
 		ПоследнийСимвол = StrFind(ДиалогВыбора.FullFileName, ".", SearchDirection.FromEnd);
 		Object.Title = Mid(ДиалогВыбора.FullFileName, ПервыйСимвол, ПоследнийСимвол - ПервыйСимвол);
@@ -1320,7 +1326,7 @@ Procedure ОткрытьНастройкиИзФайлаНаКлиентеЗав
 EndProcedure
 
 &AtServer
-Procedure ОткрытьНастройкиИзФайлаНаСервере(Address, ЗагружатьТабличныеДокументы = False)
+Procedure OpenSettingsFromFileAtServer(Address, ЗагружатьТабличныеДокументы = False)
 	
 	PathToFile = GetTempFileName("xml");
 	BinaryData = GetFromTempStorage(Address);
@@ -1404,7 +1410,7 @@ Procedure OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, Заг�
 EndProcedure
 
 &AtClient
-Procedure ОткрытьНастройкиИзФайлаЗавершение(Result, AdditionalParameters) Export
+Procedure OpenSettingsFromFileEnd(Result, AdditionalParameters) Export
 	
 	ОбновитьВидимостьДоступностьЭлементовФормы();
 	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
@@ -1421,7 +1427,7 @@ Procedure ОткрытьФормуВыбораОперацииДляЗаписи
 EndProcedure
 
 &AtClient
-Procedure ОткрытьНастройкиИзБазыЗавершение(Result, AdditionalParameters) Export
+Procedure OpenSettingsFromBaseEnd(Result, AdditionalParameters) Export
 	
 	ВыбранныйЭлемент = Result;
 	ЗагружатьТабличныеДокументы = AdditionalParameters <> Undefined And AdditionalParameters.Property("ЗагружатьТабличныеДокументы") And AdditionalParameters.ЗагружатьТабличныеДокументы;
@@ -1593,84 +1599,84 @@ EndProcedure
 
 #Region Commands
 &AtClient
-Procedure СравнитьДанные(Command)
+Procedure CompareData(Command)
 	
-	СравнитьДанныеНаКлиенте();
-	
-EndProcedure
-
-&AtClient
-Procedure КонструкторЗапросаБ(Command)
-	ОткрытьКонструкторЗапроса("Б");
-EndProcedure
-
-&AtClient
-Procedure КонструкторЗапросаА(Command)
-	ОткрытьКонструкторЗапроса("А");
-EndProcedure
-
-&AtClient
-Procedure СохранитьНастройкиВФайл(Command)
-	
-	СохранитьНастройкиВФайлНаКлиенте();
+	CompareDataOnClient();
 	
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиИТабличныеДокументыВФайл(Command)
+Procedure QueryConstructorB(Command)
+	OpenQueryConstructor("Б");
+EndProcedure
+
+&AtClient
+Procedure QueryConstructorA(Command)
+	OpenQueryConstructor("А");
+EndProcedure
+
+&AtClient
+Procedure SaveSettingsToFile(Command)
 	
-	СохранитьНастройкиВФайлНаКлиенте(True);
+	SaveSettingsToFileAtClient();
 	
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиВБазу(Command)
+Procedure SaveSettingsAndSpreadsheetDocumentsToFile(Command)
 	
-	СохранитьНастройкиВБазуНаКлиенте();
+	SaveSettingsToFileAtClient(True);
+	
+EndProcedure
+
+&AtClient
+Procedure SaveSettingsToDatabase(Command)
+	
+	SaveSettingsToDatabaseAtClient();
 		
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиИТабличныеДокументыВБазу(Command)
+Procedure SaveSettingsAndSpreadsheetDocumentsToDatabase(Command)
 	
-	СохранитьНастройкиВБазуНаКлиенте(True);
+	SaveSettingsToDatabaseAtClient(True);
 	
 EndProcedure
 
 &AtClient
-Procedure ОткрытьНастройкиИзФайла(Command)
+Procedure OpenSettingsFromFile(Command)
 	
-	ОткрытьНастройкиИзФайлаНаКлиенте(New NotifyDescription("ОткрытьНастройкиИзФайлаЗавершение", ThisForm));
+	OpenSettingsFromFileAtClient(New NotifyDescription("OpenSettingsFromFileEnd", ThisForm));
 			
 EndProcedure
 
 &AtClient
-Procedure ЗагрузитьНастройкиИТабличныеДокументыИзФайла(Command)
+Procedure LoadSettingsAndSpreadsheetDocumentsFromFile(Command)
 	
-	ОткрытьНастройкиИзФайлаНаКлиенте(New NotifyDescription("ОткрытьНастройкиИзФайлаЗавершение", ThisForm), True);
+	OpenSettingsFromFileAtClient(New NotifyDescription("OpenSettingsFromFileEnd", ThisForm), True);
 	
 EndProcedure
 
 &AtClient
-Procedure ОткрытьНастройкиИзБазы(Command)
+Procedure OpenSettingsFromBase(Command)
 	
 	ВыбранныйЭлемент = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("ОткрытьНастройкиИзБазыЗавершение", ThisForm), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
 EndProcedure
 
 &AtClient
-Procedure ЗагрузитьНастройкиИТабличныеДокументыИзБазы(Command)
+Procedure LoadSettingsAndSpreadsheetDocumentsFromDatabase(Command)
 	
 	ВыбранныйЭлемент = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("ОткрытьНастройкиИзБазыЗавершение", ThisForm, New Structure("ЗагружатьТабличныеДокументы", True)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("ЗагружатьТабличныеДокументы", True)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаПолучитьПараметрыЗапросаА(Command)
+Procedure CommandGetQueryParametersA(Command)
 	
 	ПолучитьПараметрыИзЗапросаНаСервере("А");
 	Items.ГруппаСтраницыБазаА.CurrentPage = Items.ГруппаСтраницаПараметрыЗапросаА;
@@ -1678,7 +1684,7 @@ Procedure КомандаПолучитьПараметрыЗапросаА(Comma
 EndProcedure
 
 &AtClient
-Procedure КомандаПолучитьПараметрыЗапросаБ(Command)
+Procedure CommandGetQueryParametersB(Command)
 	
 	ПолучитьПараметрыИзЗапросаНаСервере("Б");
 	Items.ГруппаСтраницыБазаБ.CurrentPage = Items.ГруппаСтраницаПараметрыЗапросаБ;
@@ -1693,35 +1699,35 @@ Procedure ПосетитьСтраницуАвтора(Command)
 EndProcedure
 
 &AtClient
-Procedure ПосетитьСтраницуОбработки(Command)
+Procedure VisitPageProcessing(Command)
 	
 	BeginRunningApplication(New NotifyDescription("ПосетитьСтраницу", ThisForm), "https://infostart.ru/public/581794/");
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаСкачатьОбработку(Command)
+Procedure CommandDownloadProcessing(Command)
 	
 	BeginRunningApplication(New NotifyDescription("ПосетитьСтраницу", ThisForm), "http://sertakov.by/work/KSD.epf");
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаА(Command)
+Procedure CommandPreviewSourceA(Command)
 	
 	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(1);
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаБ(Command)
+Procedure CommandPreviewSourceB(Command)
 	
 	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(2);
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаАВсеСтроки(Command)	
+Procedure CommandPreviewSourceA_AllRows(Command)	
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А");
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А");	
@@ -1729,7 +1735,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаА100Строк(Command)
+Procedure CommandPreviewSourceA_100Rows(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",100);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (100 строк)");
@@ -1737,7 +1743,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаБ100Строк(Command)
+Procedure CommandPreviewSourceB_100Rows(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",100);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (100 строк)");
@@ -1745,7 +1751,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаБВсеСтроки(Command)
+Procedure CommandPreviewSourceB_AllRows(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б");
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б");
@@ -1753,7 +1759,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаАДубликаты(Command)
+Procedure CommandPreviewSourceA_Duplicates(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",,True);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (дубликаты)");
@@ -1761,7 +1767,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаБДубликаты(Command)
+Procedure CommandPreviewSourceB_Duplicates(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",,True);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (дубликаты)");
@@ -1769,7 +1775,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаА1000Строк(Command)
+Procedure CommandPreviewSourceA_1000Rows(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",1000);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (1000 строк)");
@@ -1777,7 +1783,7 @@ Procedure КомандаПредварительныйПросмотрИсточ
 EndProcedure
 
 &AtClient
-Procedure КомандаПредварительныйПросмотрИсточникаБ1000Строк(Command)
+Procedure CommandPreviewSourceB_1000Rows(Command)
 	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",1000);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (1000 строк)");
@@ -1792,7 +1798,7 @@ EndProcedure
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	NumberOfAttributes = 5;
-	ЦветФонаФормыПоУмолчанию = StyleColors.FormBackColor;
+	ColorBackgroundFormDefault = StyleColors.FormBackColor;
 	
 	If Parameters.Property("UserMode") And Parameters.UserMode Then
 		Object.UserMode = True;
@@ -1848,20 +1854,20 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	EndIf;
 		
-	Пример1 = "КлючТек = Left(КлючТек,10);";
-	Пример2 = "КлючТек = Number(КлючТек) + 1;";
-	Пример3 = "If Left(КлючТек,1) = ""#"" Then КлючТек = Mid(КлючТек, 2); EndIf;";
-	Пример4 = "КлючТек = Right(""0000000000"" + КлючТек, 10);";
-	Пример5 = "КлючТек = StrReplace(КлючТек, ""_"", """");";
-	Пример6 = "КлючТек = ?(ValueIsFilled(КлючТек), КлючТек, ""<>"");";
+	Example1 = "КлючТек = Left(КлючТек,10);";
+	Example2 = "КлючТек = Number(КлючТек) + 1;";
+	Example3 = "If Left(КлючТек,1) = ""#"" Then КлючТек = Mid(КлючТек, 2); EndIf;";
+	Example4 = "КлючТек = Right(""0000000000"" + КлючТек, 10);";
+	Example5 = "КлючТек = StrReplace(КлючТек, ""_"", """");";
+	Example6 = "КлючТек = ?(ValueIsFilled(КлючТек), КлючТек, ""<>"");";
 	
 	If Object.UserMode Then
 		
-		Items.ГруппаШапкаСкрываемыеРеквизиты.Visible = False;
+		Items.GroupHeaderHiddenAttributes.Visible = False;
 		Items.ГруппаБазаАСтраница.Visible = False;
 		Items.ГруппаБазаБСтраница.Visible = False;
-		Items.ГруппаНастройкиВывода.Visible = False;
-		Items.ГруппаОсновная.PagesRepresentation = FormPagesRepresentation.None;
+		Items.GroupOutputSettings.Visible = False;
+		Items.GroupMain.PagesRepresentation = FormPagesRepresentation.None;
 		Items.РезультатКомандаВыгрузитьРезультатВФайлНаСервере.Visible = False;
 		Items.РезультатГруппаВидимостьСтолбцовКлюча.Visible = False;
 				
@@ -1936,7 +1942,7 @@ EndProcedure
 
 &AtClient
 Procedure BeforeClose(Cancel, StandardProcessing)
-	If Not ЗакрытиеФормыПодтверждено Then
+	If Not ClosingFormConfirmed Then
 		Cancel = True;
 		ShowQueryBox(New NotifyDescription("ПередЗакрытиемЗавершение", ThisForm),"Close консоль сравнения данных?", QuestionDialogMode.YesNo);
 	EndIf;
@@ -2082,7 +2088,7 @@ Procedure DiscretenessOfRelativePeriodOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбора(Item, ДанныеВыбора, StandardProcessing)
+Procedure ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбора(Item, ChoiceData, StandardProcessing)
 	
 	FileDialog = New FileDialog(FileDialogMode.Opening);
 	
@@ -2123,7 +2129,7 @@ Procedure ПодключениеКВнешнейБазеАПутьКФайлуН
 EndProcedure
 
 &AtClient
-Procedure ConnectionToExternalBaseBPathToFileStartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ConnectionToExternalBaseBPathToFileStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	FileDialog = New FileDialog(FileDialogMode.Opening);
 	
@@ -2236,7 +2242,7 @@ Procedure ПриИзмененииКлючевогоРеквизита(Item)
 EndProcedure
 
 &AtClient
-Procedure ParameterListAParameterValueStartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ParameterListAParameterValueStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	Items.ParameterListAParameterValue.ChooseType = TypeOf(Items.ParameterListA.CurrentData.ParameterValue) = Type("Undefined");	
 	ПриНачалеВыбораЗначенияПараметра("А", StandardProcessing);
@@ -2252,7 +2258,7 @@ Procedure ParameterListAParameterValueOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure ParameterListBParameterValueStartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ParameterListBParameterValueStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	Items.ParameterListBParameterValue.ChooseType = TypeOf(Items.ParameterListB.CurrentData.Значениепараметра) = Type("Undefined");	
 	ПриНачалеВыбораЗначенияПараметра("Б", StandardProcessing);
@@ -2280,19 +2286,19 @@ Procedure NumberColumnsInKeyOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure ResultKey1StartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ResultKey1StartChoice(Item, ChoiceData, StandardProcessing)
 	
 	StandardProcessing = False;
 	
 EndProcedure
 
 &AtClient
-Procedure ResultKey2StartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ResultKey2StartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing = False;
 EndProcedure
 
 &AtClient
-Procedure ResultKey3StartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure ResultKey3StartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing = False;
 EndProcedure
 
@@ -2338,7 +2344,7 @@ Procedure CommandVisibilityTypesColumnsKey(Command)
 EndProcedure
 
 &AtClient
-Procedure КомандаВыгрузитьРезультатВФайлНаСервере(Command)
+Procedure CommandUploadResultToFileOnServer(Command)
 	
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
@@ -2357,24 +2363,24 @@ Procedure КомандаВыгрузитьРезультатВФайлНаСер
 	EndIf;
 			
 	Ответ = Undefined; 	
-	ShowQueryBox(New NotifyDescription("КомандаВыгрузитьРезультатВФайлНаСервереЗавершение", ThisForm), "Unload таблицу в файл на сервере?", QuestionDialogMode.YesNo, , DialogReturnCode.None, "Выгрузка");
+	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnServerEnd", ThisForm), "Unload таблицу в файл на сервере?", QuestionDialogMode.YesNo, , DialogReturnCode.None, "Выгрузка");
 	
 EndProcedure
 
 &AtClient
-Procedure КомандаВыгрузитьРезультатВФайлНаСервереЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure CommandUploadResultToFileOnServerEnd(РезультатВопроса, AdditionalParameters) Export
 	
 	Ответ = РезультатВопроса; 
 	If Ответ = DialogReturnCode.None Then
 		Return;
 	EndIf;
 	
-	ВыгрузитьРезультатВФайлНаСервере(False, ПредставленияЗаголовковРеквизитов);
+	ВыгрузитьРезультатВФайлНаСервере(False, RepresentationHeadersAttributes);
 
 EndProcedure
 
 &AtClient
-Procedure PathToDownloadFileStartChoice(Item, ДанныеВыбора, StandardProcessing)
+Procedure PathToDownloadFileStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
@@ -2409,7 +2415,7 @@ Procedure ПутьКФайлуВыгрузкиНачалоВыбораЗавер
 EndProcedure
 
 &AtClient
-Procedure КомандаВыгрузитьРезультатВФайлНаКлиенте(Command)
+Procedure CommandUploadResultToFileOnClient(Command)
 	
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
@@ -2419,7 +2425,7 @@ Procedure КомандаВыгрузитьРезультатВФайлНаКли
 		Return;
 	EndIf;
 	
-	ShowQueryBox(New NotifyDescription("КомандаВыгрузитьРезультатВФайлНаКлиентеЗавершениеВопрос", ThisForm), "Unload таблицу в файл на клиенте?", QuestionDialogMode.YesNo,, DialogReturnCode.None, "Выгрузка");
+	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnClientEndQuestion", ThisForm), "Unload таблицу в файл на клиенте?", QuestionDialogMode.YesNo,, DialogReturnCode.None, "Выгрузка");
 	
 EndProcedure
 
@@ -2475,77 +2481,38 @@ Procedure ConditionsProhibitOutputRowsDisabledOnChange(Item)
 	
 EndProcedure
 
-&НаКлиенте
-Процедура СортироватьТаблицуРасхожденийПриИзменении(Элемент)
+&AtClient
+Procedure SortTableDifferencesOnChange(Item)
 	
 	ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
 		
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПорядокСортировкиТаблицыРасхожденийНачалоВыбора(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure OrderSortTableDifferencesStartChoice(Item, ChoiceData, StandardProcessing)
 	
-	ВозвращаемоеЗначение = Неопределено;
+	ReturnValue = Undefined;
 	
-	ОткрытьФорму(СтрЗаменить(ИмяФормы, "ФормаУправляемая", "ФормаНастройкиСортировки"), Новый Структура("ПорядокСортировкиТаблицыРасхождений", Объект.ПорядокСортировкиТаблицыРасхождений),,,,, Новый ОписаниеОповещения("ПорядокСортировкиТаблицыРасхожденийНачалоВыбораЗавершение", ЭтаФорма), РежимОткрытияОкнаФормы.БлокироватьВесьИнтерфейс);
+	OpenForm(StrReplace(FormName, "ФормаУправляемая", "ФормаНастройкиСортировки")
+		, New Structure("OrderSortTableDifferences", Object.OrderSortTableDifferences)
+		,
+		,
+		,
+		,
+		, New NotifyDescription("OrderSortTableDifferencesStartChoiceEnd", ThisForm)
+		, РежимОткрытияОкнаФормы.БлокироватьВесьИнтерфейс);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПорядокСортировкиТаблицыРасхожденийНачалоВыбораЗавершение(Результат, ДополнительныеПараметры) Экспорт
+&AtClient
+Procedure OrderSortTableDifferencesStartChoiceEnd(Result, AdditionalParameters) Export
 	
-	ВозвращаемоеЗначение = Результат;
-	Если ВозвращаемоеЗначение <> Неопределено Тогда
-		Объект.ПорядокСортировкиТаблицыРасхождений = ВозвращаемоеЗначение;
-	КонецЕсли;
+	ReturnValue = Result;
+	If ReturnValue <> Undefined Then
+		Object.OrderSortTableDifferences = ReturnValue;
+	EndIf;
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НастройкиФайлаБАгрегатнаяФункцияДляРасчетаИтогаОчистка(Элемент, СтандартнаяОбработка)
-	
-	СтандартнаяОбработка = Ложь;
-	пТекущаяСтрока = Элементы.НастройкиФайлаБ.ТекущиеДанные;
-	Если пТекущаяСтрока <> Неопределено Тогда
-		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
-	КонецЕсли;
-	
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НастройкиФайлаААгрегатнаяФункцияДляРасчетаИтогаОчистка(Элемент, СтандартнаяОбработка)
-	
-	СтандартнаяОбработка = Ложь;
-	пТекущаяСтрока = Элементы.НастройкиФайлаА.ТекущиеДанные;
-	Если пТекущаяСтрока <> Неопределено Тогда
-		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НастройкиФайлаАПриИзменении(Элемент)
-	
-	пТекущаяСтрока = Элементы.НастройкиФайлаА.ТекущиеДанные;
-	Если пТекущаяСтрока <> Неопределено Тогда
-		Если ПустаяСтрока(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Тогда
-			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
-		КонецЕсли;
-	КонецЕсли;
-	
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НастройкиФайлаБПриИзменении(Элемент)
-	
-	пТекущаяСтрока = Элементы.НастройкиФайлаБ.ТекущиеДанные;
-	Если пТекущаяСтрока <> Неопределено Тогда
-		Если ПустаяСтрока(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Тогда
-			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
-		КонецЕсли;
-	КонецЕсли;
-	
-КонецПроцедуры
+EndProcedure
 
 //@skip-warning
 &AtClient
@@ -2557,4 +2524,4 @@ EndProcedure
 
 #EndRegion
 
-ЗакрытиеФормыПодтверждено = False;
+ClosingFormConfirmed = False;
