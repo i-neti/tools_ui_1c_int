@@ -15,7 +15,7 @@
   </synonym>
   <comment> </comment>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_ExportImportDataXMLWithFilters.Form.Форма</defaultForm>
+  <defaultForm>DataProcessor.UT_ExportImportDataXMLWithFilters.Form.Form</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -400,7 +400,11 @@
     </attributes>
   </tabularSections>
   <forms uuid="1593f4d5-c47b-4fa9-ab3e-6ac5746da382">
-    <name>Форма</name>
+    <name>Form</name>
+    <synonym>
+      <key>en</key>
+      <value>Form</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Форма</value>
