@@ -518,7 +518,7 @@
                 </dataPath>
                 <handlers>
                   <event>OnChange</event>
-                  <name>ДеревоМетаданныхВыгружатьПриНеобходимостиПриИзменении</name>
+                  <name>MetadataTreeExportIfNecessaryOnChange</name>
                 </handlers>
                 <extendedTooltip>
                   <name>MetadataTreeExportIfNecessaryExtendedTooltip</name>
@@ -889,7 +889,7 @@
             <name>BuilderGroup</name>
             <id>159</id>
             <items xsi:type="form:Table">
-              <name>Отбор</name>
+              <name>Filter</name>
               <id>161</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -901,7 +901,7 @@
               </dataPath>
               <titleLocation>None</titleLocation>
               <autoCommandBar>
-                <name>ОтборКоманднаяПанель</name>
+                <name>FilterCommandBar</name>
                 <id>163</id>
                 <items xsi:type="form:Button">
                   <name>FilterAddFilterItem</name>
@@ -934,7 +934,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item.Отбор.StandardCommand.AddFilterItem</commandName>
+                  <commandName>Form.Item.Filter.StandardCommand.AddFilterItem</commandName>
                   <representation>PictureAndText</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -968,7 +968,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item.Отбор.StandardCommand.Delete</commandName>
+                  <commandName>Form.Item.Filter.StandardCommand.Delete</commandName>
                   <representation>PictureAndText</representation>
                   <onlyInAllActions>false</onlyInAllActions>
                   <autoMaxWidth>true</autoMaxWidth>
@@ -1010,7 +1010,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item.Отбор.StandardCommand.Copy</commandName>
+                  <commandName>Form.Item.Filter.StandardCommand.Copy</commandName>
                   <representation>PictureAndText</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -1108,7 +1108,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item.Отбор.StandardCommand.MoveUp</commandName>
+                  <commandName>Form.Item.Filter.StandardCommand.MoveUp</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -1138,7 +1138,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Item.Отбор.StandardCommand.MoveDown</commandName>
+                  <commandName>Form.Item.Filter.StandardCommand.MoveDown</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -1154,11 +1154,11 @@
               </autoCommandBar>
               <handlers>
                 <event>OnEditEnd</event>
-                <name>ОтборПриОкончанииРедактирования</name>
+                <name>FilterOnEditEnd</name>
               </handlers>
               <handlers>
                 <event>AfterDeleteRow</event>
-                <name>ОтборПослеУдаления</name>
+                <name>FilterAfterDeleteRow</name>
               </handlers>
               <searchStringAddition>
                 <visible>true</visible>
@@ -1166,10 +1166,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>ОтборСтрокаПоиска</name>
+                <name>FilterSearchString</name>
                 <id>165</id>
                 <extendedTooltip>
-                  <name>ОтборСтрокаПоискаРасширеннаяПодсказка</name>
+                  <name>FilterSearchStringExtendedTooltip</name>
                   <id>167</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1184,7 +1184,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ОтборСтрокаПоискаКонтекстноеМеню</name>
+                  <name>FilterSearchStringContextMenu</name>
                   <id>166</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1203,10 +1203,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>ОтборСостояниеПросмотра</name>
+                <name>FilterViewStatus</name>
                 <id>168</id>
                 <extendedTooltip>
-                  <name>ОтборСостояниеПросмотраРасширеннаяПодсказка</name>
+                  <name>FilterViewStatusExtendedTooltip</name>
                   <id>170</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1221,7 +1221,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ОтборСостояниеПросмотраКонтекстноеМеню</name>
+                  <name>FilterViewStatusContextMenu</name>
                   <id>169</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1242,10 +1242,10 @@
                 <userVisible>
                   <common>true</common>
                 </userVisible>
-                <name>ОтборУправлениеПоиском</name>
+                <name>FilterSearchControl</name>
                 <id>171</id>
                 <extendedTooltip>
-                  <name>ОтборУправлениеПоискомРасширеннаяПодсказка</name>
+                  <name>FilterSearchControlExtendedTooltip</name>
                   <id>173</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1260,7 +1260,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ОтборУправлениеПоискомКонтекстноеМеню</name>
+                  <name>FilterSearchControlContextMenu</name>
                   <id>172</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1275,7 +1275,7 @@
                 </extInfo>
               </searchControlAddition>
               <extendedTooltip>
-                <name>ОтборРасширеннаяПодсказка</name>
+                <name>FilterExtendedTooltip</name>
                 <id>164</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1290,7 +1290,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ОтборКонтекстноеМеню</name>
+                <name>FilterContextMenu</name>
                 <id>162</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3718,7 +3718,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПересчитатьВыгружаемыеПоСсылке</name>
+        <name>RecalculateDataToExportByRef</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
