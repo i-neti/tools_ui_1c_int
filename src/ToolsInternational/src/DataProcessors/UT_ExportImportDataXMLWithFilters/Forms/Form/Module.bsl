@@ -1,2012 +1,2012 @@
-#Область ОбработчикиСобытийФормы
+#Region EventHandlers
 
-&НаСервере
-Процедура OnCreateAtServer(Отказ, СтандартнаяОбработка)
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
-	Если Параметры.Свойство("АвтоТест") Тогда
-		Возврат;
-	КонецЕсли;
+	If Parameters.Property("AutoTests") Then
+		Return;
+	EndIf;
 
-	ПроверитьВерсиюИРежимСовместимостиПлатформы();
+	CheckPlatformVersionAndCompatibilityMode();
 
-	РежимРаботыНаКлиенте = (OperatingModeAtClientOrAtServer = 0);
+	OperatingModeAtClient = (OperatingModeAtClientOrAtServer = 0);
 
-	Элементы.ExportFileName.Доступность = Не РежимРаботыНаКлиенте;
+	Items.ExportFileName.Enabled = Not OperatingModeAtClient;
 
-	ОбъектНаСервере = РеквизитФормыВЗначение("Object");
-	ОбъектНаСервере.Инициализация();
+	ObjectAtServer = FormAttributeToValue("Object");
+	ObjectAtServer.Initializing();
 
-	ЗначениеВРеквизитФормы(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
+	ValueToFormAttribute(ObjectAtServer.MetadataTree, "Object.MetadataTree");
 
-	Файл = Новый Файл(ExportFileName);
-	Object.UseFastInfoSetFormat = (Файл.Расширение = ".fi");
+	File = New File(ExportFileName);
+	Object.UseFastInfoSetFormat = (File.Extension = ".fi");
 
-	ExportMode = (Элементы.ModeGroup.ТекущаяСтраница = Элементы.ModeGroup.ПодчиненныеЭлементы.ExportGroup);
+	ExportMode = (Items.ModeGroup.CurrentPage = Items.ModeGroup.ChildItems.ExportGroup);
 
-	UT_Common.ToolFormOnCreateAtServer(ЭтотОбъект, Отказ, СтандартнаяОбработка);
+	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура OnLoadDataFromSettingsAtServer(Настройки)
+&AtServer
+Procedure OnLoadDataFromSettingsAtServer(Settings)
 
-	РежимРаботыНаКлиенте = (OperatingModeAtClientOrAtServer = 0);
+	OperatingModeAtClient = (OperatingModeAtClientOrAtServer = 0);
+	
+	Items.ExportFileName.Enabled = Not OperatingModeAtClient;
+	
+	File = New File(ExportFileName);
+	Object.UseFastInfoSetFormat = (File.Extension = ".fi");
+	
+	ExportMode = (Items.ModeGroup.CurrentPage = Items.ModeGroup.ChildItems.ExportGroup);
 
-	Элементы.ExportFileName.Доступность = Не РежимРаботыНаКлиенте;
+EndProcedure
 
-	Файл = Новый Файл(ExportFileName);
-	Object.UseFastInfoSetFormat = (Файл.Расширение = ".fi");
+&AtClient
+Procedure ChoiceProcessing(SelectedValue, ChoiceSource)
+	
+	ChoiceProcessingAtServer(SelectedValue);
+	
+EndProcedure
 
-	ExportMode = (Элементы.ModeGroup.ТекущаяСтраница = Элементы.ModeGroup.ПодчиненныеЭлементы.ExportGroup);
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
 
-КонецПроцедуры
+	If EventName = "QueryConsoleSettingsFormClosed" Then
+		FillPropertyValues(ThisObject, Parameter);
+	EndIf;
 
-&НаКлиенте
-Процедура ChoiceProcessing(ВыбранноеЗначение, ИсточникВыбора)
+EndProcedure
 
-	ОбработкаВыбораНаСервере(ВыбранноеЗначение);
+#EndRegion
 
-КонецПроцедуры
+#Region FormHeaderItemsEventHandlers
 
-&НаКлиенте
-Процедура NotificationProcessing(ИмяСобытия, Параметр, Источник)
+&AtClient
+Procedure ExportFileNameOnChange(Item)
+	
+	File = New File(ExportFileName);
+	Object.UseFastInfoSetFormat = (File.Extension = ".fi");
+	
+EndProcedure
 
-	Если ИмяСобытия = "ЗакрытаФормаНастройкиКонсолиЗапросов" Тогда
-		ЗаполнитьЗначенияСвойств(ЭтотОбъект, Параметр);
-	КонецЕсли;
+&AtClient
+Procedure ExportFileNameOnOpen(Item, StandardProcessing)
 
-КонецПроцедуры
+	OpenInApplication(Item, "ExportFileName", StandardProcessing);
 
-#КонецОбласти
+EndProcedure
 
-#Область ОбработчикиСобытийЭлементовШапкиФормы
+&AtClient
+Procedure ExportFileNameStartChoice(Item, ChoiceData, StandardProcessing)
 
-&НаКлиенте
-Процедура ExportFileNameOnChange(Элемент)
+	ProcessFileChoiceStart(StandardProcessing);
 
-	Файл = Новый Файл(ExportFileName);
-	Object.UseFastInfoSetFormat = (Файл.Расширение = ".fi");
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure UseFastInfoSetFormatOnChange(Item)
+	
+	If Object.UseFastInfoSetFormat Then
+		ExportFileName = StrReplace(ExportFileName, ".xml", ".fi");
+	Else
+		ExportFileName = StrReplace(ExportFileName, ".fi", ".xml");
+	EndIf;
+	
+EndProcedure
 
-&НаКлиенте
-Процедура ExportFileNameOnOpen(Элемент, СтандартнаяОбработка)
+&AtClient
+Procedure ModeGroupOnCurrentPageChange(Item, CurrentPage)
 
-	ОткрытьВПриложении(Элемент, "ExportFileName", СтандартнаяОбработка);
+	ExportMode = (Items.ModeGroup.CurrentPage = Items.ModeGroup.ChildItems.ExportGroup);
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ExportFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure AdditionalObjectsToExportOnChange(Item)
 
-	ОбработатьНачалоВыбораФайла(СтандартнаяОбработка);
+	If Item.CurrentData <> Undefined And ValueIsFilled(Item.CurrentData.Object) Then
+		
+		Item.CurrentData.ObjectForQueryName = ObjectNameByTypeForQuery(Item.CurrentData.Object);
+		
+	EndIf;
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура UseFastInfoSetFormatOnChange(Элемент)
-
-	Если Object.UseFastInfoSetFormat Тогда
-		ExportFileName = СтрЗаменить(ExportFileName, ".xml", ".fi");
-	Иначе
-		ExportFileName = СтрЗаменить(ExportFileName, ".fi", ".xml");
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ModeGroupOnCurrentPageChange(Элемент, ТекущаяСтраница)
-
-	ExportMode = (Элементы.ModeGroup.ТекущаяСтраница = Элементы.ModeGroup.ПодчиненныеЭлементы.ExportGroup);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура AdditionalObjectsToExportOnChange(Элемент)
-
-	Если Элемент.ТекущиеДанные <> Неопределено И ЗначениеЗаполнено(Элемент.ТекущиеДанные.Object) Тогда
-
-		Элемент.ТекущиеДанные.ObjectForQueryName = ИмяОбъектаПоТипуДляЗапроса(Элемент.ТекущиеДанные.Object);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-//@skip-warning
-&НаКлиенте
-Процедура ИмяФайлаЗагрузкиОткрытие(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент, "ImportFileName", СтандартнаяОбработка);
-
-КонецПроцедуры
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура ИмяФайлаЗагрузкиНачалоВыбора(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure ImportFileNameOpen(Item, StandardProcessing)
+	
+	OpenInApplication(Item, "ImportFileName", StandardProcessing);
 
-	ОбработатьНачалоВыбораФайла(СтандартнаяОбработка);
+EndProcedure
 
-КонецПроцедуры
+//@skip-warning
+&AtClient
+Procedure ImportFileNameStartChoice(Item, ChoiceData, StandardProcessing)
 
-#КонецОбласти
+	ProcessFileChoiceStart(StandardProcessing);
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыДеревоМетаданных
+EndProcedure
 
-&НаКлиенте
-Процедура MetadataTreeExportDataOnChange(Элемент)
+#EndRegion
 
-	ТекущиеДанные = Элементы.MetadataTree.ТекущиеДанные;
+#Region MetadataTreeFormTableItemsEventHandlers
 
-	Если ТекущиеДанные.ExportData = 2 Тогда
-		ТекущиеДанные.ExportData = 0;
-	КонецЕсли;
+&AtClient
+Procedure MetadataTreeExportDataOnChange(Item)
 
-	УстановитьПометкиПодчиненных(ТекущиеДанные, "ExportData");
-	УстановитьПометкиРодителей(ТекущиеДанные, "ExportData");
+	CurrentData = Items.MetadataTree.CurrentData;
+	
+	If CurrentData.ExportData = 2 Then
+		CurrentData.ExportData = 0;
+	EndIf;
 
-	ТекущиеДанныеИмя = Элементы.MetadataTree.ТекущиеДанные.MetadataFullName;
+	SetChildItemsMarks(CurrentData, "ExportData");
+	SetParentItemsMarks(CurrentData, "ExportData");
 
-	//ТаблицаРезультатОтбор.Очистить();
-	ПодготовитьСписокВыбранныхОбъектов(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+	CurrentDataName = Items.MetadataTree.CurrentData.MetadataFullName;
 
-КонецПроцедуры
+	//ResultTableFilter.Clear();
+	PrepareSelectedObjectsList(CurrentDataName, Items.MetadataTree.CurrentData.MetadataObjectName);
 
-&НаКлиенте
-Процедура ДеревоМетаданныхВыгружатьПриНеобходимостиПриИзменении(Элемент)
+EndProcedure
 
-	ТекущиеДанные = Элементы.MetadataTree.ТекущиеДанные;
+&AtClient
+Procedure MetadataTreeExportIfNecessaryOnChange(Item)
+	
+	CurrentData = Items.MetadataTree.CurrentData;
+	
+	If CurrentData.ExportIfNecessary = 2 Then
+		CurrentData.ExportIfNecessary = 0;
+	EndIf;
 
-	Если ТекущиеДанные.ExportIfNecessary = 2 Тогда
-		ТекущиеДанные.ExportIfNecessary = 0;
-	КонецЕсли;
+	SetChildItemsMarks(CurrentData, "ExportIfNecessary");
+	SetParentItemsMarks(CurrentData, "ExportIfNecessary");
 
-	УстановитьПометкиПодчиненных(ТекущиеДанные, "ExportIfNecessary");
-	УстановитьПометкиРодителей(ТекущиеДанные, "ExportIfNecessary");
+EndProcedure
 
-КонецПроцедуры
+#EndRegion
 
-#КонецОбласти
+#Region AdditionalObjectsForExportFormTableItemsEventHandlers
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыДополнительныеОбъектыДляВыгрузки
+&AtClient
+Procedure AdditionalObjectsToExportBeforeAddRow(Item, Cancel, Clone, Parent, Folder)
 
-&НаКлиенте
-Процедура AdditionalObjectsToExportBeforeAddRow(Элемент, Отказ, Копирование, Родитель, Группа)
+	Item.CurrentItem.TypeRestriction = ObjectsTypeToExport;
 
-	Элемент.ТекущийЭлемент.ОграничениеТипа = ObjectsTypeToExport;
+EndProcedure
 
-КонецПроцедуры
+#EndRegion
 
-#КонецОбласти
+#Region FormCommandHandlers
 
-#Область ОбработчикиКомандФормы
+&AtClient
+Procedure AddFromQuery(Command)
 
-&НаКлиенте
-Процедура AddFromQuery(Команда)
+	OpenForm(QueryConsoleFormName(), QueryConsoleParameters(), ThisObject);
 
-	ОткрытьФорму(ИмяФормыКонсолиЗапросов(), ПараметрыКонсолиЗапросов(), ЭтотОбъект);
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ClearAdditionalObjectsToExport(Command)
 
-&НаКлиенте
-Процедура ClearAdditionalObjectsToExport(Команда)
+	Object.AdditionalObjectsToExport.Clear();
 
-	Object.AdditionalObjectsToExport.Очистить();
+EndProcedure
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportData(Команда)
+&AtClient
+Procedure ExportData(Command)
 
 	Object.StartDate = ExportPeriod.StartDate;
 	Object.EndDate = ExportPeriod.EndDate;
 
-	ОчиститьСообщения();
+	ClearMessages();
 
-	Если Не РежимРаботыНаКлиенте Тогда
+	If Not OperatingModeAtClient Then
+		
+		If IsBlankString(ExportFileName) Then
+			
+			MessageText = NStr("ru = 'Поле ""Имя файла"" не заполнено'; en = 'The File name field is not filled.'");
+			MessageToUser(MessageText, "ExportFileName");
+			Return;
+			
+		EndIf;
+		
+	EndIf;
 
-		Если ПустаяСтрока(ExportFileName) Тогда
+	Status(NStr("ru = 'Выполняется выгрузка данных. Пожалуйста, подождите...'; en = 'Export data. Please wait...'"));
 
-			ТекстСообщения = Нстр("ru = 'Поле ""Имя файла"" не заполнено'");
-			СообщитьПользователю(ТекстСообщения, "ExportFileName");
-			Возврат;
+	FileAddressInTempStorage = "";
+	ExportDataAtServer(FileAddressInTempStorage);
+	
+	If OperatingModeAtClient And Not IsBlankString(FileAddressInTempStorage) Then
+		
+		FileName = ?(Object.UseFastInfoSetFormat, NStr("ru = 'Файл выгрузки.fi'; en = 'Export file.fi'"), NStr("ru = 'Файл выгрузки.xml'; en = 'Export file.xml'"));
+		GetFile(FileAddressInTempStorage, FileName);
+		
+	EndIf;
 
-		КонецЕсли;
+EndProcedure
 
-	КонецЕсли;
+&AtClient
+Procedure ImportData(Command)
 
-	Состояние(Нстр("ru = 'Выполняется выгрузка данных. Пожалуйста, подождите...'"));
+	ClearMessages();
+	FileAddressInTempStorage = "";
 
-	АдресФайлаВоВременномХранилище = "";
-	ВыгрузитьДанныеНаСервере(АдресФайлаВоВременномХранилище);
+	//	If OperatingModeAtClient Then
 
-	Если РежимРаботыНаКлиенте И Не ПустаяСтрока(АдресФайлаВоВременномХранилище) Тогда
+	//NotifyDescription = New NotifyDescription("ImportDataCompletion", ThisObject);
+	//BeginPutFileAtServer(NotifyDescription,,,FileAddressInTempStorage,, ThisForm.UUID);
+	Mode = FileDialogMode.Open;
+	FileOpenDialog = New FileDialog(Mode);
+	FileOpenDialog.FullFileName = "";
+	//Filter = NStr("ru = 'XML файлы'; en = 'XML files'")	+ "(*.xml)|*.xml";
+	//FileOpenDialog.Filter = Filter;
+	FileOpenDialog.Multiselect = False;
+	FileOpenDialog.Title = NStr("ru = 'Выберите файлы'; en = 'Select files'");
 
-		ИмяФайла = ?(Object.UseFastInfoSetFormat, Нстр("ru = 'Файл выгрузки.fi'"), Нстр(
-			"ru = 'Файл выгрузки.xml'"));
-		ПолучитьФайл(АдресФайлаВоВременномХранилище, ИмяФайла);
+	NotifyDescription = New NotifyDescription("ImportDataCompletion", ThisObject);
+	BeginPuttingFiles(NotifyDescription, FileAddressInTempStorage, FileOpenDialog, True,
+		UUID);
 
-	КонецЕсли;
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure QueryConsoleSettings(Command)
 
-&НаКлиенте
-Процедура ImportData(Команда)
+	FormParameters = New Structure;
+	FormParameters.Insert("QueryConsoleUsageOption", QueryConsoleUsageOption);
+	FormParameters.Insert("PathToExternalQueryConsole", PathToExternalQueryConsole);
 
-	ОчиститьСообщения();
-	АдресФайлаВоВременномХранилище = "";
+	OpenForm(QueryConsoleSettingsFormName(), FormParameters);
 
-	//	Если РежимРаботыНаКлиенте Тогда
+EndProcedure
 
-	//ОписаниеОповещения = Новый ОписаниеОповещения("ЗагрузитьДанныеЗавершение", ЭтотОбъект);
-	//НачатьПомещениеФайлаНаСервер(ОписаниеОповещения,,,АдресФайлаВоВременномХранилище,, ЭтаФорма.УникальныйИдентификатор);
-	Режим = РежимДиалогаВыбораФайла.Открытие;
-	ДиалогОткрытияФайла = Новый ДиалогВыбораФайла(Режим);
-	ДиалогОткрытияФайла.ПолноеИмяФайла = "";
-	//Фильтр = НСтр("ru = 'XML файлы'; en = 'XML files'")	+ "(*.xml)|*.xml";
-	//ДиалогОткрытияФайла.Фильтр = Фильтр;
-	ДиалогОткрытияФайла.МножественныйВыбор = Ложь;
-	ДиалогОткрытияФайла.Заголовок = "Выберите файлы";
+&AtClient
+Procedure RecalculateDataToExportByRef(Command)
 
-	ОписаниеОповещения = Новый ОписаниеОповещения("ЗагрузитьДанныеЗавершение", ЭтотОбъект);
-	НачатьПомещениеФайла(ОписаниеОповещения, АдресФайлаВоВременномХранилище, ДиалогОткрытияФайла, Истина,
-		УникальныйИдентификатор);
+	Status(NStr("ru = 'Выполняется поиск объектов метаданных, которые могут быть выгружены по ссылкам...'; en = 'Searching for the metadata objects available to export by refs...'"));
+	SaveTreeView(Object.MetadataTree.GetItems());
+	RecalculateDataToExportByRefAtServer();
+	RestoreTreeView(Object.MetadataTree.GetItems());
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура QueryConsoleSettings(Команда)
-
-	ПараметрыФормы = Новый Структура;
-	ПараметрыФормы.Вставить("QueryConsoleUsageOption", QueryConsoleUsageOption);
-	ПараметрыФормы.Вставить("PathToExternalQueryConsole", PathToExternalQueryConsole);
-
-	ОткрытьФорму(ИмяФормыНастроекКонсолиЗапросов(), ПараметрыФормы);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПересчитатьВыгружаемыеПоСсылке(Команда)
-
-	Состояние(Нстр("ru = 'Выполняется поиск объектов метаданных, которые могут быть выгружены по ссылкам...'"));
-	СохранитьОтображениеДерева(Object.MetadataTree.ПолучитьЭлементы());
-	ПересчитатьВыгружаемыеПоСсылкеНаСервере();
-	ВосстановитьОтображениеДерева(Object.MetadataTree.ПолучитьЭлементы());
-
-КонецПроцедуры
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура Attachable_ExecuteToolsCommonCommand(Команда) 
-	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ЭтотОбъект, Команда);
-КонецПроцедуры
+&AtClient
+Procedure Attachable_ExecuteToolsCommonCommand(Command) 
+	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
+EndProcedure
 
 
 
-#КонецОбласти
+#EndRegion
 
-#Область СлужебныеПроцедурыИФункции
+#Region Private
 
-&НаСервере
-Функция ИмяФормыКонсолиЗапросов()
+&AtServer
+Function QueryConsoleFormName()
 
-	Если QueryConsoleUsageOption = 0 Тогда
+	If QueryConsoleUsageOption = 0 Then
 
-		Обработка = РеквизитФормыВЗначение("Object");
-		ИдентификаторФормы = ".Форма.ВыборИзЗапроса";
+		DataProcessor = FormAttributeToValue("Object");
+		FormID = ".Form.SelectFromQuery";
 
-	ИначеЕсли QueryConsoleUsageOption = 1 Тогда
+	ElsIf QueryConsoleUsageOption = 1 Then
 
-		Обработка = Обработки.UT_QueryConsole.Создать();
-		ИдентификаторФормы = ".Форма";
+		DataProcessor = DataProcessors.UT_QueryConsole.Create();
+		FormID = ".Form";
 
-	Иначе //QueryConsoleUsageOption = 2
-		Обработка = ВнешниеОбработки.Создать(PathToExternalQueryConsole);
-		ИдентификаторФормы = ".ФормаОбъекта";
+	Else //QueryConsoleUsageOption = 2
+		DataProcessor = ExternalDataProcessors.Create(PathToExternalQueryConsole);
+		FormID = ".ObjectForm";
 
-	КонецЕсли;
+	EndIf;
 
-	Возврат Обработка.Метаданные().ПолноеИмя() + ИдентификаторФормы;
+	Return DataProcessor.Metadata().FullName() + FormID;
 
-КонецФункции
+EndFunction
 
-&НаСервере
-Функция ИмяФормыНастроекКонсолиЗапросов()
+&AtServer
+Function QueryConsoleSettingsFormName()
 
-	Обработка = РеквизитФормыВЗначение("Object");
-	ИмяФормыНастроек = Обработка.Метаданные().ПолноеИмя() + ".Форма.QueryConsoleSettings";
+	DataProcessor = FormAttributeToValue("Object");
+	SettingsFormName = DataProcessor.Metadata().FullName() + ".Form.QueryConsoleSettings";
+	
+	Return SettingsFormName;
 
-	Возврат ИмяФормыНастроек;
+EndFunction
 
-КонецФункции
+&AtClient
+Function QueryConsoleParameters()
 
-&НаКлиенте
-Функция ПараметрыКонсолиЗапросов()
+	FormParameters = New Structure;
 
-	ПараметрыФормы = Новый Структура;
+	If QueryConsoleUsageOption = 0 Then
 
-	Если QueryConsoleUsageOption = 0 Тогда
+		FormParameters.Insert("QueryConsoleUsageOption", QueryConsoleUsageOption);
+		FormParameters.Insert("PathToExternalQueryConsole", PathToExternalQueryConsole);
 
-		ПараметрыФормы.Вставить("QueryConsoleUsageOption", QueryConsoleUsageOption);
-		ПараметрыФормы.Вставить("PathToExternalQueryConsole", PathToExternalQueryConsole);
+	Else
 
-	Иначе
+		FormParameters.Insert("Title", NStr("ru='Выбор данных для выгрузки'; en = 'Choose data for export'"));
+		FormParameters.Insert("ChoiceMode", True);
+		FormParameters.Insert("CloseOnChoice", False);
 
-		ПараметрыФормы.Вставить("Заголовок", НСтр("ru='Выбор данных для выгрузки'"));
-		ПараметрыФормы.Вставить("РежимВыбора", Истина);
-		ПараметрыФормы.Вставить("ЗакрыватьПриВыборе", Ложь);
+	EndIf;
 
-	КонецЕсли;
+	Return FormParameters;
 
-	Возврат ПараметрыФормы;
+EndFunction
 
-КонецФункции
+&AtClient
+Procedure OpenInApplication(Item, DataPath, StandardProcessing)
+	StandardProcessing = False;
 
-&НаКлиенте
-Процедура ОткрытьВПриложении(Элемент, ПутьКДанным, СтандартнаяОбработка)
-	СтандартнаяОбработка = Ложь;
+	File = New File(Item.EditText);
 
-	Файл = Новый Файл(Элемент.ТекстРедактирования);
+	File.BeginCheckingExistence(New NotifyDescription("OpenInApplicationCompletion", ThisForm,
+		New Structure("DataPath, Item", DataPath, Item)));
 
-	Файл.НачатьПроверкуСуществования(Новый ОписаниеОповещения("ОткрытьВПриложенииЗавершение", ЭтаФорма,
-		Новый Структура("ПутьКДанным, Элемент", ПутьКДанным, Элемент)));
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure OpenInApplicationCompletion(Exists, AdditionalParameters) Export
 
-&НаКлиенте
-Процедура ОткрытьВПриложенииЗавершение(Существует, ДополнительныеПараметры) Экспорт
+	DataPath = AdditionalParameters.DataPath;
+	Item = AdditionalParameters.Item;
+	If Exists Then
 
-	ПутьКДанным = ДополнительныеПараметры.ПутьКДанным;
-	Элемент = ДополнительныеПараметры.Элемент;
-	Если Существует Тогда
+		BeginRunningApplication(UT_CommonClient.ApplicationRunEmptyNotifyDescription(),
+			Item.EditText);
 
-		НачатьЗапускПриложения(UT_CommonClient.ApplicationRunEmptyNotifyDescription(),
-			Элемент.ТекстРедактирования);
+	Else
 
-	Иначе
+		MessageToUser(NStr("ru = 'Файл не найден'; en = 'File not found'"), DataPath);
 
-		СообщитьПользователю(Нстр("ru = 'Файл не найден'"), ПутьКДанным);
+	EndIf;
 
-	КонецЕсли;
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure OperatingModeOnChange()
 
-&НаКлиенте
-Процедура ПриИзмененииРежимаРаботы()
+	OperatingModeAtClient = (OperatingModeAtClientOrAtServer = 0);
 
-	РежимРаботыНаКлиенте = (OperatingModeAtClientOrAtServer = 0);
+	Items.ExportFileName.Enabled = Not OperatingModeAtClient;
+	Items.ImportFileName.Enabled = Not OperatingModeAtClient;
+
+EndProcedure
+
+&AtClientAtServerNoContext
+Procedure MessageToUser(Text, DataPath = "")
+
+	Message = New UserMessage;
+	Message.Text = Text;
+	Message.DataPath = DataPath;
+	Message.Message();
 
-	Элементы.ExportFileName.Доступность = Не РежимРаботыНаКлиенте;
-	Элементы.ImportFileName.Доступность = Не РежимРаботыНаКлиенте;
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ProcessFileChoiceStart(StandardProcessing)
 
-&НаКлиентеНаСервереБезКонтекста
-Процедура СообщитьПользователю(Текст, ПутьКДанным = "")
+	StandardProcessing = False;
+	DialogMode = ?(ExportMode, FileDialogMode.Save, FileDialogMode.Open);
+	FileDialog = New FileDialog(DialogMode);
+	FileDialog.CheckFileExist = Not ExportMode;
+	FileDialog.Multiselect = False;
+	FileDialog.Title = NStr("ru = 'Задайте имя файла выгрузки'; en = 'Specify export file name'");
+	FileDialog.FullFileName = ?(ExportMode, ExportFileName, ImportFileName);
+	
+	FileDialog.Filter = "Format export(*.xml)|*.xml|FastInfoSet (*.fi)|*.fi|All files (*.*)|*.*";
+	FileDialog.Show(New NotifyDescription("ProcessFileChoiceStartCompletion", ThisForm,
+		New Structure("FileDialog", FileDialog)));
 
-	Сообщение = Новый СообщениеПользователю;
-	Сообщение.Текст = Текст;
-	Сообщение.ПутьКДанным = ПутьКДанным;
-	Сообщение.Сообщить();
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ProcessFileChoiceStartCompletion(SelectedFiles, AdditionalParameters) Export
 
-&НаКлиенте
-Процедура ОбработатьНачалоВыбораФайла(СтандартнаяОбработка)
+	FileDialog = AdditionalParameters.FileDialog;
+	If (SelectedFiles <> Undefined) Then
+		If ExportMode Then
+			ExportFileName = FileDialog.FullFileName;
+		Else
+			ImportFileName = FileDialog.FullFileName;
+		EndIf;
+	EndIf;
 
-	СтандартнаяОбработка = Ложь;
-	РежимДиалога = ?(ExportMode, РежимДиалогаВыбораФайла.Сохранение, РежимДиалогаВыбораФайла.Открытие);
-	ДиалогВыбораФайла = Новый ДиалогВыбораФайла(РежимДиалога);
-	ДиалогВыбораФайла.ПроверятьСуществованиеФайла = Не ExportMode;
-	ДиалогВыбораФайла.МножественныйВыбор = Ложь;
-	ДиалогВыбораФайла.Заголовок = Нстр("ru = 'Задайте имя файла выгрузки'");
-	ДиалогВыбораФайла.ПолноеИмяФайла = ?(ExportMode, ExportFileName, ImportFileName);
+EndProcedure
 
-	ДиалогВыбораФайла.Фильтр = "Формат выгрузки(*.xml)|*.xml|FastInfoSet (*.fi)|*.fi|Все файлы (*.*)|*.*";
-	ДиалогВыбораФайла.Показать(Новый ОписаниеОповещения("ОбработатьНачалоВыбораФайлаЗавершение", ЭтаФорма,
-		Новый Структура("ДиалогВыбораФайла", ДиалогВыбораФайла)));
+&AtClient
+Procedure SetChildItemsMarks(CurrRow, CheckBoxName)
 
-КонецПроцедуры
+	RowChildItems = CurrRow.GetItems();
 
-&НаКлиенте
-Процедура ОбработатьНачалоВыбораФайлаЗавершение(ВыбранныеФайлы, ДополнительныеПараметры) Экспорт
+	If ChildItems.Count() = 0 Then
+		Return;
+	EndIf;
 
-	ДиалогВыбораФайла = ДополнительныеПараметры.ДиалогВыбораФайла;
-	Если (ВыбранныеФайлы <> Неопределено) Тогда
-		Если ExportMode Тогда
-			ExportFileName = ДиалогВыбораФайла.ПолноеИмяФайла;
-		Иначе
-			ImportFileName = ДиалогВыбораФайла.ПолноеИмяФайла;
-		КонецЕсли;
-	КонецЕсли;
+	For Each Row In RowChildItems Do
 
-КонецПроцедуры
+		Row[CheckBoxName] = CurrRow[CheckBoxName];
 
-&НаКлиенте
-Процедура УстановитьПометкиПодчиненных(ТекСтрока, ИмяФлажка)
+		SetChildItemsMarks(Row, CheckBoxName);
 
-	Подчиненные = ТекСтрока.ПолучитьЭлементы();
+	EndDo;
 
-	Если Подчиненные.Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
+EndProcedure
 
-	Для Каждого Строка Из Подчиненные Цикл
+&AtClient
+Procedure SetParentItemsMarks(CurrRow, CheckBoxName)
 
-		Строка[ИмяФлажка] = ТекСтрока[ИмяФлажка];
+	Parent = CurrRow.GetParent();
+	If Parent = Undefined Then
+		Return;
+	EndIf;
 
-		УстановитьПометкиПодчиненных(Строка, ИмяФлажка);
+	CurrStatus = Parent[CheckBoxName];
 
-	КонецЦикла;
+	EnabledItemsFound = False;
+	DisabledItemsFound = False;
 
-КонецПроцедуры
+	For Each Row In Parent.GetItems() Do
+		If Row[CheckBoxName] = 0 Then
+			DisabledItemsFound = True;
+		ElsIf Row[CheckBoxName] = 1 Or Row[CheckBoxName] = 2 Then
+			EnabledItemsFound = True;
+		EndIf;
+		If EnabledItemsFound And DisabledItemsFound Then
+			Break;
+		EndIf;
+	EndDo;
 
-&НаКлиенте
-Процедура УстановитьПометкиРодителей(ТекСтрока, ИмяФлажка)
+	If EnabledItemsFound And DisabledItemsFound Then
+		Enable = 2;
+	ElsIf EnabledItemsFound And (Not DisabledItemsFound) Then
+		Enable = 1;
+	ElsIf (Not EnabledItemsFound) And DisabledItemsFound Then
+		Enable = 0;
+	ElsIf (Not EnabledItemsFound) And (Not DisabledItemsFound) Then
+		Enable = 2;
+	EndIf;
 
-	Родитель = ТекСтрока.ПолучитьРодителя();
-	Если Родитель = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+	If Enable = CurrStatus Then
+		Return;
+	Else
+		Parent[CheckBoxName] = Enable;
+		SetParentItemsMarks(Parent, CheckBoxName);
+	EndIf;
 
-	ТекСостояние = Родитель[ИмяФлажка];
+EndProcedure
 
-	НайденыВключенные = Ложь;
-	НайденыВыключенные = Ложь;
+&AtServer
+Procedure ExportDataAtServer(FileAddressInTempStorage)
 
-	Для Каждого Строка Из Родитель.ПолучитьЭлементы() Цикл
-		Если Строка[ИмяФлажка] = 0 Тогда
-			НайденыВыключенные = Истина;
-		ИначеЕсли Строка[ИмяФлажка] = 1 Или Строка[ИмяФлажка] = 2 Тогда
-			НайденыВключенные = Истина;
-		КонецЕсли;
-		Если НайденыВключенные И НайденыВыключенные Тогда
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+	FilterTable1 = FormAttributeToValue("FilterTable");
 
-	Если НайденыВключенные И НайденыВыключенные Тогда
-		Включить = 2;
-	ИначеЕсли НайденыВключенные И (Не НайденыВыключенные) Тогда
-		Включить = 1;
-	ИначеЕсли (Не НайденыВключенные) И НайденыВыключенные Тогда
-		Включить = 0;
-	ИначеЕсли (Не НайденыВключенные) И (Не НайденыВыключенные) Тогда
-		Включить = 2;
-	КонецЕсли;
+	If OperatingModeAtClient Then
 
-	Если Включить = ТекСостояние Тогда
-		Возврат;
-	Иначе
-		Родитель[ИмяФлажка] = Включить;
-		УстановитьПометкиРодителей(Родитель, ИмяФлажка);
-	КонецЕсли;
+		Extension = ?(Object.UseFastInfoSetFormat, ".fi", ".xml");
+		TempFileName = GetTempFileName(Extension);
 
-КонецПроцедуры
+	Else
 
-&НаСервере
-Процедура ВыгрузитьДанныеНаСервере(АдресФайлаВоВременномХранилище)
+		TempFileName = ExportFileName;
 
-	ТаблицаОтбора1 = РеквизитФормыВЗначение("ТаблицаОтбора");
+	EndIf;
 
-	Если РежимРаботыНаКлиенте Тогда
+	ObjectAtServer = FormAttributeToValue("Object");
+	FillMetadataTreeAtServer(ObjectAtServer);
 
-		Расширение = ?(Object.UseFastInfoSetFormat, ".fi", ".xml");
-		ИмяВременногоФайла = ПолучитьИмяВременногоФайла(Расширение);
+	ObjectAtServer.ExecuteExport(TempFileName, , FilterTable1);
 
-	Иначе
+	If OperatingModeAtClient Then
 
-		ИмяВременногоФайла = ExportFileName;
+		File = New File(TempFileName);
 
-	КонецЕсли;
+		If File.Exists() Then
 
-	ОбъектНаСервере = РеквизитФормыВЗначение("Object");
-	ЗаполнитьДеревоМетаданныхНаСервере(ОбъектНаСервере);
+			BinaryData = New BinaryData(TempFileName);
+			FileAddressInTempStorage = PutToTempStorage(BinaryData, UUID);
+			DeleteFiles(TempFileName);
 
-	ОбъектНаСервере.ВыполнитьВыгрузку(ИмяВременногоФайла, , ТаблицаОтбора1);
+		EndIf;
 
-	Если РежимРаботыНаКлиенте Тогда
+	EndIf;
 
-		Файл = Новый Файл(ИмяВременногоФайла);
+EndProcedure
 
-		Если Файл.Существует() Тогда
+&AtServer
+Procedure SetMarksOfDataToExport(SourceTreeRows, TreeToReplaceRows)
+	
+	ColumnExport = TreeToReplaceRows.UnloadColumn("ExportData");
+	SourceTreeRows.LoadColumn(ColumnExport, "ExportData");
+	
+	ColumnExportIfNecessary = TreeToReplaceRows.UnloadColumn("ExportIfNecessary");
+	SourceTreeRows.LoadColumn(ColumnExportIfNecessary, "ExportIfNecessary");
+	
+	ColumnExpanded = TreeToReplaceRows.UnloadColumn("Expanded");
+	SourceTreeRows.LoadColumn(ColumnExpanded, "Expanded");
+	
+	For Each SourceTreeRow In SourceTreeRows Do
+		
+		RowIndex = SourceTreeRows.IndexOf(SourceTreeRow);
+		TreeToChangeRow = TreeToReplaceRows.Get(RowIndex);
+		
+		SetMarksOfDataToExport(SourceTreeRow.Rows, TreeToChangeRow.Rows);
+		
+	EndDo;
+	
+EndProcedure
 
-			ДвоичныеДанные = Новый ДвоичныеДанные(ИмяВременногоФайла);
-			АдресФайлаВоВременномХранилище = ПоместитьВоВременноеХранилище(ДвоичныеДанные, УникальныйИдентификатор);
-			УдалитьФайлы(ИмяВременногоФайла);
+&AtClient
+Procedure ImportDataCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	If Not Result Then
+		Return;
+	EndIf;
 
-		КонецЕсли;
+	Status(NStr("ru = 'Выполняется загрузка данных. Пожалуйста, подождите...'; en = 'Import data. Please wait...'"));
 
-	КонецЕсли;
+	ImportDataAtServer(Address);
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ПроставитьПометкиВыгружаемыхДанных(СтрокиИсходногоДерева, СтрокиЗаменяемогоДерева)
+&AtServer
+Procedure ImportDataAtServer(FileAddressInTempStorage, Extension = "xml")
 
-	КолонкаВыгружать = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("ExportData");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаВыгружать, "ExportData");
+	BinaryData = GetFromTempStorage(FileAddressInTempStorage);
+	TempFileName = GetTempFileName(Extension);
+	BinaryData.Write(TempFileName);
 
-	КолонкаВыгружатьПриНеобходимости = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("ExportIfNecessary");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаВыгружатьПриНеобходимости, "ExportIfNecessary");
+	FormAttributeToValue("Object").ExecuteImport(TempFileName);
 
-	КолонкаРазвернут = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("Развернут");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаРазвернут, "Развернут");
-
-	Для Каждого СтрокаИсходногоДерева Из СтрокиИсходногоДерева Цикл
-
-		ИндексСтроки = СтрокиИсходногоДерева.Индекс(СтрокаИсходногоДерева);
-		СтрокаИзменяемогоДерева = СтрокиЗаменяемогоДерева.Получить(ИндексСтроки);
-
-		ПроставитьПометкиВыгружаемыхДанных(СтрокаИсходногоДерева.Строки, СтрокаИзменяемогоДерева.Строки);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ЗагрузитьДанныеЗавершение(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-	Если Не Результат Тогда
-		Возврат;
-	КонецЕсли;
-
-	Состояние(Нстр("ru = 'Выполняется загрузка данных. Пожалуйста, подождите...'"));
-
-	ЗагрузитьДанныеНаСервере(Адрес);
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ЗагрузитьДанныеНаСервере(АдресФайлаВоВременномХранилище, Расширение = "xml")
-
-	ДвоичныеДанные = ПолучитьИзВременногоХранилища(АдресФайлаВоВременномХранилище);
-	ИмяВременногоФайла = ПолучитьИмяВременногоФайла(Расширение);
-	ДвоичныеДанные.Записать(ИмяВременногоФайла);
-
-	РеквизитФормыВЗначение("Object").ВыполнитьЗагрузку(ИмяВременногоФайла);
-
-	Файл = Новый Файл(ИмяВременногоФайла);
-
-	Если Файл.Существует() Тогда
-
-		УдалитьФайлы(ИмяВременногоФайла);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ПересчитатьВыгружаемыеПоСсылкеНаСервере()
-
-	ОбъектНаСервере = РеквизитФормыВЗначение("Object");
-	ЗаполнитьДеревоМетаданныхНаСервере(ОбъектНаСервере);
-	ОбъектНаСервере.СоставВыгрузки(Истина);
-	ЗначениеВРеквизитФормы(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ЗаполнитьДеревоМетаданныхНаСервере(ОбъектНаСервере)
-
-	ДеревоМетаданных = РеквизитФормыВЗначение("Object.MetadataTree");
-
-	ОбъектНаСервере.Инициализация();
-
-	ПроставитьПометкиВыгружаемыхДанных(ОбъектНаСервере.MetadataTree.Строки, ДеревоМетаданных.Строки);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура СохранитьОтображениеДерева(СтрокиДерева)
-
-	Для Каждого Строка Из СтрокиДерева Цикл
-
-		ИдентификаторСтроки = Строка.ПолучитьИдентификатор();
-		Строка.Развернут = Элементы.MetadataTree.Развернут(ИдентификаторСтроки);
-
-		СохранитьОтображениеДерева(Строка.ПолучитьЭлементы());
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ВосстановитьОтображениеДерева(СтрокиДерева)
-
-	Для Каждого Строка Из СтрокиДерева Цикл
-
-		ИдентификаторСтроки = Строка.ПолучитьИдентификатор();
-		Если Строка.Развернут Тогда
-			Элементы.MetadataTree.Развернуть(ИдентификаторСтроки);
-		КонецЕсли;
-
-		ВосстановитьОтображениеДерева(Строка.ПолучитьЭлементы());
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаСервереБезКонтекста
-Функция ИмяОбъектаПоТипуДляЗапроса(Ссылка)
-
-	МетаданныеОбъекта = Ссылка.Метаданные();
-	ИмяМетаданных = МетаданныеОбъекта.Имя;
-
-	ИмяДляЗапроса = "";
-
-	Если Метаданные.Справочники.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "Справочник";
-	ИначеЕсли Метаданные.Документы.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "Документ";
-	ИначеЕсли Метаданные.ПланыВидовХарактеристик.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "ПланВидовХарактеристик";
-	ИначеЕсли Метаданные.ПланыСчетов.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "ПланСчетов";
-	ИначеЕсли Метаданные.ПланыВидовРасчета.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "ПланВидовРасчета";
-	ИначеЕсли Метаданные.ПланыОбмена.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "ПланОбмена";
-	ИначеЕсли Метаданные.БизнесПроцессы.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "БизнесПроцесс";
-	ИначеЕсли Метаданные.Задачи.Содержит(МетаданныеОбъекта) Тогда
-		ИмяДляЗапроса = "Задача";
-	КонецЕсли;
-
-	Если ПустаяСтрока(ИмяДляЗапроса) Тогда
-		Возврат "";
-	Иначе
-		Возврат ИмяДляЗапроса + "." + ИмяМетаданных;
-	КонецЕсли;
-
-КонецФункции
-
-&НаСервере
-Процедура ОбработкаВыбораНаСервере(ВыбранныеЗначения)
-
-	Если ТипЗнч(ВыбранныеЗначения) = Тип("Структура") Тогда
-
-		РезультатЗапроса = ПолучитьИзВременногоХранилища(ВыбранныеЗначения.ДанныеВыбора);
-
-		Если ТипЗнч(РезультатЗапроса) = Тип("Массив") Тогда
-
-			РезультатЗапроса = РезультатЗапроса[РезультатЗапроса.ВГраница()];
-
-			Если РезультатЗапроса.Колонки.Найти("Ссылка") <> Неопределено Тогда
-				ВыбранныеСсылки = РезультатЗапроса.Выгрузить();
-			КонецЕсли;
-
-		КонецЕсли;
-
-	Иначе
-
-		ВыбранныеСсылки = ВыбранныеЗначения;
-
-	КонецЕсли;
-
-	Для Каждого Значение Из ВыбранныеСсылки Цикл
-
-		НоваяСтрока = Object.AdditionalObjectsToExport.Добавить();
-		НоваяСтрока.Object = Значение.Ссылка;
-		НоваяСтрока.ObjectForQueryName = ИмяОбъектаПоТипуДляЗапроса(Значение.Ссылка);
-
-	КонецЦикла;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура OperatingModeAtClientOrAtServerOnChange(Элемент)
-
-	ПриИзмененииРежимаРаботы();
-
-КонецПроцедуры
+	File = New File(TempFileName);
+
+	If File.Exists() Then
+
+		DeleteFiles(TempFileName);
+
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Procedure RecalculateDataToExportByRefAtServer()
+
+	ObjectAtServer = FormAttributeToValue("Object");
+	FillMetadataTreeAtServer(ObjectAtServer);
+	ObjectAtServer.ExportContent(True);
+	ValueToFormAttribute(ObjectAtServer.MetadataTree, "Object.MetadataTree");
+
+EndProcedure
+
+&AtServer
+Procedure FillMetadataTreeAtServer(ObjectAtServer)
+
+	MetadataTree = FormAttributeToValue("Object.MetadataTree");
+
+	ObjectAtServer.Initializing();
+
+	SetMarksOfDataToExport(ObjectAtServer.MetadataTree.Rows, MetadataTree.Rows);
+
+EndProcedure
+
+&AtClient
+Procedure SaveTreeView(TreeRows)
+
+	For Each Row In TreeRows Do
+		
+		RowID=Row.GetID();
+		Row.Expanded = Items.MetadataTree.Expanded(RowID);
+		
+		SaveTreeView(Row.GetItems());
+		
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure RestoreTreeView(TreeRows)
+
+	For Each Row In TreeRows Do
+		
+		RowID=Row.GetID();
+		If Row.Expanded Then
+			Items.MetadataTree.Expand(RowID);
+		EndIf;
+
+		RestoreTreeView(Row.GetItems());
+
+	EndDo;
+
+EndProcedure
+
+&AtServerNoContext
+Function ObjectNameByTypeForQuery(Ref)
+	
+	ObjectMetadata = Ref.Metadata();
+	MetadataName = ObjectMetadata.Name;
+	
+	NameForQuery = "";
+	
+	If Metadata.Catalogs.Contains(ObjectMetadata) Then
+		NameForQuery = "Catalog";
+	ElsIf Metadata.Documents.Contains(ObjectMetadata) Then
+		NameForQuery = "Document";
+	ElsIf Metadata.ChartsOfCharacteristicTypes.Contains(ObjectMetadata) Then
+		NameForQuery = "ChartOfCharacteristicTypes";
+	ElsIf Metadata.ChartsOfAccounts.Contains(ObjectMetadata) Then
+		NameForQuery = "ChartOfAccounts";
+	ElsIf Metadata.ChartsOfCalculationTypes.Contains(ObjectMetadata) Then
+		NameForQuery = "ChartOfCalculationTypes";
+	ElsIf Metadata.ExchangePlans.Contains(ObjectMetadata) Then
+		NameForQuery = "ExchangePlan";
+	ElsIf Metadata.BusinessProcesses.Contains(ObjectMetadata) Then
+		NameForQuery = "BusinessProcess";
+	ElsIf Metadata.Tasks.Contains(ObjectMetadata) Then
+		NameForQuery = "Task";
+	EndIf;
+	
+	If IsBlankString(NameForQuery) Then
+		Return "";
+	Else
+		Return NameForQuery + "." + MetadataName;
+	EndIf;
+	
+EndFunction
+
+&AtServer
+Procedure ChoiceProcessingAtServer(SelectedValues)
+	
+	If TypeOf(SelectedValues) = Type("Structure") Then
+		
+		QueryResult = GetFromTempStorage(SelectedValues.ChoiceData);
+		
+		If TypeOf(QueryResult)=Type("Array") Then
+			
+			QueryResult = QueryResult[QueryResult.UBound()];
+			
+			If QueryResult.Columns.Find("Ref") <> Undefined Then
+				SelectedRefs = QueryResult.Unload();
+			EndIf;
+			
+		EndIf;
+		
+	Else
+		
+		SelectedRefs = SelectedValues;
+		
+	EndIf;
+	
+	For Each Value In SelectedRefs Do
+		
+		NewRow = Object.AdditionalObjectsToExport.Add();
+		NewRow.Object = Value.Ref;
+		NewRow.ObjectForQueryName = ObjectNameByTypeForQuery(Value.Ref);
+		
+	EndDo
+	
+EndProcedure
+
+&AtClient
+Procedure OperatingModeAtClientOrAtServerOnChange(Item)
+
+	OperatingModeOnChange();
+
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура ЗагрузкаНаКлиентеИлиНаСервереПриИзменении(Элемент)
+&AtClient
+Procedure ImportAtClientOrAtServerOnChange(Элемент)
 
-	ПриИзмененииРежимаРаботы();
+	OperatingModeOnChange();
 
-КонецПроцедуры
-
-//@skip-warning
-&НаСервере
-Функция ПроверитьВерсиюИРежимСовместимостиПлатформы()
-
-	Информация = Новый СистемнаяИнформация;
-	Если Не (Лев(Информация.ВерсияПриложения, 3) = "8.3" И (Метаданные.РежимСовместимости
-		= Метаданные.СвойстваОбъектов.РежимСовместимости.НеИспользовать Или (Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости.Версия8_1 И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости.Версия8_2_13 И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_2_16"] И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_3_1"] И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_3_2"]))) Тогда
-
-		ВызватьИсключение Нстр("ru = 'Обработка предназначена для запуска на версии платформы
-							   |1С:Предприятие 8.3 с отключенным режимом совместимости или выше'");
-
-	КонецЕсли;
-
-КонецФункции
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура MetadataTreeOnChange(Элемент)
-// Вставить содержимое обработчика.
-КонецПроцедуры
+&AtServer
+Function CheckPlatformVersionAndCompatibilityMode()
 
-&НаСервере
-Процедура ИнициализироватьСКД()
+	Information = New SystemInfo;
+	If Not (Left(Information.AppVersion, 3) = "8.3"
+		AND (Metadata.CompatibilityMode = Metadata.ObjectProperties.CompatibilityMode.DontUse
+		Or (Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode.Version8_1
+		AND Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode.Version8_2_13
+		AND Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_2_16"]
+		AND Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_3_1"]
+		AND Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_3_2"]))) Then
+		
+		Raise NStr("ru = 'Обработка предназначена для запуска на версии платформы
+			|1С:Предприятие 8.3 с отключенным режимом совместимости или выше'; 
+			|en = 'The data processor is intended for use with 
+			|1C:Enterprise 8.3 or later, with disabled compatibility mode'");
+		
+	EndIf;
 
-	СхемаКомпоновкиДанных = Новый СхемаКомпоновкиДанных;
-	НовыйИсточник = СхемаКомпоновкиДанных.ИсточникиДанных.Добавить();
-	НовыйИсточник.Имя = "ИсточникДанных1";
-	НовыйИсточник.ТипИсточникаДанных = "Local";
+EndFunction
 
-	НовыйНаборДанных = СхемаКомпоновкиДанных.НаборыДанных.Добавить(Тип("НаборДанныхОбъектСхемыКомпоновкиДанных"));
-	НовыйНаборДанных.ИсточникДанных = "Local";
+//@skip-warning
+&AtClient
+Procedure MetadataTreeOnChange(Item)
+// Insert handler content.
+EndProcedure
 
-	НовыйНаборДанных.Имя = "Основной";
-	НовыйНаборДанных.ИмяОбъекта = "Основной";
-	НовыйНаборДанных.ИсточникДанных = "ИсточникДанных1";
+&AtServer
+Procedure InitializeDCS()
 
-	ТаблицаМетаданных.Очистить();
+	DataCompositionSchema = New DataCompositionSchema;
+	NewSource = DataCompositionSchema.DataSources.Add();
+	NewSource.Name = "DataSource1";
+	NewSource.DataSourceType = "Local";
 
-	ТаблицаОбщихРеквизитов = Новый ТаблицаЗначений;
+	NewDataSet = DataCompositionSchema.DataSets.Add(Type("DataCompositionSchemaDataSetObject"));
+	NewDataSet.DataSource = "Local";
 
-	ТаблицаОбщихРеквизитов.Колонки.Добавить("ОбъектМетаданных");
-	ТаблицаОбщихРеквизитов.Колонки.Добавить("КоличествоРеквизитов");
-	ТаблицаОбщихРеквизитов.Колонки.Добавить("Шапка");
+	NewDataSet.Name = "Main";
+	NewDataSet.ObjectName = "Main";
+	NewDataSet.DataSource = "DataSource1";
 
-	МассивТиповСсылка = Новый Массив;
+	MetadataTable.Clear();
 
-	Для Каждого Элементобъектов Из ChoiceResult Цикл
+	CommonAttributesTable = New ValueTable;
 
-		Если Элементобъектов.значение = "Справочники" Тогда
+	CommonAttributesTable.Columns.Add("MetadataObject");
+	CommonAttributesTable.Columns.Add("AttributeCount");
+	CommonAttributesTable.Columns.Add("Header");
 
-			СтрокаТипа = "СправочникСсылка.";
+	RefTypesArray = New Array;
 
-		ИначеЕсли Элементобъектов.значение = "Документы" Тогда
+	For Each ObjectsItem In ChoiceResult Do
 
-			СтрокаТипа = "ДокументСсылка.";
+		If ObjectsItem.Value = "Catalogs" Then
 
-		ИначеЕсли Элементобъектов.значение = "ПланыВидовРасчета" Тогда
+			TypeString = "CatalogRef.";
 
-			СтрокаТипа = "ПланВидовРасчетаСсылка.";
+		ElsIf ObjectsItem.Value = "Documents" Then
 
-		ИначеЕсли Элементобъектов.значение = "ПланыВидовХарактеристик" Тогда
+			TypeString = "DocumentRef.";
 
-			СтрокаТипа = "ПланВидовХарактеристикСсылка.";
+		ElsIf ObjectsItem.Value = "ChartsOfCalculationTypes" Then
 
-		ИначеЕсли Элементобъектов.значение = "БизнесПроцессы" Тогда
+			TypeString = "ChartOfCalculationTypesRef.";
 
-			СтрокаТипа = "БизнесПроцессСсылка.";
+		ElsIf ObjectsItem.Value = "ChartsOfCharacteristicTypes" Then
 
-		ИначеЕсли Элементобъектов.значение = "Задачи" Тогда
+			TypeString = "ChartOfCharacteristicTypesRef.";
 
-			СтрокаТипа = "ЗадачаСсылка.";
-		ИначеЕсли Элементобъектов.значение = "Константы" Тогда
+		ElsIf ObjectsItem.Value = "BusinessProcesses" Then
 
-			СтрокаТипа = "КонстантаМенеджер.";
-		ИначеЕсли Элементобъектов.значение = "ПланыОбмена" Тогда
-			СтрокаТипа = "ПланОбменассылка.";
-		ИначеЕсли Элементобъектов.значение = "ПланыСчетов" Тогда
-			СтрокаТипа = "ПланСчетовссылка.";
-		ИначеЕсли Элементобъектов.значение = "Последовательности" Тогда
-			СтрокаТипа = "ПоследовательностьМенеджер.";
-		ИначеЕсли Элементобъектов.значение = "РегистрыСведений" Тогда
-			СтрокаТипа = "РегистрСведенийМенеджер.";
-		ИначеЕсли Элементобъектов.значение = "РегистрыНакопления" Тогда
-			СтрокаТипа = "РегистрНакопленияМенеджер.";
-		ИначеЕсли Элементобъектов.значение = "РегистрыБухгалтерии" Тогда
-			СтрокаТипа = "РегистрБухгалтерииМенеджер.";
-		КонецЕсли;
+			TypeString = "BusinessProcessRef.";
 
-		МассивТиповСсылка.Добавить(Тип(СтрокаТипа + Элементобъектов));
+		ElsIf ObjectsItem.Value = "Tasks" Then
 
-	КонецЦикла;
+			TypeString = "TaskRef.";
+		ElsIf ObjectsItem.Value = "Constants" Then
 
-	Для Каждого ОбъектВыбора Из ChoiceResult Цикл
+			TypeString = "ConstantManager.";
+		ElsIf ObjectsItem.Value = "ExchangePlans" Then
+			TypeString = "ExchangePlanRef.";
+		ElsIf ObjectsItem.Value = "ChartsOfAccounts" Then
+			TypeString = "ChartOfAccountsRef.";
+		ElsIf ObjectsItem.Value = "Sequences" Then
+			TypeString = "SequenceManager.";
+		ElsIf ObjectsItem.Value = "InformationRegisters" Then
+			TypeString = "InformationRegisterManager.";
+		ElsIf ObjectsItem.Value = "AccumulationRegisters" Then
+			TypeString = "AccumulationRegisterManager.";
+		ElsIf ObjectsItem.Value = "AccountingRegisters" Then
+			TypeString = "AccountingRegisterManager.";
+		EndIf;
 
-		Если ОбъектВыбора.Значение = "РегистрыСведений" Или ОбъектВыбора.Значение = "РегистрыНакопления"
-			Или ОбъектВыбора.Значение = "РегистрыБухгалтерии" Тогда
+		RefTypesArray.Add(Type(TypeString + ObjectsItem));
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Реквизиты Цикл
+	EndDo;
 
-				НоваяСтрока = ТаблицаМетаданных.Добавить();
+	For Each ChoiceObject In ChoiceResult Do
 
-				НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-				НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Синоним;
-				НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-				НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+		If ChoiceObject.Value = "InformationRegisters" Or ChoiceObject.Value = "AccumulationRegisters"
+			Or ChoiceObject.Value = "AccountingRegisters" Then
 
-			КонецЦикла;
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(ChoiceObject)].Attributes Do
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].СтандартныеРеквизиты Цикл
+				NewRow = MetadataTable.Add();
 
-				Если ОбъектМетаданных.Имя = "Предопределенный" Или ОбъектМетаданных.Имя = "ЭтоГруппа"
-					Или ОбъектМетаданных.Имя = "Ссылка" Тогда
+				NewRow.AttributeName = MetadataObject.Name;
+				NewRow.AttributeSynonym = MetadataObject.Synonym;
+				NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+				NewRow.MetadataObject = ChoiceObject.Value;
 
-					Продолжить;
+			EndDo;
 
-				Иначе
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].StandardAttributes Do
 
-					НоваяСтрока = ТаблицаМетаданных.Добавить();
+				If MetadataObject.Name = "Predefined" Or MetadataObject.Name = "IsFolder"
+					Or MetadataObject.Name = "Ref" Then
 
-					НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-					НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+					Continue;
 
-				КонецЕсли;
+				Else
 
-			КонецЦикла;
+					NewRow = MetadataTable.Add();
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Измерения Цикл
+					NewRow.AttributeName = MetadataObject.Name;
+					NewRow.AttributeSynonym = MetadataObject.Name;
+					NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+					NewRow.MetadataObject = ChoiceObject.Value;
 
-				НоваяСтрока = ТаблицаМетаданных.Добавить();
+				EndIf;
 
-				НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-				НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Синоним;
-				НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-				НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+			EndDo;
 
-			КонецЦикла;
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(ChoiceObject)].Dimensions Do
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Ресурсы Цикл
+				NewRow = MetadataTable.Add();
 
-				НоваяСтрока = ТаблицаМетаданных.Добавить();
+				NewRow.AttributeName = MetadataObject.Name;
+				NewRow.AttributeSynonym = MetadataObject.Synonym;
+				NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+				NewRow.MetadataObject = ChoiceObject.Value;
 
-				НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-				НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Синоним;
-				НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-				НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+			EndDo;
 
-			КонецЦикла;
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(ChoiceObject)].Resources Do
 
-		ИначеЕсли ОбъектВыбора.Значение <> "Константы" И ОбъектВыбора.Значение <> "Последовательности" Тогда
-			КоличествоРеквизитов = Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Реквизиты.Количество();
+				NewRow = MetadataTable.Add();
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Реквизиты Цикл
+				NewRow.AttributeName = MetadataObject.Name;
+				NewRow.AttributeSynonym = MetadataObject.Synonym;
+				NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+				NewRow.MetadataObject = ChoiceObject.Value;
 
-				НоваяСтрока = ТаблицаМетаданных.Добавить();
+			EndDo;
 
-				НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-				НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Синоним;
-				НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-				НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+		ElsIf ChoiceObject.Value <> "Constants" And ChoiceObject.Value <> "Sequences" Then
+			AttributeCount = Metadata[ChoiceObject.Value][String(ChoiceObject)].Attributes.Count();
 
-			КонецЦикла;
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(ChoiceObject)].Attributes Do
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].СтандартныеРеквизиты Цикл
+				NewRow = MetadataTable.Add();
 
-				Если ОбъектМетаданных.Имя = "Предопределенный" Или ОбъектМетаданных.Имя = "ЭтоГруппа"
-					Или ОбъектМетаданных.Имя = "Ссылка" Тогда
+				NewRow.AttributeName = MetadataObject.Name;
+				NewRow.AttributeSynonym = MetadataObject.Synonym;
+				NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+				NewRow.MetadataObject = ChoiceObject.Value;
 
-					Продолжить;
+			EndDo;
 
-				Иначе
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].StandardAttributes Do
 
-					НоваяСтрока = ТаблицаМетаданных.Добавить();
+				If MetadataObject.Name = "Predefined" Or MetadataObject.Name = "IsFolder"
+					Or MetadataObject.Name = "Ref" Then
 
-					НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-					НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+					Continue;
 
-				КонецЕсли;
+				Else
 
-			КонецЦикла;
-		ИначеЕсли ОбъектВыбора.Значение = "Константы" Тогда
-			НоваяСтрока = ТаблицаМетаданных.Добавить();
-			ОбъектМетаданных = Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)];
+					NewRow = MetadataTable.Add();
 
-			НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-			НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Имя;
-			НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-			НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
-		ИначеЕсли ОбъектВыбора.Значение = "Последовательности" Тогда
+					NewRow.AttributeName = MetadataObject.Name;
+					NewRow.AttributeSynonym = MetadataObject.Name;
+					NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+					NewRow.MetadataObject = ChoiceObject.Value;
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Измерения Цикл
-				Если ОбъектМетаданных.Имя = "Предопределенный" Или ОбъектМетаданных.Имя = "ЭтоГруппа"
-					Или ОбъектМетаданных.Имя = "Ссылка" Тогда
-					Продолжить;
-				Иначе
-					НоваяСтрока = ТаблицаМетаданных.Добавить();
-					НоваяСтрока.ИмяРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.СинонимРеквизита = ОбъектМетаданных.Имя;
-					НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных.Тип);
-					НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
-				КонецЕсли;
-			КонецЦикла;
+				EndIf;
 
-		КонецЕсли;
+			EndDo;
+		ElsIf ChoiceObject.Value = "Constants" Then
+			NewRow = MetadataTable.Add();
+			MetadataObject = Metadata[ChoiceObject.Value][String(ChoiceObject)];
 
-		Если ОбъектВыбора.Значение = "Задачи" Тогда
+			NewRow.AttributeName = MetadataObject.Name;
+			NewRow.AttributeSynonym = MetadataObject.Name;
+			NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+			NewRow.MetadataObject = ChoiceObject.Value;
+		ElsIf ChoiceObject.Value = "Sequences" Then
 
-			КоличествоРеквизитов = КоличествоРеквизитов + Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].РеквизитыАдресации.Количество();
+			For Each MetadataObject In Metadata[ChoiceObject.Value][String(ChoiceObject)].Dimensions Do
+				If MetadataObject.Name = "Predefined" Or MetadataObject.Name = "IsFolder"
+					Or MetadataObject.Name = "Ref" Then
+					Continue;
+				Else
+					NewRow = MetadataTable.Add();
+					NewRow.AttributeName = MetadataObject.Name;
+					NewRow.AttributeSynonym = MetadataObject.Name;
+					NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject.Type);
+					NewRow.MetadataObject = ChoiceObject.Value;
+				EndIf;
+			EndDo;
 
-			Для Каждого ОбъектМетаданных Из Метаданные[ОбъектВыбора.Значение] Цикл
-				Для Каждого ОбъектМетаданных1 Из ОбъектМетаданных.РеквизитыАдресации Цикл
+		EndIf;
 
-					НоваяСтрока = ТаблицаМетаданных.Добавить();
+		If ChoiceObject.Value = "Tasks" Then
 
-					НоваяСтрока.ИмяРеквизита = ОбъектМетаданных1.Имя;
-					НоваяСтрока.СинонимРеквизита = ОбъектМетаданных1.Синоним;
-					НоваяСтрока.ОписаниеТипов = ИсключитьНедопустимыеТипы(ОбъектМетаданных1.Тип);
-					НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+			AttributeCount = AttributeCount + Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].AddressingAttributes.Count();
 
-				КонецЦикла;
-			КонецЦикла;
+			For Each MetadataObject In Metadata[ChoiceObject.Value] Do
+				For Each MetadataObject1 In MetadataObject.AddressingAttributes Do
 
-		КонецЕсли;
+					NewRow = MetadataTable.Add();
 
-		Если ОбъектВыбора.Значение = "РегистрыСведений" Или ОбъектВыбора.Значение = "РегистрыНакопления"
-			Или ОбъектВыбора.Значение = "РегистрыБухгалтерии" Тогда
-			КоличествоРеквизитов = Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].СтандартныеРеквизиты.Количество() + Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].СтандартныеРеквизиты.Количество() + Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].Измерения.Количество() + Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].Ресурсы.Количество();
+					NewRow.AttributeName = MetadataObject1.Name;
+					NewRow.AttributeSynonym = MetadataObject1.Synonym;
+					NewRow.TypeDescription = ExcludeInvalidTypes(MetadataObject1.Type);
+					NewRow.MetadataObject = ChoiceObject.Value;
 
-			НоваяСтрока = ТаблицаОбщихРеквизитов.Добавить();
+				EndDo;
+			EndDo;
 
-			НоваяСтрока.ОбъектМетаданных = ОбъектВыбора;
-			НоваяСтрока.КоличествоРеквизитов = КоличествоРеквизитов;
-			НоваяСтрока.Шапка = Истина;
+		EndIf;
 
-		ИначеЕсли ОбъектВыбора.Значение <> "Константы" И ОбъектВыбора.Значение <> "Последовательности" Тогда
+		If ChoiceObject.Value = "InformationRegisters" Or ChoiceObject.Value = "AccumulationRegisters"
+			Or ChoiceObject.Value = "AccountingRegisters" Then
+			AttributeCount = Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].StandardAttributes.Count() + Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].StandardAttributes.Count() + Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].Dimensions.Count() + Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].Resources.Count();
 
-			КоличествоРеквизитов = КоличествоРеквизитов + Метаданные[ОбъектВыбора.Значение][Строка(
-				ОбъектВыбора)].СтандартныеРеквизиты.Количество();
+			NewRow = CommonAttributesTable.Add();
 
-			НоваяСтрока = ТаблицаОбщихРеквизитов.Добавить();
+			NewRow.MetadataObject = ChoiceObject;
+			NewRow.AttributeCount = AttributeCount;
+			NewRow.Header = True;
 
-			НоваяСтрока.ОбъектМетаданных = ОбъектВыбора;
-			НоваяСтрока.КоличествоРеквизитов = КоличествоРеквизитов;
-			НоваяСтрока.Шапка = Истина;
-		ИначеЕсли ОбъектВыбора.Значение = "Константы" Тогда
-			КоличествоРеквизитов = 1;
-			НоваяСтрока = ТаблицаОбщихРеквизитов.Добавить();
-			НоваяСтрока.ОбъектМетаданных = ОбъектВыбора;
-			НоваяСтрока.КоличествоРеквизитов = КоличествоРеквизитов;
-			НоваяСтрока.Шапка = Истина;
+		ElsIf ChoiceObject.Value <> "Constants" And ChoiceObject.Value <> "Sequences" Then
+
+			AttributeCount = AttributeCount + Metadata[ChoiceObject.Value][String(
+				ChoiceObject)].StandardAttributes.Count();
+
+			NewRow = CommonAttributesTable.Add();
+
+			NewRow.MetadataObject = ChoiceObject;
+			NewRow.AttributeCount = AttributeCount;
+			NewRow.Header = True;
+		ElsIf ChoiceObject.Value = "Constants" Then
+			AttributeCount = 1;
+			NewRow = CommonAttributesTable.Add();
+			NewRow.MetadataObject = ChoiceObject;
+			NewRow.AttributeCount = AttributeCount;
+			NewRow.Header = True;
 
 			//
-		ИначеЕсли ОбъектВыбора.Значение = "Последовательности" Тогда
+		ElsIf ChoiceObject.Value = "Sequences" Then
 
-			КоличествоРеквизитов = Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Измерения.Количество();
+			AttributeCount = Metadata[ChoiceObject.Value][String(ChoiceObject)].Dimensions.Count();
 
-			НоваяСтрока = ТаблицаОбщихРеквизитов.Добавить();
+			NewRow = CommonAttributesTable.Add();
 
-			НоваяСтрока.ОбъектМетаданных = ОбъектВыбора;
-			НоваяСтрока.КоличествоРеквизитов = КоличествоРеквизитов;
-			НоваяСтрока.Шапка = Истина;
+			NewRow.MetadataObject = ChoiceObject;
+			NewRow.AttributeCount = AttributeCount;
+			NewRow.Header = True;
 
-		КонецЕсли;
-
-		// {Начало изменений [25.11.2020 15:47:53] Причина: Добавление фильтра по счетам учета для регистра бухгалтерии. 
-		Если ОбъектВыбора.Значение="РегистрыБухгалтерии"  И Метаданные[ОбъектВыбора.Значение][Строка(ОбъектВыбора)].Корреспонденция Тогда
-			НоваяСтрока = ТаблицаМетаданных.Добавить();
-            НоваяСтрока.ИмяРеквизита = "СчетДТ";
-            НоваяСтрока.СинонимРеквизита = "СчетДТ";
-            НоваяСтрока.ОписаниеТипов = ПланыСчетов.ТипВсеСсылки(); 
-            НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
+		EndIf;
+ 
+		If ChoiceObject.Value="AccountingRegisters"  And Metadata[ChoiceObject.Value][String(ChoiceObject)].Correspondence Then
+			NewRow = MetadataTable.Add();
+            NewRow.AttributeName = "AccountDr";
+            NewRow.AttributeSynonym = "AccountDr";
+            NewRow.TypeDescription = ChartsOfAccounts.AllRefsType(); 
+            NewRow.MetadataObject = ChoiceObject.Value;
                 
-            НоваяСтрока = ТаблицаМетаданных.Добавить();
-            НоваяСтрока.ИмяРеквизита = "СчетКТ";
-            НоваяСтрока.СинонимРеквизита = "СчетКТ";
-            НоваяСтрока.ОписаниеТипов = ПланыСчетов.ТипВсеСсылки(); 
-            НоваяСтрока.ОбъектМетаданных = ОбъектВыбора.Значение;
-		КонецЕсли;
-        // }  Конец изменений [25.11.2020 15:48:46]
+            NewRow = MetadataTable.Add();
+            NewRow.AttributeName = "AccountCr";
+            NewRow.AttributeSynonym = "AccountCr";
+            NewRow.TypeDescription = ChartsOfAccounts.AllRefsType(); 
+            NewRow.MetadataObject = ChoiceObject.Value;
+		EndIf;
 
-	КонецЦикла;
+	EndDo;
 
-	ТаблицаОбщихРеквизитов.Сортировать("КоличествоРеквизитов возр");
+	CommonAttributesTable.Sort("AttributeCount asc");
 
-	ТаблицаОбщихРеквизитов.Свернуть("КоличествоРеквизитов,ОбъектМетаданных,Шапка", "");
+	CommonAttributesTable.GroupBy("AttributeCount,MetadataObject,Header", "");
 
-	Если ТаблицаОбщихРеквизитов.Количество() > 1 Тогда
+	If CommonAttributesTable.Count() > 1 Then
 
-		ИсключитьУникальныеРеквизиты(ТаблицаОбщихРеквизитов, Ложь);
+		ExcludeUniqueAttributes(CommonAttributesTable, False);
 
-	КонецЕсли;
+	EndIf;
 
-	ОписаниеТиповСсылка = Новый ОписаниеТипов(МассивТиповСсылка);
+	TypeDescriptionRef = New TypeDescription(RefTypesArray);
 
-	НоваяСтрока = ТаблицаМетаданных.Добавить();
+	NewRow = MetadataTable.Add();
 
-	НоваяСтрока.ИмяРеквизита = "Ссылка";
-	НоваяСтрока.СинонимРеквизита = "Ссылка";
-	НоваяСтрока.ОписаниеТипов = ОписаниеТиповСсылка;
+	NewRow.AttributeName = "Ref";
+	NewRow.AttributeSynonym = "Ref";
+	NewRow.TypeDescription = TypeDescriptionRef;
 
-	ТаблицаМетаданных.Сортировать("Шапка возр,ИмяРеквизита возр");
+	MetadataTable.Sort("Header asc,AttributeName asc");
 
-	Для Каждого ЭлементРеквизит Из ТаблицаМетаданных Цикл
+	For Each AttributeItem In MetadataTable Do
 
-		ИмяРеквизита = СтрЗаменить(ЭлементРеквизит.ИмяРеквизита, ".", "*$");
-		//ИмяРеквизита=ЭлементРеквизит.ИмяРеквизита;
-		НовоеПолеНабораДанных = НовыйНаборДанных.Поля.Добавить(Тип("ПолеНабораДанныхСхемыКомпоновкиДанных"));
-		НовоеПолеНабораДанных.Заголовок = ЭлементРеквизит.СинонимРеквизита;
+		AttributeName = StrReplace(AttributeItem.AttributeName, ".", "*$");
+		//AttributeName=AttributeItem.AttributeName;
+		NewDataSetField = NewDataSet.Fields.Add(Type("DataCompositionSchemaDataSetField"));
+		NewDataSetField.Title = AttributeItem.AttributeSynonym;
 
-		НовоеПолеНабораДанных.Поле = ИмяРеквизита;
-		НовоеПолеНабораДанных.ТипЗначения = ЭлементРеквизит.ОписаниеТипов;
-		НовоеПолеНабораДанных.ПутьКДанным = ИмяРеквизита;
+		NewDataSetField.Field = AttributeName;
+		NewDataSetField.ValueType = AttributeItem.TypeDescription;
+		NewDataSetField.DataPath = AttributeName;
 
-		Если ЭлементРеквизит.ИмяРеквизита = "ИмяТЧ" Тогда
+		If AttributeItem.AttributeName = "TSName" Then
 
-			НовоеПолеНабораДанных.ОграничениеИспользования.Условие = Истина;
-			НовоеПолеНабораДанных.ОграничениеИспользования.Порядок = Истина;
+			NewDataSetField.UseRestriction.Condition = True;
+			NewDataSetField.UseRestriction.Order = True;
 
-		КонецЕсли;
+		EndIf;
 
-	КонецЦикла;
+	EndDo;
 
-	НастройкиКомпоновки = СхемаКомпоновкиДанных.НастройкиПоУмолчанию;
+	CompositionSettings = DataCompositionSchema.DefaultSettings;
 
-	НоваяГруппировка = НастройкиКомпоновки.Структура.Добавить(Тип("ГруппировкаКомпоновкиДанных"));
-	НоваяГруппировка.Использование = Истина;
+	NewGroup = CompositionSettings.Structure.Add(Type("DataCompositionGroup"));
+	NewGroup.Use = True;
 
-	Для Каждого ЭлементРеквизит Из ТаблицаМетаданных Цикл
+	For Each AttributeItem In MetadataTable Do
 
-		НовоеПолеКомпоновкиДанных = НоваяГруппировка.ПоляГруппировки.Элементы.Добавить(Тип(
-			"ПолеГруппировкиКомпоновкиДанных"));
-		НовоеПолеКомпоновкиДанных.Использование = Истина;
+		NewDataCompositionField = NewGroup.GroupFields.Items.Add(Type(
+			"DataCompositionGroupField"));
+		NewDataCompositionField.Use = True;
 
-		НовоеПолеКомпоновкиДанных.Поле = Новый ПолеКомпоновкиДанных(ЭлементРеквизит.ИмяРеквизита);
+		NewDataCompositionField.Field = New DataCompositionField(AttributeItem.AttributeName);
 
-		ВыбранноеПоле = НоваяГруппировка.Выбор.Элементы.Добавить(Тип("ВыбранноеПолеКомпоновкиДанных"));
-		ВыбранноеПоле.Использование = Истина;
-		ВыбранноеПоле.Заголовок = ЭлементРеквизит.СинонимРеквизита;
-		ВыбранноеПоле.Поле = Новый ПолеКомпоновкиДанных(ЭлементРеквизит.ИмяРеквизита);
+		SelectedField = NewGroup.Selection.Items.Add(Type("DataCompositionSelectedField"));
+		SelectedField.Use = True;
+		SelectedField.Title = AttributeItem.AttributeSynonym;
+		SelectedField.Field = New DataCompositionField(AttributeItem.AttributeName);
 
-	КонецЦикла;
+	EndDo;
 
-	АдресСКД = ПоместитьВоВременноеХранилище(СхемаКомпоновкиДанных, ЭтаФорма.УникальныйИдентификатор);
+	DCSAddress = PutToTempStorage(DataCompositionSchema, ThisForm.UUID);
 
-	ИсточникНастроек = Новый ИсточникДоступныхНастроекКомпоновкиДанных(АдресСКД);
+	SettingsSource = New DataCompositionAvailableSettingsSource(DCSAddress);
 
-	Object.Composer.Инициализировать(ИсточникНастроек);
+	Object.Composer.Initialize(SettingsSource);
 
-	Object.Composer.ЗагрузитьНастройки(СхемаКомпоновкиДанных.НастройкиПоУмолчанию);
+	Object.Composer.LoadSettings(DataCompositionSchema.DefaultSettings);
 
-	Если ТипОбъекта = "Документы" Тогда
+	If ObjectType = "Documents" Then
 
-		НовоеПолеСортировки = Object.Composer.Настройки.Порядок.Элементы.Добавить(Тип(
-			"ЭлементПорядкаКомпоновкиДанных"));
-		НовоеПолеСортировки.Поле = Новый ПолеКомпоновкиДанных("Дата");
+		NewSortField = Object.Composer.Settings.Order.Items.Add(Type(
+			"DataCompositionOrderItem"));
+		NewSortField.Field = New DataCompositionField("Date");
 
-		НовоеПолеСортировки = Object.Composer.Настройки.Порядок.Элементы.Добавить(Тип(
-			"ЭлементПорядкаКомпоновкиДанных"));
-		НовоеПолеСортировки.Поле = Новый ПолеКомпоновкиДанных("Ссылка");
+		NewSortField = Object.Composer.Settings.Order.Items.Add(Type(
+			"DataCompositionOrderItem"));
+		NewSortField.Field = New DataCompositionField("Ref");
 
-	ИначеЕсли ТипОбъекта = "ПланыВидовХарактеристик" Тогда
+	ElsIf ObjectType = "ChartsOfCharacteristicTypes" Then
 
-		ИнициализироватьДопОтборХарактеристик();
+		InitializeAdditionalCharacteristicsFilter();
 
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ИнициализироватьДопОтборХарактеристик()
+&AtServer
+Procedure InitializeAdditionalCharacteristicsFilter()
 
-	ОписаниеТипов = Новый ОписаниеТипов;
+	TypeDescription = New TypeDescription;
 
-	Для Каждого ВыбраннаяХарактеристика Из ChoiceResult Цикл
+	For Each SelectedCharacteristic In ChoiceResult Do
 
-		ТипыЗначенияХарактеристики = Метаданные.ПланыВидовХарактеристик[ВыбраннаяХарактеристика.Значение].Тип;
-		ОписаниеТипов = Новый ОписаниеТипов(ОписаниеТипов, ТипыЗначенияХарактеристики.Типы());
+		CharacteristicValueTypes = Metadata.ChartsOfCharacteristicTypes[SelectedCharacteristic.Value].Type;
+		TypeDescription = New TypeDescription(TypeDescription, CharacteristicValueTypes.Types());
 
-	КонецЦикла;
+	EndDo;
 
-//	ТипЗначенияХарактеристики = Новый ОписаниеТипов(ОписаниеТипов);
+//	CharacteristicValueType = New TypeDescription(TypeDescription);
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ПодготовитьСписокВыбранныхОбъектов(ТекущиеДанныеИмя, ИмяОбъектаМетаданных)
+&AtServer
+Procedure PrepareSelectedObjectsList(CurrentDataName, MetadataObjectName)
 
-	ChoiceResult = Новый СписокЗначений;
-	ПодготовитьСписокВыбранных(ChoiceResult, ТекущиеДанныеИмя, ИмяОбъектаМетаданных);
+	ChoiceResult = New ValueList;
+	PrepareSelectedItemsList(ChoiceResult, CurrentDataName, MetadataObjectName);
 
-	КэшОтбора = Object.Composer.Настройки.Отбор.Элементы;
+	FilterCache = Object.Composer.Settings.Filter.Items;
 
-	Если ChoiceResult <> Неопределено Тогда
+	If ChoiceResult <> Undefined Then
 
-		ТаблицаМетаданных.Очистить();
-		ТаблицаВидыОбъектов.Очистить();
+		MetadataTable.Clear();
+		ObjectTypesTable.Clear();
 
-		Для Каждого ЭлементРезультат Из ChoiceResult Цикл
+		For Each ResultItem In ChoiceResult Do
 
-			НоваяСтрока = ТаблицаВидыОбъектов.Добавить();
-			НоваяСтрока.ИмяТаблицы = ЭлементРезультат.Значение;
-			НоваяСтрока.ПредставлениеТаблицы = ЭлементРезультат.Представление;
+			NewRow = ObjectTypesTable.Add();
+			NewRow.TableName = ResultItem.Value;
+			NewRow.TablePresentation = ResultItem.Presentation;
 
-		КонецЦикла;
+		EndDo;
 
-		ИнициализироватьСКД();
+		InitializeDCS();
 
-	КонецЕсли;
+	EndIf;
 
-	VisibleColumnsCache.Очистить();
+	VisibleColumnsCache.Clear();
 
-	ВосстановитьОтборИзКэша(Object.Composer.Настройки.Отбор.Элементы, КэшОтбора,
-		Object.Composer.Настройки.Отбор.ДоступныеПоляОтбора);
+	RestoreFilterFromCache(Object.Composer.Settings.Filter.Items, FilterCache,
+		Object.Composer.Settings.Filter.FilterAvailableFields);
 
-	ОчиститьУО();
+	ClearCA();
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ОчиститьУО()
+&AtServer
+Procedure ClearCA()
 	;
 
-	Если ЭтаФорма.УсловноеОформление.Элементы.Количество() > 0 Тогда
+	If ThisForm.ConditionalAppearance.Items.Count() > 0 Then
 
-		ЭтаФорма.УсловноеОформление.Элементы.Очистить();
+		ThisForm.ConditionalAppearance.Items.Clear();
 
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ПодготовитьСписокВыбранных(СписокВыбора, ТекущиеДанныеИмя, ИмяОбъектаМетаданных)
+&AtServer
+Procedure PrepareSelectedItemsList(ChoiceList, CurrentDataName, MetadataObjectName)
 
-	ОбъектНаСервере = РеквизитФормыВЗначение("Object");
-	//ЗначениеВРеквизитФормы(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
-	ДеревоМетаданных1 = ОбъектНаСервере.MetadataTree;
-	//РеквизитФормыВЗначение("MetadataTree");
-	СписокГруппЭлементов = ДеревоМетаданных1.Строки[0].Строки;
+	ObjectAtServer = FormAttributeToValue("Object");
+	//ValueToFormAttribute(ObjectAtServer.MetadataTree, "Object.MetadataTree");
+	MetadataTree1 = ObjectAtServer.MetadataTree;
+	//FormAttributeToValue("MetadataTree");
+	ItemGroupsList = MetadataTree1.Rows[0].Rows;
 
-	Для Каждого ЭлементСтрока Из СписокГруппЭлементов Цикл
-	//Если ЭлементСтрока.Выгружать>0 Тогда
-		Для Каждого ЭлементМетаданных Из ЭлементСтрока.Строки Цикл
-			Если ЭлементМетаданных.MetadataFullName = ТекущиеДанныеИмя И ЭлементМетаданных.ИмяОбъектаМетаданных
-				= ИмяОбъектаМетаданных Тогда
-				СписокВыбора.Добавить(ЭлементСтрока.ПолноеИмяМетаданных, ЭлементМетаданных.ПолноеИмяМетаданных);
-				Прервать;
-			КонецЕсли;
-		КонецЦикла;
-		//КонецЕсли;
-	КонецЦикла;
+	For Each RowItem In ItemGroupsList Do
+	//If RowItem.ExportData>0 Then
+		For Each MetadataItem In RowItem.Rows Do
+			If MetadataItem.MetadataFullName = CurrentDataName And MetadataItem.MetadataObjectName
+				= MetadataObjectName Then
+				ChoiceList.Add(RowItem.MetadataFullName, MetadataItem.MetadataFullName);
+				Break;
+			EndIf;
+		EndDo;
+		//EndIf;
+	EndDo;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Функция ИсключитьНедопустимыеТипы(ТипРеквизита)
+&AtServer
+Function ExcludeInvalidTypes(AttributeType)
 
-	МассивНедопустимых = ПолучитьНедопустимыеТипы();
+	InvalidTypesArray = GetInvalidTypes();
 
-	МассивИсключаемыхТипов = Новый Массив;
+	ExcludedTypesArray = New Array;
 
-	Для Каждого ЭлементНедопустимый Из МассивНедопустимых Цикл
+	For Each InvalidItem In InvalidTypesArray Do
 
-		Если ТипРеквизита.СодержитТип(ЭлементНедопустимый) Тогда
+		If AttributeType.ContainsType(InvalidItem) Then
 
-			МассивИсключаемыхТипов.Добавить(ЭлементНедопустимый);
+			ExcludedTypesArray.Add(InvalidItem);
 
-		КонецЕсли;
+		EndIf;
 
-	КонецЦикла;
+	EndDo;
 
-	Если МассивИсключаемыхТипов.Количество() = 0 Тогда
+	If ExcludedTypesArray.Count() = 0 Then
 
-		ОписаниеРеквизита = ТипРеквизита;
+		AttributeDetails = AttributeType;
 
-	Иначе
+	Else
 
-		ОписаниеРеквизита = Новый ОписаниеТипов(ТипРеквизита, , МассивИсключаемыхТипов);
+		AttributeDetails = New TypeDescription(AttributeType, , ExcludedTypesArray);
 
-	КонецЕсли;
+	EndIf;
 
-	Возврат ОписаниеРеквизита;
+	Return AttributeDetails;
 
-КонецФункции
+EndFunction
 
-&НаСервере
-Процедура ИсключитьУникальныеРеквизиты(ТаблицаОбщихРеквизитов, ОбрабатыватьТЧ)
+&AtServer
+Procedure ExcludeUniqueAttributes(CommonAttributesTable, ProcessTS)
 
-	ТаблКолич = ТаблицаОбщихРеквизитов.Скопировать();
+	CountTable = CommonAttributesTable.Copy();
 
-	ТаблицаРезультат = ТаблицаМетаданных.Выгрузить();
+	ResultTable = MetadataTable.Unload();
 
-	ТаблКолич.Колонки.Добавить("Колич");
+	CountTable.Columns.Add("Count");
 
-	Для Каждого Строка Из ТаблКолич Цикл
-		Строка.Колич = 1;
-	КонецЦикла;
+	For Each Row In CountTable Do
+		Row.Count = 1;
+	EndDo;
 
-	ТаблКолич.Свернуть("Шапка", "Колич");
+	CountTable.Collapse("Header", "Count");
 
-	ТаблицаРезультат.Колонки.Добавить("Колич");
-	//ТаблицаРезультат.Колонки.Добавить("Шапка");
-	Для Каждого Строка Из ТаблицаРезультат Цикл
-		Строка.Колич = 1;
-		Если Не ОбрабатыватьТЧ Тогда
-			Строка.Шапка = Истина;
-		ИначеЕсли Врег(Лев(Строка.ИмяРеквизита, 6)) = "ССЫЛКА" Тогда
-			Строка.Шапка = Истина;
-		Иначе
-			Строка.Шапка = Ложь;
-		КонецЕсли;
-	КонецЦикла;
+	ResultTable.Columns.Add("Count");
+	//ResultTable.Columns.Add("Header");
+	For Each Row In ResultTable Do
+		Row.Count = 1;
+		If Not ProcessTS Then
+			Row.Header = True;
+		ElsIf Upper(Left(Row.AttributeName, 6)) = "REF" Then
+			Row.Header = True;
+		Else
+			Row.Header = False;
+		EndIf;
+	EndDo;
 
-	//  приводим к одному типу квалификаторы типа число
-	Для Каждого Строка Из ТаблицаРезультат Цикл
-		Если СокрЛП(Строка.ОписаниеТипов) = "Число" Тогда
-			Разрядность = Строка.ОписаниеТипов.КвалификаторыЧисла.Разрядность;
-			РазрядностьДробнойЧасти = Строка.ОписаниеТипов.КвалификаторыЧисла.РазрядностьДробнойЧасти;
-			//ДопустимыйЗнак=Строка.ОписаниеТипов.КвалификаторыЧисла.ДопустимыйЗнак;
-			Массив = Новый Массив;
-			Массив.Добавить(Тип("Число"));
+	//  Adjusting the number qualifiers to the same type.
+	For Each Row In ResultTable Do
+		If TrimAll(Row.TypeDescription) = "Number" Then
+			Digits = Row.TypeDescription.NumberQualifiers.Digits;
+			FractionDigits = Row.TypeDescription.NumberQualifiers.FractionDigits;
+			//AllowedSign=Row.TypeDescription.NumberQualifiers.AllowedSign;
+			Array = New Array;
+			Array.Add(Type("Number"));
 
-			ПараметрыЧисла = Новый КвалификаторыЧисла(Разрядность, РазрядностьДробнойЧасти);
+			NumberParameters = New NumberQualifiers(Digits, FractionDigits);
 
-			Строка.ОписаниеТипов = Новый ОписаниеТипов(Массив, , , ПараметрыЧисла);
+			Row.TypeDescription = New TypeDescription(Array, , , NumberParameters);
 
-		КонецЕсли;
-	КонецЦикла;
+		EndIf;
+	EndDo;
 
-	ТаблицаРезультат.Свернуть("ИмяРеквизита,Синонимреквизита,ОписаниеТипов,Шапка", "Колич");
+	ResultTable.Collapse("AttributeName,AttributeSynonym,TypeDescription,Header", "Count");
 
-	// Чистим все не дублирующиеся элементы, оставляем только дубли 
-	КолМакс = 0;
-	Для Каждого Строка3 Из ТаблицаРезультат Цикл
-		Если Строка3.Колич > КолМакс Тогда
-			КолМакс = Строка3.Колич;
-		КонецЕсли;
+	// Deleting the non-duplicating items. 
+	MaxCount = 0;
+	For Each VRow In ResultTable Do
+		If VRow.Count > MaxCount Then
+			MaxCount = VRow.Count;
+		EndIf;
 
-	КонецЦикла;
+	EndDo;
 
-	Колво = ТаблицаРезультат.Количество();
-	//КолМакс=ТаблКолич.Количество();
-	Пока КолВо > 0 Цикл
-		Строка = ТаблицаРезультат[КолВо - 1];
-		Если Строка.Колич <> КолМакс Тогда
-			ТаблицаРезультат.Удалить(Строка);
-		КонецЕсли;
-		Колво = Колво - 1;
-	КонецЦикла;
+	Count = ResultTable.Количество();
+	//MaxCount=ТаблКолич.Количество();
+	While Count > 0 Do
+		Row = ResultTable[Count - 1];
+		If Row.Count <> MaxCount Then
+			ResultTable.Delete(Row);
+		EndIf;
+		Count = Count - 1;
+	EndDo;
 
-	ТаблицаРезультат.Свернуть("ИмяРеквизита,Синонимреквизита,ОписаниеТипов,Шапка", "");
+	ResultTable.Collapse("AttributeName,AttributeSynonym,TypeDescription,Header", "");
 
-	ТаблицаМетаданных.Очистить();
-	ТаблицаМетаданных.Загрузить(ТаблицаРезультат);
+	MetadataTable.Clear();
+	MetadataTable.Load(ResultTable);
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервереБезКонтекста
-Функция ПолучитьНедопустимыеТипы()
+&AtServerNoContext
+Function GetInvalidTypes()
 
-	МассивНедопустимыхТипов = Новый Массив;
-	МассивНедопустимыхТипов.Добавить(Тип("ХранилищеЗначения"));
+	InvalidTypesArray = New Array;
+	InvalidTypesArray.Add(Type("ValueStorage"));
 
-	Возврат МассивНедопустимыхТипов;
+	Return InvalidTypesArray;
 
-КонецФункции
+EndFunction
 
-&НаКлиенте
-Процедура CopyFilter(Команда)
-// Вставить содержимое обработчика.
-	ТекущиеДанныеИмя = Элементы.MetadataTree.ТекущиеДанные.MetadataFullName;
-//	ТекущаяСтрока = Элементы.MetadataTree.ТекущаяСтрока;
-//	ТекущиеДанные = Элементы.MetadataTree.ТекущиеДанные;
-	ТекущийЭлемент = Элементы.MetadataTree.ТекущийЭлемент;
+&AtClient
+Procedure CopyFilter(Command)
+// Insert handler content.
+	CurrentDataName = Items.MetadataTree.CurrentData.MetadataFullName;
+//	CurrentRow = Items.MetadataTree.CurrentRow;
+//	CurrentData = Items.MetadataTree.CurrentData;
+	CurrentItem = Items.MetadataTree.CurrentItem;
 
-	СкопироватьОтборнаСервере(ТекущиеДанныеИмя);
+	CopyFilterAtServer(CurrentDataName);
 
-КонецПроцедуры
+EndProcedure
 
 // Обходим дерево и проставляем флажок выводить
-&НаСервере
-Процедура СкопироватьОтборнаСервере(ТекущиеДанныеИмя)
+&AtServer
+Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 
-	Дерево1 = Object.MetadataTree.ПолучитьЭлементы();
+	Дерево1 = Object.MetadataTree.GetItems();
 
-	//РеквизитФормыВЗначение("Object.MetadataTree");
-	ОбъектСсылка = РеквизитФормыВЗначение("Object");
+	//FormAttributeToValue("Object.MetadataTree");
+	ОбъектСсылка = FormAttributeToValue("Object");
 
-	ТаблицаОтбораТекущ = ОбъектСсылка.Composer.Настройки.Отбор;
+	ТаблицаОтбораТекущ = ОбъектСсылка.Composer.Настройки.Filter;
 
-	ТаблицаОтбора1 = РеквизитФормыВЗначение("ТаблицаОтбора");
+	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
 //	НомерТекущейСтрокиДерева = 0;
 
-	Для Каждого СтрокаРодитель Из Дерево1[0].ПолучитьЭлементы() Цикл
-		Если СтрокаРодитель.MetadataFullName <> "Константы" Тогда
-			Для Каждого ВетвьДерева Из СтрокаРодитель.ПолучитьЭлементы() Цикл
-				ВетвьДереваВыделить = Ложь;
+	For Each СтрокаРодитель Из Дерево1[0].GetItems() Do
+		If СтрокаРодитель.MetadataFullName <> "Константы" Then
+			For Each ВетвьДерева Из СтрокаРодитель.GetItems() Do
+				ВетвьДереваВыделить = False;
 
-				Если СтрокаРодитель.MetadataFullName = "Последовательности" Тогда
+				If СтрокаРодитель.MetadataFullName = "Последовательности" Then
 					МетадатаИзмерения = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Измерения;
-					Для Каждого СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Цикл
-						Для Каждого СтрокаИзмерения Из МетадатаИзмерения Цикл
-							Если СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
+						For Each СтрокаИзмерения Из МетадатаИзмерения Do
+							If СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 								//Сообщить(СтрокаИзмерения.Имя);
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-										КонецЕсли;
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-								КонецЕсли;
+								EndIf;
 
-							КонецЕсли;
-						КонецЦикла;
-					КонецЦикла;
-				ИначеЕсли СтрокаРодитель.MetadataFullName = "РегистрыСведений"
+							EndIf;
+						EndDo;
+					EndDo;
+				ElsIf СтрокаРодитель.MetadataFullName = "РегистрыСведений"
 					Или СтрокаРодитель.MetadataFullName = "РегистрыНакопления"
-					Или СтрокаРодитель.MetadataFullName = "РегистрыБухгалтерии" Тогда
+					Или СтрокаРодитель.MetadataFullName = "РегистрыБухгалтерии" Then
 
 					МетадатаИзмерения = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Измерения;
-					Для Каждого СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Цикл
-						Для Каждого СтрокаИзмерения Из МетадатаИзмерения Цикл
-							Если СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
+						For Each СтрокаИзмерения Из МетадатаИзмерения Do
+							If СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-										КонецЕсли;
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-								КонецЕсли;
+								EndIf;
 
 								//Сообщить(СтрокаИзмерения.Имя);
-							КонецЕсли;
-						КонецЦикла;
-					КонецЦикла;
+							EndIf;
+						EndDo;
+					EndDo;
 
 					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Реквизиты;
-					Для Каждого СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Цикл
-						Для Каждого СтрокаРеквизиты Из Метадатареквизиты Цикл
-							Если СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
+						For Each СтрокаРеквизиты Из Метадатареквизиты Do
+							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-										КонецЕсли;
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-								КонецЕсли;
+								EndIf;
 
 								//Сообщить(СтрокаРеквизиты.Имя);
-							КонецЕсли;
-						КонецЦикла;
-					КонецЦикла;
+							EndIf;
+						EndDo;
+					EndDo;
 
-					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].СтандартныеРеквизиты;
-					Для Каждого СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Цикл
-						Для Каждого СтрокаРеквизиты Из Метадатареквизиты Цикл
-							Если СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].StandardAttributes;
+					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
+						For Each СтрокаРеквизиты Из Метадатареквизиты Do
+							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-										КонецЕсли;
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-								КонецЕсли;
+								EndIf;
 
 								//Сообщить(СтрокаРеквизиты.Имя);
-							КонецЕсли;
-						КонецЦикла;
-					КонецЦикла;
+							EndIf;
+						EndDo;
+					EndDo;
 
-				Иначе
+				Else
 					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Реквизиты;
-					СтандартныеРеквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Стандартныереквизиты;
-					Для Каждого СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Цикл
+					StandardAttributes = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].StandardAttributes;
+					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
 
-						Для Каждого СтрокаРеквизиты Из Метадатареквизиты Цикл
-							Если СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+						For Each СтрокаРеквизиты Из Метадатареквизиты Do
+							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 
-								//  Добавляем отбор в таблицу
-								// Ищем существующий отбор в таблице, если нет то добавляем новый
-								// если находим то ищем существующий реквизит отбора, если находим заменяем его
-								// если нет то просто дабавляем 
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								//  Добавляем Filter в таблицу
+								// Ищем существующий Filter в таблице, If нет то добавляем новый
+								// If находим то ищем существующий реквизит отбора, If находим заменяем его
+								// If нет то просто дабавляем 
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-										КонецЕсли;
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
 
-								КонецЕсли;
-							КонецЕсли;
-						КонецЦикла;
+								EndIf;
+							EndIf;
+						EndDo;
 
-						Для Каждого СтрокаРеквизиты Из Стандартныереквизиты Цикл
-							Если СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Тогда
-								ВетвьДереваВыделить = Истина;
+						For Each СтрокаРеквизиты Из StandardAttributes Do
+							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
+								ВетвьДереваВыделить = True;
 
-								//  Добавляем отбор в таблицу
-								// Ищем существующий отбор в таблице, если нет то добавляем новый
-								// если находим то ищем существующий реквизит отбора, если находим заменяем его
-								// если нет то просто дабавляем 
-								Найдено = Ложь;
-								Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-									Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-										Найдено = Истина;
-										НайденоРеквизит = Ложь;
-										Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-											Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Тогда
-												НайденоРеквизит = Истина;
-												ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								//  Добавляем Filter в таблицу
+								// Ищем существующий Filter в таблице, If нет то добавляем новый
+								// If находим то ищем существующий реквизит отбора, If находим заменяем его
+								// If нет то просто дабавляем 
+								Найдено = False;
+								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+										Найдено = True;
+										НайденоРеквизит = False;
+										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
+												НайденоРеквизит = True;
+												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
-										Если Не НайденоРеквизит Тогда
-											НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+												Break;
+											EndIf;
+										EndDo;
+										If Не НайденоРеквизит Then
+											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-										КонецЕсли;
-										Прервать;
-									КонецЕсли;
-								КонецЦикла;
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+										EndIf;
+										Break;
+									EndIf;
+								EndDo;
 
-								Если Не Найдено Тогда
+								If Не Найдено Then
 									НоваяСтрока = ТаблицаОтбора1.Добавить();
 									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 										"ЭлементОтбораКомпоновкиДанных"));
-									ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-								КонецЕсли;
-							КонецЕсли;
+									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+								EndIf;
+							EndIf;
 							//
 							//
-						КонецЦикла;
-						Если Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".") > 0 Тогда
-							найдено8 = Ложь;
-							Для Каждого СтрокаРеквизиты Из Стандартныереквизиты Цикл
-								Если Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
-									- 1) = СтрокаРеквизиты.Имя Тогда
-									Если НайтиРеквизитВДеревеРевизитовМетаданных(
+						EndDo;
+						If Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".") > 0 Then
+							найдено8 = False;
+							For Each СтрокаРеквизиты Из StandardAttributes Do
+								If Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
+									- 1) = СтрокаРеквизиты.Имя Then
+									If НайтиРеквизитВДеревеРевизитовМетаданных(
 										Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName],
 										Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
 										- 1), Прав(СтрокаОтбора.ЛевоеЗначение, СтрДлина(СтрокаОтбора.ЛевоеЗначение)
-										- Найти(Строка(СтрокаОтбора.ЛевоеЗначение), "."))) Тогда
-										ВетвьДереваВыделить = Истина;
-										Найдено = Ложь;
-										Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-											Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-												Найдено = Истина;
-												НайденоРеквизит = Ложь;
-												Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-													Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
-														= СтрокаОтбора.ЛевоеЗначение Тогда
-														НайденоРеквизит = Истина;
-														ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+										- Найти(Строка(СтрокаОтбора.ЛевоеЗначение), "."))) Then
+										ВетвьДереваВыделить = True;
+										Найдено = False;
+										For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+											If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+												Найдено = True;
+												НайденоРеквизит = False;
+												For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+													If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
+														= СтрокаОтбора.ЛевоеЗначение Then
+														НайденоРеквизит = True;
+														FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
 
-														Прервать;
-													КонецЕсли;
-												КонецЦикла;
-												Если Не НайденоРеквизит Тогда
-													НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+														Break;
+													EndIf;
+												EndDo;
+												If Не НайденоРеквизит Then
+													НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 														"ЭлементОтбораКомпоновкиДанных"));
-													ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-												КонецЕсли;
-												Прервать;
-											КонецЕсли;
-										КонецЦикла;
+													FillPropertyValues(НовоеПоле, СтрокаОтбора);
+												EndIf;
+												Break;
+											EndIf;
+										EndDo;
 
-										Если Не Найдено Тогда
+										If Не Найдено Then
 											НоваяСтрока = ТаблицаОтбора1.Добавить();
 											НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 											НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-											НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+											НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 												"ЭлементОтбораКомпоновкиДанных"));
-											ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-										КонецЕсли;
+											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+										EndIf;
 
-										Прервать;
-									КонецЕсли;
-								КонецЕсли;
-							КонецЦикла;
-							Если Не найдено8 Тогда
-								Для Каждого СтрокаРеквизиты Из Метадатареквизиты Цикл
-									Если Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
-										- 1) = СтрокаРеквизиты.Имя Тогда
-										Если НайтиРеквизитВДеревеРевизитовМетаданных(
+										Break;
+									EndIf;
+								EndIf;
+							EndDo;
+							If Не найдено8 Then
+								For Each СтрокаРеквизиты Из Метадатареквизиты Do
+									If Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
+										- 1) = СтрокаРеквизиты.Имя Then
+										If НайтиРеквизитВДеревеРевизитовМетаданных(
 											Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName],
 											Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение),
 											".") - 1), Прав(СтрокаОтбора.ЛевоеЗначение, СтрДлина(
 											СтрокаОтбора.ЛевоеЗначение) - Найти(Строка(СтрокаОтбора.ЛевоеЗначение),
-											"."))) Тогда
-											ВетвьДереваВыделить = Истина;
-											Найдено = Ложь;
-											Для Каждого СтрокаОтбораТаблица Из ТаблицаОтбора1 Цикл
-												Если СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Тогда
-													Найдено = Истина;
-													НайденоРеквизит = Ложь;
-													Для Каждого СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Отбор.Элементы Цикл
-														Если СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
-															= СтрокаОтбора.ЛевоеЗначение Тогда
-															НайденоРеквизит = Истина;
-															ЗаполнитьЗначенияСвойств(СтрокаОтбораТаблицаОтбор,
+											"."))) Then
+											ВетвьДереваВыделить = True;
+											Найдено = False;
+											For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
+												If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
+													Найдено = True;
+													НайденоРеквизит = False;
+													For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
+														If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
+															= СтрокаОтбора.ЛевоеЗначение Then
+															НайденоРеквизит = True;
+															FillPropertyValues(СтрокаОтбораТаблицаОтбор,
 																СтрокаОтбора);
 
-															Прервать;
-														КонецЕсли;
-													КонецЦикла;
-													Если Не НайденоРеквизит Тогда
-														НовоеПоле = СтрокаОтбораТаблица.Отбор.Элементы.Добавить(Тип(
+															Break;
+														EndIf;
+													EndDo;
+													If Не НайденоРеквизит Then
+														НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
 															"ЭлементОтбораКомпоновкиДанных"));
-														ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-													КонецЕсли;
-													Прервать;
-												КонецЕсли;
-											КонецЦикла;
+														FillPropertyValues(НовоеПоле, СтрокаОтбора);
+													EndIf;
+													Break;
+												EndIf;
+											EndDo;
 
-											Если Не Найдено Тогда
+											If Не Найдено Then
 												НоваяСтрока = ТаблицаОтбора1.Добавить();
 												НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
 												НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
 
-												НовоеПоле = НоваяСтрока.Отбор.Элементы.Добавить(Тип(
+												НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
 													"ЭлементОтбораКомпоновкиДанных"));
-												ЗаполнитьЗначенияСвойств(НовоеПоле, СтрокаОтбора);
-											КонецЕсли;
+												FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											EndIf;
 
-											Прервать;
-										КонецЕсли;
-									КонецЕсли;
-								КонецЦикла;
-							КонецЕсли;
-						КонецЕсли;
+											Break;
+										EndIf;
+									EndIf;
+								EndDo;
+							EndIf;
+						EndIf;
 
-					КонецЦикла;
-				КонецЕсли;
-				Если ВетвьДереваВыделить И Не ВетвьДерева.Выделить Тогда
+					EndDo;
+				EndIf;
+				If ВетвьДереваВыделить И Не ВетвьДерева.Выделить Then
 					ВетвьДерева.PictureIndex = ВетвьДерева.PictureIndex + 1;
 					ВетвьДерева.Выделить = ВетвьДереваВыделить;
-				КонецЕсли;
+				EndIf;
 
-			КонецЦикла;
-		КонецЕсли;
+			EndDo;
+		EndIf;
 
-	КонецЦикла;
+	EndDo;
 
-	ЗначениеВреквизитФормы(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Функция НайтиРеквизитВДеревеРевизитовМетаданных(Метаданные1, Реквизит2, Строка1)
-	ВозвращЗначение = Ложь;
+&AtServer
+Function НайтиРеквизитВДеревеРевизитовМетаданных(Метаданные1, Реквизит2, Строка1)
+	ВозвращЗначение = False;
 
 	//Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0])
 	Реквизиты1 = Метаданные1.Реквизиты;
 
-	СтандартныеРеквизиты1 = Метаданные1.СтандартныеРеквизиты;
+	StandardAttributes1 = Метаданные1.StandardAttributes;
 
-	Для Каждого Строка Из СтандартныеРеквизиты1 Цикл
-		Если Строка.имя = Реквизит2 Тогда
+	For Each Строка Из StandardAttributes1 Do
+		If Строка.имя = Реквизит2 Then
 
-			Если Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
-				Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Тогда
+			If Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
+				Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Then
 
 				Метадата2 = Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0]);
 
 				Реквизиты3 = Метадата2.Реквизиты;
-				СтандартныеРеквизиты3 = Метадата2.СтандартныеРеквизиты;
+				StandardAttributes3 = Метадата2.StandardAttributes;
 
-				Если найти(Строка1, ".") > 0 Тогда
+				If найти(Строка1, ".") > 0 Then
 					ВозвращЗначение = НайтиРеквизитВДеревеРевизитовМетаданных(Метадата2, Лев(Строка1, найти(Строка1, ".")
 						- 1), Прав(Строка1, СтрДлина(Строка1) - найти(Строка1, ".")));
-				Иначе
-					Для Каждого Строка Из СтандартныеРеквизиты3 Цикл
-						Если Строка.имя = Строка1 Тогда
-							ВозвращЗначение = Истина;
-							Прервать;
-						КонецЕсли;
-					КонецЦикла;
+				Else
+					For Each Строка Из StandardAttributes3 Do
+						If Строка.имя = Строка1 Then
+							ВозвращЗначение = True;
+							Break;
+						EndIf;
+					EndDo;
 
-					Если Не ВозвращЗначение Тогда
-						Для Каждого Строка Из Реквизиты3 Цикл
-							Если Строка.имя = Строка1 Тогда
-								ВозвращЗначение = Истина;
-								Прервать;
-							КонецЕсли;
-						КонецЦикла;
-					КонецЕсли;
-				КонецЕсли;
-			КонецЕсли;
-			//ВозвращЗначение=Истина;
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+					If Не ВозвращЗначение Then
+						For Each Строка Из Реквизиты3 Do
+							If Строка.имя = Строка1 Then
+								ВозвращЗначение = True;
+								Break;
+							EndIf;
+						EndDo;
+					EndIf;
+				EndIf;
+			EndIf;
+			//ВозвращЗначение=True;
+			Break;
+		EndIf;
+	EndDo;
 
-	Если Не ВозвращЗначение Тогда
-		Для Каждого Строка Из Реквизиты1 Цикл
-			Если Строка.имя = Реквизит2 Тогда
+	If Не ВозвращЗначение Then
+		For Each Строка Из Реквизиты1 Do
+			If Строка.имя = Реквизит2 Then
 
-				Если Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
-					Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Тогда
+				If Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
+					Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Then
 
 					Метадата2 = Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0]);
 
 					Реквизиты3 = Метадата2.Реквизиты;
-					СтандартныеРеквизиты3 = Метадата2.СтандартныеРеквизиты;
-					Если найти(Строка1, ".") > 0 Тогда
+					StandardAttributes3 = Метадата2.StandardAttributes;
+					If найти(Строка1, ".") > 0 Then
 						ВозвращЗначение = НайтиРеквизитВДеревеРевизитовМетаданных(Метадата2, Лев(Строка1, найти(
 							Строка1, ".") - 1), Прав(Строка1, СтрДлина(Строка1) - найти(Строка1, ".")));
-					Иначе
+					Else
 
-						Для Каждого Строка Из СтандартныеРеквизиты3 Цикл
-							Если Строка.имя = Строка1 Тогда
-								ВозвращЗначение = Истина;
-								Прервать;
-							КонецЕсли;
-						КонецЦикла;
+						For Each Строка Из StandardAttributes3 Do
+							If Строка.имя = Строка1 Then
+								ВозвращЗначение = True;
+								Break;
+							EndIf;
+						EndDo;
 
-						Если Не ВозвращЗначение Тогда
-							Для Каждого Строка Из Реквизиты3 Цикл
-								Если Строка.имя = Строка1 Тогда
-									ВозвращЗначение = Истина;
-									Прервать;
-								КонецЕсли;
-							КонецЦикла;
-						КонецЕсли;
-					КонецЕсли;
-				КонецЕсли;
-				//ВозвращЗначение=Истина;
-				Прервать;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
+						If Не ВозвращЗначение Then
+							For Each Строка Из Реквизиты3 Do
+								If Строка.имя = Строка1 Then
+									ВозвращЗначение = True;
+									Break;
+								EndIf;
+							EndDo;
+						EndIf;
+					EndIf;
+				EndIf;
+				//ВозвращЗначение=True;
+				Break;
+			EndIf;
+		EndDo;
+	EndIf;
 
-	Возврат ВозвращЗначение;
-КонецФункции
+	Return ВозвращЗначение;
+EndFunction
 
-&НаКлиенте
-Процедура MetadataTreeOnActivateRow(Элемент)
+&AtClient
+Procedure MetadataTreeOnActivateRow(Элемент)
 // Вставить содержимое обработчика.
 	ТекущиеДанныеИмя = Элементы.MetadataTree.ТекущиеДанные.MetadataFullName;
 
 	//ТаблицаРезультатОтбор.Очистить();
-	ПодготовитьСписокВыбранныхОбъектов(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+	PrepareSelectedObjectsList(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
 
 	ОбновитьОтборПоАктивизацииНаСервере(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ОбновитьОтборПоАктивизацииНаСервере(ТекущиеДанныеИмя, ИмяОбъектаМетаданных)
+&AtServer
+Procedure ОбновитьОтборПоАктивизацииНаСервере(ТекущиеДанныеИмя, ИмяОбъектаМетаданных)
 	;
 
-	//	ОбъектНаСервере = РеквизитФормыВЗначение("Object");
-	//ЗначениеВРеквизитФормы(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
+	//	ОбъектНаСервере = FormAttributeToValue("Object");
+	//ValueToFormAttribute(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
 	//	MetadataTree1 = ОбъектНаСервере.MetadataTree;
 
-	ТаблицаОтбора1 = РеквизитФормыВЗначение("ТаблицаОтбора");
+	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
 
-	Отбор = Object.Composer.Настройки.Отбор;
+	Отбор = Object.Composer.Настройки.Filter;
 	Отбор.Элементы.Очистить();
 
-	Для Каждого Строка Из ТаблицаОтбора1 Цикл
-		Если Строка.ИмяРеквизита = ТекущиеданныеИмя И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Тогда
+	For Each Строка Из ТаблицаОтбора1 Do
+		If Строка.ИмяРеквизита = ТекущиеданныеИмя И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Then
 
-			ВосстановитьОтборИзКэша(Отбор.Элементы, Строка.Отбор.Элементы, Строка.Отбор.ДоступныеПоляОтбора);
+			RestoreFilterFromCache(Отбор.Элементы, Строка.Filter.Элементы, Строка.Filter.ДоступныеПоляОтбора);
 
-			//НовоеПоле  = Отбор.Элементы.Добавить(Тип("ЭлементОтбораКомпоновкиДанных"));
-			//ЗаполнитьЗначенияСвойств(НовоеПоле, Строка.Отбор);
+			//НовоеПоле  = Filter.Элементы.Добавить(Тип("ЭлементОтбораКомпоновкиДанных"));
+			//FillPropertyValues(НовоеПоле, Строка.Filter);
 			//		
-			//ОбъектНаСервере.Composer.Настройки.Отбор.Элементы.Добавить(Строка.Отбор);
-			//=Строка.Отбор;
-		КонецЕсли;
-	КонецЦикла;
+			//ОбъектНаСервере.Composer.Настройки.Filter.Элементы.Добавить(Строка.Filter);
+			//=Строка.Filter;
+		EndIf;
+	EndDo;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ОтборПриОкончанииРедактирования(Элемент, НоваяСтрока, ОтменаРедактирования)
+&AtClient
+Procedure FilterOnEditEnd(Элемент, НоваяСтрока, ОтменаРедактирования)
 		// Вставить содержимое обработчика.
-	Если Не ОтменаРедактирования Тогда
+	If Не ОтменаРедактирования Then
 
 		Выделить = ОбновитьТаблицуОтборанаСервере(Элементы.MetadataTree.ТекущиеДанные.ПолноеИмяМетаданных,
 			Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
 
-		Если Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Тогда
-			ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+		If Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Then
+			ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
 				+ 1;
-		ИначеЕсли Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Тогда
-			ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+		ElsIf Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Then
+			ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
 				- 1;
-		КонецЕсли;
+		EndIf;
 
 		Элементы.MetadataTree.ТекущиеДанные.Выделить = Выделить;
 
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ВосстановитьОтборИзКэша(ЭлементыОтбора, КэшОтбора, ОтборДоступныеПоляОтбора)
+&AtServer
+Procedure RestoreFilterFromCache(ЭлементыОтбора, КэшОтбора, ОтборДоступныеПоляОтбора)
 
-	Если КэшОтбора.Количество() > 0 Тогда
+	If КэшОтбора.Количество() > 0 Then
 
-		Для Каждого ЭлементОтбора Из КэшОтбора Цикл
+		For Each ЭлементОтбора Из КэшОтбора Do
 
-			Если ТипЗнч(ЭлементОтбора) = Тип("ГруппаЭлементовОтбораКомпоновкиДанных") Тогда
+			If ТипЗнч(ЭлементОтбора) = Тип("ГруппаЭлементовОтбораКомпоновкиДанных") Then
 
 				НовоеПоле = ЭлементыОтбора.Добавить(Тип("ГруппаЭлементовОтбораКомпоновкиДанных"));
-				ЗаполнитьЗначенияСвойств(НовоеПоле, ЭлементОтбора);
-				ВосстановитьОтборИзКэша(НовоеПоле.Элементы, ЭлементОтбора.Элементы, ОтборДоступныеПоляОтбора);
+				FillPropertyValues(НовоеПоле, ЭлементОтбора);
+				RestoreFilterFromCache(НовоеПоле.Элементы, ЭлементОтбора.Элементы, ОтборДоступныеПоляОтбора);
 
-			Иначе
+			Else
 
-				Если Object.Composer.Настройки.Отбор.ДоступныеПоляОтбора.НайтиПоле(ЭлементОтбора.ЛевоеЗначение)
-					<> Неопределено Тогда
+				If Object.Composer.Настройки.Filter.ДоступныеПоляОтбора.НайтиПоле(ЭлементОтбора.ЛевоеЗначение)
+					<> Undefined Then
 
 					НовоеПоле = ЭлементыОтбора.Добавить(Тип("ЭлементОтбораКомпоновкиДанных"));
-					ЗаполнитьЗначенияСвойств(НовоеПоле, ЭлементОтбора);
+					FillPropertyValues(НовоеПоле, ЭлементОтбора);
 
-				КонецЕсли;
+				EndIf;
 
-			КонецЕсли;
+			EndIf;
 
-		КонецЦикла;
+		EndDo;
 
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
 //@skip-warning
-Процедура УстановитьДоступныеПоляДляОтбора(Отбор, ОтборДоступныеПоляОтбора)
-КонецПроцедуры
+Procedure УстановитьДоступныеПоляДляОтбора(Отбор, ОтборДоступныеПоляОтбора)
+EndProcedure
 
-&НаСервере
-Функция ОбновитьТаблицуОтборанаСервере(ПолноеИмяМетаданных, ИмяОбъектаМетаданных)
+&AtServer
+Function ОбновитьТаблицуОтборанаСервере(ПолноеИмяМетаданных, ИмяОбъектаМетаданных)
 
-	ОтборСсылка = Object.Composer.Настройки.Отбор;
+	ОтборСсылка = Object.Composer.Настройки.Filter;
 
-	ТаблицаОтбора1 = РеквизитФормыВЗначение("ТаблицаОтбора");
+	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
 
 	Колво = ТаблицаОтбора1.Количество();
-	Пока Колво > 0 Цикл
+	Пока Колво > 0 Do
 		Строка = ТаблицаОтбора1[КолВо - 1];
-		Если Строка.ИмяРеквизита = ПолноеИмяМетаданных И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Тогда
+		If Строка.ИмяРеквизита = ПолноеИмяМетаданных И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Then
 			ТаблицаОтбора1.Удалить(Строка);
-		КонецЕсли;
+		EndIf;
 
 		КолВо = КолВо - 1;
-	КонецЦикла;
+	EndDo;
 
-	Выделить = Ложь;
+	Выделить = False;
 
 	//Найдено=Найти(MetadataFullName, "ИмяРеквизита");
 	//
-	//Если Найдено>0 Тогда
+	//If Найдено>0 Then
 	//	НоваяСтрока=ТаблицаОтбора1[Найдено];
-	//	НоваяСтрока.Отбор=ОтборСсылка;
-	//Иначе
-	Если ОтборСсылка.Элементы.Количество() > 0 Тогда
+	//	НоваяСтрока.Filter=ОтборСсылка;
+	//Else
+	If ОтборСсылка.Элементы.Количество() > 0 Then
 		НоваяСтрока = ТаблицаОтбора1.Добавить();
 		НоваяСтрока.ИмяРеквизита = ПолноеИмяМетаданных;
 		НоваяСтрока.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных;
 
-		ВосстановитьОтборИзКэша(НоваяСтрока.Отбор.Элементы, ОтборСсылка.Элементы, ОтборСсылка.ДоступныеПоляОтбора);
+		RestoreFilterFromCache(НоваяСтрока.Filter.Элементы, ОтборСсылка.Элементы, ОтборСсылка.ДоступныеПоляОтбора);
 		УстановитьДоступныеПоляДляОтбора(НоваяСтрока.Отбор, ОтборСсылка.ДоступныеПоляОтбора);
-		//НоваяСтрока.Отбор=ОтборСсылка;
-		//КонецЕсли;
-		Выделить = Истина;
-	Иначе
-		Выделить = Ложь;
-	КонецЕсли;
+		//НоваяСтрока.Filter=ОтборСсылка;
+		//EndIf;
+		Выделить = True;
+	Else
+		Выделить = False;
+	EndIf;
 
-	ЗначениеВРеквизитФормы(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
 
-	//MetadataTree1= РеквизитФормыВЗначение("Object.MetadataTree");
-	//ЗначениеВРеквизитФормы(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
+	//MetadataTree1= FormAttributeToValue("Object.MetadataTree");
+	//ValueToFormAttribute(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
 	//MetadataTree1 = ОбъектНаСервере.MetadataTree;
-	Возврат Выделить;
+	Return Выделить;
 
-КонецФункции
+EndFunction
 
-&НаКлиенте
-Процедура ОтборПослеУдаления(Элемент)
+&AtClient
+Procedure FilterAfterDeleteRow(Элемент)
 
 	Выделить = ОбновитьТаблицуОтборанаСервере(Элементы.MetadataTree.ТекущиеДанные.ПолноеИмяМетаданных,
 		Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
 
-	Если Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Тогда
-		ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+	If Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Then
+		ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
 			+ 1;
-	ИначеЕсли Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Тогда
-		ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+	ElsIf Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Then
+		ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
 			- 1;
-	КонецЕсли;
+	EndIf;
 
 	Элементы.MetadataTree.ТекущиеДанные.Выделить = Выделить;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура УдалитьОтборНаСервере()
+&AtServer
+Procedure УдалитьОтборНаСервере()
 // Вставить содержимое обработчика.
-	ТаблицаОтбора1 = РеквизитФормыВЗначение("ТаблицаОтбора");
+	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
 
 	ТаблицаОтбора1.Очистить();
 
-	ЗначениеВРеквизитФормы(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
 
-	Object.Composer.Настройки.Отбор.Элементы.Очистить();
+	Object.Composer.Настройки.Filter.Элементы.Очистить();
 
-	Дерево1 = Object.MetadataTree.ПолучитьЭлементы();
+	Дерево1 = Object.MetadataTree.GetItems();
 
-	Для Каждого СтрокаРодитель Из Дерево1[0].ПолучитьЭлементы() Цикл
-		Для Каждого ВетвьДерева Из СтрокаРодитель.ПолучитьЭлементы() Цикл
-			Если ВетвьДерева.Выделить Тогда
+	For Each СтрокаРодитель Из Дерево1[0].GetItems() Do
+		For Each ВетвьДерева Из СтрокаРодитель.GetItems() Do
+			If ВетвьДерева.Выделить Then
 				ВетвьДерева.PictureIndex = ВетвьДерева.PictureIndex - 1;
-				ВетвьДерева.Выделить = Ложь;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЦикла;
+				ВетвьДерева.Выделить = False;
+			EndIf;
+		EndDo;
+	EndDo;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура DeleteFilter(Команда)
+&AtClient
+Procedure DeleteFilter(Команда)
 	УдалитьОтборНаСервере();
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура УдалитьПредопределенныеНаСервере()
+&AtServer
+Procedure УдалитьПредопределенныеНаСервере()
 // Вставить содержимое обработчика.
-	Для Каждого Строка Из Метаданные.ПланыСчетов Цикл
-		Запрос = Новый запрос;
+	For Each Строка Из Метаданные.ПланыСчетов Do
+		Запрос = New запрос;
 		Запрос.Текст = "ВЫБРАТЬ
 					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
 											 |ИЗ
@@ -2019,21 +2019,21 @@
 
 		КолВо = Выгрузка.Количество();
 
-		Пока КолВо > 0 Цикл
+		Пока КолВо > 0 Do
 			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			Если Объект1 <> Неопределено Тогда
+			If Объект1 <> Undefined Then
 				Попытка
-					Объект1.ОбменДанными.Загрузка = Истина;
+					Объект1.ОбменДанными.Загрузка = True;
 					Объект1.Удалить();
 				Исключение
 				КонецПопытки;
-			КонецЕсли;
+			EndIf;
 			КолВо = КолВо - 1;
-		КонецЦикла;
-	КонецЦикла;
+		EndDo;
+	EndDo;
 
-	Для Каждого Строка Из Метаданные.Справочники Цикл
-		Запрос = Новый запрос;
+	For Each Строка Из Метаданные.Справочники Do
+		Запрос = New запрос;
 		Запрос.Текст = "ВЫБРАТЬ
 					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
 											 |ИЗ
@@ -2046,21 +2046,21 @@
 
 		КолВо = Выгрузка.Количество();
 
-		Пока КолВо > 0 Цикл
+		Пока КолВо > 0 Do
 			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			Если Объект1 <> Неопределено Тогда
+			If Объект1 <> Undefined Then
 				Попытка
-					Объект1.ОбменДанными.Загрузка = Истина;
+					Объект1.ОбменДанными.Загрузка = True;
 					Объект1.Удалить();
 				Исключение
 				КонецПопытки;
-			КонецЕсли;
+			EndIf;
 			КолВо = КолВо - 1;
-		КонецЦикла;
-	КонецЦикла;
+		EndDo;
+	EndDo;
 
-	Для Каждого Строка Из Метаданные.ПланыВидовХарактеристик Цикл
-		Запрос = Новый запрос;
+	For Each Строка Из Метаданные.ПланыВидовХарактеристик Do
+		Запрос = New запрос;
 		Запрос.Текст = "ВЫБРАТЬ
 					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
 											 |ИЗ
@@ -2073,21 +2073,21 @@
 
 		КолВо = Выгрузка.Количество();
 
-		Пока КолВо > 0 Цикл
+		Пока КолВо > 0 Do
 			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			Если Объект1 <> Неопределено Тогда
+			If Объект1 <> Undefined Then
 				Попытка
-					Объект1.ОбменДанными.Загрузка = Истина;
+					Объект1.ОбменДанными.Загрузка = True;
 					Объект1.Удалить();
 				Исключение
 				КонецПопытки;
-			КонецЕсли;
+			EndIf;
 			КолВо = КолВо - 1;
-		КонецЦикла;
-	КонецЦикла;
+		EndDo;
+	EndDo;
 
-	Для Каждого Строка Из Метаданные.ПланыВидовРасчета Цикл
-		Запрос = Новый запрос;
+	For Each Строка Из Метаданные.ПланыВидовРасчета Do
+		Запрос = New запрос;
 		Запрос.Текст = "ВЫБРАТЬ
 					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
 											 |ИЗ
@@ -2100,90 +2100,90 @@
 
 		КолВо = Выгрузка.Количество();
 
-		Пока КолВо > 0 Цикл
+		Пока КолВо > 0 Do
 			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			Если Объект1 <> Неопределено Тогда
+			If Объект1 <> Undefined Then
 				Попытка
-					Объект1.ОбменДанными.Загрузка = Истина;
+					Объект1.ОбменДанными.Загрузка = True;
 					Объект1.Удалить();
 				Исключение
 				КонецПопытки;
-			КонецЕсли;
+			EndIf;
 			КолВо = КолВо - 1;
-		КонецЦикла;
-	КонецЦикла;
+		EndDo;
+	EndDo;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура DeletePredefinedItems(Команда)
+&AtClient
+Procedure DeletePredefinedItems(Команда)
 
 	Режим = РежимДиалогаВопрос.ДаНет;
-	Оповещение = Новый ОписаниеОповещения("ПослеЗакрытияВопроса", ЭтотОбъект, Параметры);
-	ПоказатьВопрос(Оповещение, НСтр("ru = 'Внимание! после удаления всех предопределенных элементов будет нарушена структура данных и   
+	Оповещение = New NotifyDescription("ПослеЗакрытияВопроса", ThisObject, Parameters);
+	ПоказатьВопрос(Оповещение, НСтр("ru = 'Внимание! после удаления всех предопределенных элементов будет нарушена Structure данных и   
 									|Вы, возможно, не сможете зайти в программу снова (!) 
 									|Вы готовы сразу после выполнения загрузить новые предопределенные элементы из файла ?
-									|Продолжить выполнение операции?';" + " en = 'Warning! after the deleting predefined elements  structure of the data will be broken 
+									|Continue выполнение операции?';" + " en = 'Warning! after the deleting predefined elements  structure of the data will be broken 
 																		  |and you will not start the programm. Do you prepared to download the predefined elements from file ?
 																		  |Do you want to continue?'"), Режим, 0);
 		//...
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПослеЗакрытияВопроса(Результат, Параметры) Экспорт
-	Если Результат = КодВозвратаДиалога.Нет Тогда
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure ПослеЗакрытияВопроса(Результат, Parameters) Export
+	If Результат = КодReturnаДиалога.Нет Then
+		Return;
+	EndIf;
 
 	УдалитьПредопределенныеНаСервере();
 
 	//...
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура CheckSelected(Команда)
-
-	ВыделенныеСтроки = Элементы.MetadataTree.ВыделенныеСтроки;
-
-	Если ВыделенныеСтроки.Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
-
-	Для Каждого Стр Из ВыделенныеСтроки Цикл
-		Если ТипЗнч(Стр) = Тип("Число") Тогда
-			ДанныеСтроки = Элементы.MetadataTree.ДанныеСтроки(Стр);
-		Иначе
-			ДанныеСтроки = Стр;
-		КонецЕсли;
-		//	
-		ДанныеСтроки.ExportData = Истина;
-	КонецЦикла;
-	//
-	//		ЭтаФорма.ОбновитьОтображениеДанных(Элементы.MetadataTree);
-КонецПроцедуры
-
-&НаКлиенте
-Процедура UncheckSelected(Команда)
+&AtClient
+Procedure CheckSelected(Команда)
 
 	ВыделенныеСтроки = Элементы.MetadataTree.ВыделенныеСтроки;
 
-	Если ВыделенныеСтроки.Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
+	If ВыделенныеСтроки.Количество() = 0 Then
+		Return;
+	EndIf;
 
-	Для Каждого Стр Из ВыделенныеСтроки Цикл
-		Если ТипЗнч(Стр) = Тип("Число") Тогда
+	For Each Стр Из ВыделенныеСтроки Do
+		If ТипЗнч(Стр) = Тип("Число") Then
 			ДанныеСтроки = Элементы.MetadataTree.ДанныеСтроки(Стр);
-		Иначе
+		Else
 			ДанныеСтроки = Стр;
-		КонецЕсли;
+		EndIf;
 		//	
-		ДанныеСтроки.ExportData = Ложь;
-	КонецЦикла;
+		ДанныеСтроки.ExportData = True;
+	EndDo;
 	//
-	//		ЭтаФорма.ОбновитьОтображениеДанных(Элементы.MetadataTree);
-КонецПроцедуры
+	//		ThisForm.ОбновитьОтображениеДанных(Элементы.MetadataTree);
+EndProcedure
 
-//ЭтаФорма.Элементы.MetadataTree.ТекущиеДанные.PictureIndex=4;
+&AtClient
+Procedure UncheckSelected(Команда)
 
-#КонецОбласти
+	ВыделенныеСтроки = Элементы.MetadataTree.ВыделенныеСтроки;
+
+	If ВыделенныеСтроки.Количество() = 0 Then
+		Return;
+	EndIf;
+
+	For Each Стр Из ВыделенныеСтроки Do
+		If ТипЗнч(Стр) = Тип("Число") Then
+			ДанныеСтроки = Элементы.MetadataTree.ДанныеСтроки(Стр);
+		Else
+			ДанныеСтроки = Стр;
+		EndIf;
+		//	
+		ДанныеСтроки.ExportData = False;
+	EndDo;
+	//
+	//		ThisForm.ОбновитьОтображениеДанных(Элементы.MetadataTree);
+EndProcedure
+
+//ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex=4;
+
+#EndRegion
