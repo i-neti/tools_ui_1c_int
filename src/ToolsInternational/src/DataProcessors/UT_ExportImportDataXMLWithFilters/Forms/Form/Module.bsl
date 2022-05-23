@@ -1299,50 +1299,50 @@ Procedure CopyFilter(Command)
 
 EndProcedure
 
-// Обходим дерево и проставляем флажок выводить
+// Walks the tree and sets the ExportData checkbox.
 &AtServer
-Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
+Procedure CopyFilterAtServer(CurrentDataName)
 
-	Дерево1 = Object.MetadataTree.GetItems();
+	Tree1 = Object.MetadataTree.GetItems();
 
 	//FormAttributeToValue("Object.MetadataTree");
-	ОбъектСсылка = FormAttributeToValue("Object");
+	ObjectRef = FormAttributeToValue("Object");
 
-	ТаблицаОтбораТекущ = ОбъектСсылка.Composer.Настройки.Filter;
+	CurrFilterTable = ObjectRef.Composer.Settings.Filter;
 
-	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
-//	НомерТекущейСтрокиДерева = 0;
+	FilterTable1 = FormAttributeToValue("FilterTable");
+//	CurrentTreeRowNo = 0;
 
-	For Each СтрокаРодитель Из Дерево1[0].GetItems() Do
-		If СтрокаРодитель.MetadataFullName <> "Константы" Then
-			For Each ВетвьДерева Из СтрокаРодитель.GetItems() Do
-				ВетвьДереваВыделить = False;
+	For Each ParentRow In Tree1[0].GetItems() Do
+		If ParentRow.MetadataFullName <> "Constants" Then
+			For Each TreeBranch In ParentRow.GetItems() Do
+				TreeBranchSelect = False;
 
-				If СтрокаРодитель.MetadataFullName = "Последовательности" Then
-					МетадатаИзмерения = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Измерения;
-					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
-						For Each СтрокаИзмерения Из МетадатаИзмерения Do
-							If СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
-								//Сообщить(СтрокаИзмерения.Имя);
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+				If ParentRow.MetadataFullName = "Sequences" Then
+					MetadataDimensions = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].Dimensions;
+					For Each FilterRow In CurrFilterTable.Items Do
+						For Each DimensionRow In MetadataDimensions Do
+							If DimensionRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
+								//Message(DimensionRow.Name);
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
+										If Not FoundAttribute Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 
 										EndIf;
 
@@ -1350,49 +1350,49 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+								If Not Found Then
+								//NewRow.AttributeName=CurrentDataName;
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 
 								EndIf;
 
 							EndIf;
 						EndDo;
 					EndDo;
-				ElsIf СтрокаРодитель.MetadataFullName = "РегистрыСведений"
-					Или СтрокаРодитель.MetadataFullName = "РегистрыНакопления"
-					Или СтрокаРодитель.MetadataFullName = "РегистрыБухгалтерии" Then
+				ElsIf ParentRow.MetadataFullName = "InformationRegisters"
+					Or ParentRow.MetadataFullName = "AccumulationRegisters"
+					Or ParentRow.MetadataFullName = "AccountingRegisters" Then
 
-					МетадатаИзмерения = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Измерения;
-					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
-						For Each СтрокаИзмерения Из МетадатаИзмерения Do
-							If СтрокаИзмерения.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
+					MetadataDimensions = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].Dimensions;
+					For Each FilterRow In CurrFilterTable.Items Do
+						For Each DimensionRow In MetadataDimensions Do
+							If DimensionRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
 
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
+										If Not FoundAttribute Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 
 										EndIf;
 
@@ -1400,46 +1400,46 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+								If Not Found Then
+								//NewRow.AttributeName=CurrentDataName;
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 
 								EndIf;
 
-								//Сообщить(СтрокаИзмерения.Имя);
+								//Message(DimensionRow.Name);
 							EndIf;
 						EndDo;
 					EndDo;
 
-					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Реквизиты;
-					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
-						For Each СтрокаРеквизиты Из Метадатареквизиты Do
-							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
+					MetadataAttributes = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].Attributes;
+					For Each FilterRow In CurrFilterTable.Items Do
+						For Each AttributesRow In MetadataAttributes Do
+							If AttributesRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
 
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
+										If Not FoundAttribute Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 
 										EndIf;
 
@@ -1447,47 +1447,47 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+								If Not Found Then
+								//NewRow.AttributeName=CurrentDataName;
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 
 								EndIf;
 
-								//Сообщить(СтрокаРеквизиты.Имя);
+								//Message(AttributesRow.Name);
 							EndIf;
 						EndDo;
 					EndDo;
 
-					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].StandardAttributes;
-					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
-						For Each СтрокаРеквизиты Из Метадатареквизиты Do
-							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
+					MetadataAttributes = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].StandardAttributes;
+					For Each FilterRow In CurrFilterTable.Items Do
+						For Each AttributesRow In MetadataAttributes Do
+							If AttributesRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
 
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
+										If Not FoundAttribute Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 
 										EndIf;
 
@@ -1495,53 +1495,53 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+								If Not Found Then
+								//NewRow.AttributeName=CurrentDataName;
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 
 								EndIf;
 
-								//Сообщить(СтрокаРеквизиты.Имя);
+								//Message(AttributesRow.Name);
 							EndIf;
 						EndDo;
 					EndDo;
 
 				Else
-					Метадатареквизиты = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].Реквизиты;
-					StandardAttributes = Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName].StandardAttributes;
-					For Each СтрокаОтбора Из ТаблицаОтбораТекущ.Элементы Do
+					MetadataAttributes = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].Attributes;
+					StandardAttributes = Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName].StandardAttributes;
+					For Each FilterRow In CurrFilterTable.Items Do
 
-						For Each СтрокаРеквизиты Из Метадатареквизиты Do
-							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
+						For Each AttributesRow In MetadataAttributes Do
+							If AttributesRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
 
-								//  Добавляем Filter в таблицу
-								// Ищем существующий Filter в таблице, If нет то добавляем новый
-								// If находим то ищем существующий реквизит отбора, If находим заменяем его
-								// If нет то просто дабавляем 
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								// Adding filter to table.
+								// Searching for an existing filter, if not found, adding a new one.
+								// If filter is found, searching for an existing filter attribute, if found, replacing.
+								// If not found, adding a new attribute. 
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
+										If Not FoundAttribute Then
 
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 
 										EndIf;
 
@@ -1549,154 +1549,154 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-								//НоваяСтрока.ИмяРеквизита=ТекущиеДанныеИмя;
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+								If Not Found Then
+								//NewRow.AttributeName=CurrentDataName;
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 
 								EndIf;
 							EndIf;
 						EndDo;
 
-						For Each СтрокаРеквизиты Из StandardAttributes Do
-							If СтрокаРеквизиты.Имя = Строка(СтрокаОтбора.ЛевоеЗначение) Then
-								ВетвьДереваВыделить = True;
+						For Each AttributesRow In StandardAttributes Do
+							If AttributesRow.Name = String(FilterRow.LeftValue) Then
+								TreeBranchSelect = True;
 
-								//  Добавляем Filter в таблицу
-								// Ищем существующий Filter в таблице, If нет то добавляем новый
-								// If находим то ищем существующий реквизит отбора, If находим заменяем его
-								// If нет то просто дабавляем 
-								Найдено = False;
-								For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-									If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-										Найдено = True;
-										НайденоРеквизит = False;
-										For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-											If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение = СтрокаОтбора.ЛевоеЗначение Then
-												НайденоРеквизит = True;
-												FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+								// Adding filter to table.
+								// Searching for an existing filter, if not found, adding a new one.
+								// If filter is found, searching for an existing filter attribute, if found, replacing.
+								// If not found, adding a new attribute. 
+								Found = False;
+								For Each FilterRowTable In FilterTable1 Do
+									If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+										Found = True;
+										FoundAttribute = False;
+										For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+											If FilterRowTableFilter.LeftValue = FilterRow.LeftValue Then
+												FoundAttribute = True;
+												FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 												Break;
 											EndIf;
 										EndDo;
-										If Не НайденоРеквизит Then
-											НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+										If Not FoundAttribute Then
+											NewField = FilterRowTable.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 										EndIf;
 										Break;
 									EndIf;
 								EndDo;
 
-								If Не Найдено Then
-									НоваяСтрока = ТаблицаОтбора1.Добавить();
-									НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-									НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+								If Not Found Then
+									NewRow = FilterTable1.Add();
+									NewRow.AttributeName = TreeBranch.MetadataFullName;
+									NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-									НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-										"ЭлементОтбораКомпоновкиДанных"));
-									FillPropertyValues(НовоеПоле, СтрокаОтбора);
+									NewField = NewRow.Filter.Items.Add(Type(
+										"DataCompositionFilterItem"));
+									FillPropertyValues(NewField, FilterRow);
 								EndIf;
 							EndIf;
 							//
 							//
 						EndDo;
-						If Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".") > 0 Then
-							найдено8 = False;
-							For Each СтрокаРеквизиты Из StandardAttributes Do
-								If Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
-									- 1) = СтрокаРеквизиты.Имя Then
-									If НайтиРеквизитВДеревеРевизитовМетаданных(
-										Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName],
-										Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
-										- 1), Прав(СтрокаОтбора.ЛевоеЗначение, СтрДлина(СтрокаОтбора.ЛевоеЗначение)
-										- Найти(Строка(СтрокаОтбора.ЛевоеЗначение), "."))) Then
-										ВетвьДереваВыделить = True;
-										Найдено = False;
-										For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-											If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-												Найдено = True;
-												НайденоРеквизит = False;
-												For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-													If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
-														= СтрокаОтбора.ЛевоеЗначение Then
-														НайденоРеквизит = True;
-														FillPropertyValues(СтрокаОтбораТаблицаОтбор, СтрокаОтбора);
+						If Find(String(FilterRow.LeftValue), ".") > 0 Then
+							Found8 = False;
+							For Each AttributesRow In StandardAttributes Do
+								If Left(FilterRow.LeftValue, Find(String(FilterRow.LeftValue), ".")
+									- 1) = AttributesRow.Name Then
+									If FindAttributeInMetadataAttributesTree(
+										Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName],
+										Left(FilterRow.LeftValue, Find(String(FilterRow.LeftValue), ".")
+										- 1), Right(FilterRow.LeftValue, StrLen(FilterRow.LeftValue)
+										- Find(String(FilterRow.LeftValue), "."))) Then
+										TreeBranchSelect = True;
+										Found = False;
+										For Each FilterRowTable In FilterTable1 Do
+											If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+												Found = True;
+												FoundAttribute = False;
+												For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+													If FilterRowTableFilter.LeftValue
+														= FilterRow.LeftValue Then
+														FoundAttribute = True;
+														FillPropertyValues(FilterRowTableFilter, FilterRow);
 
 														Break;
 													EndIf;
 												EndDo;
-												If Не НайденоРеквизит Then
-													НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-														"ЭлементОтбораКомпоновкиДанных"));
-													FillPropertyValues(НовоеПоле, СтрокаОтбора);
+												If Not FoundAttribute Then
+													NewField = FilterRowTable.Filter.Items.Add(Type(
+														"DataCompositionFilterItem"));
+													FillPropertyValues(NewField, FilterRow);
 												EndIf;
 												Break;
 											EndIf;
 										EndDo;
 
-										If Не Найдено Then
-											НоваяСтрока = ТаблицаОтбора1.Добавить();
-											НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-											НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+										If Not Found Then
+											NewRow = FilterTable1.Add();
+											NewRow.AttributeName = TreeBranch.MetadataFullName;
+											NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-											НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-												"ЭлементОтбораКомпоновкиДанных"));
-											FillPropertyValues(НовоеПоле, СтрокаОтбора);
+											NewField = NewRow.Filter.Items.Add(Type(
+												"DataCompositionFilterItem"));
+											FillPropertyValues(NewField, FilterRow);
 										EndIf;
 
 										Break;
 									EndIf;
 								EndIf;
 							EndDo;
-							If Не найдено8 Then
-								For Each СтрокаРеквизиты Из Метадатареквизиты Do
-									If Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение), ".")
-										- 1) = СтрокаРеквизиты.Имя Then
-										If НайтиРеквизитВДеревеРевизитовМетаданных(
-											Метаданные[СтрокаРодитель.MetadataFullName][ВетвьДерева.MetadataFullName],
-											Лев(СтрокаОтбора.ЛевоеЗначение, Найти(Строка(СтрокаОтбора.ЛевоеЗначение),
-											".") - 1), Прав(СтрокаОтбора.ЛевоеЗначение, СтрДлина(
-											СтрокаОтбора.ЛевоеЗначение) - Найти(Строка(СтрокаОтбора.ЛевоеЗначение),
+							If Not Found8 Then
+								For Each AttributesRow In MetadataAttributes Do
+									If Left(FilterRow.LeftValue, Find(String(FilterRow.LeftValue), ".")
+										- 1) = AttributesRow.Name Then
+										If FindAttributeInMetadataAttributesTree(
+											Metadata[ParentRow.MetadataFullName][TreeBranch.MetadataFullName],
+											Left(FilterRow.LeftValue, Find(String(FilterRow.LeftValue),
+											".") - 1), Right(FilterRow.LeftValue, StrLen(
+											FilterRow.LeftValue) - Find(String(FilterRow.LeftValue),
 											"."))) Then
-											ВетвьДереваВыделить = True;
-											Найдено = False;
-											For Each СтрокаОтбораТаблица Из ТаблицаОтбора1 Do
-												If СтрокаОтбораТаблица.ИмяРеквизита = ВетвьДерева.MetadataFullName Then
-													Найдено = True;
-													НайденоРеквизит = False;
-													For Each СтрокаОтбораТаблицаОтбор Из СтрокаОтбораТаблица.Filter.Элементы Do
-														If СтрокаОтбораТаблицаОтбор.ЛевоеЗначение
-															= СтрокаОтбора.ЛевоеЗначение Then
-															НайденоРеквизит = True;
-															FillPropertyValues(СтрокаОтбораТаблицаОтбор,
-																СтрокаОтбора);
+											TreeBranchSelect = True;
+											Found = False;
+											For Each FilterRowTable In FilterTable1 Do
+												If FilterRowTable.AttributeName = TreeBranch.MetadataFullName Then
+													Found = True;
+													FoundAttribute = False;
+													For Each FilterRowTableFilter In FilterRowTable.Filter.Items Do
+														If FilterRowTableFilter.LeftValue
+															= FilterRow.LeftValue Then
+															FoundAttribute = True;
+															FillPropertyValues(FilterRowTableFilter,
+																FilterRow);
 
 															Break;
 														EndIf;
 													EndDo;
-													If Не НайденоРеквизит Then
-														НовоеПоле = СтрокаОтбораТаблица.Filter.Элементы.Добавить(Тип(
-															"ЭлементОтбораКомпоновкиДанных"));
-														FillPropertyValues(НовоеПоле, СтрокаОтбора);
+													If Not FoundAttribute Then
+														NewField = FilterRowTable.Filter.Items.Add(Type(
+															"DataCompositionFilterItem"));
+														FillPropertyValues(NewField, FilterRow);
 													EndIf;
 													Break;
 												EndIf;
 											EndDo;
 
-											If Не Найдено Then
-												НоваяСтрока = ТаблицаОтбора1.Добавить();
-												НоваяСтрока.ИмяРеквизита = ВетвьДерева.MetadataFullName;
-												НоваяСтрока.ИмяОбъектаМетаданных = СтрокаРодитель.MetadataFullName;
+											If Not Found Then
+												NewRow = FilterTable1.Добавить();
+												NewRow.AttributeName = TreeBranch.MetadataFullName;
+												NewRow.MetadataObjectName = ParentRow.MetadataFullName;
 
-												НовоеПоле = НоваяСтрока.Filter.Элементы.Добавить(Тип(
-													"ЭлементОтбораКомпоновкиДанных"));
-												FillPropertyValues(НовоеПоле, СтрокаОтбора);
+												NewField = NewRow.Filter.Items.Add(Type(
+													"DataCompositionFilterItem"));
+												FillPropertyValues(NewField, FilterRow);
 											EndIf;
 
 											Break;
@@ -1708,9 +1708,9 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 
 					EndDo;
 				EndIf;
-				If ВетвьДереваВыделить И Не ВетвьДерева.Выделить Then
-					ВетвьДерева.PictureIndex = ВетвьДерева.PictureIndex + 1;
-					ВетвьДерева.Выделить = ВетвьДереваВыделить;
+				If TreeBranchSelect And Not TreeBranch.Select Then
+					TreeBranch.PictureIndex = TreeBranch.PictureIndex + 1;
+					TreeBranch.Select = TreeBranchSelect;
 				EndIf;
 
 			EndDo;
@@ -1718,180 +1718,180 @@ Procedure CopyFilterAtServer(ТекущиеДанныеИмя)
 
 	EndDo;
 
-	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(FilterTable1, "FilterTable");
 
 EndProcedure
 
 &AtServer
-Function НайтиРеквизитВДеревеРевизитовМетаданных(Метаданные1, Реквизит2, Строка1)
-	ВозвращЗначение = False;
+Function FindAttributeInMetadataAttributesTree(Metadata1, Attribute2, String1)
+	ReturnValue = False;
 
-	//Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0])
-	Реквизиты1 = Метаданные1.Реквизиты;
+	//Metadata.FindByType(Row.Type.Types()[0])
+	Attributes1 = Metadata1.Attributes;
 
-	StandardAttributes1 = Метаданные1.StandardAttributes;
+	StandardAttributes1 = Metadata1.StandardAttributes;
 
-	For Each Строка Из StandardAttributes1 Do
-		If Строка.имя = Реквизит2 Then
+	For Each Row In StandardAttributes1 Do
+		If Row.Name = Attribute2 Then
 
-			If Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
-				Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Then
+			If Not (String(Row.Type.Types()[0]) = "String" Or String(Row.Type.Types()[0]) = "Date" Or String(
+				Row.Type.Types()[0]) = "Number" Or String(Row.Type.Types()[0]) = "Boolean") Then
 
-				Метадата2 = Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0]);
+				Metadata2 = Metadata.FindByType(Row.Type.Types()[0]);
 
-				Реквизиты3 = Метадата2.Реквизиты;
-				StandardAttributes3 = Метадата2.StandardAttributes;
+				Attributes3 = Metadata2.Attributes;
+				StandardAttributes3 = Metadata2.StandardAttributes;
 
-				If найти(Строка1, ".") > 0 Then
-					ВозвращЗначение = НайтиРеквизитВДеревеРевизитовМетаданных(Метадата2, Лев(Строка1, найти(Строка1, ".")
-						- 1), Прав(Строка1, СтрДлина(Строка1) - найти(Строка1, ".")));
+				If Find(String1, ".") > 0 Then
+					ReturnValue = FindAttributeInMetadataAttributesTree(Metadata2, Left(String1, Find(String1, ".")
+						- 1), Right(String1, StrLen(String1) - Find(String1, ".")));
 				Else
-					For Each Строка Из StandardAttributes3 Do
-						If Строка.имя = Строка1 Then
-							ВозвращЗначение = True;
+					For Each Row In StandardAttributes3 Do
+						If Row.Name = String1 Then
+							ReturnValue = True;
 							Break;
 						EndIf;
 					EndDo;
 
-					If Не ВозвращЗначение Then
-						For Each Строка Из Реквизиты3 Do
-							If Строка.имя = Строка1 Then
-								ВозвращЗначение = True;
+					If Not ReturnValue Then
+						For Each Row In Attributes3 Do
+							If Row.Name = String1 Then
+								ReturnValue = True;
 								Break;
 							EndIf;
 						EndDo;
 					EndIf;
 				EndIf;
 			EndIf;
-			//ВозвращЗначение=True;
+			//ReturnValue=True;
 			Break;
 		EndIf;
 	EndDo;
 
-	If Не ВозвращЗначение Then
-		For Each Строка Из Реквизиты1 Do
-			If Строка.имя = Реквизит2 Then
+	If Not ReturnValue Then
+		For Each Row In Attributes1 Do
+			If Row.Name = Attribute2 Then
 
-				If Не (Строка(Строка.Тип.Типы()[0]) = "Строка" Или Строка(Строка.Тип.Типы()[0]) = "Дата" Или Строка(
-					Строка.Тип.Типы()[0]) = "Число" Или Строка(Строка.Тип.Типы()[0]) = "Булево") Then
+				If Not (String(Row.Type.Types()[0]) = "String" Or String(Row.Type.Types()[0]) = "Date" Or String(
+					Row.Type.Types()[0]) = "Number" Or String(Row.Type.Types()[0]) = "Boolean") Then
 
-					Метадата2 = Метаданные.НайтиПоТипу(Строка.Тип.Типы()[0]);
+					Metadata2 = Metadata.FindByType(Row.Type.Types()[0]);
 
-					Реквизиты3 = Метадата2.Реквизиты;
-					StandardAttributes3 = Метадата2.StandardAttributes;
-					If найти(Строка1, ".") > 0 Then
-						ВозвращЗначение = НайтиРеквизитВДеревеРевизитовМетаданных(Метадата2, Лев(Строка1, найти(
-							Строка1, ".") - 1), Прав(Строка1, СтрДлина(Строка1) - найти(Строка1, ".")));
+					Attributes3 = Metadata2.Attributes;
+					StandardAttributes3 = Metadata2.StandardAttributes;
+					If Find(String1, ".") > 0 Then
+						ReturnValue = FindAttributeInMetadataAttributesTree(Metadata2, Left(String1, Find(
+							String1, ".") - 1), Right(String1, StrLen(String1) - Find(String1, ".")));
 					Else
 
-						For Each Строка Из StandardAttributes3 Do
-							If Строка.имя = Строка1 Then
-								ВозвращЗначение = True;
+						For Each Row In StandardAttributes3 Do
+							If Row.Name = String1 Then
+								ReturnValue = True;
 								Break;
 							EndIf;
 						EndDo;
 
-						If Не ВозвращЗначение Then
-							For Each Строка Из Реквизиты3 Do
-								If Строка.имя = Строка1 Then
-									ВозвращЗначение = True;
+						If Not ReturnValue Then
+							For Each Row In Attributes3 Do
+								If Row.Name = String1 Then
+									ReturnValue = True;
 									Break;
 								EndIf;
 							EndDo;
 						EndIf;
 					EndIf;
 				EndIf;
-				//ВозвращЗначение=True;
+				//ReturnValue=True;
 				Break;
 			EndIf;
 		EndDo;
 	EndIf;
 
-	Return ВозвращЗначение;
+	Return ReturnValue;
 EndFunction
 
 &AtClient
-Procedure MetadataTreeOnActivateRow(Элемент)
-// Вставить содержимое обработчика.
-	ТекущиеДанныеИмя = Элементы.MetadataTree.ТекущиеДанные.MetadataFullName;
+Procedure MetadataTreeOnActivateRow(Item)
+// Insert handler content.
+	CurrentDataName = Items.MetadataTree.CurrentData.MetadataFullName;
 
-	//ТаблицаРезультатОтбор.Очистить();
-	PrepareSelectedObjectsList(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+	//ResultTableFilter.Clear();
+	PrepareSelectedObjectsList(CurrentDataName, Items.MetadataTree.CurrentData.MetadataObjectName);
 
-	ОбновитьОтборПоАктивизацииНаСервере(ТекущиеДанныеИмя, Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+	RefreshFilterOnActivateAtServer(CurrentDataName, Items.MetadataTree.CurrentData.MetadataObjectName);
 
 EndProcedure
 
 &AtServer
-Procedure ОбновитьОтборПоАктивизацииНаСервере(ТекущиеДанныеИмя, ИмяОбъектаМетаданных)
+Procedure RefreshFilterOnActivateAtServer(CurrentDataName, MetadataObjectName)
 	;
 
-	//	ОбъектНаСервере = FormAttributeToValue("Object");
-	//ValueToFormAttribute(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
-	//	MetadataTree1 = ОбъектНаСервере.MetadataTree;
+	//	ObjectAtServer = FormAttributeToValue("Object");
+	//ValueToFormAttribute(ObjectAtServer.MetadataTree, "Object.MetadataTree");
+	//	MetadataTree1 = ObjectAtServer.MetadataTree;
 
-	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
+	FilterTable1 = FormAttributeToValue("FilterTable");
 
-	Отбор = Object.Composer.Настройки.Filter;
-	Отбор.Элементы.Очистить();
+	Filter = Object.Composer.Settings.Filter;
+	Filter.Items.Clear();
 
-	For Each Строка Из ТаблицаОтбора1 Do
-		If Строка.ИмяРеквизита = ТекущиеданныеИмя И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Then
+	For Each Row In FilterTable1 Do
+		If Row.AttributeName = CurrentDataName And Row.MetadataObjectName = MetadataObjectName Then
 
-			RestoreFilterFromCache(Отбор.Элементы, Строка.Filter.Элементы, Строка.Filter.ДоступныеПоляОтбора);
+			RestoreFilterFromCache(Filter.Items, Row.Filter.Items, Row.Filter.FilterAvailableFields);
 
-			//НовоеПоле  = Filter.Элементы.Добавить(Тип("ЭлементОтбораКомпоновкиДанных"));
-			//FillPropertyValues(НовоеПоле, Строка.Filter);
+			//NewField  = Filter.Items.Add(Type("DataCompositionFilterItem"));
+			//FillPropertyValues(NewField, Row.Filter);
 			//		
-			//ОбъектНаСервере.Composer.Настройки.Filter.Элементы.Добавить(Строка.Filter);
-			//=Строка.Filter;
+			//ObjectAtServer.Composer.Settings.Filter.Items.Add(Row.Filter);
+			//=Row.Filter;
 		EndIf;
 	EndDo;
 
 EndProcedure
 
 &AtClient
-Procedure FilterOnEditEnd(Элемент, НоваяСтрока, ОтменаРедактирования)
-		// Вставить содержимое обработчика.
-	If Не ОтменаРедактирования Then
+Procedure FilterOnEditEnd(Item, NewRow, CancelEdit)
+		// Insert handler content.
+	If Not CancelEdit Then
 
-		Выделить = ОбновитьТаблицуОтборанаСервере(Элементы.MetadataTree.ТекущиеДанные.ПолноеИмяМетаданных,
-			Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+		Select = RefreshFilterTableAtServer(Items.MetadataTree.CurrentData.MetadataFullName,
+			Items.MetadataTree.CurrentData.MetadataObjectName);
 
-		If Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Then
-			ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+		If Select And Not Items.MetadataTree.CurrentData.Select Then
+			ThisForm.Items.MetadataTree.CurrentData.PictureIndex = ThisForm.Items.MetadataTree.CurrentData.PictureIndex
 				+ 1;
-		ElsIf Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Then
-			ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+		ElsIf Not (Select And Items.MetadataTree.CurrentData.Select) Then
+			ThisForm.Items.MetadataTree.CurrentData.PictureIndex = ThisForm.Items.MetadataTree.CurrentData.PictureIndex
 				- 1;
 		EndIf;
 
-		Элементы.MetadataTree.ТекущиеДанные.Выделить = Выделить;
+		Items.MetadataTree.CurrentData.Select = Select;
 
 	EndIf;
 
 EndProcedure
 
 &AtServer
-Procedure RestoreFilterFromCache(ЭлементыОтбора, КэшОтбора, ОтборДоступныеПоляОтбора)
+Procedure RestoreFilterFromCache(FilterItems, FilterCache, FilterAvailableFields)
 
-	If КэшОтбора.Количество() > 0 Then
+	If FilterCache.Count() > 0 Then
 
-		For Each ЭлементОтбора Из КэшОтбора Do
+		For Each FilterItem In FilterCache Do
 
-			If ТипЗнч(ЭлементОтбора) = Тип("ГруппаЭлементовОтбораКомпоновкиДанных") Then
+			If TypeOf(FilterItem) = Type("DataCompositionFilterItemGroup") Then
 
-				НовоеПоле = ЭлементыОтбора.Добавить(Тип("ГруппаЭлементовОтбораКомпоновкиДанных"));
-				FillPropertyValues(НовоеПоле, ЭлементОтбора);
-				RestoreFilterFromCache(НовоеПоле.Элементы, ЭлементОтбора.Элементы, ОтборДоступныеПоляОтбора);
+				NewField = FilterItems.Add(Type("DataCompositionFilterItemGroup"));
+				FillPropertyValues(NewField, FilterItem);
+				RestoreFilterFromCache(NewField.Items, FilterItem.Items, FilterAvailableFields);
 
 			Else
 
-				If Object.Composer.Настройки.Filter.ДоступныеПоляОтбора.НайтиПоле(ЭлементОтбора.ЛевоеЗначение)
+				If Object.Composer.Settings.Filter.FilterAvailableFields.FindField(FilterItem.LeftValue)
 					<> Undefined Then
 
-					НовоеПоле = ЭлементыОтбора.Добавить(Тип("ЭлементОтбораКомпоновкиДанных"));
-					FillPropertyValues(НовоеПоле, ЭлементОтбора);
+					NewField = FilterItems.Add(Type("DataCompositionFilterItem"));
+					FillPropertyValues(NewField, FilterItem);
 
 				EndIf;
 
@@ -1904,93 +1904,93 @@ Procedure RestoreFilterFromCache(ЭлементыОтбора, КэшОтбор�
 EndProcedure
 
 //@skip-warning
-Procedure УстановитьДоступныеПоляДляОтбора(Отбор, ОтборДоступныеПоляОтбора)
+Procedure SetFilterAvailableFields(Filter, FilterAvailableFields)
 EndProcedure
 
 &AtServer
-Function ОбновитьТаблицуОтборанаСервере(ПолноеИмяМетаданных, ИмяОбъектаМетаданных)
+Function RefreshFilterTableAtServer(MetadataFullName, MetadataObjectName)
 
-	ОтборСсылка = Object.Composer.Настройки.Filter;
+	FilterRef = Object.Composer.Settings.Filter;
 
-	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
+	FilterTable1 = FormAttributeToValue("FilterTable");
 
-	Колво = ТаблицаОтбора1.Количество();
-	Пока Колво > 0 Do
-		Строка = ТаблицаОтбора1[КолВо - 1];
-		If Строка.ИмяРеквизита = ПолноеИмяМетаданных И Строка.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных Then
-			ТаблицаОтбора1.Удалить(Строка);
+	Count = FilterTable1.Count();
+	While Count > 0 Do
+		Row = FilterTable1[Count - 1];
+		If Row.AttributeName = MetadataFullName And Row.MetadataObjectName = MetadataObjectName Then
+			FilterTable1.Delete(Row);
 		EndIf;
 
-		КолВо = КолВо - 1;
+		Count = Count - 1;
 	EndDo;
 
-	Выделить = False;
+	Select = False;
 
-	//Найдено=Найти(MetadataFullName, "ИмяРеквизита");
+	//Found=Find(MetadataFullName, "AttributeName");
 	//
-	//If Найдено>0 Then
-	//	НоваяСтрока=ТаблицаОтбора1[Найдено];
-	//	НоваяСтрока.Filter=ОтборСсылка;
+	//If Found>0 Then
+	//	NewRow=FilterTable1[Found];
+	//	NewRow.Filter=FilterRef;
 	//Else
-	If ОтборСсылка.Элементы.Количество() > 0 Then
-		НоваяСтрока = ТаблицаОтбора1.Добавить();
-		НоваяСтрока.ИмяРеквизита = ПолноеИмяМетаданных;
-		НоваяСтрока.ИмяОбъектаМетаданных = ИмяОбъектаМетаданных;
+	If FilterRef.Items.Count() > 0 Then
+		NewRow = FilterTable1.Add();
+		NewRow.AttributeName = MetadataFullName;
+		NewRow.MetadataObjectName = MetadataObjectName;
 
-		RestoreFilterFromCache(НоваяСтрока.Filter.Элементы, ОтборСсылка.Элементы, ОтборСсылка.ДоступныеПоляОтбора);
-		УстановитьДоступныеПоляДляОтбора(НоваяСтрока.Отбор, ОтборСсылка.ДоступныеПоляОтбора);
-		//НоваяСтрока.Filter=ОтборСсылка;
+		RestoreFilterFromCache(NewRow.Filter.Items, FilterRef.Items, FilterRef.FilterAvailableFields);
+		SetFilterAvailableFields(NewRow.Filter, FilterRef.FilterAvailableFields);
+		//NewRow.Filter=FilterRef;
 		//EndIf;
-		Выделить = True;
+		Select = True;
 	Else
-		Выделить = False;
+		Select = False;
 	EndIf;
 
-	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(FilterTable1, "FilterTable");
 
 	//MetadataTree1= FormAttributeToValue("Object.MetadataTree");
-	//ValueToFormAttribute(ОбъектНаСервере.MetadataTree, "Object.MetadataTree");
-	//MetadataTree1 = ОбъектНаСервере.MetadataTree;
-	Return Выделить;
+	//ValueToFormAttribute(ObjectAtServer.MetadataTree, "Object.MetadataTree");
+	//MetadataTree1 = ObjectAtServer.MetadataTree;
+	Return Select;
 
 EndFunction
 
 &AtClient
-Procedure FilterAfterDeleteRow(Элемент)
+Procedure FilterAfterDeleteRow(Item)
 
-	Выделить = ОбновитьТаблицуОтборанаСервере(Элементы.MetadataTree.ТекущиеДанные.ПолноеИмяМетаданных,
-		Элементы.MetadataTree.ТекущиеДанные.ИмяОбъектаМетаданных);
+	Select = RefreshFilterTableAtServer(Items.MetadataTree.CurrentData.MetadataFullName,
+		Items.MetadataTree.CurrentData.MetadataObjectName);
 
-	If Выделить И Не Элементы.MetadataTree.ТекущиеДанные.Выделить Then
-		ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+	If Select And Not Items.MetadataTree.CurrentData.Select Then
+		ThisForm.Items.MetadataTree.CurrentData.PictureIndex = ThisForm.Items.MetadataTree.CurrentData.PictureIndex
 			+ 1;
-	ElsIf Не (Выделить И Элементы.MetadataTree.ТекущиеДанные.Выделить) Then
-		ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex = ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex
+	ElsIf Not (Select And Items.MetadataTree.CurrentData.Select) Then
+		ThisForm.Items.MetadataTree.CurrentData.PictureIndex = ThisForm.Items.MetadataTree.CurrentData.PictureIndex
 			- 1;
 	EndIf;
 
-	Элементы.MetadataTree.ТекущиеДанные.Выделить = Выделить;
+	Items.MetadataTree.CurrentData.Select = Select;
 
 EndProcedure
 
 &AtServer
-Procedure УдалитьОтборНаСервере()
-// Вставить содержимое обработчика.
-	ТаблицаОтбора1 = FormAttributeToValue("ТаблицаОтбора");
+Procedure DeleteFilterAtServer()
+// Insert handler content.
+	FilterTable1 = FormAttributeToValue("FilterTable");
 
-	ТаблицаОтбора1.Очистить();
+	FilterTable1.Clear();
 
-	ValueToFormAttribute(ТаблицаОтбора1, "ТаблицаОтбора");
+	ValueToFormAttribute(FilterTable1, "FilterTable");
 
-	Object.Composer.Настройки.Filter.Элементы.Очистить();
+	Object.Composer.Settings.Filter.Items.Clear();
 
-	Дерево1 = Object.MetadataTree.GetItems();
+	Tree1 = Object.MetadataTree.GetItems();
 
-	For Each СтрокаРодитель Из Дерево1[0].GetItems() Do
-		For Each ВетвьДерева Из СтрокаРодитель.GetItems() Do
-			If ВетвьДерева.Выделить Then
-				ВетвьДерева.PictureIndex = ВетвьДерева.PictureIndex - 1;
-				ВетвьДерева.Выделить = False;
+	For Each ParentRow In Tree1[0].GetItems() Do
+		For Each TreeBranch In ParentRow.GetItems() Do
+			If TreeBranch.Select Then
+				TreeBranch.PictureIndex = TreeBranch.PictureIndex - 1;
+				TreeBranch.Select = False;
 			EndIf;
 		EndDo;
 	EndDo;
@@ -1998,192 +1998,192 @@ Procedure УдалитьОтборНаСервере()
 EndProcedure
 
 &AtClient
-Procedure DeleteFilter(Команда)
-	УдалитьОтборНаСервере();
+Procedure DeleteFilter(Command)
+	DeleteFilterAtServer();
 EndProcedure
 
 &AtServer
-Procedure УдалитьПредопределенныеНаСервере()
-// Вставить содержимое обработчика.
-	For Each Строка Из Метаданные.ПланыСчетов Do
-		Запрос = New запрос;
-		Запрос.Текст = "ВЫБРАТЬ
-					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
-											 |ИЗ
-											 |	ПланСчетов." + Строка.Имя + " КАК " + Строка.Имя + "
-																									 |ГДЕ
-																									 |	"
-			+ Строка.Имя + ".Предопределенный";
+Procedure DeletePredefinedItemsAtServer()
+// Insert handler content.
+	For Each Row In Metadata.ChartsOfAccounts Do
+		Query = New Query;
+		Query.Text = "SELECT
+					 |	" + Row.Name + ".Ref AS Ref
+									   |FROM
+									   |	ChartOfAccounts." + Row.Name + " AS " + Row.Name + "
+																							   |WHERE
+																							   |	"
+			+ Row.Name + ".Predefined";
 
-		Выгрузка = Запрос.Выполнить().Выгрузить();
+		ExportTable = Query.Execute().Unload();
 
-		КолВо = Выгрузка.Количество();
+		Count = ExportTable.Count();
 
-		Пока КолВо > 0 Do
-			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			If Объект1 <> Undefined Then
-				Попытка
-					Объект1.ОбменДанными.Загрузка = True;
-					Объект1.Удалить();
-				Исключение
-				КонецПопытки;
+		While Count > 0 Do
+			Object1 = ExportTable[Count - 1].Ref.GetObject();
+			If Object1 <> Undefined Then
+				Try
+					Object1.DataExchange.Load = True;
+					Object1.Delete();
+				Except
+				EndTry;
 			EndIf;
-			КолВо = КолВо - 1;
+			Count = Count - 1;
 		EndDo;
 	EndDo;
 
-	For Each Строка Из Метаданные.Справочники Do
-		Запрос = New запрос;
-		Запрос.Текст = "ВЫБРАТЬ
-					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
-											 |ИЗ
-											 |	Справочник." + Строка.Имя + " КАК " + Строка.Имя + "
-																									 |ГДЕ
-																									 |	"
-			+ Строка.Имя + ".Предопределенный";
+	For Each Row In Metadata.Catalogs Do
+		Query = New Query;
+		Query.Text = "SELECT
+					 |	" + Row.Name + ".Ref AS Ref
+									   |FROM
+									   |	Catalog." + Row.Name + " AS " + Row.Name + "
+																					   |WHERE
+																					   |	"
+			+ Row.Name + ".Predefined";
 
-		Выгрузка = Запрос.Выполнить().Выгрузить();
+		ExportTable = Query.Execute().Unload();
 
-		КолВо = Выгрузка.Количество();
+		Count = ExportTable.Count();
 
-		Пока КолВо > 0 Do
-			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			If Объект1 <> Undefined Then
-				Попытка
-					Объект1.ОбменДанными.Загрузка = True;
-					Объект1.Удалить();
-				Исключение
-				КонецПопытки;
+		While Count > 0 Do
+			Object1 = ExportTable[Count - 1].Ref.GetObject();
+			If Object1 <> Undefined Then
+				Try
+					Object1.DataExchange.Load = True;
+					Object1.Delete();
+				Except
+				EndTry;
 			EndIf;
-			КолВо = КолВо - 1;
+			Count = Count - 1;
 		EndDo;
 	EndDo;
 
-	For Each Строка Из Метаданные.ПланыВидовХарактеристик Do
-		Запрос = New запрос;
-		Запрос.Текст = "ВЫБРАТЬ
-					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
-											 |ИЗ
-											 |	ПланВидовХарактеристик." + Строка.Имя + " КАК " + Строка.Имя + "
-																												 |ГДЕ
-																												 |	"
-			+ Строка.Имя + ".Предопределенный";
+	For Each Row In Metadata.ChartsOfCharacteristicTypes Do
+		Query = New Query;
+		Query.Text = "SELECT
+					 |	" + Row.Name + ".Ref AS Ref
+									   |FROM
+									   |	ChartOfCharacteristicTypes." + Row.Name + " AS " + Row.Name + "
+																										  |WHERE
+																										  |	"
+			+ Row.Name + ".Predefined";
 
-		Выгрузка = Запрос.Выполнить().Выгрузить();
+		ExportTable = Query.Execute().Unload();
 
-		КолВо = Выгрузка.Количество();
+		Count = ExportTable.Count();
 
-		Пока КолВо > 0 Do
-			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			If Объект1 <> Undefined Then
-				Попытка
-					Объект1.ОбменДанными.Загрузка = True;
-					Объект1.Удалить();
-				Исключение
-				КонецПопытки;
+		While Count > 0 Do
+			Object1 = ExportTable[Count - 1].Ref.GetObject();
+			If Object1 <> Undefined Then
+				Try
+					Object1.DataExchange.Load = True;
+					Object1.Delete();
+				Except
+				EndTry;
 			EndIf;
-			КолВо = КолВо - 1;
+			Count = Count - 1;
 		EndDo;
 	EndDo;
 
-	For Each Строка Из Метаданные.ПланыВидовРасчета Do
-		Запрос = New запрос;
-		Запрос.Текст = "ВЫБРАТЬ
-					   |	" + Строка.Имя + ".Ссылка КАК Ссылка
-											 |ИЗ
-											 |	ПланВидовРасчета." + Строка.Имя + " КАК " + Строка.Имя + "
-																										   |ГДЕ
-																										   |	"
-			+ Строка.Имя + ".Предопределенный";
+	For Each Row In Metadata.ChartsOfCalculationTypes Do
+		Query = New Query;
+		Query.Text = "SELECT
+					 |	" + Row.Name + ".Ref AS Ref
+									   |FROM
+									   |	ChartOfCalculationTypes." + Row.Name + " AS " + Row.Name + "
+																									   |WHERE
+																									   |	"
+			+ Row.Name + ".Predefined";
 
-		Выгрузка = Запрос.Выполнить().Выгрузить();
+		ExportTable = Query.Execute().Unload();
 
-		КолВо = Выгрузка.Количество();
+		Count = ExportTable.Count();
 
-		Пока КолВо > 0 Do
-			Объект1 = Выгрузка[КолВо - 1].Ссылка.ПолучитьОбъект();
-			If Объект1 <> Undefined Then
-				Попытка
-					Объект1.ОбменДанными.Загрузка = True;
-					Объект1.Удалить();
-				Исключение
-				КонецПопытки;
+		While Count > 0 Do
+			Object1 = ExportTable[Count - 1].Ref.GetObject();
+			If Object1 <> Undefined Then
+				Try
+					Object1.DataExchange.Load = True;
+					Object1.Delete();
+				Except
+				EndTry;
 			EndIf;
-			КолВо = КолВо - 1;
+			Count = Count - 1;
 		EndDo;
 	EndDo;
 
 EndProcedure
 
 &AtClient
-Procedure DeletePredefinedItems(Команда)
+Procedure DeletePredefinedItems(Command)
 
-	Режим = РежимДиалогаВопрос.ДаНет;
-	Оповещение = New NotifyDescription("ПослеЗакрытияВопроса", ThisObject, Parameters);
-	ПоказатьВопрос(Оповещение, НСтр("ru = 'Внимание! после удаления всех предопределенных элементов будет нарушена Structure данных и   
+	Mode = QuestionDialogMode.YesNo;
+	Notification = New NotifyDescription("AfterCloseQuery", ThisObject, Parameters);
+	ShowQueryBox(Notification, НСтр("ru = 'Внимание! после удаления всех предопределенных элементов будет нарушена структура данных и   
 									|Вы, возможно, не сможете зайти в программу снова (!) 
 									|Вы готовы сразу после выполнения загрузить новые предопределенные элементы из файла ?
-									|Continue выполнение операции?';" + " en = 'Warning! after the deleting predefined elements  structure of the data will be broken 
-																		  |and you will not start the programm. Do you prepared to download the predefined elements from file ?
-																		  |Do you want to continue?'"), Режим, 0);
+									|Продолжить выполнение операции?';" + " en = 'Warning! After the deleting predefined items  structure of the data will be broken 
+																		  |and you will not start the programm. Did you prepared to load the predefined items from file ?
+																		  |Do you want to continue?'"), Mode, 0);
 		//...
 EndProcedure
 
 &AtClient
-Procedure ПослеЗакрытияВопроса(Результат, Parameters) Export
-	If Результат = КодReturnаДиалога.Нет Then
+Procedure AfterCloseQuery(Result, Parameters) Export
+	If Result = DialogReturnCode.No Then
 		Return;
 	EndIf;
 
-	УдалитьПредопределенныеНаСервере();
+	DeletePredefinedItemsAtServer();
 
 	//...
 EndProcedure
 
 &AtClient
-Procedure CheckSelected(Команда)
+Procedure CheckSelected(Command)
 
-	ВыделенныеСтроки = Элементы.MetadataTree.ВыделенныеСтроки;
+	SelectedRows = Items.MetadataTree.SelectedRows;
 
-	If ВыделенныеСтроки.Количество() = 0 Then
+	If SelectedRows.Count() = 0 Then
 		Return;
 	EndIf;
 
-	For Each Стр Из ВыделенныеСтроки Do
-		If ТипЗнч(Стр) = Тип("Число") Then
-			ДанныеСтроки = Элементы.MetadataTree.ДанныеСтроки(Стр);
+	For Each Row In SelectedRows Do
+		If TypeOf(Row) = Type("Number") Then
+			RowData = Items.MetadataTree.RowData(Row);
 		Else
-			ДанныеСтроки = Стр;
+			RowData = Row;
 		EndIf;
 		//	
-		ДанныеСтроки.ExportData = True;
+		RowData.ExportData = True;
 	EndDo;
 	//
-	//		ThisForm.ОбновитьОтображениеДанных(Элементы.MetadataTree);
+	//		ThisForm.RefreshDataRepresentation(Items.MetadataTree);
 EndProcedure
 
 &AtClient
-Procedure UncheckSelected(Команда)
+Procedure UncheckSelected(Command)
 
-	ВыделенныеСтроки = Элементы.MetadataTree.ВыделенныеСтроки;
+	SelectedRows = Items.MetadataTree.SelectedRows;
 
-	If ВыделенныеСтроки.Количество() = 0 Then
+	If SelectedRows.Count() = 0 Then
 		Return;
 	EndIf;
 
-	For Each Стр Из ВыделенныеСтроки Do
-		If ТипЗнч(Стр) = Тип("Число") Then
-			ДанныеСтроки = Элементы.MetadataTree.ДанныеСтроки(Стр);
+	For Each Row In SelectedRows Do
+		If TypeOf(Row) = Type("Number") Then
+			RowData = Items.MetadataTree.RowData(Row);
 		Else
-			ДанныеСтроки = Стр;
+			RowData = Row;
 		EndIf;
 		//	
-		ДанныеСтроки.ExportData = False;
+		RowData.ExportData = False;
 	EndDo;
 	//
-	//		ThisForm.ОбновитьОтображениеДанных(Элементы.MetadataTree);
+	//		ThisForm.RefreshDataRepresentation(Items.MetadataTree);
 EndProcedure
 
-//ThisForm.Элементы.MetadataTree.ТекущиеДанные.PictureIndex=4;
+//ThisForm.Items.MetadataTree.CurrentData.PictureIndex=4;
 
 #EndRegion
