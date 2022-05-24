@@ -151,8 +151,8 @@ Procedure CompareDataOnClientEnd(StructureParametersOnClient, TextErrors)
 		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 	EndIf; 
 	
-	Items.GroupMain.CurrentPage = Items.ГруппаРезультатСравнения;
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	Items.GroupMain.CurrentPage = Items.GroupResultComparison;
+	UpdateVisibilityAccessibilityFormItems();
 
 EndProcedure
 
@@ -167,7 +167,7 @@ EndProcedure
 #EndRegion 
 
 &AtClient
-Procedure ПередЗакрытиемЗавершение(Result, AdditionalParameters) Export
+Procedure BeforeCloseEnd(Result, AdditionalParameters) Export
 	
 	If Result = DialogReturnCode.Yes Then
 		ClosingFormConfirmed = True;
@@ -177,13 +177,13 @@ Procedure ПередЗакрытиемЗавершение(Result, AdditionalPar
 EndProcedure
 
 &AtServer
-Function ПолучитьДанныеВВидеСтруктуры(СохранятьТабличныеДокументы)
+Function ПолучитьДанныеВВидеСтруктуры(SaveSpreadsheetDocuments)
 	
-	ФормаОбъект = FormAttributeToValue("Object");
-	ДанныеСтруктура = ФормаОбъект.GetDataAsStructureOnServer(СохранятьТабличныеДокументы);
-	ValueToFormAttribute(ФормаОбъект, "Object");
+	FormObject = FormAttributeToValue("Object");
+	DataStructure = FormObject.GetDataAsStructureOnServer(SaveSpreadsheetDocuments);
+	ValueToFormAttribute(FormObject, "Object");
 	
-	Return ДанныеСтруктура;
+	Return DataStructure;
 	
 EndFunction
 
@@ -195,50 +195,53 @@ Procedure OpenQueryConstructor(BaseID)
 	If Object["BaseType" + BaseID] = 0 Then
 		
 		If ValueIsFilled(QueryText) Then
-			Конструктор = New QueryWizard(QueryText);
+			Constructor = New QueryWizard(QueryText);
 		Else
-			Конструктор = New QueryWizard();
+			Constructor = New QueryWizard();
 		EndIf;
 		
-		#If ТолстыйКлиентУправляемоеПриложение Then
-			If Конструктор.DoModal() Then
-				Object["QueryText" + BaseID] = Конструктор.Text;
+		#If ThickClientManagedApplication Then
+			If Constructor.DoModal() Then
+				Object["QueryText" + BaseID] = Constructor.Text;
 			EndIf;
 		#ElsIf ThinClient Then
-			ПараметрыКонструктора = New Structure("Конструктор, BaseID", Конструктор, BaseID);
-			ОповещениеКонструктора = New NotifyDescription("ВыполнитьПослеЗакрытияКонструктора", ThisForm, ПараметрыКонструктора);
-			Конструктор.Show(ОповещениеКонструктора);
+			ConstructorParameters = New Structure("Constructor, BaseID", Constructor, BaseID);
+			ConstructorNotifyDescription = New NotifyDescription("ExecuteAfterClosingConstructor", ThisForm, ConstructorParameters);
+			Constructor.Show(ConstructorNotifyDescription);
 		#EndIf
 		
 	ElsIf Object["BaseType" + BaseID] = 1 Then
 		
 		If Object["WorkOptionExternalBase" + BaseID] = 0 Then
 			ParameterConnections = 
-				"File=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "ПутьКБазе"]
-				+ """;Usr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Логин"]
-				+ """;Pwd=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Password"] + """;";	
+				"File=""" + Object["ConnectingToExternalBase" + BaseID + "PathBase"]
+				+ """;Usr=""" + Object["ConnectingToExternalBase" + BaseID + "Login"]
+				+ """;Pwd=""" + Object["ConnectingToExternalBase" + BaseID + "Password"] + """;";	
 		Else
 			ParameterConnections = 
-				"Srvr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Server"]
-				+ """;Ref=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "ПутьКБазе"] 
-				+ """;Usr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Логин"] 
-				+ """;Pwd=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Password"] + """;";
+				"Srvr=""" + Object["ConnectingToExternalBase" + BaseID + "Server"]
+				+ """;Ref=""" + Object["ConnectingToExternalBase" + BaseID + "PathBase"] 
+				+ """;Usr=""" + Object["ConnectingToExternalBase" + BaseID + "Login"] 
+				+ """;Pwd=""" + Object["ConnectingToExternalBase" + BaseID + "Password"] + """;";
 		EndIf;
 
 		
 		Try
 			Application = New COMObject(StrReplace(Object["VersionPlatformExternalBase" + BaseID],".","") + ".Application");
-			Подключение = Application.Connect(ParameterConnections);
+			Connection = Application.Connect(ParameterConnections);
 		Except
-			Message(Формат(CurrentDate(),"DLF=DT") + ": Ошибка при подключении к внешней базе: " + ErrorDescription());
+			MessageText = StrTemplate(Nstr("ru = '%1 : Ошибка при подключении к внешней базе: %2';en = '%1 : Error connecting to external database: %2'")
+				, Format(CurrentDate(),"DLF=DT")
+				, ErrorDescription());
+			Message(MessageText);
 			Return;
 		EndTry;
 			
-		If Подключение Then
-			Конструктор = Application.NewObject("QueryWizard");
-			Конструктор.Text = Object["QueryText" + BaseID];
-			If Конструктор.DoModal() Then
-				Object["QueryText" + BaseID] = Конструктор.Text;
+		If Connection Then
+			Constructor = Application.NewObject("QueryWizard");
+			Constructor.Text = Object["QueryText" + BaseID];
+			If Constructor.DoModal() Then
+				Object["QueryText" + BaseID] = Constructor.Text;
 			EndIf;
 		EndIf;
 	 	
@@ -247,16 +250,16 @@ Procedure OpenQueryConstructor(BaseID)
 EndProcedure
 
 &AtClient
-Procedure ВыполнитьПослеЗакрытияКонструктора(Result, ПараметрыКонструктора) Export
+Procedure ExecuteAfterClosingConstructor(Result, ConstructorParameters) Export
 	
 	If Not IsBlankString(Result) Then
-		Object["QueryText" + ПараметрыКонструктора.BaseID] = TrimAll(Result);
+		Object["QueryText" + ConstructorParameters.BaseID] = TrimAll(Result);
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьКодДляВыводаИЗапретаВыводаСтрок()
+Procedure UpdateCodeToOutputAndProhibitOutputRows()
 	
 	If Not Object.CodeForOutputRowsEditedManually Then
 		
@@ -268,19 +271,19 @@ Procedure ОбновитьКодДляВыводаИЗапретаВыводаС
 			
 			Object.CodeForOutputRows = "";
 		
-			For Each СтрокаТЧ In Object.ConditionsOutputRows Do
+			For Each RowTP In Object.ConditionsOutputRows Do
 				
-				КодИзСтрокиТЧ = ПреобразоватьСтрокуРеквизитовВКодДляВыводаИЗапретаВыводаСтрок(СтрокаТЧ);
+				CodeFromRowTP = ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP);
 				Object.CodeForOutputRows =
 					Object.CodeForOutputRows 
 					+ ?(IsBlankString(Object.CodeForOutputRows), "", Chars.LF + Object.BooleanOperatorForConditionsOutputRows + " ")
-					+ КодИзСтрокиТЧ;
+					+ CodeFromRowTP;
 				
 			EndDo;
 				
 		EndIf;
 		
-		Object.CodeForOutputRows = "УсловияВыводаСтрокиВыполнены = " + Object.CodeForOutputRows + ";";
+		Object.CodeForOutputRows = "ConditionsOutputRowCompleted = " + Object.CodeForOutputRows + ";";
 		
 	EndIf;
 	
@@ -294,82 +297,82 @@ Procedure ОбновитьКодДляВыводаИЗапретаВыводаС
 			
 			Object.CodeForProhibitingOutputRows = "";
 		
-			For Each СтрокаТЧ In Object.ConditionsProhibitOutputRows Do
+			For Each RowTP In Object.ConditionsProhibitOutputRows Do
 				
-				КодИзСтрокиТЧ = ПреобразоватьСтрокуРеквизитовВКодДляВыводаИЗапретаВыводаСтрок(СтрокаТЧ);
+				CodeFromRowTP = ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP);
 				Object.CodeForProhibitingOutputRows =
 					Object.CodeForProhibitingOutputRows 
 					+ ?(IsBlankString(Object.CodeForProhibitingOutputRows), "", Chars.LF + Object.BooleanOperatorForProhibitingConditionsOutputRows + " ")
-					+ КодИзСтрокиТЧ;
+					+ CodeFromRowTP;
 				
 			EndDo;
 				
 		EndIf;
 		
-		Object.CodeForProhibitingOutputRows = "УсловияЗапретаВыводаСтрокиВыполнены = " + Object.CodeForProhibitingOutputRows + ";";
+		Object.CodeForProhibitingOutputRows = "ConditionsProhibitOutputRowCompleted = " + Object.CodeForProhibitingOutputRows + ";";
 		
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Function ПреобразоватьСтрокуРеквизитовВКодДляВыводаИЗапретаВыводаСтрок(СтрокаТЧ)
+Function ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP)
 
-	КодИзСтрокиТЧ = "";
+	CodeFromRowTP = "";
 	
-	If СтрокаТЧ.Condition <> "Заполнен" Then					
+	If RowTP.Condition <> "Заполнен" Then					
 					
-		If СтрокаТЧ.ComparisonType = "Value" Then
-			If TypeOf(СтрокаТЧ.ComparedValue) = Type("Date") Then 
+		If RowTP.ComparisonType = "Value" Then
+			If TypeOf(RowTP.ComparedValue) = Type("Date") Then 
 				ПраваяСторона = 
 					"Date("
-					+ Year(СтрокаТЧ.ComparedValue)
+					+ Year(RowTP.ComparedValue)
 					+ ","
-					+ Month(СтрокаТЧ.ComparedValue)
+					+ Month(RowTP.ComparedValue)
 					+ ","
-					+ Day(СтрокаТЧ.ComparedValue)
+					+ Day(RowTP.ComparedValue)
 					+ ","
-					+ Hour(СтрокаТЧ.ComparedValue)
+					+ Hour(RowTP.ComparedValue)
 					+ ","
-					+ Minute(СтрокаТЧ.ComparedValue)
+					+ Minute(RowTP.ComparedValue)
 					+ ","
-					+ Second(СтрокаТЧ.ComparedValue)
+					+ Second(RowTP.ComparedValue)
 					+ ")";
-			ElsIf TypeOf(СтрокаТЧ.ComparedValue) = Type("Number") Then 
-				ПраваяСторона = String(СтрокаТЧ.ComparedValue);
-			ElsIf TypeOf(СтрокаТЧ.ComparedValue) = Type("String") Then 
-				ПраваяСторона = """" + String(СтрокаТЧ.ComparedValue) + """";
-			ElsIf TypeOf(СтрокаТЧ.ComparedValue) = Type("Boolean") Then 
-				If СтрокаТЧ.ComparedValue Then
+			ElsIf TypeOf(RowTP.ComparedValue) = Type("Number") Then 
+				ПраваяСторона = String(RowTP.ComparedValue);
+			ElsIf TypeOf(RowTP.ComparedValue) = Type("String") Then 
+				ПраваяСторона = """" + String(RowTP.ComparedValue) + """";
+			ElsIf TypeOf(RowTP.ComparedValue) = Type("Boolean") Then 
+				If RowTP.ComparedValue Then
 					ПраваяСторона = "True";
 				Else
 					ПраваяСторона = "False";
 				EndIf;
 			Else
-				ПраваяСторона = String(СтрокаТЧ.ComparedValue);
+				ПраваяСторона = String(RowTP.ComparedValue);
 			EndIf;
 			
 		Else
-			ПраваяСторона = СтрокаТЧ.NameComparedAttribute2;
+			ПраваяСторона = RowTP.NameComparedAttribute2;
 		EndIf;
 		
-		КодИзСтрокиТЧ =
-			СтрокаТЧ.NameComparedAttribute
+		CodeFromRowTP =
+			RowTP.NameComparedAttribute
 			+ " "
-			+ СтрокаТЧ.Condition
+			+ RowTP.Condition
 			+ " "
 			+ ПраваяСторона;
 		
 	Else
 		
-		КодИзСтрокиТЧ =
+		CodeFromRowTP =
 			"ValueIsFilled("
-			+ СтрокаТЧ.NameComparedAttribute
+			+ RowTP.NameComparedAttribute
 			+ ")";
 		
 	EndIf;
 	
-	Return КодИзСтрокиТЧ;	
+	Return CodeFromRowTP;	
 
 EndFunction
 
@@ -390,20 +393,20 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 		
 		If Object["WorkOptionExternalBase" + BaseID] = 0 Then
 			ParameterConnections = 
-				"File=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "ПутьКБазе"]
-				+ """;Usr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Логин"]
-				+ """;Pwd=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Password"] + """;";	
+				"File=""" + Object["ConnectingToExternalBase" + BaseID + "PathBase"]
+				+ """;Usr=""" + Object["ConnectingToExternalBase" + BaseID + "Login"]
+				+ """;Pwd=""" + Object["ConnectingToExternalBase" + BaseID + "Password"] + """;";	
 		Else
 			ParameterConnections = 
-				"Srvr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Server"]
-				+ """;Ref=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "ПутьКБазе"] 
-				+ """;Usr=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Логин"] 
-				+ """;Pwd=""" + Object["ПодключениеКВнешнейБазе" + BaseID + "Password"] + """;";
+				"Srvr=""" + Object["ConnectingToExternalBase" + BaseID + "Server"]
+				+ """;Ref=""" + Object["ConnectingToExternalBase" + BaseID + "PathBase"] 
+				+ """;Usr=""" + Object["ConnectingToExternalBase" + BaseID + "Login"] 
+				+ """;Pwd=""" + Object["ConnectingToExternalBase" + BaseID + "Password"] + """;";
 		EndIf;
 				
 		Try
 			COMConnector = New COMObject(Object["VersionPlatformExternalBase" + BaseID] + ".COMConnector");
-			Подключение = COMConnector.Connect(ParameterConnections);
+			Connection = COMConnector.Connect(ParameterConnections);
 		Except
 			ТекстОшибки = "Error при подключении к внешней базе: " + ErrorDescription();
 			Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
@@ -411,7 +414,7 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 			Return;
 		EndTry;
 
-		Query = Подключение.NewObject("Query");		
+		Query = Connection.NewObject("Query");		
 	
 	EndIf;
 	
@@ -519,7 +522,7 @@ Procedure CommandUploadResultToFileOnClientEnd(SelectedFiles, AdditionalParamete
 EndProcedure
 
 &AtServer
-Function ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере(BaseID, МаксимальноеЧислоСтрок = 0, ТолькоДубликаты = False, Подключение = Undefined)
+Function ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере(BaseID, МаксимальноеЧислоСтрок = 0, ТолькоДубликаты = False, Connection = Undefined)
 
 	ТекстОшибки = "";
 	ProcessingObject = FormAttributeToValue("Object");
@@ -528,8 +531,8 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 		Return Undefined;
 	EndIf;
 	
-	Подключение = Undefined;
-	ТЗ = ProcessingObject.ReadDataAndGetValueTable(BaseID, ТекстОшибки, Подключение);
+	Connection = Undefined;
+	ТЗ = ProcessingObject.ReadDataAndGetValueTable(BaseID, ТекстОшибки, Connection);
 	
 	If ТЗ = Undefined Then
 		Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
@@ -585,10 +588,10 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 			Break;
 		EndIf;
 		
-		If Подключение = Undefined Then
+		If Connection = Undefined Then
 			ОтборСтруктура = New Structure;
 		Else
-			ОтборСтруктура = Подключение.NewObject("Structure");
+			ОтборСтруктура = Connection.NewObject("Structure");
 		EndIf;
 				
 		Ключ1 = СтрокаТЗ.Get(0);
@@ -649,7 +652,7 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 	
 	ТЗ = Undefined;
 	ТЗ_Сгруппированная = Undefined;
-	Подключение = Undefined;
+	Connection = Undefined;
 	
 	SpreadsheetDocument.Protection = False;
 	SpreadsheetDocument.ReadOnly = True;
@@ -662,10 +665,10 @@ EndFunction
 
 #Region Видимость_доступность_элементов_формы
 &AtClient
-Procedure ОбновитьВидимостьДоступностьЭлементовФормы()
+Procedure UpdateVisibilityAccessibilityFormItems()
 		
-	ОбновитьВидимостьДоступностьЭлементовФормыПоИдентификаторуБазы("А");
-	ОбновитьВидимостьДоступностьЭлементовФормыПоИдентификаторуБазы("Б");
+	UpdateVisibilityAccessibilityFormItemsByBaseID("A");
+	UpdateVisibilityAccessibilityFormItemsByBaseID("B");
 	//Items.ResultKey2.Visible = Object.NumberColumnsInKey > 1;
 	//Items.ResultKey3.Visible = Object.NumberColumnsInKey > 2;
 	//Items.ResultColumnType1Key.Visible = Object.DisplayKeyColumnTypes;
@@ -679,15 +682,15 @@ Procedure ОбновитьВидимостьДоступностьЭлемент
 	//If Object.PeriodTypeAbsolute Then
 	If Object.PeriodType = 1 Then
 		Items.AbsolutePeriodValue.ReadOnly = True;
-		Items.ГруппаОтносительныйПериод.Visible = True;
-		Items.ГруппаПодчиненныйОтносительныйПериод.Visible = False;
+		Items.GroupRelativePeriod.Visible = True;
+		Items.GroupSlaveRelativePeriod.Visible = False;
 	ElsIf Object.PeriodType = 2 Then	
 		Items.AbsolutePeriodValue.ReadOnly = True;
-		Items.ГруппаОтносительныйПериод.Visible = True;
-		Items.ГруппаПодчиненныйОтносительныйПериод.Visible = True;
+		Items.GroupRelativePeriod.Visible = True;
+		Items.GroupSlaveRelativePeriod.Visible = True;
 	Else
 		Items.AbsolutePeriodValue.ReadOnly = False;
-		Items.ГруппаОтносительныйПериод.Visible = False;
+		Items.GroupRelativePeriod.Visible = False;
 	EndIf;
 	
 	ОбновитьЗаголовок();
@@ -735,7 +738,7 @@ Procedure ОбновитьИтогиПоРеквизитамТЧ(Идентиф�
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьЭлементовФормыПоИдентификаторуБазы(BaseID)
+Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 	
 	Items["ГруппаОбработкаКлюча2" + BaseID].Visible = Object.NumberColumnsInKey > 1;
 	Items["ГруппаОбработкаКлюча3" + BaseID].Visible = Object.NumberColumnsInKey > 2;
@@ -1176,7 +1179,7 @@ EndProcedure
 
 #Region Save
 &AtClient
-Procedure SaveSettingsToFileAtClient(СохранятьТабличныеДокументы = False)
+Procedure SaveSettingsToFileAtClient(SaveSpreadsheetDocuments = False)
 	
 	Mode = FileDialogMode.Save;
 	ДиалогВыбора = New FileDialog(Mode);
@@ -1185,7 +1188,7 @@ Procedure SaveSettingsToFileAtClient(СохранятьТабличныеДок�
 	ДиалогВыбора.Filter = Filter;
 	ДиалогВыбора.Title = "Укажите файл для сохранения настроек";   
 
-	ДиалогВыбора.Show(New NotifyDescription("SaveSettingsToFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора,СохранятьТабличныеДокументы", ДиалогВыбора, СохранятьТабличныеДокументы)));
+	ДиалогВыбора.Show(New NotifyDescription("SaveSettingsToFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора,SaveSpreadsheetDocuments", ДиалогВыбора, SaveSpreadsheetDocuments)));
 	
 EndProcedure
 
@@ -1193,12 +1196,12 @@ EndProcedure
 Procedure SaveSettingsToFileAtClientEnd(SelectedFiles, AdditionalParameters) Export
 	
 	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;
-	СохранятьТабличныеДокументы = AdditionalParameters.СохранятьТабличныеДокументы;
+	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
 	                             	
 	If (SelectedFiles <> Undefined) Then
 		
 		Object.Title = Mid(ДиалогВыбора.FullFileName, StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1);
-		Address = SaveSettingsToFileAtServer(СохранятьТабличныеДокументы);
+		Address = SaveSettingsToFileAtServer(SaveSpreadsheetDocuments);
 		BinaryData = GetFromTempStorage(Address);
 		BinaryData.Write(ДиалогВыбора.FullFileName);
 		
@@ -1207,15 +1210,15 @@ Procedure SaveSettingsToFileAtClientEnd(SelectedFiles, AdditionalParameters) Exp
 EndProcedure
 
 &AtClient
-Procedure SaveSettingsToDatabaseAtClient(СохранятьТабличныеДокументы = False);
+Procedure SaveSettingsToDatabaseAtClient(SaveSpreadsheetDocuments = False);
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation)  Then
 	
-		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,СохранятьТабличныеДокументы",True,СохранятьТабличныеДокументы)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,SaveSpreadsheetDocuments",True,SaveSpreadsheetDocuments)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
 		
 	Else
 		
-		ОткрытьФормуВыбораОперацииДляЗаписи(СохранятьТабличныеДокументы);
+		ОткрытьФормуВыбораОперацииДляЗаписи(SaveSpreadsheetDocuments);
 		
 	EndIf;
 	
@@ -1224,13 +1227,13 @@ EndProcedure
 &AtClient
 Procedure СохранитьВСвязаннуюОперациюЗавершение(РезультатВопроса, AdditionalParameters) Export
 	
-	СохранятьТабличныеДокументы = AdditionalParameters.СохранятьТабличныеДокументы;
+	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
 	ВыбратьЭлементСправочникаДляСохранения = AdditionalParameters.ВыбратьЭлементСправочникаДляСохранения;
 	ПриЗакрытииФормы = AdditionalParameters.Property("ПриЗакрытииФормы") And AdditionalParameters.ПриЗакрытииФормы;
 	
 	If РезультатВопроса = DialogReturnCode.Yes Then
 		
-		SaveSettingsToBaseAtServer(Object.RelatedDataComparisonOperation, СохранятьТабличныеДокументы);
+		SaveSettingsToBaseAtServer(Object.RelatedDataComparisonOperation, SaveSpreadsheetDocuments);
 		ОбновитьЗаголовок();
 		
 	//Click кнопки Save в базу
@@ -1245,12 +1248,12 @@ EndProcedure
 &AtClient
 Procedure СохранитьВВыбраннуюОперациюЗавершение(Result, AdditionalParameters) Export
 	
-	СохранятьТабличныеДокументы = AdditionalParameters.СохранятьТабличныеДокументы;
+	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
 	
 	ВыбранныйЭлемент = Result;
 	If ВыбранныйЭлемент <> Undefined Then
 		
-		SaveSettingsToBaseAtServer(ВыбранныйЭлемент, СохранятьТабличныеДокументы);
+		SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments);
 		ОбновитьЗаголовок();
 				
 	EndIf;
@@ -1258,10 +1261,10 @@ Procedure СохранитьВВыбраннуюОперациюЗавершен
 EndProcedure
 
 &AtServer
-Function SaveSettingsToFileAtServer(СохранятьТабличныеДокументы)
+Function SaveSettingsToFileAtServer(SaveSpreadsheetDocuments)
 	
 	PathToFile = GetTempFileName("xml");
-	Data = ПолучитьДанныеВВидеСтруктуры(СохранятьТабличныеДокументы); 
+	Data = ПолучитьДанныеВВидеСтруктуры(SaveSpreadsheetDocuments); 
 	ХранилищеВнешнее = New ValueStorage(Data);
 	XMLWriter = New XMLWriter;
 	XMLWriter.OpenFile(PathToFile, "UTF-8");
@@ -1275,11 +1278,11 @@ Function SaveSettingsToFileAtServer(СохранятьТабличныеДоку
 EndFunction
 
 &AtServer
-Procedure SaveSettingsToBaseAtServer(ВыбранныйЭлемент, СохранятьТабличныеДокументы = False)
+Procedure SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments = False)
 
-	ФормаОбъект = FormAttributeToValue("Object");
-	ФормаОбъект.SaveSettingsToBaseAtServer(ВыбранныйЭлемент, СохранятьТабличныеДокументы);
-	ValueToFormAttribute(ФормаОбъект, "Object");
+	FormObject = FormAttributeToValue("Object");
+	FormObject.SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments);
+	ValueToFormAttribute(FormObject, "Object");
 		
 EndProcedure
 #EndRegion 
@@ -1314,7 +1317,7 @@ Procedure OpenSettingsFromFileAtClientEnd(SelectedFiles, AdditionalParameters) E
 		ПервыйСимвол = StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1;
 		ПоследнийСимвол = StrFind(ДиалогВыбора.FullFileName, ".", SearchDirection.FromEnd);
 		Object.Title = Mid(ДиалогВыбора.FullFileName, ПервыйСимвол, ПоследнийСимвол - ПервыйСимвол);
-		ОбновитьВидимостьДоступностьЭлементовФормы();
+		UpdateVisibilityAccessibilityFormItems();
 		ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
 		ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 		ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
@@ -1403,26 +1406,26 @@ EndProcedure
 &AtServer
 Procedure OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы = False)
 	
-	ФормаОбъект = FormAttributeToValue("Object");
-	ФормаОбъект.OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы);
-	ValueToFormAttribute(ФормаОбъект, "Object");
+	FormObject = FormAttributeToValue("Object");
+	FormObject.OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы);
+	ValueToFormAttribute(FormObject, "Object");
 	
 EndProcedure
 
 &AtClient
 Procedure OpenSettingsFromFileEnd(Result, AdditionalParameters) Export
 	
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
 	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 
 EndProcedure
 
 &AtClient
-Procedure ОткрытьФормуВыбораОперацииДляЗаписи(СохранятьТабличныеДокументы = False)
+Procedure ОткрытьФормуВыбораОперацииДляЗаписи(SaveSpreadsheetDocuments = False)
 
 	ВыбранныйЭлемент = Undefined;
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("СохранитьВВыбраннуюОперациюЗавершение", ThisForm, New Structure("СохранятьТабличныеДокументы",СохранятьТабличныеДокументы)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("СохранитьВВыбраннуюОперациюЗавершение", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
 EndProcedure
 
@@ -1435,7 +1438,7 @@ Procedure OpenSettingsFromBaseEnd(Result, AdditionalParameters) Export
 	If ВыбранныйЭлемент <> Undefined Then
 		
 		OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы);
-		ОбновитьВидимостьДоступностьЭлементовФормы();
+		UpdateVisibilityAccessibilityFormItems();
 		ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
 		ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 		
@@ -1679,7 +1682,7 @@ EndProcedure
 Procedure CommandGetQueryParametersA(Command)
 	
 	ПолучитьПараметрыИзЗапросаНаСервере("А");
-	Items.ГруппаСтраницыБазаА.CurrentPage = Items.ГруппаСтраницаПараметрыЗапросаА;
+	Items.GroupPagesBaseA.CurrentPage = Items.GroupPageQueryParametersA;
 	
 EndProcedure
 
@@ -1687,7 +1690,7 @@ EndProcedure
 Procedure CommandGetQueryParametersB(Command)
 	
 	ПолучитьПараметрыИзЗапросаНаСервере("Б");
-	Items.ГруппаСтраницыБазаБ.CurrentPage = Items.ГруппаСтраницаПараметрыЗапросаБ;
+	Items.GroupPagesBaseB.CurrentPage = Items.GroupPageQueryParametersB;
 	
 EndProcedure
 
@@ -1807,9 +1810,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Parameters.Property("ОперацияСравненияДанных") And ValueIsFilled(Parameters.ОперацияСравненияДанных) Then
 		
 		Object.RelatedDataComparisonOperation = Parameters.ОперацияСравненияДанных;
-		ФормаОбъект = FormAttributeToValue("Object");
-		ФормаОбъект.OpenSettingsFromBaseAtServer(Object.RelatedDataComparisonOperation);
-		ValueToFormAttribute(ФормаОбъект, "Object");
+		FormObject = FormAttributeToValue("Object");
+		FormObject.OpenSettingsFromBaseAtServer(Object.RelatedDataComparisonOperation);
+		ValueToFormAttribute(FormObject, "Object");
 				
 	Else 
 		
@@ -1864,8 +1867,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	If Object.UserMode Then
 		
 		Items.GroupHeaderHiddenAttributes.Visible = False;
-		Items.ГруппаБазаАСтраница.Visible = False;
-		Items.ГруппаБазаБСтраница.Visible = False;
+		Items.GroupBaseAPage.Visible = False;
+		Items.GroupBaseBPage.Visible = False;
 		Items.GroupOutputSettings.Visible = False;
 		Items.GroupMain.PagesRepresentation = FormPagesRepresentation.None;
 		Items.РезультатКомандаВыгрузитьРезультатВФайлНаСервере.Visible = False;
@@ -1923,11 +1926,11 @@ EndProcedure
 &AtClient
 Procedure OnOpen(Cancel)
 	
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
 	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 	ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 		
 EndProcedure
 
@@ -1944,7 +1947,7 @@ EndProcedure
 Procedure BeforeClose(Cancel, StandardProcessing)
 	If Not ClosingFormConfirmed Then
 		Cancel = True;
-		ShowQueryBox(New NotifyDescription("ПередЗакрытиемЗавершение", ThisForm),"Close консоль сравнения данных?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm),"Close консоль сравнения данных?", QuestionDialogMode.YesNo);
 	EndIf;
 EndProcedure
 
@@ -1953,7 +1956,7 @@ Procedure OnClose(ЗавершениеРаботы)
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation) And Not Object.UserMode  Then
 		
-		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,СохранятьТабличныеДокументы,ПриЗакрытииФормы",True,False,True)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,SaveSpreadsheetDocuments,ПриЗакрытииФормы",True,False,True)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
 	
 	EndIf; 
 	
@@ -1995,7 +1998,7 @@ EndProcedure
 &AtClient
 Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
 	
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 
 EndProcedure
@@ -2029,29 +2032,29 @@ EndProcedure
 &AtClient
 Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
 	
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
 
 EndProcedure
 
 &AtClient
 Procedure ConditionsOutputRowsOnChange(Item)
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 EndProcedure
 
 &AtClient
 Procedure ConditionsProhibitOutputRowsOnChange(Item)
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 EndProcedure
 
 &AtClient
 Procedure BooleanOperatorForProhibitingConditionsOutputRowsOnChange(Item)
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 EndProcedure
 
 &AtClient
 Procedure ЛогическийОператорДляУсловийВыводаСтрокПриИзменении(Item)
-	ОбновитьКодДляВыводаИЗапретаВыводаСтрок();
+	UpdateCodeToOutputAndProhibitOutputRows();
 EndProcedure
 
 &AtClient
@@ -2069,7 +2072,7 @@ EndProcedure
 Procedure ТипПараметраПериодПриИзменении(Item)
 	
 	RefreshDataPeriod();
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	
 EndProcedure
 
@@ -2237,7 +2240,7 @@ EndProcedure
 &AtClient
 Procedure ПриИзмененииКлючевогоРеквизита(Item)
 	
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	
 EndProcedure
 
@@ -2279,9 +2282,9 @@ Procedure NumberColumnsInKeyOnChange(Item)
 	Object.VisibilityKey1 = True;
 	Object.VisibilityKey2 = Object.NumberColumnsInKey > 1;
 	Object.VisibilityKey3 = Object.NumberColumnsInKey > 2;
-	ОбновитьВидимостьДоступностьЭлементовФормы();
-	ОбновитьВидимостьДоступностьЭлементовФормыПоИдентификаторуБазы("A");
-	ОбновитьВидимостьДоступностьЭлементовФормыПоИдентификаторуБазы("B");
+	UpdateVisibilityAccessibilityFormItems();
+	UpdateVisibilityAccessibilityFormItemsByBaseID("A");
+	UpdateVisibilityAccessibilityFormItemsByBaseID("B");
 	
 EndProcedure
 
@@ -2327,7 +2330,7 @@ EndProcedure
 &AtClient
 Procedure DisplayKeyColumnTypesOnChange(Item)
 	
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	
 EndProcedure
 
@@ -2339,7 +2342,7 @@ Procedure CommandVisibilityTypesColumnsKey(Command)
 	If Object.DisplayKeyColumnTypes Then
 		ЗаполнитьТипыСтолбцовКлючаВоВсехСтроках();
 	EndIf;
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	
 EndProcedure
 
@@ -2433,7 +2436,7 @@ EndProcedure
 Procedure ТипПериодаПриИзменении(Item)
 	
 	RefreshDataPeriod();
-	ОбновитьВидимостьДоступностьЭлементовФормы();
+	UpdateVisibilityAccessibilityFormItems();
 	
 EndProcedure
 
@@ -2493,7 +2496,7 @@ Procedure OrderSortTableDifferencesStartChoice(Item, ChoiceData, StandardProcess
 	
 	ReturnValue = Undefined;
 	
-	OpenForm(StrReplace(FormName, "ФормаУправляемая", "ФормаНастройкиСортировки")
+	OpenForm(StrReplace(FormName, "Form", "SortingSettingsForm")
 		, New Structure("OrderSortTableDifferences", Object.OrderSortTableDifferences)
 		,
 		,

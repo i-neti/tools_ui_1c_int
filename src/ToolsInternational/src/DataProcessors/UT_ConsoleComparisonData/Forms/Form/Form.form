@@ -1834,7 +1834,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>Группа5</name>
+            <name>Group5</name>
             <id>1119</id>
             <items xsi:type="form:FormGroup">
               <name>Group7</name>
@@ -1967,7 +1967,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:Decoration">
-              <name>Декорация17</name>
+              <name>Decoration17</name>
               <id>1189</id>
               <title>
                 <key>en</key>
@@ -1983,7 +1983,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация17ExtendedTooltip</name>
+                <name>Decoration17ExtendedTooltip</name>
                 <id>1191</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1998,7 +1998,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация17ContextMenu</name>
+                <name>Decoration17ContextMenu</name>
                 <id>1190</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2029,7 +2029,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Группа5РасширеннаяПодсказка</name>
+              <name>Group5ExtendedTooltip</name>
               <id>1120</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2190,7 +2190,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:Decoration">
-              <name>Декорация32</name>
+              <name>Decoration32</name>
               <id>1186</id>
               <title>
                 <key>en</key>
@@ -2206,7 +2206,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация32ExtendedTooltip</name>
+                <name>Decoration32ExtendedTooltip</name>
                 <id>1188</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2221,7 +2221,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация32ContextMenu</name>
+                <name>Decoration32ContextMenu</name>
                 <id>1187</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2276,7 +2276,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>Группа3</name>
+            <name>Group3</name>
             <id>995</id>
             <items xsi:type="form:FormField">
               <name>PathToDownloadFile</name>
@@ -2343,7 +2343,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:Decoration">
-              <name>Декорация26</name>
+              <name>Decoration26</name>
               <id>1031</id>
               <title>
                 <key>en</key>
@@ -2359,7 +2359,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация26РасширеннаяПодсказка</name>
+                <name>Decoration26ExtendedTooltip</name>
                 <id>1033</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2374,7 +2374,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация26КонтекстноеМеню</name>
+                <name>Decoration26ContextMenu</name>
                 <id>1032</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2405,7 +2405,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Группа3РасширеннаяПодсказка</name>
+              <name>Group3ExtendedTooltip</name>
               <id>996</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2430,11 +2430,15 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаПериод</name>
+            <name>GroupPeriod</name>
             <id>389</id>
             <items xsi:type="form:FormField">
-              <name>ТипПериода</name>
+              <name>PeriodType</name>
               <id>1058</id>
+              <title>
+                <key>en</key>
+                <value>Selection by period</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Отбор по периоду</value>
@@ -2455,7 +2459,7 @@
                 <name>ТипПериодаПриИзменении</name>
               </handlers>
               <extendedTooltip>
-                <name>ТипПериодаРасширеннаяПодсказка</name>
+                <name>PeriodTypeExtendedTooltip</name>
                 <id>1060</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2470,7 +2474,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТипПериодаКонтекстноеМеню</name>
+                <name>PeriodTypeContextMenu</name>
                 <id>1059</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2529,10 +2533,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаОтносительныйПериод</name>
+              <name>GroupRelativePeriod</name>
               <id>1056</id>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаПодчиненныйОтносительныйПериод</name>
+                <name>GroupSlaveRelativePeriod</name>
                 <id>1061</id>
                 <items xsi:type="form:FormField">
                   <name>ValueOfSlaveRelativePeriod</name>
@@ -2695,8 +2699,12 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:Decoration">
-                  <name>Декорация33</name>
+                  <name>Decoration33</name>
                   <id>1069</id>
+                  <title>
+                    <key>en</key>
+                    <value>of the last</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>из последних</value>
@@ -2707,7 +2715,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>Декорация33РасширеннаяПодсказка</name>
+                    <name>Decoration33ExtendedTooltip</name>
                     <id>1071</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2722,7 +2730,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>Декорация33КонтекстноеМеню</name>
+                    <name>Decoration33ContextMenu</name>
                     <id>1070</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2747,12 +2755,16 @@
                   <key>ru</key>
                   <value>Группа подчиненный относительный период</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group slave relative period</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа подчиненный относительный период</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаПодчиненныйОтносительныйПериодРасширеннаяПодсказка</name>
+                  <name>GroupSlaveRelativePeriodExtendedTooltip</name>
                   <id>1062</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2943,12 +2955,16 @@
                 <key>ru</key>
                 <value>Группа относительный период</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group relative period</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа относительный период</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаОтносительныйПериодРасширеннаяПодсказка</name>
+                <name>GroupRelativePeriodExtendedTooltip</name>
                 <id>1057</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3036,6 +3052,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Parameters StartDate, EndDate (for 1C 8 databases)</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Параметры ДатаНачала, ДатаОкончания (для баз 1С 8)</value>
             </title>
@@ -3045,7 +3065,7 @@
             </toolTip>
             <horizontalStretch>false</horizontalStretch>
             <extendedTooltip>
-              <name>ГруппаПериодРасширеннаяПодсказка</name>
+              <name>GroupPeriodExtendedTooltip</name>
               <id>390</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3159,8 +3179,12 @@
             <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <items xsi:type="form:Decoration">
-            <name>Декорация30</name>
+            <name>Decoration30</name>
             <id>1043</id>
+            <title>
+              <key>en</key>
+              <value>a row of the discrepancy table will be displayed if the current conditions are met (and the conditions on the Conditions for prohibiting the output of rows tab are not met or there are no conditions),</value>
+            </title>
             <title>
               <key>ru</key>
               <value>строка таблицы расхождений будет выведена, если выполнены текущие условия (и при этом не выполнены или отсутствует условия на вкладке Условия запрета вывода строк),</value>
@@ -3171,7 +3195,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Декорация30РасширеннаяПодсказка</name>
+              <name>Decoration30ExtendedTooltip</name>
               <id>1045</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3186,7 +3210,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>Декорация30КонтекстноеМеню</name>
+              <name>Decoration30ContextMenu</name>
               <id>1044</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3212,8 +3236,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Decoration">
-            <name>Декорация28</name>
+            <name>Decoration28</name>
             <id>1037</id>
+            <title>
+              <key>en</key>
+              <value>more than one, then the row will be displayed in any case as incorrect for further analysis of the reasons</value>
+            </title>
             <title>
               <key>ru</key>
               <value>но если в любой из баз число найденных по ключу строк больше одной, то строка будет выведена в любом случае как некорректная для дальнейшего анализа причин</value>
@@ -3224,7 +3252,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Декорация28РасширеннаяПодсказка</name>
+              <name>Decoration28ExtendedTooltip</name>
               <id>1039</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3239,7 +3267,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>Декорация28КонтекстноеМеню</name>
+              <name>Decoration28ContextMenu</name>
               <id>1038</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3265,10 +3293,10 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаУсловияВыводаСтрок2</name>
+            <name>GroupOutputConditionsRows2</name>
             <id>347</id>
             <items xsi:type="form:FormField">
-              <name>ЛогическийОператорДляУсловийВыводаСтрок</name>
+              <name>BooleanOperatorForConditionsOutputRows</name>
               <id>337</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3285,7 +3313,7 @@
                 <name>ЛогическийОператорДляУсловийВыводаСтрокПриИзменении</name>
               </handlers>
               <extendedTooltip>
-                <name>ЛогическийОператорДляУсловийВыводаСтрокРасширеннаяПодсказка</name>
+                <name>BooleanOperatorForConditionsOutputRowsExtendedTooltip</name>
                 <id>339</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3300,7 +3328,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ЛогическийОператорДляУсловийВыводаСтрокКонтекстноеМеню</name>
+                <name>BooleanOperatorForConditionsOutputRowsContextMenu</name>
                 <id>338</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3342,7 +3370,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>КодДляВыводаСтрокРедактируетсяВручную</name>
+              <name>CodeForOutputRowsEditedManually</name>
               <id>319</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3359,7 +3387,7 @@
                 <name>КодДляВыводаСтрокРедактируетсяВручнуюПриИзменении</name>
               </handlers>
               <extendedTooltip>
-                <name>КодДляВыводаСтрокРедактируетсяВручнуюРасширеннаяПодсказка</name>
+                <name>CodeForOutputRowsEditedManuallyExtendedTooltip</name>
                 <id>321</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3374,7 +3402,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>КодДляВыводаСтрокРедактируетсяВручнуюКонтекстноеМеню</name>
+                <name>CodeForOutputRowsEditedManuallyContextMenu</name>
                 <id>320</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3506,7 +3534,7 @@
               <value>Группа условия вывода строк2</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаУсловияВыводаСтрок2РасширеннаяПодсказка</name>
+              <name>GroupOutputConditionsRows2ExtendedTooltip</name>
               <id>348</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3530,7 +3558,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>КодДляВыводаСтрок</name>
+            <name>CodeForOutputRows</name>
             <id>322</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3544,7 +3572,7 @@
             </dataPath>
             <titleLocation>None</titleLocation>
             <extendedTooltip>
-              <name>КодДляВыводаСтрокРасширеннаяПодсказка</name>
+              <name>CodeForOutputRowsExtendedTooltip</name>
               <id>324</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3559,7 +3587,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>КодДляВыводаСтрокКонтекстноеМеню</name>
+              <name>CodeForOutputRowsContextMenu</name>
               <id>323</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4421,8 +4449,12 @@
             <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <items xsi:type="form:Decoration">
-            <name>Декорация29</name>
+            <name>Decoration29</name>
             <id>1040</id>
+            <title>
+              <key>en</key>
+              <value>the discrepancy table line will NOT be displayed if the current conditions are met,</value>
+            </title>
             <title>
               <key>ru</key>
               <value>строка таблицы расхождений НЕ будет выведена, если выполнены текущие условия,</value>
@@ -4433,7 +4465,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Декорация29РасширеннаяПодсказка</name>
+              <name>Decoration29ExtendedTooltip</name>
               <id>1042</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4448,7 +4480,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>Декорация29КонтекстноеМеню</name>
+              <name>Decoration29ContextMenu</name>
               <id>1041</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4474,8 +4506,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Decoration">
-            <name>Декорация31</name>
+            <name>Decoration31</name>
             <id>1046</id>
+            <title>
+              <key>en</key>
+              <value>but if in any of the databases the number of rows found by the key is more than one, then the row will be displayed in any case as incorrect for further analysis of the reasons</value>
+            </title>
             <title>
               <key>ru</key>
               <value>но если в любой из баз число найденных по ключу строк больше одной, то строка будет выведена в любом случае как некорректная для дальнейшего анализа причин</value>
@@ -4486,7 +4522,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>Декорация31РасширеннаяПодсказка</name>
+              <name>Decoration31ExtendedTooltip</name>
               <id>1048</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4501,7 +4537,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>Декорация31КонтекстноеМеню</name>
+              <name>Decoration31ContextMenu</name>
               <id>1047</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5608,16 +5644,16 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаБазаАСтраница</name>
+      <name>GroupBaseAPage</name>
       <id>61</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаПредварительныйПросмотрА</name>
+        <name>GroupPreviewA</name>
         <id>1137</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаПредварительныйПросмотрА1</name>
+          <name>GroupPreviewA1</name>
           <id>1139</id>
           <items xsi:type="form:Button">
-            <name>КомандаПредварительныйПросмотр100СтрокИсточникаА</name>
+            <name>CommandPreviewSourceA_100Rows</name>
             <id>1123</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5625,7 +5661,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>КомандаПредварительныйПросмотр100СтрокИсточникаАРасширеннаяПодсказка</name>
+              <name>CommandPreviewSourceA_100RowsExtendedTooltip</name>
               <id>1124</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5647,7 +5683,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>КомандаПредварительныйПросмотрИсточникаА1000Строк</name>
+            <name>CommandPreviewSourceA_1000Rows</name>
             <id>1145</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5655,7 +5691,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>КомандаПредварительныйПросмотрИсточникаА1000СтрокРасширеннаяПодсказка</name>
+              <name>CommandPreviewSourceA_1000RowsExtendedTooltip</name>
               <id>1146</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5677,7 +5713,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>КомандаПредварительныйПросмотрИсточникаА</name>
+            <name>CommandPreviewSourceA_AllRows</name>
             <id>1121</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5685,7 +5721,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>КомандаПредварительныйПросмотрИсточникаАРасширеннаяПодсказка</name>
+              <name>CommandPreviewSourceA_AllRowsExtendedTooltip</name>
               <id>1122</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5707,10 +5743,10 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаПредварительныйПросмотрАДубликаты</name>
+            <name>GroupPreviewSourceA_Duplicates</name>
             <id>1147</id>
             <items xsi:type="form:Button">
-              <name>КомандаПредварительныйПросмотрИсточникаАДубликаты</name>
+              <name>CommandPreviewSourceA_Duplicates</name>
               <id>1133</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5718,7 +5754,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>КомандаПредварительныйПросмотрИсточникаАДубликатыРасширеннаяПодсказка</name>
+                <name>CommandPreviewSourceA_DuplicatesExtendedTooltip</name>
                 <id>1134</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5748,12 +5784,16 @@
               <key>ru</key>
               <value>Группа предварительный просмотр а дубликаты</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group preview source a duplicates</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа предварительный просмотр а дубликаты</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаПредварительныйПросмотрАДубликатыРасширеннаяПодсказка</name>
+              <name>GroupPreviewSourceA_DuplicatesExtendedTooltip</name>
               <id>1148</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5775,6 +5815,10 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Data preview from source A</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Предварительный просмотр данных из источника А</value>
           </title>
@@ -5783,7 +5827,7 @@
             <value>Группа предварительный просмотр а1</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаПредварительныйПросмотрА1РасширеннаяПодсказка</name>
+            <name>GroupPreviewA1ExtendedTooltip</name>
             <id>1140</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5814,12 +5858,16 @@
           <key>ru</key>
           <value>Группа предварительный просмотр А</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Group preview A</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа предварительный просмотр А</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаПредварительныйПросмотрАРасширеннаяПодсказка</name>
+          <name>GroupPreviewAExtendedTooltip</name>
           <id>1138</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5839,17 +5887,21 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаБазаА</name>
+        <name>GroupBaseA</name>
         <id>65</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаСтраницыБазаА</name>
+          <name>GroupPagesBaseA</name>
           <id>570</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаПараметрыА</name>
+            <name>GroupPageParametersA</name>
             <id>574</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация23</name>
+              <name>Decoration23</name>
               <id>1022</id>
+              <title>
+                <key>en</key>
+                <value>Base A settings are filled in here, to fill in general settings (for example, the number of key columns), go to the tab General settings -> General</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Здесь заполняются настройки базы А, для заполнения общих настроек (например, число столбцов ключа) надо перейти на вкладку Общие настройки -> Основные</value>
@@ -5860,7 +5912,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация23РасширеннаяПодсказка</name>
+                <name>Decoration23ExtendedTooltip</name>
                 <id>1024</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5875,7 +5927,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация23КонтекстноеМеню</name>
+                <name>Decoration23ContextMenu</name>
                 <id>1023</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6024,10 +6076,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПараметрыПодключенияКИсточникуА</name>
+              <name>GroupSettingsConnectionsToSourceA</name>
               <id>495</id>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаТипБазыА</name>
+                <name>GroupBaseTypeA</name>
                 <id>73</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -6038,12 +6090,16 @@
                   <key>ru</key>
                   <value>Группа тип базы А</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group base type A</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа тип базы А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаТипБазыАРасширеннаяПодсказка</name>
+                  <name>GroupBaseTypeAExtendedTooltip</name>
                   <id>74</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -6067,13 +6123,13 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаВариантПараметрыПодключенияКБазеА</name>
+                <name>GroupOptionSettingsConnectionsBaseA</name>
                 <id>99</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаВариантВерсияПлатформыБазыА</name>
+                  <name>GroupVariantVersionPlatformsBaseA</name>
                   <id>137</id>
                   <items xsi:type="form:FormField">
-                    <name>ВариантРаботыВнешнейБазыА</name>
+                    <name>WorkOptionExternalBaseA</name>
                     <id>101</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6090,7 +6146,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ВариантРаботыВнешнейБазыАРасширеннаяПодсказка</name>
+                      <name>WorkOptionExternalBaseAExtendedTooltip</name>
                       <id>103</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6105,7 +6161,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ВариантРаботыВнешнейБазыАКонтекстноеМеню</name>
+                      <name>WorkOptionExternalBaseAContextMenu</name>
                       <id>102</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6231,12 +6287,16 @@
                     <key>ru</key>
                     <value>Группа вариант версия платформы базы А</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group variant version platforms base A</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа вариант версия платформы базы А</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаВариантВерсияПлатформыБазыАРасширеннаяПодсказка</name>
+                    <name>GroupVariantVersionPlatformsBaseAExtendedTooltip</name>
                     <id>138</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6260,13 +6320,13 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКБазеА</name>
+                  <name>GroupSettingsConnectionsBaseA</name>
                   <id>104</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаПодключениеКВнешнейБазеАРеквизиты</name>
+                    <name>GroupConnectionToExternalBaseAAttributes</name>
                     <id>1080</id>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеАДрайверSQL</name>
+                      <name>ConnectingToExternalBaseADriverSQL</name>
                       <id>405</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6279,7 +6339,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеАДрайверSQLРасширеннаяПодсказка</name>
+                        <name>ConnectingToExternalBaseADriverSQLExtendedTooltip</name>
                         <id>407</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6294,7 +6354,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеАДрайверSQLКонтекстноеМеню</name>
+                        <name>ConnectingToExternalBaseADriverSQLContextMenu</name>
                         <id>406</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6371,7 +6431,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеАСервер</name>
+                      <name>ConnectionToExternalBaseAServer</name>
                       <id>112</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6384,7 +6444,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеАСерверРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseAServerExtendedTooltip</name>
                         <id>114</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6399,7 +6459,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеАСерверКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseAServerContextMenu</name>
                         <id>113</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6430,7 +6490,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеАПутьКБазе</name>
+                      <name>ConnectionToExternalBaseAPathBase</name>
                       <id>115</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6443,7 +6503,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеАПутьКБазеРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseAPathBaseExtendedTooltip</name>
                         <id>117</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6458,7 +6518,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеАПутьКБазеКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseAPathBaseContextMenu</name>
                         <id>116</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6489,7 +6549,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеАЛогин</name>
+                      <name>ConnectionToExternalBaseALogin</name>
                       <id>106</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6502,7 +6562,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеАЛогинРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseALoginExtendedTooltip</name>
                         <id>108</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6517,7 +6577,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеАЛогинКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseALoginContextMenu</name>
                         <id>107</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6548,7 +6608,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеАПароль</name>
+                      <name>ConnectionToExternalBaseAPassword</name>
                       <id>109</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6561,7 +6621,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеАПарольРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseAPasswordExtendedTooltip</name>
                         <id>111</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6576,7 +6636,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеАПарольКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseAPasswordContextMenu</name>
                         <id>110</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6616,12 +6676,16 @@
                       <key>ru</key>
                       <value>Группа подключение к внешней базе а реквизиты</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group connection to external base a attributes</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа подключение к внешней базе а реквизиты</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаПодключениеКВнешнейБазеАРеквизитыРасширеннаяПодсказка</name>
+                      <name>GroupConnectionToExternalBaseAAttributesExtendedTooltip</name>
                       <id>1081</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6652,12 +6716,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к базе А</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections base A</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к базе А</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКБазеАРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsBaseAExtendedTooltip</name>
                     <id>105</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6688,12 +6756,16 @@
                   <key>ru</key>
                   <value>Группа вариант параметры подключения к базе А</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group option settings connections base A</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа вариант параметры подключения к базе А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаВариантПараметрыПодключенияКБазеАРасширеннаяПодсказка</name>
+                  <name>GroupOptionSettingsConnectionsBaseAExtendedTooltip</name>
                   <id>100</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -6718,13 +6790,13 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаПараметрыПодключенияКФайлуА</name>
+                <name>GroupSettingsConnectionsFileA</name>
                 <id>411</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуОбщиеА</name>
+                  <name>GroupSettingsConnectionsToFileGeneralA</name>
                   <id>718</id>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеАФорматФайла</name>
+                    <name>ConnectionToExternalBaseAFileFormat</name>
                     <id>413</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6741,7 +6813,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеАФорматФайлаРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalBaseAFileFormatExtendedTooltip</name>
                       <id>415</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6756,7 +6828,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеАФорматФайлаКонтекстноеМеню</name>
+                      <name>ConnectionToExternalBaseAFileFormatContextMenu</name>
                       <id>414</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6841,7 +6913,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеАПутьКФайлу</name>
+                    <name>ConnectionToExternalBaseAPathToFile</name>
                     <id>416</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6854,7 +6926,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеАПутьКФайлуРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalBaseAPathToFileExtendedTooltip</name>
                       <id>418</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6869,7 +6941,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеАПутьКФайлуКонтекстноеМеню</name>
+                      <name>ConnectionToExternalBaseAPathToFileContextMenu</name>
                       <id>417</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6905,7 +6977,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УстройствоХраненияФайлаА</name>
+                    <name>ConnectingToExternalBaseADeviceStorageFile</name>
                     <id>1092</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -6919,7 +6991,7 @@
                     </dataPath>
                     <titleLocation>Left</titleLocation>
                     <extendedTooltip>
-                      <name>УстройствоХраненияФайлаАРасширеннаяПодсказка</name>
+                      <name>ConnectingToExternalBaseADeviceStorageFileExtendedTooltip</name>
                       <id>1094</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6934,7 +7006,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УстройствоХраненияФайлаАКонтекстноеМеню</name>
+                      <name>ConnectingToExternalBaseADeviceStorageFileContextMenu</name>
                       <id>1093</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6978,12 +7050,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу общие А</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to file general A</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу общие А</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуОбщиеАРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToFileGeneralAExtendedTooltip</name>
                     <id>719</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7006,10 +7082,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуXMLJSONА</name>
+                  <name>GroupSettingsConnectionsToXMLJSONA</name>
                   <id>1112</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаПараметрыПодключенияКФайлуXMLА</name>
+                    <name>GroupSettingsConnectionsToXMLA</name>
                     <id>720</id>
                     <items xsi:type="form:FormField">
                       <name>DataStorageMethodInXMLFileA</name>
@@ -7157,12 +7233,16 @@
                       <key>ru</key>
                       <value>Группа параметры подключения к файлу XMLА</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group settings connections to XMLA</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа параметры подключения к файлу XMLА</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаПараметрыПодключенияКФайлуXMLАРасширеннаяПодсказка</name>
+                      <name>GroupSettingsConnectionsToXMLAExtendedTooltip</name>
                       <id>721</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7252,12 +7332,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу XMLJSONА</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to XMLJSONA</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу XMLJSONА</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуXMLJSONАРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToXMLJSONAExtendedTooltip</name>
                     <id>1113</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7281,7 +7365,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуНеXMLА</name>
+                  <name>GroupSettingsConnectionsToNonXMLAFile</name>
                   <id>722</id>
                   <items xsi:type="form:FormField">
                     <name>NumberFirstRowFileA</name>
@@ -7344,7 +7428,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеАНомерТаблицыВФайле</name>
+                    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
                     <id>1098</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7357,7 +7441,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеАНомерТаблицыВФайлеРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalDatabaseANumberTableInFileExtendedTooltip</name>
                       <id>1100</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7372,7 +7456,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеАНомерТаблицыВФайлеКонтекстноеМеню</name>
+                      <name>ConnectionToExternalDatabaseANumberTableInFileContextMenu</name>
                       <id>1099</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7412,12 +7496,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLА</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to non XMLAFile</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLА</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуНеXMLАРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToNonXMLAFileExtendedTooltip</name>
                     <id>723</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7448,12 +7536,16 @@
                   <key>ru</key>
                   <value>Группа параметры подключения к файлу А</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group settings connections file A</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа параметры подключения к файлу А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаПараметрыПодключенияКФайлуАРасширеннаяПодсказка</name>
+                  <name>GroupSettingsConnectionsFileAExtendedTooltip</name>
                   <id>412</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -7483,6 +7575,10 @@
                 <common>true</common>
               </userVisible>
               <title>
+                <key>en</key>
+                <value>Connecting to a data source</value>
+              </title>
+              <title>
                 <key>ru</key>
                 <value>Подключение к источнику данных</value>
               </title>
@@ -7491,7 +7587,7 @@
                 <value>Группа параметры подключения к источнику А</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаПараметрыПодключенияКИсточникуАРасширеннаяПодсказка</name>
+                <name>GroupSettingsConnectionsToSourceAExtendedTooltip</name>
                 <id>496</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -7526,7 +7622,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаОбработкаКлючаА</name>
+              <name>GroupProcessKeyA</name>
               <id>239</id>
               <items xsi:type="form:FormGroup">
                 <name>GroupCollapseTableA</name>
@@ -7578,7 +7674,7 @@
                   <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                 </items>
                 <items xsi:type="form:Decoration">
-                  <name>Декорация16</name>
+                  <name>Decoration16</name>
                   <id>974</id>
                   <title>
                     <key>en</key>
@@ -7594,7 +7690,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>Декорация16РасширеннаяПодсказка</name>
+                    <name>Decoration16ExtendedTooltip</name>
                     <id>976</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7609,7 +7705,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>Декорация16КонтекстноеМеню</name>
+                    <name>Decoration16ContextMenu</name>
                     <id>975</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7676,10 +7772,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча1А</name>
+                <name>GroupProcessKey1A</name>
                 <id>517</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча1А1</name>
+                  <name>GroupProcessKey1A1</name>
                   <id>834</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKeyFromFileA</name>
@@ -8057,12 +8153,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа1 а1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key1 a1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа1 а1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча1А1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey1A1ExtendedTooltip</name>
                     <id>835</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8085,10 +8185,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча1А2</name>
+                  <name>GroupProcessKey1A2</name>
                   <id>836</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча1А3</name>
+                    <name>GroupProcessKey1A3</name>
                     <id>899</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode1A</name>
@@ -8141,8 +8241,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация9</name>
+                      <name>Decoration9</name>
                       <id>901</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -8153,7 +8257,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация9РасширеннаяПодсказка</name>
+                        <name>Decoration9ExtendedTooltip</name>
                         <id>903</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8168,7 +8272,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация9КонтекстноеМеню</name>
+                        <name>Decoration9ContextMenu</name>
                         <id>902</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8253,12 +8357,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key1 a3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча1А3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey1A3ExtendedTooltip</name>
                       <id>900</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -8348,12 +8456,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа1 а2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key1 a2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа1 а2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча1А2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey1A2ExtendedTooltip</name>
                     <id>837</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8394,7 +8506,7 @@
                   <value>Группа обработка ключа1 А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча1АРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey1AExtendedTooltip</name>
                   <id>518</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -8421,10 +8533,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча2А</name>
+                <name>GroupProcessKey2A</name>
                 <id>519</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча2А1</name>
+                  <name>GroupProcessKey2A1</name>
                   <id>846</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKey2FromFileA</name>
@@ -8802,12 +8914,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа2 а1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key2 a1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа2 а1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча2А1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey2A1ExtendedTooltip</name>
                     <id>847</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -8831,10 +8947,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча2А2</name>
+                  <name>GroupProcessKey2A2</name>
                   <id>848</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча2А3</name>
+                    <name>GroupProcessKey2A3</name>
                     <id>904</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode2A</name>
@@ -8887,8 +9003,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация10</name>
+                      <name>Decoration10</name>
                       <id>906</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -8899,7 +9019,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация10РасширеннаяПодсказка</name>
+                        <name>Decoration10ExtendedTooltip</name>
                         <id>908</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8914,7 +9034,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация10КонтекстноеМеню</name>
+                        <name>Decoration10ContextMenu</name>
                         <id>907</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -8999,12 +9119,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа2 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key2 a3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа2 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча2А3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey2A3ExtendedTooltip</name>
                       <id>905</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -9094,12 +9218,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа2 а2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key2 a2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа2 а2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча2А2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey2A2ExtendedTooltip</name>
                     <id>849</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -9136,7 +9264,7 @@
                   <value>Столбец 2</value>
                 </title>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча2АРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey2AExtendedTooltip</name>
                   <id>520</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -9163,10 +9291,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча3А</name>
+                <name>GroupProcessKey3A</name>
                 <id>756</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча3А1</name>
+                  <name>GroupProcessKey3A1</name>
                   <id>853</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKey3FromFileA</name>
@@ -9544,12 +9672,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа3 а1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key3 a1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа3 а1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча3А1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey3A1ExtendedTooltip</name>
                     <id>854</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -9572,10 +9704,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча3А2</name>
+                  <name>GroupProcessKey3A2</name>
                   <id>855</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча3А3</name>
+                    <name>GroupProcessKey3A3</name>
                     <id>909</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode3A</name>
@@ -9628,8 +9760,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация11</name>
+                      <name>Decoration11</name>
                       <id>911</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -9640,7 +9776,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация11РасширеннаяПодсказка</name>
+                        <name>Decoration11ExtendedTooltip</name>
                         <id>913</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -9655,7 +9791,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация11КонтекстноеМеню</name>
+                        <name>Decoration11ContextMenu</name>
                         <id>912</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -9740,12 +9876,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа3 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key3 a3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа3 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча3А3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey3A3ExtendedTooltip</name>
                       <id>910</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -9835,12 +9975,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа3 а2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key3 a2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа3 а2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча3А2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey3A2ExtendedTooltip</name>
                     <id>856</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -9881,7 +10025,7 @@
                   <value>Группа обработка ключа2 А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча3АРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey3AExtendedTooltip</name>
                   <id>757</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -9913,6 +10057,10 @@
                 <common>true</common>
               </userVisible>
               <title>
+                <key>en</key>
+                <value>Filling and processing key columns</value>
+              </title>
+              <title>
                 <key>ru</key>
                 <value>Заполнение и обработка столбцов ключа</value>
               </title>
@@ -9921,7 +10069,7 @@
                 <value>Группа обработка ключа А</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаОбработкаКлючаАРасширеннаяПодсказка</name>
+                <name>GroupProcessKeyAExtendedTooltip</name>
                 <id>240</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -9946,7 +10094,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПараметрыКолонокФайлаА</name>
+              <name>GroupParametersColumnsFileA</name>
               <id>433</id>
               <items xsi:type="form:Table">
                 <name>SettingsFileA</name>
@@ -10603,7 +10751,7 @@
                 <value>Заполнение и обработка реквизитов таблицы расхождений</value>
               </title>
               <extendedTooltip>
-                <name>ГруппаПараметрыКолонокФайлаАРасширеннаяПодсказка</name>
+                <name>GroupParametersColumnsFileAExtendedTooltip</name>
                 <id>434</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10643,6 +10791,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Settings</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Настройки</value>
             </title>
@@ -10651,7 +10803,7 @@
               <value>Группа страница параметры А</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаПараметрыАРасширеннаяПодсказка</name>
+              <name>GroupPageParametersAExtendedTooltip</name>
               <id>575</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -10672,11 +10824,15 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаТекстЗапросаА</name>
+            <name>GroupPageTextQueryA</name>
             <id>572</id>
             <items xsi:type="form:Decoration">
-              <name>ДекорацияТекстЗапросаА</name>
+              <name>DecorationQueryTextA</name>
               <id>1004</id>
+              <title>
+                <key>en</key>
+                <value>Here the text of the query to base A is indicated, the first columns of the selection will automatically be used as the selection key, the rest - as details</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Здесь указывается текст запроса к базе А, первые колонки выборки автоматически будут использованы в качестве ключа выборки, остальные - в качестве реквизитов</value>
@@ -10687,7 +10843,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДекорацияТекстЗапросаАРасширеннаяПодсказка</name>
+                <name>DecorationQueryTextAExtendedTooltip</name>
                 <id>1006</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10702,7 +10858,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ДекорацияТекстЗапросаАКонтекстноеМеню</name>
+                <name>DecorationQueryTextAContextMenu</name>
                 <id>1005</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10728,10 +10884,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаТекстЗапросаАКоманды</name>
+              <name>GroupQueryTextACommands</name>
               <id>590</id>
               <items xsi:type="form:Button">
-                <name>КонструкторЗапросаА</name>
+                <name>QueryConstructorA</name>
                 <id>83</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10739,7 +10895,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>КонструкторЗапросаАРасширеннаяПодсказка</name>
+                  <name>QueryConstructorAExtendedTooltip</name>
                   <id>84</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -10762,7 +10918,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>КомандаПолучитьПараметрыЗапросаА</name>
+                <name>CommandGetQueryParametersA</name>
                 <id>588</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10770,7 +10926,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>КомандаПолучитьПараметрыЗапросаАРасширеннаяПодсказка</name>
+                  <name>CommandGetQueryParametersAExtendedTooltip</name>
                   <id>589</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -10801,12 +10957,16 @@
                 <key>ru</key>
                 <value>Группа текст запроса а команды</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group query text a commands</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа текст запроса а команды</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаТекстЗапросаАКомандыРасширеннаяПодсказка</name>
+                <name>GroupQueryTextACommandsExtendedTooltip</name>
                 <id>591</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10830,10 +10990,10 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаТекстЗапросаА</name>
+              <name>GroupQueryTextA</name>
               <id>507</id>
               <items xsi:type="form:FormField">
-                <name>ТекстЗапросаА</name>
+                <name>QueryTextA</name>
                 <id>10</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10847,7 +11007,7 @@
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <extendedTooltip>
-                  <name>ТекстЗапросаАРасширеннаяПодсказка</name>
+                  <name>QueryTextAExtendedTooltip</name>
                   <id>12</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -10862,7 +11022,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ТекстЗапросаАКонтекстноеМеню</name>
+                  <name>QueryTextAContextMenu</name>
                   <id>11</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -10894,12 +11054,16 @@
                 <key>ru</key>
                 <value>Группа текст запроса б1</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group query text A</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа текст запроса б1</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаТекстЗапросаАРасширеннаяПодсказка</name>
+                <name>GroupQueryTextAExtendedTooltip</name>
                 <id>508</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10928,6 +11092,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Query text</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Текст запроса</value>
             </title>
@@ -10936,7 +11104,7 @@
               <value>Группа страница текст запроса А</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаТекстЗапросаАРасширеннаяПодсказка</name>
+              <name>GroupPageTextQueryAExtendedTooltip</name>
               <id>573</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -10957,11 +11125,15 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаПараметрыЗапросаА</name>
+            <name>GroupPageQueryParametersA</name>
             <id>586</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация21</name>
+              <name>Decoration21</name>
               <id>1016</id>
+              <title>
+                <key>en</key>
+                <value>The list of parameters is filled in automatically by the &quot;Get parameters&quot; button, with the exception of the Start date and End date, which are general and are located on the General settings -> General tab</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Список параметров заполняется автоматически кнопкой &quot;Получить параметры&quot;, за исключением Дата начала и Дата окончания, которые являются общими и находятся на вкладке Общие настройки -> Основные</value>
@@ -10972,7 +11144,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация21РасширеннаяПодсказка</name>
+                <name>Decoration21ExtendedTooltip</name>
                 <id>1018</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -10987,7 +11159,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация21КонтекстноеМеню</name>
+                <name>Decoration21ContextMenu</name>
                 <id>1017</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11398,6 +11570,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Query parameters</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Параметры запроса</value>
             </title>
@@ -11406,7 +11582,7 @@
               <value>Группа страница параметры запроса А</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаПараметрыЗапросаАРасширеннаяПодсказка</name>
+              <name>GroupPageQueryParametersAExtendedTooltip</name>
               <id>587</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -11430,8 +11606,12 @@
             <name>GroupPageTableA</name>
             <id>576</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация19</name>
+              <name>Decoration19</name>
               <id>1010</id>
+              <title>
+                <key>en</key>
+                <value>You can paste the copied data here or enter it manually, the key settings are set on the Settings tab</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Сюда можно вставить скопированные данные или внести их вручную, настройки ключа задаются на вкладке Настройки</value>
@@ -11442,7 +11622,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация19РасширеннаяПодсказка</name>
+                <name>Decoration19ExtendedTooltip</name>
                 <id>1012</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11457,7 +11637,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация19КонтекстноеМеню</name>
+                <name>Decoration19ContextMenu</name>
                 <id>1011</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11627,12 +11807,16 @@
             <key>ru</key>
             <value>Группа страницы база А</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group pages base A</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа страницы база А</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаСтраницыБазаАРасширеннаяПодсказка</name>
+            <name>GroupPagesBaseAExtendedTooltip</name>
             <id>571</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -11661,12 +11845,16 @@
           <key>ru</key>
           <value>Группа база А</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Group base A</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа база А</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаБазаАРасширеннаяПодсказка</name>
+          <name>GroupBaseAExtendedTooltip</name>
           <id>66</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -11695,6 +11883,10 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Data Source A</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Источник данных А</value>
       </title>
@@ -11703,7 +11895,7 @@
         <value>Группа база а страница</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаБазаАСтраницаРасширеннаяПодсказка</name>
+        <name>GroupBaseAPageExtendedTooltip</name>
         <id>62</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -11724,19 +11916,19 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаБазаБСтраница</name>
+      <name>GroupBaseBPage</name>
       <id>63</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаБазаБ</name>
+        <name>GroupBaseB</name>
         <id>67</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаПредварительныйПросмотрБ</name>
+          <name>GroupPreviewB</name>
           <id>1141</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаПредварительныйПросмотрБ1</name>
+            <name>GroupPreviewB1</name>
             <id>1143</id>
             <items xsi:type="form:Button">
-              <name>КомандаПредварительныйПросмотр100СтрокИсточникаБ</name>
+              <name>CommandPreviewSourceB_100Rows</name>
               <id>1131</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -11744,7 +11936,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>КомандаПредварительныйПросмотр100СтрокИсточникаБРасширеннаяПодсказка</name>
+                <name>CommandPreviewSourceB_100RowsExtendedTooltip</name>
                 <id>1132</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11766,7 +11958,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>КомандаПредварительныйПросмотрИсточникаБ1000Строк</name>
+              <name>CommandPreviewSourceB_1000Rows</name>
               <id>1149</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -11774,7 +11966,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>КомандаПредварительныйПросмотрИсточникаБ1000СтрокРасширеннаяПодсказка</name>
+                <name>CommandPreviewSourceB_1000RowsExtendedTooltip</name>
                 <id>1150</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11796,7 +11988,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>КомандаПредварительныйПросмотрИсточникаБ</name>
+              <name>CommandPreviewSourceB_AllRows</name>
               <id>1129</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -11804,7 +11996,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>КомандаПредварительныйПросмотрИсточникаБРасширеннаяПодсказка</name>
+                <name>CommandPreviewSourceB_AllRowsExtendedTooltip</name>
                 <id>1130</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11826,10 +12018,10 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПредварительныйПросмотрБДубликаты</name>
+              <name>GroupPreviewB_Duplicates</name>
               <id>1151</id>
               <items xsi:type="form:Button">
-                <name>КомандаПредварительныйПросмотрИсточникаБДубликаты</name>
+                <name>CommandPreviewSourceB_Duplicates</name>
                 <id>1135</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11837,7 +12029,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>КомандаПредварительныйПросмотрИсточникаБДубликатыРасширеннаяПодсказка</name>
+                  <name>CommandPreviewSourceB_DuplicatesExtendedTooltip</name>
                   <id>1136</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -11867,12 +12059,16 @@
                 <key>ru</key>
                 <value>Группа предварительный просмотр б дубликаты</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group preview b duplicates</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа предварительный просмотр б дубликаты</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаПредварительныйПросмотрБДубликатыРасширеннаяПодсказка</name>
+                <name>GroupPreviewB_DuplicatesExtendedTooltip</name>
                 <id>1152</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11897,13 +12093,17 @@
               <key>ru</key>
               <value>Предварительный просмотр данных из источника Б</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group preview b1</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа предварительный просмотр б1</value>
             </toolTip>
             <toolTipRepresentation>None</toolTipRepresentation>
             <extendedTooltip>
-              <name>ГруппаПредварительныйПросмотрБ1РасширеннаяПодсказка</name>
+              <name>GroupPreviewB1ExtendedTooltip</name>
               <id>1144</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -11934,12 +12134,16 @@
             <key>ru</key>
             <value>Группа предварительный просмотр Б</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group preview B</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа предварительный просмотр Б</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаПредварительныйПросмотрБРасширеннаяПодсказка</name>
+            <name>GroupPreviewBExtendedTooltip</name>
             <id>1142</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -11959,14 +12163,18 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаСтраницыБазаБ</name>
+          <name>GroupPagesBaseB</name>
           <id>578</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаПараметрыБ</name>
+            <name>GroupPageParametersB</name>
             <id>580</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация24</name>
+              <name>Decoration24</name>
               <id>1025</id>
+              <title>
+                <key>en</key>
+                <value>Base B settings are filled in here, to fill in general settings (for example, the number of key columns), go to the tab General settings -> General</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Здесь заполняются настройки базы Б, для заполнения общих настроек (например, число столбцов ключа) надо перейти на вкладку Общие настройки -> Основные</value>
@@ -11977,7 +12185,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация24РасширеннаяПодсказка</name>
+                <name>Decoration24ExtendedTooltip</name>
                 <id>1027</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -11992,7 +12200,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация24КонтекстноеМеню</name>
+                <name>Decoration24ContextMenu</name>
                 <id>1026</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -12018,7 +12226,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТипБазыБ</name>
+              <name>BaseTypeB</name>
               <id>7</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -12036,7 +12244,7 @@
                 <name>ПриИзмененииКлючевогоРеквизита</name>
               </handlers>
               <extendedTooltip>
-                <name>ТипБазыБРасширеннаяПодсказка</name>
+                <name>BaseTypeBExtendedTooltip</name>
                 <id>9</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -12051,7 +12259,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТипБазыБКонтекстноеМеню</name>
+                <name>BaseTypeBContextMenu</name>
                 <id>8</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -12141,22 +12349,26 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПараметрыПодключенияКИсточникуБ</name>
+              <name>GroupSettingsConnectionsToSourceB</name>
               <id>493</id>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаТипБазыБ</name>
+                <name>GroupBaseTypeB</name>
                 <id>78</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
                 <userVisible>
                   <common>true</common>
                 </userVisible>
+                <title>
+                  <key>en</key>
+                  <value>Group base type B</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа тип базы Б</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаТипБазыБРасширеннаяПодсказка</name>
+                  <name>GroupBaseTypeBExtendedTooltip</name>
                   <id>79</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -12180,13 +12392,13 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаВариантПараметрыПодключенияКБазеБ</name>
+                <name>GroupOptionSettingsConnectionsBaseB</name>
                 <id>118</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаВариантВерсияПлатформыБазыБ</name>
+                  <name>GroupVariantVersionPlatformsBaseB</name>
                   <id>142</id>
                   <items xsi:type="form:FormField">
-                    <name>ВариантРаботыВнешнейБазыБ</name>
+                    <name>WorkOptionExternalBaseB</name>
                     <id>120</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12203,7 +12415,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ВариантРаботыВнешнейБазыБРасширеннаяПодсказка</name>
+                      <name>WorkOptionExternalBaseBExtendedTooltip</name>
                       <id>122</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12218,7 +12430,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ВариантРаботыВнешнейБазыБКонтекстноеМеню</name>
+                      <name>WorkOptionExternalBaseBContextMenu</name>
                       <id>121</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12254,7 +12466,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ВерсияПлатформыВнешнейБазыБ</name>
+                    <name>VersionPlatformExternalBaseB</name>
                     <id>147</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12267,7 +12479,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ВерсияПлатформыВнешнейБазыБРасширеннаяПодсказка</name>
+                      <name>VersionPlatformExternalBaseBExtendedTooltip</name>
                       <id>149</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12282,7 +12494,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ВерсияПлатформыВнешнейБазыБКонтекстноеМеню</name>
+                      <name>VersionPlatformExternalBaseBContextMenu</name>
                       <id>148</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12341,15 +12553,19 @@
                     <common>true</common>
                   </userVisible>
                   <title>
+                    <key>en</key>
+                    <value>Group variant version platforms base B</value>
+                  </title>
+                  <title>
                     <key>ru</key>
-                    <value>Группа вариант версия платформы базы А</value>
+                    <value>Группа вариант версия платформы базы Б</value>
                   </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа вариант версия платформы базы А</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаВариантВерсияПлатформыБазыБРасширеннаяПодсказка</name>
+                    <name>GroupVariantVersionPlatformsBaseBExtendedTooltip</name>
                     <id>143</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12373,13 +12589,13 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКБазеБ</name>
+                  <name>GroupSettingsConnectionsBaseB</name>
                   <id>123</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаПодключениеКВнешнейБазеБРеквизиты</name>
+                    <name>GroupConnectionToExternalBaseBAttributes</name>
                     <id>1078</id>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеБДрайверSQL</name>
+                      <name>ConnectingToExternalBaseBDriverSQL</name>
                       <id>408</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12392,7 +12608,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеБДрайверSQLРасширеннаяПодсказка</name>
+                        <name>ConnectingToExternalBaseBDriverSQLExtendedTooltip</name>
                         <id>410</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12407,7 +12623,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеБДрайверSQLКонтекстноеМеню</name>
+                        <name>ConnectingToExternalBaseBDriverSQLContextMenu</name>
                         <id>409</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12484,7 +12700,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеБСервер</name>
+                      <name>ConnectionToExternalBaseBServer</name>
                       <id>125</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12497,7 +12713,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеБСерверРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseBServerExtendedTooltip</name>
                         <id>127</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12512,7 +12728,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеБСерверКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseBServerContextMenu</name>
                         <id>126</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12543,7 +12759,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеБПутьКБазе</name>
+                      <name>ConnectionToExternalBaseBPathBase</name>
                       <id>128</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12556,7 +12772,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеБПутьКБазеРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseBPathBaseExtendedTooltip</name>
                         <id>130</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12571,7 +12787,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеБПутьКБазеКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseBPathBaseContextMenu</name>
                         <id>129</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12602,7 +12818,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеБЛогин</name>
+                      <name>ConnectionToExternalBaseBLogin</name>
                       <id>131</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12615,7 +12831,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеБЛогинРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseBLoginExtendedTooltip</name>
                         <id>133</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12630,7 +12846,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеБЛогинКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseBLoginContextMenu</name>
                         <id>132</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12661,7 +12877,7 @@
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
-                      <name>ПодключениеКВнешнейБазеБПароль</name>
+                      <name>ConnectionToExternalBaseBPassword</name>
                       <id>134</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12674,7 +12890,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ПодключениеКВнешнейБазеБПарольРасширеннаяПодсказка</name>
+                        <name>ConnectionToExternalBaseBPasswordExtendedTooltip</name>
                         <id>136</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12689,7 +12905,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ПодключениеКВнешнейБазеБПарольКонтекстноеМеню</name>
+                        <name>ConnectionToExternalBaseBPasswordContextMenu</name>
                         <id>135</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12729,12 +12945,16 @@
                       <key>ru</key>
                       <value>Группа подключение к внешней базе б реквизиты</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group connection to external base b attributes</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа подключение к внешней базе б реквизиты</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаПодключениеКВнешнейБазеБРеквизитыРасширеннаяПодсказка</name>
+                      <name>GroupConnectionToExternalBaseBAttributesExtendedTooltip</name>
                       <id>1079</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12765,12 +12985,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к базе а1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections base B</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к базе а1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКБазеБРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsBaseBExtendedTooltip</name>
                     <id>124</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12801,12 +13025,16 @@
                   <key>ru</key>
                   <value>Группа параметры подключения к базе А</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group option settings connections base B</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа параметры подключения к базе А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаВариантПараметрыПодключенияКБазеБРасширеннаяПодсказка</name>
+                  <name>GroupOptionSettingsConnectionsBaseBExtendedTooltip</name>
                   <id>119</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -12831,13 +13059,13 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаПараметрыПодключенияКФайлуБ</name>
+                <name>GroupOptionSettingsConnectionsFileA</name>
                 <id>419</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуОбщиеБ</name>
+                  <name>GroupSettingsConnectionsToFileGeneralB</name>
                   <id>724</id>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеБФорматФайла</name>
+                    <name>ConnectionToExternalBaseBFileFormat</name>
                     <id>421</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -12854,7 +13082,7 @@
                       <name>ПриИзмененииКлючевогоРеквизита</name>
                     </handlers>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеБФорматФайлаРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalBaseBFileFormatExtendedTooltip</name>
                       <id>423</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12869,7 +13097,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеБФорматФайлаКонтекстноеМеню</name>
+                      <name>ConnectionToExternalBaseBFileFormatContextMenu</name>
                       <id>422</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13018,7 +13246,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>УстройствоХраненияФайлаБ</name>
+                    <name>ConnectingToExternalBaseBDeviceStorageFile</name>
                     <id>1095</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13032,7 +13260,7 @@
                     </dataPath>
                     <titleLocation>Left</titleLocation>
                     <extendedTooltip>
-                      <name>УстройствоХраненияФайлаБРасширеннаяПодсказка</name>
+                      <name>ConnectingToExternalBaseBDeviceStorageFileExtendedTooltip</name>
                       <id>1097</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13047,7 +13275,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>УстройствоХраненияФайлаБКонтекстноеМеню</name>
+                      <name>ConnectingToExternalBaseBDeviceStorageFileContextMenu</name>
                       <id>1096</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13091,12 +13319,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу общие Б</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to file general B</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу общие Б</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуОбщиеБРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToFileGeneralBExtendedTooltip</name>
                     <id>725</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13119,10 +13351,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуXMLJSONБ</name>
+                  <name>GroupSettingsConnectionsToXMLJSONB</name>
                   <id>1114</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаПараметрыПодключенияКФайлуXMLБ</name>
+                    <name>GroupSettingsConnectionsToXMLB</name>
                     <id>728</id>
                     <items xsi:type="form:FormField">
                       <name>DataStorageMethodInXMLFileB</name>
@@ -13270,12 +13502,16 @@
                       <key>ru</key>
                       <value>Группа параметры подключения к файлу XMLБ</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group settings connections to XMLB</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа параметры подключения к файлу XMLБ</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаПараметрыПодключенияКФайлуXMLБРасширеннаяПодсказка</name>
+                      <name>GroupSettingsConnectionsToXMLBExtendedTooltip</name>
                       <id>729</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13365,12 +13601,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу XMLJSONБ</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to XMLJSONB</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу XMLJSONБ</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуXMLJSONБРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToXMLJSONBExtendedTooltip</name>
                     <id>1115</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13394,7 +13634,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаПараметрыПодключенияКФайлуНеXMLБ</name>
+                  <name>GroupSettingsConnectionsToNonXMLBFile</name>
                   <id>726</id>
                   <items xsi:type="form:FormField">
                     <name>NumberFirstRowFileB</name>
@@ -13457,7 +13697,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ПодключениеКВнешнейБазеБНомерТаблицыВФайле</name>
+                    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
                     <id>1101</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13470,7 +13710,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ПодключениеКВнешнейБазеБНомерТаблицыВФайлеРасширеннаяПодсказка</name>
+                      <name>ConnectionToExternalDatabaseBNumberTableInFileExtendedTooltip</name>
                       <id>1103</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13485,7 +13725,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ПодключениеКВнешнейБазеБНомерТаблицыВФайлеКонтекстноеМеню</name>
+                      <name>ConnectionToExternalDatabaseBNumberTableInFileContextMenu</name>
                       <id>1102</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13525,12 +13765,16 @@
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLБ</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group settings connections to non XMLBFile</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLБ</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаПараметрыПодключенияКФайлуНеXMLБРасширеннаяПодсказка</name>
+                    <name>GroupSettingsConnectionsToNonXMLBFileExtendedTooltip</name>
                     <id>727</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13561,12 +13805,16 @@
                   <key>ru</key>
                   <value>Группа параметры файла А</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group option settings connections file A</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа параметры файла А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаПараметрыПодключенияКФайлуБРасширеннаяПодсказка</name>
+                  <name>GroupOptionSettingsConnectionsFileAExtendedTooltip</name>
                   <id>420</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -13599,12 +13847,16 @@
                 <key>ru</key>
                 <value>Подключение к источнику данных</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group settings connections to source B</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа параметры подключения к источнику Б</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаПараметрыПодключенияКИсточникуБРасширеннаяПодсказка</name>
+                <name>GroupSettingsConnectionsToSourceBExtendedTooltip</name>
                 <id>494</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -13639,7 +13891,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаОбработкаКлючаБ</name>
+              <name>GroupProcessKeyB</name>
               <id>237</id>
               <items xsi:type="form:FormGroup">
                 <name>GroupCollapseTableB</name>
@@ -13691,7 +13943,7 @@
                   <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                 </items>
                 <items xsi:type="form:Decoration">
-                  <name>Декорация15</name>
+                  <name>Decoration15</name>
                   <id>971</id>
                   <title>
                     <key>en</key>
@@ -13707,7 +13959,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>Декорация15РасширеннаяПодсказка</name>
+                    <name>Decoration15ExtendedTooltip</name>
                     <id>973</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13722,7 +13974,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>Декорация15КонтекстноеМеню</name>
+                    <name>Decoration15ContextMenu</name>
                     <id>972</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13785,10 +14037,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча1Б</name>
+                <name>GroupProcessKey1B</name>
                 <id>487</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча1Б1</name>
+                  <name>GroupProcessKey1B1</name>
                   <id>862</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKeyFromFileB</name>
@@ -14166,12 +14418,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа1 б1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key1 b1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа1 б1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча1Б1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey1B1ExtendedTooltip</name>
                     <id>863</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14194,10 +14450,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча1Б2</name>
+                  <name>GroupProcessKey1B2</name>
                   <id>864</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча1Б3</name>
+                    <name>GroupProcessKey1B3</name>
                     <id>914</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode1B</name>
@@ -14250,8 +14506,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация12</name>
+                      <name>Decoration12</name>
                       <id>919</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -14262,7 +14522,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация12РасширеннаяПодсказка</name>
+                        <name>Decoration12ExtendedTooltip</name>
                         <id>921</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -14277,7 +14537,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация12КонтекстноеМеню</name>
+                        <name>Decoration12ContextMenu</name>
                         <id>920</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -14362,12 +14622,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key1 b3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча1Б3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey1B3ExtendedTooltip</name>
                       <id>915</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -14457,12 +14721,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа1 б2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key1 b2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа1 б2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча1Б2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey1B2ExtendedTooltip</name>
                     <id>865</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14499,7 +14767,7 @@
                   <value>Столбец 1</value>
                 </title>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча1БРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey1BExtendedTooltip</name>
                   <id>488</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -14526,10 +14794,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча2Б</name>
+                <name>GroupProcessKey2B</name>
                 <id>489</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча2Б1</name>
+                  <name>GroupProcessKey2B1</name>
                   <id>860</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKey2FromFileB</name>
@@ -14907,12 +15175,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа2 б1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key2 b1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа2 б1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча2Б1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey2B1ExtendedTooltip</name>
                     <id>861</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -14935,10 +15207,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча2Б2</name>
+                  <name>GroupProcessKey2B2</name>
                   <id>869</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча2Б3</name>
+                    <name>GroupProcessKey2B3</name>
                     <id>922</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode2B</name>
@@ -14991,8 +15263,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация13</name>
+                      <name>Decoration13</name>
                       <id>927</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -15003,7 +15279,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация13РасширеннаяПодсказка</name>
+                        <name>Decoration13ExtendedTooltip</name>
                         <id>929</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -15018,7 +15294,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация13КонтекстноеМеню</name>
+                        <name>Decoration13ContextMenu</name>
                         <id>928</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -15103,12 +15379,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key2 b3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча2Б3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey2B3ExtendedTooltip</name>
                       <id>923</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -15198,12 +15478,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа2 б2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key2 b2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа2 б2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча2Б2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey2B2ExtendedTooltip</name>
                     <id>870</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -15240,7 +15524,7 @@
                   <value>Столбец 2</value>
                 </title>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча2БРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey2BExtendedTooltip</name>
                   <id>490</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -15267,10 +15551,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаОбработкаКлюча3Б</name>
+                <name>GroupProcessKey3B</name>
                 <id>794</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча3Б1</name>
+                  <name>GroupProcessKey3B1</name>
                   <id>874</id>
                   <items xsi:type="form:FormField">
                     <name>ColumnNumberKey3FromFileB</name>
@@ -15648,12 +15932,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа3 б1</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key3 b1</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа3 б1</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча3Б1РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey3B1ExtendedTooltip</name>
                     <id>875</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -15676,10 +15964,10 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>ГруппаОбработкаКлюча3Б2</name>
+                  <name>GroupProcessKey3B2</name>
                   <id>876</id>
                   <items xsi:type="form:FormGroup">
-                    <name>ГруппаОбработкаКлюча3Б3</name>
+                    <name>GroupProcessKey3B3</name>
                     <id>930</id>
                     <items xsi:type="form:FormField">
                       <name>ExecuteArbitraryKeyCode3B</name>
@@ -15732,8 +16020,12 @@
                       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                     </items>
                     <items xsi:type="form:Decoration">
-                      <name>Декорация14</name>
+                      <name>Decoration14</name>
                       <id>935</id>
+                      <title>
+                        <key>en</key>
+                        <value>example:</value>
+                      </title>
                       <title>
                         <key>ru</key>
                         <value>пример:</value>
@@ -15744,7 +16036,7 @@
                         <common>true</common>
                       </userVisible>
                       <extendedTooltip>
-                        <name>Декорация14РасширеннаяПодсказка</name>
+                        <name>Decoration14ExtendedTooltip</name>
                         <id>937</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -15759,7 +16051,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>Декорация14КонтекстноеМеню</name>
+                        <name>Decoration14ContextMenu</name>
                         <id>936</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -15844,12 +16136,16 @@
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </title>
+                    <title>
+                      <key>en</key>
+                      <value>Group process key3 b3</value>
+                    </title>
                     <toolTip>
                       <key>ru</key>
                       <value>Группа обработка ключа1 а3</value>
                     </toolTip>
                     <extendedTooltip>
-                      <name>ГруппаОбработкаКлюча3Б3РасширеннаяПодсказка</name>
+                      <name>GroupProcessKey3B3ExtendedTooltip</name>
                       <id>931</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -15939,12 +16235,16 @@
                     <key>ru</key>
                     <value>Группа обработка ключа3 б2</value>
                   </title>
+                  <title>
+                    <key>en</key>
+                    <value>Group process key3 b2</value>
+                  </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа обработка ключа3 б2</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>ГруппаОбработкаКлюча3Б2РасширеннаяПодсказка</name>
+                    <name>GroupProcessKey3B2ExtendedTooltip</name>
                     <id>877</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -15981,7 +16281,7 @@
                   <value>Столбец 3</value>
                 </title>
                 <extendedTooltip>
-                  <name>ГруппаОбработкаКлюча3БРасширеннаяПодсказка</name>
+                  <name>GroupProcessKey3BExtendedTooltip</name>
                   <id>795</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -16025,7 +16325,7 @@
                 <value>Группа обработка ключа Б</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаОбработкаКлючаБРасширеннаяПодсказка</name>
+                <name>GroupProcessKeyBExtendedTooltip</name>
                 <id>238</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -16059,7 +16359,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПараметрыКолонокФайлаБ</name>
+              <name>GroupParametersColumnsFileB</name>
               <id>454</id>
               <items xsi:type="form:Table">
                 <name>SettingsFileB</name>
@@ -16711,7 +17011,7 @@
                 <value>Заполнение и обработка реквизитов таблицы расхождений</value>
               </title>
               <extendedTooltip>
-                <name>ГруппаПараметрыКолонокФайлаБРасширеннаяПодсказка</name>
+                <name>GroupParametersColumnsFileBExtendedTooltip</name>
                 <id>455</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -16754,12 +17054,16 @@
               <key>ru</key>
               <value>Настройки</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group page parameters B</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа страница параметры Б</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаПараметрыБРасширеннаяПодсказка</name>
+              <name>GroupPageParametersBExtendedTooltip</name>
               <id>581</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -16780,11 +17084,15 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаТекстЗапросаБ</name>
+            <name>GroupPageTextQueryB</name>
             <id>582</id>
             <items xsi:type="form:Decoration">
-              <name>ДекорацияТекстЗапросаБ</name>
+              <name>DecorationQueryTextB</name>
               <id>1007</id>
+              <title>
+                <key>en</key>
+                <value>Here the text of the query to the database B is indicated, the first columns of the selection will automatically be used as the selection key, the rest - as details</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Здесь указывается текст запроса к базе Б, первые колонки выборки автоматически будут использованы в качестве ключа выборки, остальные - в качестве реквизитов</value>
@@ -16795,7 +17103,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>ДекорацияТекстЗапросаБРасширеннаяПодсказка</name>
+                <name>DecorationQueryTextBExtendedTooltip</name>
                 <id>1009</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -16810,7 +17118,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ДекорацияТекстЗапросаБКонтекстноеМеню</name>
+                <name>DecorationQueryTextBContextMenu</name>
                 <id>1008</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -16836,13 +17144,13 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаТекстЗапросаБ</name>
+              <name>GroupQueryTextB</name>
               <id>491</id>
               <items xsi:type="form:FormGroup">
-                <name>ГруппаТекстЗапросаБКоманды</name>
+                <name>GroupQueryTextBCommands</name>
                 <id>698</id>
                 <items xsi:type="form:Button">
-                  <name>КонструкторЗапросаБ</name>
+                  <name>QueryConstructorB</name>
                   <id>85</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -16850,7 +17158,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>КонструкторЗапросаБРасширеннаяПодсказка</name>
+                    <name>QueryConstructorBExtendedTooltip</name>
                     <id>86</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -16873,7 +17181,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>КомандаПолучитьПараметрыЗапросаБ</name>
+                  <name>CommandGetQueryParametersB</name>
                   <id>696</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -16881,7 +17189,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>КомандаПолучитьПараметрыЗапросаБРасширеннаяПодсказка</name>
+                    <name>CommandGetQueryParametersBExtendedTooltip</name>
                     <id>697</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -16912,12 +17220,16 @@
                   <key>ru</key>
                   <value>Группа текст запроса а1</value>
                 </title>
+                <title>
+                  <key>en</key>
+                  <value>Group query text b commands</value>
+                </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа текст запроса а1</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>ГруппаТекстЗапросаБКомандыРасширеннаяПодсказка</name>
+                  <name>GroupQueryTextBCommandsExtendedTooltip</name>
                   <id>699</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -16941,7 +17253,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>ТекстЗапросаБ</name>
+                <name>QueryTextB</name>
                 <id>13</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -16955,7 +17267,7 @@
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <extendedTooltip>
-                  <name>ТекстЗапросаБРасширеннаяПодсказка</name>
+                  <name>QueryTextBExtendedTooltip</name>
                   <id>15</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -16970,7 +17282,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ТекстЗапросаБКонтекстноеМеню</name>
+                  <name>QueryTextBContextMenu</name>
                   <id>14</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -17002,12 +17314,16 @@
                 <key>ru</key>
                 <value>Группа текст запроса Б</value>
               </title>
+              <title>
+                <key>en</key>
+                <value>Group query text B</value>
+              </title>
               <toolTip>
                 <key>ru</key>
                 <value>Группа текст запроса Б</value>
               </toolTip>
               <extendedTooltip>
-                <name>ГруппаТекстЗапросаБРасширеннаяПодсказка</name>
+                <name>GroupQueryTextBExtendedTooltip</name>
                 <id>492</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -17040,12 +17356,16 @@
               <key>ru</key>
               <value>Текст запроса</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group page text query B</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа страница текст запроса Б</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаТекстЗапросаБРасширеннаяПодсказка</name>
+              <name>GroupPageTextQueryBExtendedTooltip</name>
               <id>583</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17066,11 +17386,15 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаСтраницаПараметрыЗапросаБ</name>
+            <name>GroupPageQueryParametersB</name>
             <id>649</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация22</name>
+              <name>Decoration22</name>
               <id>1019</id>
+              <title>
+                <key>en</key>
+                <value>The list of parameters is filled in automatically by the &quot;Get parameters&quot; button, with the exception of the Start date and End date, which are general and are located on the General settings -> General tab</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Список параметров заполняется автоматически кнопкой &quot;Получить параметры&quot;, за исключением Дата начала и Дата окончания, которые являются общими и находятся на вкладке Общие настройки -> Основные</value>
@@ -17081,7 +17405,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация22РасширеннаяПодсказка</name>
+                <name>Decoration22ExtendedTooltip</name>
                 <id>1021</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -17096,7 +17420,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация22КонтекстноеМеню</name>
+                <name>Decoration22ContextMenu</name>
                 <id>1020</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -17510,12 +17834,16 @@
               <key>ru</key>
               <value>Параметры запроса</value>
             </title>
+            <title>
+              <key>en</key>
+              <value>Group page query parameters B</value>
+            </title>
             <toolTip>
               <key>ru</key>
               <value>Группа страница параметры запроса</value>
             </toolTip>
             <extendedTooltip>
-              <name>ГруппаСтраницаПараметрыЗапросаБРасширеннаяПодсказка</name>
+              <name>GroupPageQueryParametersBExtendedTooltip</name>
               <id>650</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -17539,8 +17867,12 @@
             <name>GroupPageTableB</name>
             <id>584</id>
             <items xsi:type="form:Decoration">
-              <name>Декорация20</name>
+              <name>Decoration20</name>
               <id>1013</id>
+              <title>
+                <key>en</key>
+                <value>You can paste the copied data here or enter it manually, the key settings are set on the Settings tab</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Сюда можно вставить скопированные данные или внести их вручную, настройки ключа задаются на вкладке Настройки</value>
@@ -17551,7 +17883,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>Декорация20РасширеннаяПодсказка</name>
+                <name>Decoration20ExtendedTooltip</name>
                 <id>1015</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -17566,7 +17898,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>Декорация20КонтекстноеМеню</name>
+                <name>Decoration20ContextMenu</name>
                 <id>1014</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -17736,12 +18068,16 @@
             <key>ru</key>
             <value>Группа страницы база Б</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group pages base B</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа страницы база Б</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаСтраницыБазаБРасширеннаяПодсказка</name>
+            <name>GroupPagesBaseBExtendedTooltip</name>
             <id>579</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -17770,12 +18106,16 @@
           <key>ru</key>
           <value>Группа база Б</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Group base B</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа база Б</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаБазаБРасширеннаяПодсказка</name>
+          <name>GroupBaseBExtendedTooltip</name>
           <id>68</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -17804,6 +18144,10 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Data Source B</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Источник данных Б</value>
       </title>
@@ -17812,7 +18156,7 @@
         <value>Группа база б страница</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаБазаБСтраницаРасширеннаяПодсказка</name>
+        <name>GroupBaseBPageExtendedTooltip</name>
         <id>64</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -17833,7 +18177,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаРезультатСравнения</name>
+      <name>GroupResultComparison</name>
       <id>97</id>
       <items xsi:type="form:Table">
         <name>Result</name>
@@ -19964,12 +20308,16 @@
         <key>ru</key>
         <value>Таблица расхождений</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Group result comparison</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Группа результат сравнения</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаРезультатСравненияРасширеннаяПодсказка</name>
+        <name>GroupResultComparisonExtendedTooltip</name>
         <id>98</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -20134,7 +20482,7 @@
   </handlers>
   <handlers>
     <event>BeforeClose</event>
-    <name>ПередЗакрытием</name>
+    <name>BeforeClose</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
