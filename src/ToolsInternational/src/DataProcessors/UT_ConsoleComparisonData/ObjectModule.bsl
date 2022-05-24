@@ -233,7 +233,7 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 							
 				If RowValueTable_B <> Undefined Then
 					
-					//Values реквизитов выводятся только при наличии единственной записи по ключу
+					//Values ​​of attributes are displayed only if there is a single entry by key
 					If RowTP_Result.NumberOfRecordsB = 1 Then
 						For CounterColumnB = 1 To Min(NumberOfRequisites, NumberOfColumnsValueTable_B - NumberColumnsInKey) Do
 							RowTP_Result["AttributeB" + CounterColumnB] = RowValueTable_B.Get(CounterColumnB + OffsetNumberAttribute);
@@ -258,8 +258,8 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 				EndTry;
 			EndIf;
 			
-			//If число строк с одним ключом больше 1, результирующую строку нужно вывести обязательно, 
-			//т.к. условия в данном случае некорректно применять вообще
+			//If the number of rows with the same key is greater than 1, the resulting row must be displayed,
+			//because conditions in this case it is incorrect to apply at all
 			If RowTP_Result.NumberOfRecordsA <= 1 And RowTP_Result.NumberOfRecordsB <= 1 Then
 				
 				ConditionsProhibitOutputRowCompleted = False;
