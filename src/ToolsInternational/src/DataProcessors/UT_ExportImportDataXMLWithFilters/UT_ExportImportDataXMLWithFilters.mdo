@@ -413,7 +413,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="4f8926be-ac6c-4498-b37f-93241d4cd2ec">
-    <name>ВыборИзЗапроса</name>
+    <name>SelectFromQuery</name>
+    <synonym>
+      <key>en</key>
+      <value>Select from query</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выбор из запроса</value>
@@ -422,7 +426,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="8d9e4da2-c4e8-4820-823d-5325961d186f">
-    <name>НастройкиКонсолиЗапросов</name>
+    <name>QueryConsoleSettings</name>
+    <synonym>
+      <key>en</key>
+      <value>Query console settings</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Настройки консоли запросов</value>
