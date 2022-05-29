@@ -315,7 +315,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.АрхивироватьФайл</segments>
+                <segments>Объект.ArchiveFile</segments>
               </paths>
             </dataPath>
             <titleLocation>Right</titleLocation>
@@ -547,7 +547,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.ВерсияПлатформыИнформационнойБазыДляПодключения</segments>
+                      <segments>Объект.PlatformVersionForInfobaseConnection</segments>
                     </paths>
                   </dataPath>
                   <handlers>
@@ -934,7 +934,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.АутентификацияWindowsИнформационнойБазыДляПодключения</segments>
+                      <segments>Объект.InfobaseConnectionWindowsAuthentification</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>Right</titleLocation>
@@ -3645,7 +3645,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.БезопаснаяЗагрузка</segments>
+            <segments>Объект.SafeImport</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4294,7 +4294,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.ВерсияПравилОбмена</segments>
+                <segments>Объект.ExchangeRulesVersion</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -5003,7 +5003,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ВыводВОкноСообщенийИнформационныхСообщений</segments>
+            <segments>Объект.DisplayInfoMessagesIntoMessageWindow</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -5314,7 +5314,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ВестиДополнительныйКонтрольЗаписиВXML</segments>
+              <segments>Объект.XMLWriterAdvancedMonitoring</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -6788,19 +6788,19 @@
       <segments>Объект.ФлагРежимОтладкиОбработчиков</segments>
     </notDefaultUseAlwaysAttributes>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.АрхивироватьФайл</segments>
+      <segments>Объект.ArchiveFile</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.АутентификацияWindowsИнформационнойБазыДляПодключения</segments>
+      <segments>Объект.InfobaseConnectionWindowsAuthentification</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ВерсияПлатформыИнформационнойБазыДляПодключения</segments>
+      <segments>Объект.PlatformVersionForInfobaseConnection</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ВестиДополнительныйКонтрольЗаписиВXML</segments>
+      <segments>Объект.XMLWriterAdvancedMonitoring</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ВыводВОкноСообщенийИнформационныхСообщений</segments>
+      <segments>Объект.DisplayInfoMessagesIntoMessageWindow</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
       <segments>Объект.ВыводВПротоколИнформационныхСообщений</segments>

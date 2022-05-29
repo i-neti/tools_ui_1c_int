@@ -7,7 +7,7 @@
   <name>UT_UniversalXMLDataExchange</name>
   <synonym>
     <key>en</key>
-    <value>{} УИ_УниверсальныйОбменДаннымиXML</value>
+    <value>Universal XML data exchange (with filters and export to HTTP service) [UT]</value>
   </synonym>
   <synonym>
     <key>ru</key>
@@ -21,15 +21,27 @@
     </pages>
   </help>
   <extendedPresentation>
+    <key>en</key>
+    <value>Universal XML data exchange (with filters and export to HTTP service)</value>
+  </extendedPresentation>
+  <extendedPresentation>
     <key>ru</key>
     <value>Универсальный обмен данными в формате XML(с фильтрами и выгрузкой на HTTP сервис)</value>
   </extendedPresentation>
+  <explanation>
+    <key>en</key>
+    <value>Export and import by exchange rules. Added the capability to apply filters to exported objects and direct export to the database through the http service of universal tools.</value>
+  </explanation>
   <explanation>
     <key>ru</key>
     <value>Выгрузка и загрузка по правилам обмена.  Добавлена возможность накладывать фильтры на выгружаемые объеты, и прямая выгрузка в базу через http сервис универсальных инструментов.</value>
   </explanation>
   <attributes uuid="61922d92-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>АрхивироватьФайл</name>
+    <name>ArchiveFile</name>
+    <synonym>
+      <key>en</key>
+      <value>Compress file</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Архивировать файл</value>
@@ -38,6 +50,10 @@
       <types>Boolean</types>
     </type>
     <toolTip>
+      <key>en</key>
+      <value>Compress outgoing data exchange file</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Сжимать исходящий файл обмена данными</value>
     </toolTip>
@@ -45,7 +61,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="61922f0e-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>АутентификацияWindowsИнформационнойБазыДляПодключения</name>
+    <name>InfobaseConnectionWindowsAuthentification</name>
+    <synonym>
+      <key>en</key>
+      <value>Windows authentication for infobase connection</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Аутентификация windows информационной базы для подключения</value>
@@ -54,6 +74,10 @@
       <types>Boolean</types>
     </type>
     <toolTip>
+      <key>en</key>
+      <value>Windows authentification</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Аутентификация средствами Windows</value>
     </toolTip>
@@ -61,15 +85,23 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="61923012-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>БезопаснаяЗагрузка</name>
+    <name>SafeImport</name>
+    <synonym>
+      <key>en</key>
+      <value>Safe data import</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Безопасная загрузка данных</value>
     </synonym>
-    <comment>Загрузка данных по правилам, поставляемым отдельно от данных.</comment>
+    <comment>Data import by rules provided separately from data.</comment>
     <type>
       <types>Boolean</types>
     </type>
+    <toolTip>
+      <key>en</key>
+      <value>Run data import by the rules specified in the &quot;Rules file name&quot; attribute.</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Загрузка данных выполняется по правилам, указанным в реквизите &quot;Имя файла правил&quot;.</value>
@@ -78,7 +110,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="619230bc-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>БезопасныйРежим</name>
+    <name>SafeMode</name>
+    <synonym>
+      <key>en</key>
+      <value>Safe mode</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Безопасный режим</value>
@@ -87,6 +123,10 @@
       <types>Boolean</types>
     </type>
     <toolTip>
+      <key>en</key>
+      <value>Enables or disables the safe mode of algorithm execution.</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Устанавливает или отключает безопасный режим исполнения алгоритма.</value>
     </toolTip>
@@ -94,7 +134,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="61923170-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ВерсияПлатформыИнформационнойБазыДляПодключения</name>
+    <name>PlatformVersionForInfobaseConnection</name>
     <synonym>
       <key>ru</key>
       <value>Версия платформы информационной базы для подключения</value>
@@ -113,7 +153,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="619231f2-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ВерсияПравилОбмена</name>
+    <name>ExchangeRulesVersion</name>
+    <synonym>
+      <key>en</key>
+      <value>Exchange rules version</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Версия правил обмена</value>
@@ -130,7 +174,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="619232b0-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ВестиДополнительныйКонтрольЗаписиВXML</name>
+    <name>XMLWriterAdvancedMonitoring</name>
+    <synonym>
+      <key>en</key>
+      <value>Validate data written to XML files</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Вести дополнительный контроль записи в XML</value>
@@ -146,7 +194,11 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="6192333c-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ВыводВОкноСообщенийИнформационныхСообщений</name>
+    <name>DisplayInfoMessagesIntoMessageWindow</name>
+    <synonym>
+      <key>en</key>
+      <value>Display informational messages in the message window</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Вывод в окно сообщений информационных сообщений</value>
@@ -154,6 +206,10 @@
     <type>
       <types>Boolean</types>
     </type>
+    <toolTip>
+      <key>en</key>
+      <value>Display informational messages in the message window.</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выводить в окно сообщений информационные сообщения</value>
