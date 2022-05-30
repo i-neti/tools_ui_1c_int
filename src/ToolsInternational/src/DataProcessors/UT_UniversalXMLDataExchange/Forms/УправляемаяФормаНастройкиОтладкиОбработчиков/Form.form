@@ -16,7 +16,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.РежимОтладкиАлгоритмов</segments>
+            <segments>Объект.AlgorithmDebugMode</segments>
           </paths>
         </dataPath>
         <handlers>
@@ -851,7 +851,7 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Объект.ИмяФайлаВнешнейОбработкиОбработчиковСобытий</segments>
+          <segments>Объект.EventHandlerExternalDataProcessorFileName</segments>
         </paths>
       </dataPath>
       <titleLocation>None</titleLocation>
