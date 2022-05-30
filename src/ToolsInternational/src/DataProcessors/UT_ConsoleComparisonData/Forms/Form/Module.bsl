@@ -177,7 +177,7 @@ Procedure BeforeCloseEnd(Result, AdditionalParameters) Export
 EndProcedure
 
 &AtServer
-Function ПолучитьДанныеВВидеСтруктуры(SaveSpreadsheetDocuments)
+Function GetDataAsStructure(SaveSpreadsheetDocuments)
 	
 	FormObject = FormAttributeToValue("Object");
 	DataStructure = FormObject.GetDataAsStructureOnServer(SaveSpreadsheetDocuments);
@@ -320,11 +320,11 @@ Function ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP)
 
 	CodeFromRowTP = "";
 	
-	If RowTP.Condition <> "Заполнен" Then					
+	If RowTP.Condition <> "Filled" Then					
 					
 		If RowTP.ComparisonType = "Value" Then
 			If TypeOf(RowTP.ComparedValue) = Type("Date") Then 
-				ПраваяСторона = 
+				RightSide = 
 					"Date("
 					+ Year(RowTP.ComparedValue)
 					+ ","
@@ -339,21 +339,21 @@ Function ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP)
 					+ Second(RowTP.ComparedValue)
 					+ ")";
 			ElsIf TypeOf(RowTP.ComparedValue) = Type("Number") Then 
-				ПраваяСторона = String(RowTP.ComparedValue);
+				RightSide = String(RowTP.ComparedValue);
 			ElsIf TypeOf(RowTP.ComparedValue) = Type("String") Then 
-				ПраваяСторона = """" + String(RowTP.ComparedValue) + """";
+				RightSide = """" + String(RowTP.ComparedValue) + """";
 			ElsIf TypeOf(RowTP.ComparedValue) = Type("Boolean") Then 
 				If RowTP.ComparedValue Then
-					ПраваяСторона = "True";
+					RightSide = "True";
 				Else
-					ПраваяСторона = "False";
+					RightSide = "False";
 				EndIf;
 			Else
-				ПраваяСторона = String(RowTP.ComparedValue);
+				RightSide = String(RowTP.ComparedValue);
 			EndIf;
 			
 		Else
-			ПраваяСторона = RowTP.NameComparedAttribute2;
+			RightSide = RowTP.NameComparedAttribute2;
 		EndIf;
 		
 		CodeFromRowTP =
@@ -361,7 +361,7 @@ Function ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP)
 			+ " "
 			+ RowTP.Condition
 			+ " "
-			+ ПраваяСторона;
+			+ RightSide;
 		
 	Else
 		
@@ -377,7 +377,7 @@ Function ConvertStringAttributesIntoCodeForOutputAndDisableOutputRows(RowTP)
 EndFunction
 
 &AtServer
-Procedure ПолучитьПараметрыИзЗапросаНаСервере(BaseID)
+Procedure GetParametersFromQueryOnServer(BaseID)
 	
 	If IsBlankString(Object["QueryText" + BaseID]) Then	
 		Return;
@@ -408,9 +408,11 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 			COMConnector = New COMObject(Object["VersionPlatformExternalBase" + BaseID] + ".COMConnector");
 			Connection = COMConnector.Connect(ParameterConnections);
 		Except
-			ТекстОшибки = "Error при подключении к внешней базе: " + ErrorDescription();
-			Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
-			TextErrors = TextErrors + Chars.LF + ТекстОшибки;
+			TextError = StrTemplate(Nstr("ru = '%1: Ошибка при подключении к внешней базе: %2';en = '%1: Error connecting to external database: %2'")
+				, Format(CurrentDate(),"DLF=DT")
+				, ErrorDescription());
+			Message(TextError);
+			TextErrors = TextErrors + Chars.LF + TextError;
 			Return;
 		EndTry;
 
@@ -423,34 +425,37 @@ Procedure ПолучитьПараметрыИзЗапросаНаСервере
 	Try
 		QueryOptions = Query.FindParameters();
 	Except
-		Message(Формат(CurrentDate(),"DLF=DT") + "Error при получении списка параметров: " + ErrorDescription());
+		TextError = StrTemplate(Nstr("ru = '%1: Ошибка при получении списка параметров: %2';en = '%1: Error getting parameter list: %2'")
+			, Format(CurrentDate(),"DLF=DT")
+			,  ErrorDescription());
+		Message(TextError);
 		Return;
 	EndTry;
 	
-	For Each ПараметрЗапроса In QueryOptions Do
+	For Each QueryParameter In QueryOptions Do
 		
-		ИмяПараметра = ПараметрЗапроса.Name;
-		If ИмяПараметра = "ValidFrom" Or ИмяПараметра = "ValidTo" Then
+		ParameterName = QueryParameter.Name;
+		If ParameterName = "ValidFrom" Or ParameterName = "ValidTo" Then
 			Continue;
 		EndIf;
 		
-		НайденныеПараметры = Object["ParameterList" + BaseID].FindRows(New Structure("ParameterName", ИмяПараметра));
-		If НайденныеПараметры.Count() = 0 Then
-			ТекущийПараметр = Object["ParameterList" + BaseID].Add();
-			ТекущийПараметр.ParameterName = ИмяПараметра;
+		FoundParameters = Object["ParameterList" + BaseID].FindRows(New Structure("ParameterName", ParameterName));
+		If FoundParameters.Count() = 0 Then
+			CurrentParameter = Object["ParameterList" + BaseID].Add();
+			CurrentParameter.ParameterName = ParameterName;
 		Else
-			ТекущийПараметр = НайденныеПараметры[0];
+			CurrentParameter = FoundParameters[0];
 		EndIf; 
 		
-		ТекущийПараметр.ParameterValue = ПараметрЗапроса.ValueType.AdjustValue(ТекущийПараметр.ЗначениеПараметра);		
-		ТекущийПараметр.ParameterType = String(TypeOf(ТекущийПараметр.ЗначениеПараметра));
+		CurrentParameter.ParameterValue = QueryParameter.ValueType.AdjustValue(CurrentParameter.ParameterValue);		
+		CurrentParameter.ParameterType = String(TypeOf(CurrentParameter.ParameterValue));
 		
 	EndDo;
 	
 EndProcedure
 
 &AtClient
-Procedure ЗаполнитьТипыСтолбцовКлючаВоВсехСтроках()
+Procedure FillColumnTypesKeyInAllRows()
 	
 	For Each RowTP In Object.Result Do
 		
@@ -471,60 +476,64 @@ Procedure ЗаполнитьТипыСтолбцовКлючаВоВсехСтр
 EndProcedure
 
 &AtServer
-Function ВыгрузитьРезультатВФайлНаСервере(ДляКлиента, RepresentationHeadersAttributes)
+Function UploadResultToFileAtServer(ForClient, RepresentationHeadersAttributes)
 	
-	РеквизитОбъект = FormAttributeToValue("Object");
-	РеквизитОбъект.RepresentationHeadersAttributes = RepresentationHeadersAttributes;
-	АдресФайла = РеквизитОбъект.ВыгрузитьРезультатВФайлНаСервере(ДляКлиента);
-	Return АдресФайла;
+	AttributeObject = FormAttributeToValue("Object");
+	AttributeObject.RepresentationHeadersAttributes = RepresentationHeadersAttributes;
+	FileAddress = AttributeObject.UploadResultToFileAtServer(ForClient);
+	Return FileAddress;
 	
 EndFunction
 
 &AtClient
-Procedure CommandUploadResultToFileOnClientEndQuestion(РезультатВопроса, AdditionalParameters) Export
+Procedure CommandUploadResultToFileOnClientEndQuestion(Result, AdditionalParameters) Export
 	
-	If РезультатВопроса = DialogReturnCode.None Then
+	If Result = DialogReturnCode.None Then
 		Return;
 	EndIf;
 	
-	АдресФайла = ВыгрузитьРезультатВФайлНаСервере(True);
-	If АдресФайла = Undefined Then
+	FileAddress = UploadResultToFileAtServer(True, RepresentationHeadersAttributes);
+	If FileAddress = Undefined Then
 		Return;
 	EndIf;
 	
-	ДанныеФайла = GetFromTempStorage(АдресФайла, RepresentationHeadersAttributes);
-	ДиалогСохраненияФайла = New FileDialog(FileDialogMode.Save);
-	ДиалогСохраненияФайла.FullFileName = Object.PathToDownloadFile;
-	ДиалогСохраненияФайла.Filter = "*." + Object.UploadFileFormat + "|*." + Object.UploadFileFormat;
-	ДиалогСохраненияФайла.Title = "Выберите каталог"; 
+	FileData = GetFromTempStorage(FileAddress);
+	SaveFileDialog = New FileDialog(FileDialogMode.Save);
+	SaveFileDialog.FullFileName = Object.PathToDownloadFile;
+	SaveFileDialog.Filter = "*." + Object.UploadFileFormat + "|*." + Object.UploadFileFormat;
+	SaveFileDialog.Title = Nstr("ru = 'Выберите каталог';en = 'Select catalog'"); 
 	
-	ДиалогСохраненияФайла.Show(New NotifyDescription("CommandUploadResultToFileOnClientEnd", ThisForm, New Structure("ДанныеФайла, ДиалогСохраненияФайла", ДанныеФайла, ДиалогСохраненияФайла)));
+	SaveFileDialog.Show(New NotifyDescription("CommandUploadResultToFileOnClientEnd", ThisForm, New Structure("FileData, SaveFileDialog", FileData, SaveFileDialog)));
 
 EndProcedure
 
 &AtClient
 Procedure CommandUploadResultToFileOnClientEnd(SelectedFiles, AdditionalParameters) Export
 	
-	ДанныеФайла = AdditionalParameters.ДанныеФайла;
-	ДиалогСохраненияФайла = AdditionalParameters.ДиалогСохраненияФайла;
+	FileData = AdditionalParameters.FileData;
+	SaveFileDialog = AdditionalParameters.SaveFileDialog;
 	         	
 	If (SelectedFiles <> Undefined) Then
 		
-		ДанныеФайла.Write(ДиалогСохраненияФайла.FullFileName);
-		Message(Format(CurrentDate(),"ДФ='yyyy.MM.dd HH.mm.ss'") + ": Выгрузка в файл завершена (" + ДиалогСохраненияФайла.FullFileName + ")");		
+		FileData.Write(SaveFileDialog.FullFileName);
+		MessageText = StrTemplate(NStr("ru = '%1: Выгрузка в файл завершена (%2)';en = '%1: Upload to file completed (%2)'")
+			, Format(CurrentDate(),"DF='yyyy.MM.dd HH.mm.ss'")
+			, SaveFileDialog.FullFileName);
+		Message(MessageText);		
 		
 	Else
-		
-		Message(Format(CurrentDate(),"ДФ='yyyy.MM.dd HH.mm.ss'") + ": Выгрузка в файл отменена");
+		MessageText = StrTemplate(NStr("ru = '%1: Выгрузка в файл отменена';en = '%1: Upload to file canceled'")
+			, Format(CurrentDate(),"DF='yyyy.MM.dd HH.mm.ss'"));
+		Message(MessageText);		
 		
 	EndIf;
 
 EndProcedure
 
 &AtServer
-Function ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере(BaseID, МаксимальноеЧислоСтрок = 0, ТолькоДубликаты = False, Connection = Undefined)
+Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyDuplicates = False, Connection = Undefined)
 
-	ТекстОшибки = "";
+	TextError = "";
 	ProcessingObject = FormAttributeToValue("Object");
 		
 	If Not ProcessingObject.CheckFillingAttributes(BaseID) Then
@@ -532,10 +541,10 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 	EndIf;
 	
 	Connection = Undefined;
-	ТЗ = ProcessingObject.ReadDataAndGetValueTable(BaseID, ТекстОшибки, Connection);
+	ValueTable = ProcessingObject.ReadDataAndGetValueTable(BaseID, TextError, Connection);
 	
-	If ТЗ = Undefined Then
-		Message(Формат(CurrentDate(),"DLF=DT") + ": " + ТекстОшибки);
+	If ValueTable = Undefined Then
+		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextError);
 		Return Undefined;
 	EndIf;
 	
@@ -543,115 +552,115 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 	SpreadsheetDocument = New SpreadsheetDocument;
 	
 	//Key 1
-	ИмяКлюча1 = ТЗ.Cols.Get(0).Name;
-	ColumnsWithKeyRow = ИмяКлюча1;
-	ОбластьШапка = Template.GetArea("Header|Ключ1");
-	SpreadsheetDocument.Put(ОбластьШапка);
+	KeyName1 = ValueTable.Columns.Get(0).Name;
+	ColumnsWithKeyRow = KeyName1;
+	AreaHeader = Template.GetArea("Header|Key1");
+	SpreadsheetDocument.Put(AreaHeader);
 	
 	//Key 2
 	If Object.NumberColumnsInKey > 1 Then
-		ИмяКлюча2 = ТЗ.Cols.Get(1).Name;
-		ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ИмяКлюча2;
-		ОбластьШапка = Template.GetArea("Header|Ключ2");
-		SpreadsheetDocument.Join(ОбластьШапка);
+		KeyName2 = ValueTable.Columns.Get(1).Name;
+		ColumnsWithKeyRow = ColumnsWithKeyRow + "," + KeyName2;
+		AreaHeader = Template.GetArea("Header|Key2");
+		SpreadsheetDocument.Join(AreaHeader);
 	EndIf;
 	
 	//Key 3
 	If Object.NumberColumnsInKey > 2 Then
-		ИмяКлюча3 = ТЗ.Cols.Get(2).Name;
-		ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ИмяКлюча3;
-		ОбластьШапка = Template.GetArea("Header|Ключ3");
-		SpreadsheetDocument.Join(ОбластьШапка);
+		KeyName3 = ValueTable.Columns.Get(2).Name;
+		ColumnsWithKeyRow = ColumnsWithKeyRow + "," + KeyName3;
+		AreaHeader = Template.GetArea("Header|Key3");
+		SpreadsheetDocument.Join(AreaHeader);
 	EndIf;
 	
-	ТЗ.Sort(ColumnsWithKeyRow);
+	ValueTable.Sort(ColumnsWithKeyRow);
 	
-	ТЗ_Сгруппированная = ТЗ.Copy(); 
+	ValueTable_Grouped = ValueTable.Copy(); 
 	
 	ColumnNameNumberOfRowsDataSource = "NumberOfRowsDataSource_" + StrReplace(String(New UUID), "-", "");
-	ТЗ_Сгруппированная.Cols.Add(ColumnNameNumberOfRowsDataSource);
+	ValueTable_Grouped.Columns.Add(ColumnNameNumberOfRowsDataSource);
 	
-	ОбластьРеквизиты = Template.GetArea("Header|Attributes");
-	SpreadsheetDocument.Join(ОбластьРеквизиты);
+	AreaAttributes = Template.GetArea("Header|Attributes");
+	SpreadsheetDocument.Join(AreaAttributes);
 		
-	ТЗ_Сгруппированная.FillValues(1,ColumnNameNumberOfRowsDataSource);	
-	ТЗ_Сгруппированная.Collapse(ColumnsWithKeyRow, ColumnNameNumberOfRowsDataSource);
-	ТЗ_Сгруппированная.Indexes.Add(ColumnsWithKeyRow);
+	ValueTable_Grouped.FillValues(1,ColumnNameNumberOfRowsDataSource);	
+	ValueTable_Grouped.Collapse(ColumnsWithKeyRow, ColumnNameNumberOfRowsDataSource);
+	ValueTable_Grouped.Indexes.Add(ColumnsWithKeyRow);
 		
-	ЧислоКолонокТЗ = ТЗ.Cols.Count();
+	NumberOfColumnVT = ValueTable.Columns.Count();
 	RowsCounter = 0;
-	For Each СтрокаТЗ In ТЗ Do
+	For Each RowVT In ValueTable Do
 		
 		RowsCounter = RowsCounter + 1;
 		
-		If МаксимальноеЧислоСтрок > 0 And RowsCounter > МаксимальноеЧислоСтрок Then
+		If MaxRows > 0 And RowsCounter > MaxRows Then
 			Break;
 		EndIf;
 		
 		If Connection = Undefined Then
-			ОтборСтруктура = New Structure;
+			SelectionStructure = New Structure;
 		Else
-			ОтборСтруктура = Connection.NewObject("Structure");
+			SelectionStructure = Connection.NewObject("Structure");
 		EndIf;
 				
-		Ключ1 = СтрокаТЗ.Get(0);
-		ОтборСтруктура.Insert(ИмяКлюча1, Ключ1);
+		Key1 = RowVT.Get(0);
+		SelectionStructure.Insert(KeyName1, Key1);
 		
 		If Object.NumberColumnsInKey > 1 Then
-			Ключ2 = СтрокаТЗ.Get(1);
-			ОтборСтруктура.Insert(ИмяКлюча2, Ключ2);
+			Key2 = RowVT.Get(1);
+			SelectionStructure.Insert(KeyName2, Key2);
 		Else
-			Ключ2 = Undefined;
+			Key2 = Undefined;
 		EndIf;
 		
 		If Object.NumberColumnsInKey > 2 Then
-			Ключ3 = СтрокаТЗ.Get(2);
-			ОтборСтруктура.Insert(ИмяКлюча3, Ключ3);
+			Key3 = RowVT.Get(2);
+			SelectionStructure.Insert(KeyName3, Key3);
 		Else
-			Ключ3 = Undefined;
+			Key3 = Undefined;
 		EndIf;
 		
-		СтрокиСгруппированнойТЗ = ТЗ_Сгруппированная.FindRows(ОтборСтруктура);
-		ЧислоСтрокПоКлючу = ?(СтрокиСгруппированнойТЗ.Count(), СтрокиСгруппированнойТЗ.Get(0)[ColumnNameNumberOfRowsDataSource], 0);
-		If ЧислоСтрокПоКлючу > 1 Then
-			ИмяОбластиСтрока = "СтрокаСОшибками";
+		RowsGroupedVT = ValueTable_Grouped.FindRows(SelectionStructure);
+		NumberOfRowsByKey = ?(RowsGroupedVT.Count(), RowsGroupedVT.Get(0)[ColumnNameNumberOfRowsDataSource], 0);
+		If NumberOfRowsByKey > 1 Then
+			AreaNameRow = "RowWithErrors";
 		Else
-			If ТолькоДубликаты Then
+			If OnlyDuplicates Then
 				Continue;
 			EndIf;
-			ИмяОбластиСтрока = "СтрокаБезОшибок";
+			AreaNameRow = "RowWithoutErrors";
 		EndIf;
 		
-		ОбластьСтрока = Template.GetArea(ИмяОбластиСтрока + "|Ключ1");
-		ОбластьСтрока.Parameters.Ключ1 = String(Ключ1);
-		SpreadsheetDocument.Put(ОбластьСтрока);
+		AreaRow = Template.GetArea(AreaNameRow + "|Key1");
+		AreaRow.Parameters.Key1 = String(Key1);
+		SpreadsheetDocument.Put(AreaRow);
 		
 		If Object.NumberColumnsInKey > 1 Then
-			ОбластьСтрока = Template.GetArea(ИмяОбластиСтрока + "|Ключ2");
-			ОбластьСтрока.Parameters.Ключ2 = String(Ключ2);
-			SpreadsheetDocument.Join(ОбластьСтрока);
+			AreaRow = Template.GetArea(AreaNameRow + "|Key2");
+			AreaRow.Parameters.Key2 = String(Key2);
+			SpreadsheetDocument.Join(AreaRow);
 		EndIf;
 		
 		If Object.NumberColumnsInKey > 2 Then
-			ОбластьСтрока = Template.GetArea(ИмяОбластиСтрока + "|Ключ3");
-			ОбластьСтрока.Parameters.Ключ3 = String(Ключ3);
-			SpreadsheetDocument.Join(ОбластьСтрока);
+			AreaRow = Template.GetArea(AreaNameRow + "|Key3");
+			AreaRow.Parameters.Key3 = String(Key3);
+			SpreadsheetDocument.Join(AreaRow);
 		EndIf;		
 		
-		ОбластьСтрока = Template.GetArea(ИмяОбластиСтрока + "|Attributes");
-		ОбластьСтрока.Parameters.ЧислоСтрок = ЧислоСтрокПоКлючу; 
+		AreaRow = Template.GetArea(AreaNameRow + "|Attributes");
+		AreaRow.Parameters.NumberOfRows = NumberOfRowsByKey; 
 				
-		СмещениеНомераРеквизита = Object.NumberColumnsInKey;
-		For ColumnCounter = 1 To Min(NumberOfAttributes, ЧислоКолонокТЗ - Object.NumberColumnsInKey) Do
-			ОбластьСтрока.Parameters["Attribute" + ColumnCounter] = String(СтрокаТЗ.Get(ColumnCounter + СмещениеНомераРеквизита - 1));
+		AttributeNumberOffset = Object.NumberColumnsInKey;
+		For ColumnCounter = 1 To Min(NumberOfAttributes, NumberOfColumnVT - Object.NumberColumnsInKey) Do
+			AreaRow.Parameters["Attribute" + ColumnCounter] = String(RowVT.Get(ColumnCounter + AttributeNumberOffset - 1));
 		EndDo;
 		
-		SpreadsheetDocument.Join(ОбластьСтрока);
+		SpreadsheetDocument.Join(AreaRow);
 			
 	EndDo;
 	
-	ТЗ = Undefined;
-	ТЗ_Сгруппированная = Undefined;
+	ValueTable = Undefined;
+	ValueTable_Grouped = Undefined;
 	Connection = Undefined;
 	
 	SpreadsheetDocument.Protection = False;
@@ -663,7 +672,7 @@ Function ПолучитьТабличныйДокументСДаннымиИз�
 EndFunction
 
 
-#Region Видимость_доступность_элементов_формы
+#Region Visibility_Availability_of_form_elements
 &AtClient
 Procedure UpdateVisibilityAccessibilityFormItems()
 		
@@ -677,7 +686,7 @@ Procedure UpdateVisibilityAccessibilityFormItems()
 	Items.ResultCommandVisibilityTypesColumnsKey.Check = Object.DisplayKeyColumnTypes;
 	Items.ResultCommandVisibilityKey2.Visible = Object.NumberColumnsInKey > 1;
 	Items.ResultCommandVisibilityKey3.Visible = Object.NumberColumnsInKey > 2;
-	ОбновитьВидимостьКлючейТЧ();
+	UpdateVisibilityKeysTP();
 		
 	//If Object.PeriodTypeAbsolute Then
 	If Object.PeriodType = 1 Then
@@ -693,45 +702,47 @@ Procedure UpdateVisibilityAccessibilityFormItems()
 		Items.GroupRelativePeriod.Visible = False;
 	EndIf;
 	
-	ОбновитьЗаголовок();
-	ОбновитьРеквизитыПроизвольныйКод();
-	ОбновитьВидимостьДоступностьВкладкиУсловияЗапретаВыводаСтрок();
-	ОбновитьВидимостьДоступностьВкладкиУсловияВыводаСтрок();
+	UpdateHeader();
+	UpdateAttributesArbitraryCode();
+	UpdateVisibilityAvailabilityPage_GroupConditionsProhibitOutputRows();
+	UpdateVisibilityAvailabilityPage_GroupConditionsOutputRows();
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьРеквизитыПроизвольныйКод()
+Procedure UpdateAttributesArbitraryCode()
 	
-	For СчетчикЭлементов = 1 To 3 Do
-		ОбновитьВидимостьДоступностьРеквизитаПроизвольныйКод(СчетчикЭлементов, "А"); 
-		ОбновитьВидимостьДоступностьРеквизитаПроизвольныйКод(СчетчикЭлементов, "Б");
+	For CounterItems = 1 To 3 Do
+		UpdateVisibilityAvailabilityAttribute_ArbitraryCode(CounterItems, "A"); 
+		UpdateVisibilityAvailabilityAttribute_ArbitraryCode(CounterItems, "B");
 	EndDo;
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьРеквизитаПроизвольныйКод(НомерЭлементаФормы, BaseID)
+Procedure UpdateVisibilityAvailabilityAttribute_ArbitraryCode(FormItemNumber, BaseID)
 	
-	Items["ArbitraryKeyCode" + НомерЭлементаФормы + BaseID].Visible = 
-		Object["ExecuteArbitraryKeyCode" + НомерЭлементаФормы + BaseID];
+	Items["ArbitraryKeyCode" + FormItemNumber + BaseID].Visible = 
+		Object["ExecuteArbitraryKeyCode" + FormItemNumber + BaseID];
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьЗаголовок()
+Procedure UpdateHeader()
 	
 	ThisForm.Title = "КСД: " + Object.Title;
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьИтогиПоРеквизитамТЧ(ИдентификаторБазы)
+Procedure UpdateTotalsByAttributesTP(BaseID)
 	
 	For AttributesCounter = 1 To NumberOfAttributes Do
 	
-		ИмяРеквизита = "Реквизит" + ИдентификаторБазы + AttributesCounter;
-		Элементы["Результат" + ИмяРеквизита].ТекстПодвала = ?(Объект["НастройкиФайла" + ИдентификаторБазы].Количество() >= AttributesCounter И Объект["НастройкиФайла" + ИдентификаторБазы][AttributesCounter - 1].РассчитыватьИтог, Объект["ЗначениеИтога" + ИмяРеквизита], "");
+		AttributeName = "Attribute" + BaseID + AttributesCounter;
+		Items["Result" + AttributeName].FooterText = ?(Object["SettingsFile" + BaseID].Count() >= AttributesCounter И Object["SettingsFile" + BaseID][AttributesCounter - 1].CalculateTotal
+			, Object["ValueTotal" + AttributeName]
+			, "");
 	
 	EndDo; 
 		
@@ -740,34 +751,34 @@ EndProcedure
 &AtClient
 Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 	
-	Items["ГруппаОбработкаКлюча2" + BaseID].Visible = Object.NumberColumnsInKey > 1;
-	Items["ГруппаОбработкаКлюча3" + BaseID].Visible = Object.NumberColumnsInKey > 2;
+	Items["GroupProcessKey2" + BaseID].Visible = Object.NumberColumnsInKey > 1;
+	Items["GroupProcessKey3" + BaseID].Visible = Object.NumberColumnsInKey > 2;
 	
-	Items["ГруппаСтраницаПараметрыЗапроса" + BaseID].Visible = Object["BaseType" + BaseID] <= 1;
-	Items["ParameterList"  + BaseID + "КомандаПолучитьПараметрыЗапроса"  + BaseID].Visible = Object["BaseType" + BaseID] <= 2;
+	Items["GroupPageQueryParameters" + BaseID].Visible = Object["BaseType" + BaseID] <= 1;
+	Items["ParameterList"  + BaseID + "CommandGetQueryParameters"  + BaseID].Visible = Object["BaseType" + BaseID] <= 2;
 	
 	//Table 
-	Items["ГруппаСтраницаТаблица" + BaseID].Visible = Object["BaseType" + BaseID] = 4;
+	Items["GroupPageTable" + BaseID].Visible = Object["BaseType" + BaseID] = 4;
 		
 //#Region _1C_8_внешняя
 	If Object["BaseType" + BaseID] = 1 Then
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= True;
-		Items["ГруппаВариантВерсияПлатформыБазы" + BaseID].Visible 						= True;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= True;
+		Items["GroupVariantVersionPlatformsBase" + BaseID].Visible 						= True;
 		If Object["WorkOptionExternalBase" + BaseID] = 1 Then
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= True;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= "Name базы";
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Имя базы';en = 'Base name'");
 		Else
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= False;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= "Path к базе";
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Путь к базе';en = 'Path to base'");
 		EndIf;
-		Items["ConnectionToExternalBase" + BaseID + "ДрайверSQL"].Visible 				= False;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= True;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Title							= "Text запроса";
-		Items["ДекорацияТекстЗапроса" + BaseID].Visible									= True;
-		Items["ГруппаТекстЗапроса" + BaseID + "Commands"].Visible 						= True;
+		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= False;
+		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
+		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
+		Items["DecorationQueryText" + BaseID].Visible									= True;
+		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= False;	
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;	
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
@@ -793,25 +804,25 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["KeyLength2WhenCastingToString" + BaseID].ReadOnly 					= Not Object["CastKey2ToString" + BaseID];
 		Items["KeyLength3WhenCastingToString" + BaseID].ReadOnly 					= Not Object["CastKey3ToString" + BaseID];
 		
-		Items["НастройкиФайла" + BaseID + "ColumnName"].Visible							= False;
+		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
 							
 //#EndRegion
 
 //#Region SQL
 	ElsIf Object["BaseType" + BaseID] = 2 Then
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= True;
-		Items["ГруппаВариантВерсияПлатформыБазы" + BaseID].Visible 						= False;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= True;
+		Items["GroupVariantVersionPlatformsBase" + BaseID].Visible 						= False;
 		Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 					= True;
-		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= "Name базы данных";
-		Items["ConnectionToExternalBase" + BaseID + "ДрайверSQL"].Visible 				= True;
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= False;
+		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= Nstr("ru = 'Имя базы данных';en = 'Database name'");
+		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= True;
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;		
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= True;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Title							= "Text запроса";
-		Items["ДекорацияТекстЗапроса" + BaseID].Visible									= True;
-		Items["ГруппаТекстЗапроса" + BaseID + "Commands"].Visible 						= False;
+		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
+		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
+		Items["DecorationQueryText" + BaseID].Visible									= True;
+		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= False;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= False;
 		
@@ -828,73 +839,77 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["CastKeyToString" + BaseID].Visible 									= True;
 		Items["CastKey2ToString" + BaseID].Visible 								= True;
 		Items["CastKey3ToString" + BaseID].Visible 								= True;
-		//Приведение производится просто к строке без указания длины
+		//Casting is performed simply to a string without specifying the length
 		Items["KeyLengthWhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength2WhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
 		
-		Items["НастройкиФайла" + BaseID + "ColumnName"].Visible							= False;
+		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
 				                                                                       						
 //#EndRegion 
 
 //#Region Файл
 	ElsIf Object["BaseType" + BaseID] = 3 Then
 		
-		ФайлФорматаXML = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "XML";
-		ФайлФорматаXLS = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "XLS";
-		ФайлФорматаDOC = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "DOC";
+		FileFormatXML = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "XML";
+		FileFormatXLS = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "XLS";
+		FileFormatDOC = Object["ConnectionToExternalBase" + BaseID + "FileFormat" ] = "DOC";
 				
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= False;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible							= False;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
+		Items["GroupPageTextQuery" + BaseID].Visible							= False;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= True;
-		Items["ГруппаПараметрыПодключенияКФайлуОбщие" + BaseID].Visible					= True;
-		Items["ГруппаПараметрыПодключенияКФайлуXMLJSON" + BaseID].Visible 				= ФайлФорматаXML;
-		Items["ГруппаПараметрыПодключенияКФайлуXML" + BaseID].Visible 					= ФайлФорматаXML;
-		Items["ГруппаПараметрыПодключенияКФайлуНеXML" + BaseID].Visible					= Not ФайлФорматаXML;
-		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= ФайлФорматаXLS Or ФайлФорматаDOC;
-		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= ?(ФайлФорматаXLS, "Number книги", "Number таблицы");
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
+		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= True;
+		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= FileFormatXML;
+		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= FileFormatXML;
+		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= Not FileFormatXML;
+		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= FileFormatXLS Or FileFormatDOC;
+		
+		ConnectionToExternalBaseTitle = ?(FileFormatXLS
+			, Nstr("ru = 'Номер книги';en = 'Book number'")
+			, Nstr("ru = 'Номер таблицы';en = 'Table number'"));
+		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= ConnectionToExternalBaseTitle;
 		
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= True;		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
 		
-		Items["ColumnNumberKeyFromFile" + BaseID].Visible 							= Not ФайлФорматаXML;
-		Items["ColumnNumberKey2FromFile" + BaseID].Visible 							= Not ФайлФорматаXML;
-		Items["ColumnNumberKey3FromFile" + BaseID].Visible 							= Not ФайлФорматаXML;
-		Items["ColumnNameKeyFromFile" + BaseID].Visible 								= ФайлФорматаXML;
-		Items["ColumnNameKey2FromFile" + BaseID].Visible 							= ФайлФорматаXML;
-		Items["ColumnNameKey3FromFile" + BaseID].Visible 							= ФайлФорматаXML;
+		Items["ColumnNumberKeyFromFile" + BaseID].Visible 							= Not FileFormatXML;
+		Items["ColumnNumberKey2FromFile" + BaseID].Visible 							= Not FileFormatXML;
+		Items["ColumnNumberKey3FromFile" + BaseID].Visible 							= Not FileFormatXML;
+		Items["ColumnNameKeyFromFile" + BaseID].Visible 								= FileFormatXML;
+		Items["ColumnNameKey2FromFile" + BaseID].Visible 							= FileFormatXML;
+		Items["ColumnNameKey3FromFile" + BaseID].Visible 							= FileFormatXML;
 				
 		Items["UseAsKeyUniqueIdentifier" + BaseID].Visible 	= False;
 		Items["UseAsKey2UniqueIdentifier" + BaseID].Visible 	= False;
 		Items["UseAsKey3UniqueIdentifier" + BaseID].Visible 	= False;
 		
-		Items["CastKeyToString" + BaseID].Visible 									= Not ФайлФорматаXML;
-		Items["CastKey2ToString" + BaseID].Visible 								= Not ФайлФорматаXML;
-		Items["CastKey3ToString" + BaseID].Visible 								= Not ФайлФорматаXML;
-		//Приведение производится просто к строке без указания длины
+		Items["CastKeyToString" + BaseID].Visible 									= Not FileFormatXML;
+		Items["CastKey2ToString" + BaseID].Visible 								= Not FileFormatXML;
+		Items["CastKey3ToString" + BaseID].Visible 								= Not FileFormatXML;
+		//Casting is performed simply to a string without specifying the length
 		Items["KeyLengthWhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength2WhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
 		
-		Items["НастройкиФайла" + BaseID + "NumberColumn"].Visible						= Not ФайлФорматаXML;
-		Items["НастройкиФайла" + BaseID + "ColumnName"].Visible							= ФайлФорматаXML;
+		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= Not FileFormatXML;
+		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= FileFormatXML;
 							
 //#EndRegion 
 
-//#Region Таблица
+//#Region Table
 	ElsIf Object["BaseType" + BaseID] = 4 Then
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= False;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= False;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
+		Items["GroupPageTextQuery" + BaseID].Visible 							= False;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= True;
-		Items["ГруппаПараметрыПодключенияКФайлуОбщие" + BaseID].Visible					= False;
-		Items["ГруппаПараметрыПодключенияКФайлуXMLJSON" + BaseID].Visible				= False;
-		Items["ГруппаПараметрыПодключенияКФайлуXML" + BaseID].Visible					= False;
-		Items["ГруппаПараметрыПодключенияКФайлуНеXML" + BaseID].Visible					= True;
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
+		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible				= False;
+		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= True;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible							= True;
@@ -916,29 +931,29 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["CastKeyToString" + BaseID].Visible 									= True;
 		Items["CastKey2ToString" + BaseID].Visible 								= True;
 		Items["CastKey3ToString" + BaseID].Visible 								= True;
-		//Приведение производится просто к строке без указания длины
+		//Casting is performed simply to a string without specifying the length
 		Items["KeyLengthWhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength2WhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
 		
-		Items["НастройкиФайла" + BaseID + "ColumnName"].Visible							= False;
+		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
 		
 //#EndRegion 
 
-//#Region _1C_7_7_внешняя
+//#Region _1C_7_7_external
 	ElsIf Object["BaseType" + BaseID] = 5 Then
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= True;
-		Items["ГруппаВариантВерсияПлатформыБазы" + BaseID].Visible 						= False;
-		Items["ConnectionToExternalBase" + BaseID + "ДрайверSQL"].Visible 				= False;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= True;
+		Items["GroupVariantVersionPlatformsBase" + BaseID].Visible 						= False;
+		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= False;
 		Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 					= False;
-		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= "Path к базе";
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= True;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Title							= "Text запроса";
-		Items["ДекорацияТекстЗапроса" + BaseID].Visible									= True;
-		Items["ГруппаТекстЗапроса" + BaseID + "Commands"].Visible 						= False;
+		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= Nstr("ru = 'Путь к базе';en = 'Path to base'");
+		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
+		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
+		Items["DecorationQueryText" + BaseID].Visible									= True;
+		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= False;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= False;
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;     		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
@@ -969,19 +984,19 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 //#Region Строка_JSON
 	ElsIf Object["BaseType" + BaseID] = 6 Then
 	
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= True;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Title							= "String JSON";
+		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
+		Items["GroupPageTextQuery" + BaseID].Title							= NStr("ru = 'Строка JSON';en = 'JSON string'");
 		
-		Items["ДекорацияТекстЗапроса" + BaseID].Visible									= False;
-		Items["ГруппаТекстЗапроса" + BaseID + "Commands"].Visible 						= False;
+		Items["DecorationQueryText" + BaseID].Visible									= False;
+		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= False;
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= False;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= True;
-		Items["ГруппаПараметрыПодключенияКФайлуОбщие" + BaseID].Visible					= False;
-		Items["ГруппаПараметрыПодключенияКФайлуXMLJSON" + BaseID].Visible 				= True;
-		Items["ГруппаПараметрыПодключенияКФайлуXML" + BaseID].Visible 					= False;
-		Items["ГруппаПараметрыПодключенияКФайлуНеXML" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
+		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= True;
+		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= False;
+		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= False;
 		
@@ -1004,7 +1019,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["CastKeyToString" + BaseID].Visible 									= False;
 		Items["CastKey2ToString" + BaseID].Visible 								= False;
 		Items["CastKey3ToString" + BaseID].Visible 								= False;
-		//Приведение производится просто к строке без указания длины
+		//Casting is performed simply to a string without specifying the length
 		Items["KeyLengthWhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength2WhenCastingToString" + BaseID].Visible 						= False;
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
@@ -1017,13 +1032,13 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 //#Region _1С_8_текущая
 	Else 
 		
-		Items["ГруппаВариантПараметрыПодключенияКБазе" + BaseID].Visible 				= False;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Visible 							= True;
-		Items["ГруппаСтраницаТекстЗапроса" + BaseID].Title							= "Text запроса";
-		Items["ДекорацияТекстЗапроса" + BaseID].Visible									= True;
-		Items["ГруппаТекстЗапроса" + BaseID + "Commands"].Visible 						= True;
+		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
+		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
+		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
+		Items["DecorationQueryText" + BaseID].Visible									= True;
+		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
-		Items["ГруппаПараметрыПодключенияКФайлу" + BaseID].Visible 						= False;
+		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
 		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
@@ -1057,37 +1072,37 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 //#EndRegion
 
 	
-	ОбновитьВидимостьРеквизитовТЧ(BaseID);
-	ОбновитьИтогиПоРеквизитамТЧ(BaseID);
+	UpdateVisibilityAttributesTP(BaseID);
+	UpdateTotalsByAttributesTP(BaseID);
 				
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьКлючейТЧ(Форсировать = Ложь)
+Procedure UpdateVisibilityKeysTP(Форсировать = Ложь)
 	
-	ОбновитьВидимостьРеквизитаТЧ("Key1");
-	ОбновитьВидимостьРеквизитаТЧ("Key2");
-	ОбновитьВидимостьРеквизитаТЧ("Key3");
+	UpdateVisibilityAttributeTP("Key1");
+	UpdateVisibilityAttributeTP("Key2");
+	UpdateVisibilityAttributeTP("Key3");
 		
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьРеквизитовТЧ(BaseID = "")
+Procedure UpdateVisibilityAttributesTP(BaseID = "")
 	
-	If ПустаяСтрока(BaseID) Then
-		ОбновитьВидимостьРеквизитаТЧ("ЧислоЗаписейА");
-		ОбновитьВидимостьРеквизитаТЧ("ЧислоЗаписейБ");
+	If IsBlankString(BaseID) Then
+		UpdateVisibilityAttributeTP("NumberOfRecordsA");
+		UpdateVisibilityAttributeTP("NumberOfRecordsB");
 	Else 
-		ОбновитьВидимостьРеквизитаТЧ("ЧислоЗаписей" + BaseID);
+		UpdateVisibilityAttributeTP("NumberOfRecords" + BaseID);
 	EndIf;
 	
-	For Счетчик = 1 To 5 Do
+	For Counter = 1 To 5 Do
 		
-		If ПустаяСтрока(BaseID) Then
-			ОбновитьВидимостьРеквизитаТЧ("РеквизитА" + Счетчик);
-			ОбновитьВидимостьРеквизитаТЧ("РеквизитБ" + Счетчик);
+		If IsBlankString(BaseID) Then
+			UpdateVisibilityAttributeTP("AttributeA" + Counter);
+			UpdateVisibilityAttributeTP("AttributeB" + Counter);
 		Else
-			ОбновитьВидимостьРеквизитаТЧ("Реквизит" + BaseID + Счетчик);
+			UpdateVisibilityAttributeTP("Attribute" + BaseID + Counter);
 		EndIf; 
 		
 	EndDo;
@@ -1095,43 +1110,43 @@ Procedure ОбновитьВидимостьРеквизитовТЧ(BaseID = ""
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьРеквизитаТЧ(AttributeName)
+Procedure UpdateVisibilityAttributeTP(AttributeName)
 	
-	ВидимостьКолонки = Object["Visibility" + AttributeName];
-	Items["РезультатКомандаВидимость" + AttributeName].Check = ВидимостьКолонки;
+	VisibilityColumn = Object["Visibility" + AttributeName];
+	Items["ResultCommandVisibility" + AttributeName].Check = VisibilityColumn;
 	
-	If ВРег(Лев(ИмяРеквизита, 4)) = "KEY" Then
-		НомерКлюча = Сред(ИмяРеквизита,5,1);
-		Items["Result" + ИмяРеквизита].Видимость = ВидимостьКолонки И Object.NumberColumnsInKey >= Number(НомерКлюча);
-		Items["РезультатТипСтолбца" + НомерКлюча + "Ключа"].Видимость = Object.ОтображатьТипыСтолбцовКлюча И Object["VisibilityKey" + НомерКлюча] И Object.NumberColumnsInKey >= Число(НомерКлюча);
+	If ВРег(Лев(AttributeName, 4)) = "KEY" Then
+		NumberKey = Mid(AttributeName,5,1);
+		Items["Result" + AttributeName].Visible = VisibilityColumn И Object.NumberColumnsInKey >= Number(NumberKey);
+		Items["ResultColumnType" + NumberKey + "Key"].Visible = Object.DisplayKeyColumnTypes И Object["VisibilityKey" + NumberKey] И Object.NumberColumnsInKey >= Number(NumberKey);
 	Else
-		Items["Result" + AttributeName].Visible = ВидимостьКолонки;
+		Items["Result" + AttributeName].Visible = VisibilityColumn;
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(РежимОтображения = 0)
+Procedure UpdateVisibilityAvailabilityItemsRelationalOperation(DisplayMode = 0)
 	
 	Items.CompareData.Enabled = Object.RelationalOperation > 0;
-	For СчетчикОпераций = 1 To 7 Do 
+	For CounterOperations = 1 To 7 Do 
 		
-		If СчетчикОпераций = Object.RelationalOperation Then
-			If РежимОтображения = 1 Then
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["ActiveOperationA1"];
-			ElsIf РежимОтображения = 2 Then
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["ActiveOperationA" + (4 + ?(СчетчикОпераций > 1, СчетчикОпераций + 2, СчетчикОпераций - 1) % 2)];
+		If CounterOperations = Object.RelationalOperation Then
+			If DisplayMode = 1 Then
+				ThisForm["Operation" + CounterOperations] = ThisForm["ActiveOperationA1"];
+			ElsIf DisplayMode = 2 Then
+				ThisForm["Operation" + CounterOperations] = ThisForm["ActiveOperationA" + (4 + ?(CounterOperations > 1, CounterOperations + 2, CounterOperations - 1) % 2)];
 			Else
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["ActiveOperation" + СчетчикОпераций];
+				ThisForm["Operation" + CounterOperations] = ThisForm["ActiveOperation" + CounterOperations];
 			EndIf;
 						
 		Else
-			If РежимОтображения = 1 Then
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["ActiveOperation" + СчетчикОпераций];
-			ElsIf РежимОтображения = 2 Then
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["ActiveOperationA" + (2 + ?(СчетчикОпераций > 1, СчетчикОпераций + 2, СчетчикОпераций - 1) % 2)];
+			If DisplayMode = 1 Then
+				ThisForm["Operation" + CounterOperations] = ThisForm["ActiveOperation" + CounterOperations];
+			ElsIf DisplayMode = 2 Then
+				ThisForm["Operation" + CounterOperations] = ThisForm["ActiveOperationA" + (2 + ?(CounterOperations > 1, CounterOperations + 2, CounterOperations - 1) % 2)];
 			Else
-				ThisForm["Operation" + СчетчикОпераций] = ThisForm["InactiveOperation" + СчетчикОпераций];
+				ThisForm["Operation" + CounterOperations] = ThisForm["InactiveOperation" + CounterOperations];
 			EndIf;			
 		EndIf;
 		
@@ -1140,7 +1155,7 @@ Procedure ОбновитьВидимостьДоступностьЭлемент
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок()
+Procedure UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput()
 	
 	Items.BooleanOperatorForConditionsOutputRows.ReadOnly 		= Object.CodeForOutputRowsEditedManually;
 	Items.ConditionsOutputRows.ReadOnly 								= Object.CodeForOutputRowsEditedManually;
@@ -1153,21 +1168,21 @@ Procedure ОбновитьВидимостьДоступностьЭлемент
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьВкладкиУсловияВыводаСтрок()
+Procedure UpdateVisibilityAvailabilityPage_GroupConditionsOutputRows()
 	
 	Items.GroupConditionsOutputRows.BgColor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьВкладкиУсловияЗапретаВыводаСтрок()
+Procedure UpdateVisibilityAvailabilityPage_GroupConditionsProhibitOutputRows()
 	
 	Items.GroupConditionsProhibitOutputRows.BgColor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
 &AtClient
-Procedure ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений()
+Procedure UpdateVisibilityAvailabilityOrderSortTableDifferences()
 	
 	Items.OrderSortTableDifferences.ReadOnly = Not Object.SortTableDifferences;
 	
@@ -1182,28 +1197,28 @@ EndProcedure
 Procedure SaveSettingsToFileAtClient(SaveSpreadsheetDocuments = False)
 	
 	Mode = FileDialogMode.Save;
-	ДиалогВыбора = New FileDialog(Mode);
-	ДиалогВыбора.FullFileName = Object.Title;
+	SelectionDialog = New FileDialog(Mode);
+	SelectionDialog.FullFileName = Object.Title;
 	Filter = "File xml (*.xml)|*.xml";
-	ДиалогВыбора.Filter = Filter;
-	ДиалогВыбора.Title = "Укажите файл для сохранения настроек";   
+	SelectionDialog.Filter = Filter;
+	SelectionDialog.Title = Nstr("ru = 'Укажите файл для сохранения настроек';en = 'Specify a file to save settings'");   
 
-	ДиалогВыбора.Show(New NotifyDescription("SaveSettingsToFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора,SaveSpreadsheetDocuments", ДиалогВыбора, SaveSpreadsheetDocuments)));
+	SelectionDialog.Show(New NotifyDescription("SaveSettingsToFileAtClientEnd", ThisForm, New Structure("SelectionDialog,SaveSpreadsheetDocuments", SelectionDialog, SaveSpreadsheetDocuments)));
 	
 EndProcedure
 
 &AtClient
 Procedure SaveSettingsToFileAtClientEnd(SelectedFiles, AdditionalParameters) Export
 	
-	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;
+	SelectionDialog = AdditionalParameters.SelectionDialog;
 	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
 	                             	
 	If (SelectedFiles <> Undefined) Then
 		
-		Object.Title = Mid(ДиалогВыбора.FullFileName, StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1);
+		Object.Title = Mid(SelectionDialog.FullFileName, StrFind(SelectionDialog.FullFileName, "\", SearchDirection.FromEnd) + 1);
 		Address = SaveSettingsToFileAtServer(SaveSpreadsheetDocuments);
 		BinaryData = GetFromTempStorage(Address);
-		BinaryData.Write(ДиалогВыбора.FullFileName);
+		BinaryData.Write(SelectionDialog.FullFileName);
 		
 	EndIf;
 
@@ -1214,47 +1229,53 @@ Procedure SaveSettingsToDatabaseAtClient(SaveSpreadsheetDocuments = False);
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation)  Then
 	
-		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,SaveSpreadsheetDocuments",True,SaveSpreadsheetDocuments)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
+		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'")
+			, Object.RelatedDataComparisonOperation);
+		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd"
+				, ThisObject
+				, New Structure("SelectCatalogItemToSave, SaveSpreadsheetDocuments", True, SaveSpreadsheetDocuments))
+			, QueryText
+			, QuestionDialogMode.YesNo);
 		
 	Else
 		
-		ОткрытьФормуВыбораОперацииДляЗаписи(SaveSpreadsheetDocuments);
+		OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments);
 		
 	EndIf;
 	
 EndProcedure
 
 &AtClient
-Procedure СохранитьВСвязаннуюОперациюЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure SaveToRelatedOperationEnd(Result, AdditionalParameters) Export
 	
 	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
-	ВыбратьЭлементСправочникаДляСохранения = AdditionalParameters.ВыбратьЭлементСправочникаДляСохранения;
-	ПриЗакрытииФормы = AdditionalParameters.Property("ПриЗакрытииФормы") And AdditionalParameters.ПриЗакрытииФормы;
+	SelectCatalogItemToSave = AdditionalParameters.SelectCatalogItemToSave;
+	OnCloseForm = AdditionalParameters.Property("OnCloseForm") And AdditionalParameters.OnCloseForm;
 	
-	If РезультатВопроса = DialogReturnCode.Yes Then
+	If Result = DialogReturnCode.Yes Then
 		
 		SaveSettingsToBaseAtServer(Object.RelatedDataComparisonOperation, SaveSpreadsheetDocuments);
-		ОбновитьЗаголовок();
+		UpdateHeader();
 		
-	//Click кнопки Save в базу
-	ElsIf ВыбратьЭлементСправочникаДляСохранения = True And ПриЗакрытииФормы = False Then
+	//Click button Save to database
+	ElsIf SelectCatalogItemToSave = True And OnCloseForm = False Then
 		
-		ОткрытьФормуВыбораОперацииДляЗаписи();
+		OpenOperationSelectionFormForRecording();
 				
 	EndIf;
 
 EndProcedure
 
 &AtClient
-Procedure СохранитьВВыбраннуюОперациюЗавершение(Result, AdditionalParameters) Export
+Procedure SaveSelectedOperationEnd(Result, AdditionalParameters) Export
 	
 	SaveSpreadsheetDocuments = AdditionalParameters.SaveSpreadsheetDocuments;
 	
-	ВыбранныйЭлемент = Result;
-	If ВыбранныйЭлемент <> Undefined Then
+	SelectedItem = Result;
+	If SelectedItem <> Undefined Then
 		
-		SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments);
-		ОбновитьЗаголовок();
+		SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments);
+		UpdateHeader();
 				
 	EndIf;
 
@@ -1264,11 +1285,11 @@ EndProcedure
 Function SaveSettingsToFileAtServer(SaveSpreadsheetDocuments)
 	
 	PathToFile = GetTempFileName("xml");
-	Data = ПолучитьДанныеВВидеСтруктуры(SaveSpreadsheetDocuments); 
-	ХранилищеВнешнее = New ValueStorage(Data);
+	Data = GetDataAsStructure(SaveSpreadsheetDocuments); 
+	ExternalStorage = New ValueStorage(Data);
 	XMLWriter = New XMLWriter;
 	XMLWriter.OpenFile(PathToFile, "UTF-8");
-	XDTOSerializer.WriteXML(XMLWriter, ХранилищеВнешнее);
+	XDTOSerializer.WriteXML(XMLWriter, ExternalStorage);
 	XMLWriter.Close();
 	Address = PutToTempStorage(New BinaryData(PathToFile));
 	DeleteFiles(PathToFile);
@@ -1278,10 +1299,10 @@ Function SaveSettingsToFileAtServer(SaveSpreadsheetDocuments)
 EndFunction
 
 &AtServer
-Procedure SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments = False)
+Procedure SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments = False)
 
 	FormObject = FormAttributeToValue("Object");
-	FormObject.SaveSettingsToBaseAtServer(ВыбранныйЭлемент, SaveSpreadsheetDocuments);
+	FormObject.SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments);
 	ValueToFormAttribute(FormObject, "Object");
 		
 EndProcedure
@@ -1290,54 +1311,56 @@ EndProcedure
 
 #Region Load
 &AtClient
-Procedure OpenSettingsFromFileAtClient(Val Оповещение, ЗагружатьТабличныеДокументы = False)
+Procedure OpenSettingsFromFileAtClient(Val Notification, UploadSpreadsheetDocuments = False)
 
 	Mode = FileDialogMode.Opening;
-	ДиалогВыбора = New FileDialog(Mode);
-	ДиалогВыбора.FullFileName = "";
+	SelectionDialog = New FileDialog(Mode);
+	SelectionDialog.FullFileName = "";
 	Filter = "File xml (*.xml)|*.xml";
-	ДиалогВыбора.Filter = Filter;
-	ДиалогВыбора.Title = "Укажите файл с настройками";   
+	SelectionDialog.Filter = Filter;
+	SelectionDialog.Title = Nstr("ru = 'Укажите файл с настройками';en = 'Specify the settings file'");   
 
-	ДиалогВыбора.Show(New NotifyDescription("OpenSettingsFromFileAtClientEnd", ThisForm, New Structure("ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы", ДиалогВыбора, Оповещение, ЗагружатьТабличныеДокументы)));
+	SelectionDialog.Show(New NotifyDescription("OpenSettingsFromFileAtClientEnd"
+		, ThisForm
+		, New Structure("SelectionDialog, Notification, UploadSpreadsheetDocuments", SelectionDialog, Notification, UploadSpreadsheetDocuments)));
 
 EndProcedure
 
 &AtClient
 Procedure OpenSettingsFromFileAtClientEnd(SelectedFiles, AdditionalParameters) Export
 	
-	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;
-	Оповещение = AdditionalParameters.Оповещение;	
-	ЗагружатьТабличныеДокументы = AdditionalParameters.ЗагружатьТабличныеДокументы;	
+	SelectionDialog = AdditionalParameters.SelectionDialog;
+	Notification = AdditionalParameters.Notification;	
+	UploadSpreadsheetDocuments = AdditionalParameters.UploadSpreadsheetDocuments;	
 	
 	If (SelectedFiles <> Undefined) Then
 		
-		Address = PutToTempStorage(New BinaryData(ДиалогВыбора.FullFileName));
-		OpenSettingsFromFileAtServer(Address, ЗагружатьТабличныеДокументы);
-		ПервыйСимвол = StrFind(ДиалогВыбора.FullFileName, "\", SearchDirection.FromEnd) + 1;
-		ПоследнийСимвол = StrFind(ДиалогВыбора.FullFileName, ".", SearchDirection.FromEnd);
-		Object.Title = Mid(ДиалогВыбора.FullFileName, ПервыйСимвол, ПоследнийСимвол - ПервыйСимвол);
+		Address = PutToTempStorage(New BinaryData(SelectionDialog.FullFileName));
+		OpenSettingsFromFileAtServer(Address, UploadSpreadsheetDocuments);
+		ПервыйСимвол = StrFind(SelectionDialog.FullFileName, "\", SearchDirection.FromEnd) + 1;
+		ПоследнийСимвол = StrFind(SelectionDialog.FullFileName, ".", SearchDirection.FromEnd);
+		Object.Title = Mid(SelectionDialog.FullFileName, ПервыйСимвол, ПоследнийСимвол - ПервыйСимвол);
 		UpdateVisibilityAccessibilityFormItems();
-		ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
-		ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
-		ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
+		UpdateVisibilityAvailabilityItemsRelationalOperation();
+		UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
+		UpdateVisibilityAvailabilityOrderSortTableDifferences();
 		
 	EndIf;
 	
-	ExecuteNotifyProcessing(Оповещение);
+	ExecuteNotifyProcessing(Notification);
 
 EndProcedure
 
 &AtServer
-Procedure OpenSettingsFromFileAtServer(Address, ЗагружатьТабличныеДокументы = False)
+Procedure OpenSettingsFromFileAtServer(Address, UploadSpreadsheetDocuments = False)
 	
 	PathToFile = GetTempFileName("xml");
 	BinaryData = GetFromTempStorage(Address);
 	BinaryData.Write(PathToFile);
 	XMLReader = New XMLReader;
 	XMLReader.OpenFile(PathToFile,,,"UTF-8");
-	ХранилищеВнешнее = XDTOSerializer.ReadXML(XMLReader);
-	Data = ХранилищеВнешнее.Get();
+	ExternalStorage = XDTOSerializer.ReadXML(XMLReader);
+	Data = ExternalStorage.Get();
 	FillPropertyValues(Object, Data);
 	
 	If Data.Property("ТЗУсловияВыводаСтрок") Then
@@ -1376,7 +1399,7 @@ Procedure OpenSettingsFromFileAtServer(Address, ЗагружатьТабличн
 		Object.ParameterListB.Clear();
 	EndIf;
 	
-	If ЗагружатьТабличныеДокументы Then
+	If UploadSpreadsheetDocuments Then
 		If Object.BaseTypeA = 4 Then
 			Try
 				If Data.Property("TableAValueStorage") Then
@@ -1404,10 +1427,10 @@ Procedure OpenSettingsFromFileAtServer(Address, ЗагружатьТабличн
 EndProcedure
 
 &AtServer
-Procedure OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы = False)
+Procedure OpenSettingsFromBaseAtServer(SelectedItem, UploadSpreadsheetDocuments = False)
 	
 	FormObject = FormAttributeToValue("Object");
-	FormObject.OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы);
+	FormObject.OpenSettingsFromBaseAtServer(SelectedItem, UploadSpreadsheetDocuments);
 	ValueToFormAttribute(FormObject, "Object");
 	
 EndProcedure
@@ -1416,31 +1439,35 @@ EndProcedure
 Procedure OpenSettingsFromFileEnd(Result, AdditionalParameters) Export
 	
 	UpdateVisibilityAccessibilityFormItems();
-	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
-	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
+	UpdateVisibilityAvailabilityItemsRelationalOperation();
+	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 
 EndProcedure
 
 &AtClient
-Procedure ОткрытьФормуВыбораОперацииДляЗаписи(SaveSpreadsheetDocuments = False)
+Procedure OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments = False)
 
-	ВыбранныйЭлемент = Undefined;
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("СохранитьВВыбраннуюОперациюЗавершение", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	SelectedItem = Undefined;
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
+		,,,,,
+		, New NotifyDescription("SaveSelectedOperationEnd", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments))
+		, FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
 EndProcedure
 
 &AtClient
 Procedure OpenSettingsFromBaseEnd(Result, AdditionalParameters) Export
 	
-	ВыбранныйЭлемент = Result;
-	ЗагружатьТабличныеДокументы = AdditionalParameters <> Undefined And AdditionalParameters.Property("ЗагружатьТабличныеДокументы") And AdditionalParameters.ЗагружатьТабличныеДокументы;
+	SelectedItem = Result;
+	UploadSpreadsheetDocuments = AdditionalParameters <> Undefined And AdditionalParameters.Property("UploadSpreadsheetDocuments") 
+		And AdditionalParameters.UploadSpreadsheetDocuments;
 	
-	If ВыбранныйЭлемент <> Undefined Then
+	If SelectedItem <> Undefined Then
 		
-		OpenSettingsFromBaseAtServer(ВыбранныйЭлемент, ЗагружатьТабличныеДокументы);
+		OpenSettingsFromBaseAtServer(SelectedItem, UploadSpreadsheetDocuments);
 		UpdateVisibilityAccessibilityFormItems();
-		ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
-		ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
+		UpdateVisibilityAvailabilityItemsRelationalOperation();
+		UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 		
 	EndIf;
 
@@ -1470,38 +1497,38 @@ Procedure ПриНачалеВыбораЗначенияПараметра(BaseI
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение4(ВыбранныйЭлемент, AdditionalParameters) Export
+Procedure ПриНачалеВыбораЗначенияПараметраЗавершение4(SelectedItem, AdditionalParameters) Export
 	
 	BaseID = AdditionalParameters.BaseID;
 	
 	
-	ВыбранныйТип = ВыбранныйЭлемент;
+	ВыбранныйТип = SelectedItem;
 	If ВыбранныйТип = Undefined Then
 		Return;
 	EndIf;
 	
 	CurrentData = Items["ParameterList" + BaseID].CurrentData;
 	If CurrentData = Undefined Then
-		ТекущееЗначениеПараметра = Undefined; 
+		CurrentParameterValue = Undefined; 
 	Else
-		ТекущееЗначениеПараметра =  CurrentData.ParameterValue;
+		CurrentParameterValue =  CurrentData.ParameterValue;
 	EndIf;
 	
 	If ВыбранныйТип.Value = "Number" Then
-		ShowInputNumber(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение3", ThisForm, New Structure("ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра", ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра)), ТекущееЗначениеПараметра);
+		ShowInputNumber(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение3", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
 	ElsIf ВыбранныйТип.Value = "String" Then
-		ShowInputString(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение2", ThisForm, New Structure("ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра", ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра)), ТекущееЗначениеПараметра);
+		ShowInputString(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение2", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
 	ElsIf ВыбранныйТип.Value = "Date" Then
-		ShowInputDate(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение1", ThisForm, New Structure("ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра", ВыбранныйТип, CurrentData, ТекущееЗначениеПараметра)), ТекущееЗначениеПараметра);
+		ShowInputDate(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение1", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
 	ElsIf ВыбранныйТип.Value = "Boolean" Then
-		ShowInputValue(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение", ThisForm, New Structure("CurrentData, ТекущееЗначениеПараметра", CurrentData, ТекущееЗначениеПараметра)), ТекущееЗначениеПараметра,,New TypeDescription("Boolean"));
+		ShowInputValue(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение", ThisForm, New Structure("CurrentData, CurrentParameterValue", CurrentData, CurrentParameterValue)), CurrentParameterValue,,New TypeDescription("Boolean"));
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент3(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент3(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
@@ -1510,21 +1537,21 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 	
 	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
 	CurrentData = AdditionalParameters.CurrentData;
-	ТекущееЗначениеПараметра = ?(Number = Undefined, AdditionalParameters.ТекущееЗначениеПараметра, Number);
+	CurrentParameterValue = ?(Number = Undefined, AdditionalParameters.CurrentParameterValue, Number);
 	
 	
 	If Not (Number <> Undefined) Then
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент3(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент3(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент3(Val ТекущееЗначениеПараметра, Val CurrentData)
+Procedure ПриНачалеВыбораЗначенияПараметраФрагмент3(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент2(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент2(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
@@ -1533,21 +1560,21 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 	
 	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
 	CurrentData = AdditionalParameters.CurrentData;
-	ТекущееЗначениеПараметра = ?(String = Undefined, AdditionalParameters.ТекущееЗначениеПараметра, String);
+	CurrentParameterValue = ?(String = Undefined, AdditionalParameters.CurrentParameterValue, String);
 	
 	
 	If Not (String <> Undefined) Then
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент2(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент2(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент2(Val ТекущееЗначениеПараметра, Val CurrentData)
+Procedure ПриНачалеВыбораЗначенияПараметраФрагмент2(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент1(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент1(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
@@ -1556,21 +1583,21 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 	
 	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
 	CurrentData = AdditionalParameters.CurrentData;
-	ТекущееЗначениеПараметра = ?(Date = Undefined, AdditionalParameters.ТекущееЗначениеПараметра, Date);
+	CurrentParameterValue = ?(Date = Undefined, AdditionalParameters.CurrentParameterValue, Date);
 	
 	
 	If Not (Date <> Undefined) Then
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент1(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент1(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент1(Val ТекущееЗначениеПараметра, Val CurrentData)
+Procedure ПриНачалеВыбораЗначенияПараметраФрагмент1(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
@@ -1578,21 +1605,21 @@ EndProcedure
 Procedure ПриНачалеВыбораЗначенияПараметраЗавершение(Value, AdditionalParameters) Export
 	
 	CurrentData = AdditionalParameters.CurrentData;
-	ТекущееЗначениеПараметра = ?(Value = Undefined, AdditionalParameters.ТекущееЗначениеПараметра, Value);
+	CurrentParameterValue = ?(Value = Undefined, AdditionalParameters.CurrentParameterValue, Value);
 	
 	
 	If Not (Value <> Undefined) Then
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент(ТекущееЗначениеПараметра, CurrentData);
+	ПриНачалеВыбораЗначенияПараметраФрагмент(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент(Val ТекущееЗначениеПараметра, Val CurrentData)
+Procedure ПриНачалеВыбораЗначенияПараметраФрагмент(Val CurrentParameterValue, Val CurrentData)
 	
-	CurrentData.ParameterValue = ТекущееЗначениеПараметра;
+	CurrentData.ParameterValue = CurrentParameterValue;
 
 EndProcedure
 #EndRegion 
@@ -1663,7 +1690,7 @@ EndProcedure
 &AtClient
 Procedure OpenSettingsFromBase(Command)
 	
-	ВыбранныйЭлемент = Undefined; 
+	SelectedItem = Undefined; 
 	
 	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
@@ -1672,16 +1699,16 @@ EndProcedure
 &AtClient
 Procedure LoadSettingsAndSpreadsheetDocumentsFromDatabase(Command)
 	
-	ВыбранныйЭлемент = Undefined; 
+	SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("ЗагружатьТабличныеДокументы", True)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
 	
 EndProcedure
 
 &AtClient
 Procedure CommandGetQueryParametersA(Command)
 	
-	ПолучитьПараметрыИзЗапросаНаСервере("А");
+	GetParametersFromQueryOnServer("А");
 	Items.GroupPagesBaseA.CurrentPage = Items.GroupPageQueryParametersA;
 	
 EndProcedure
@@ -1689,7 +1716,7 @@ EndProcedure
 &AtClient
 Procedure CommandGetQueryParametersB(Command)
 	
-	ПолучитьПараметрыИзЗапросаНаСервере("Б");
+	GetParametersFromQueryOnServer("Б");
 	Items.GroupPagesBaseB.CurrentPage = Items.GroupPageQueryParametersB;
 	
 EndProcedure
@@ -1718,20 +1745,20 @@ EndProcedure
 &AtClient
 Procedure CommandPreviewSourceA(Command)
 	
-	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(1);
+	UpdateVisibilityAvailabilityItemsRelationalOperation(1);
 	
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB(Command)
 	
-	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация(2);
+	UpdateVisibilityAvailabilityItemsRelationalOperation(2);
 	
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_AllRows(Command)	
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А");
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А");
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А");	
 	EndIf;
@@ -1739,7 +1766,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_100Rows(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",100);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",100);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (100 строк)");
 	EndIf;
@@ -1747,7 +1774,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_100Rows(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",100);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",100);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (100 строк)");
 	EndIf;
@@ -1755,7 +1782,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_AllRows(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б");
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б");
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б");
 	EndIf;
@@ -1763,7 +1790,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_Duplicates(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",,True);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",,True);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (дубликаты)");
 	EndIf;
@@ -1771,7 +1798,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_Duplicates(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",,True);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",,True);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (дубликаты)");
 	EndIf;
@@ -1779,7 +1806,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_1000Rows(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("А",1000);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",1000);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src А (1000 строк)");
 	EndIf;
@@ -1787,7 +1814,7 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_1000Rows(Command)
-	SpreadsheetDocument = ПолучитьТабличныйДокументСДаннымиИзИсточникаНаСервере("Б",1000);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",1000);
 	If SpreadsheetDocument <> Undefined Then
 		SpreadsheetDocument.Show("Src Б (1000 строк)");
 	EndIf;
@@ -1843,15 +1870,15 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.VisibilityNumberOfRecordsA = True;
 		Object.VisibilityNumberOfRecordsB = True;
 		
-		For Счетчик = 1 To NumberOfAttributes Do
-			Object["VisibilityAttributeA" + Счетчик] = True;
-			Object["VisibilityAttributeB" + Счетчик] = True;
+		For Counter = 1 To NumberOfAttributes Do
+			Object["VisibilityAttributeA" + Counter] = True;
+			Object["VisibilityAttributeB" + Counter] = True;
 		EndDo;
 		
-		For Счетчик = 1 To 20 Do 
+		For Counter = 1 To 20 Do 
 			
-			Object.TableA.Region(1,Счетчик,1,Счетчик).Text = Счетчик;
-			Object.TableB.Region(1,Счетчик,1,Счетчик).Text = Счетчик;
+			Object.TableA.Region(1,Counter,1,Counter).Text = Counter;
+			Object.TableB.Region(1,Counter,1,Counter).Text = Counter;
 			
 		EndDo;
 		
@@ -1927,9 +1954,9 @@ EndProcedure
 Procedure OnOpen(Cancel)
 	
 	UpdateVisibilityAccessibilityFormItems();
-	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
-	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
-	ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
+	UpdateVisibilityAvailabilityItemsRelationalOperation();
+	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
+	UpdateVisibilityAvailabilityOrderSortTableDifferences();
 	UpdateCodeToOutputAndProhibitOutputRows();
 		
 EndProcedure
@@ -1939,7 +1966,7 @@ Procedure ОперацияНажатие(Item, StandardProcessing)
 	
 	StandardProcessing = False;
 	Object.RelationalOperation = Number(Right(Item.Name,1));
-	ОбновитьВидимостьДоступностьЭлементовРеляционнаяОперация();
+	UpdateVisibilityAvailabilityItemsRelationalOperation();
 	
 EndProcedure
 
@@ -1956,7 +1983,7 @@ Procedure OnClose(ЗавершениеРаботы)
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation) And Not Object.UserMode  Then
 		
-		ShowQueryBox(New NotifyDescription("СохранитьВСвязаннуюОперациюЗавершение", ThisObject, New Structure("ВыбратьЭлементСправочникаДляСохранения,SaveSpreadsheetDocuments,ПриЗакрытииФормы",True,False,True)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave,SaveSpreadsheetDocuments,OnCloseForm",True,False,True)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
 	
 	EndIf; 
 	
@@ -1983,9 +2010,9 @@ Procedure КодДляВыводаСтрокРедактируетсяВручн
 EndProcedure
 
 &AtClient
-Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(Result, AdditionalParameters) Export
 	
-	If РезультатВопроса = DialogReturnCode.None Then
+	If Result = DialogReturnCode.None Then
 		Object.CodeForOutputRowsEditedManually = True;
 		Return;
 	EndIf;
@@ -1999,7 +2026,7 @@ EndProcedure
 Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
 	
 	UpdateCodeToOutputAndProhibitOutputRows();
-	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
+	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 
 EndProcedure
 
@@ -2017,9 +2044,9 @@ Procedure CodeForProhibitingOutputRowsEditedManuallyOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(Result, AdditionalParameters) Export
 	
-	If РезультатВопроса = DialogReturnCode.None Then
+	If Result = DialogReturnCode.None Then
 		Object.CodeForProhibitingOutputRowsEditedManually = True;
 		Return;
 	EndIf;
@@ -2033,7 +2060,7 @@ EndProcedure
 Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
 	
 	UpdateCodeToOutputAndProhibitOutputRows();
-	ОбновитьВидимостьДоступностьЭлементовВыводИЗапретаВыводаСтрок();
+	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 
 EndProcedure
 
@@ -2064,7 +2091,7 @@ Procedure CommandVisibilityColumnTP(Command)
 	
 	Object["Visibility" + AttributeName] = Not Object["Visibility" + AttributeName];
 	
-	ОбновитьВидимостьРеквизитаТЧ(AttributeName);
+	UpdateVisibilityAttributeTP(AttributeName);
 		
 EndProcedure
 
@@ -2200,7 +2227,7 @@ Procedure SettingsFileAOnChange(Item)
 	
 	пТекущаяСтрока = Items.SettingsFileA.CurrentData;
 	If пТекущаяСтрока <> Undefined Then
-		If ПустаяСтрока(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
+		If IsBlankString(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
 			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
 		EndIf;
 	EndIf;
@@ -2212,7 +2239,7 @@ Procedure SettingsFileBOnChange(Item)
 	
 	пТекущаяСтрока = Items.SettingsFileB.CurrentData;
 	If пТекущаяСтрока <> Undefined Then
-		If ПустаяСтрока(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
+		If IsBlankString(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
 			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
 		EndIf;
 	EndIf;
@@ -2255,15 +2282,15 @@ EndProcedure
 &AtClient
 Procedure ParameterListAParameterValueOnChange(Item)
 	
-	ТекущийПараметр = Object.ParameterListA.FindByID(Items.ParameterListA.CurrentData.GetID());
-	ТекущийПараметр.ParameterType = TypeOf(ТекущийПараметр.ParameterValue);
+	CurrentParameter = Object.ParameterListA.FindByID(Items.ParameterListA.CurrentData.GetID());
+	CurrentParameter.ParameterType = TypeOf(CurrentParameter.ParameterValue);
 
 EndProcedure
 
 &AtClient
 Procedure ParameterListBParameterValueStartChoice(Item, ChoiceData, StandardProcessing)
 	
-	Items.ParameterListBParameterValue.ChooseType = TypeOf(Items.ParameterListB.CurrentData.Значениепараметра) = Type("Undefined");	
+	Items.ParameterListBParameterValue.ChooseType = TypeOf(Items.ParameterListB.CurrentData.ParameterValue) = Type("Undefined");	
 	ПриНачалеВыбораЗначенияПараметра("Б", StandardProcessing);
 		
 EndProcedure
@@ -2271,8 +2298,8 @@ EndProcedure
 &AtClient
 Procedure ParameterListBParameterValueOnChange(Item)
 	
-	ТекущийПараметр = Object.ParameterListB.FindByID(Items.ParameterListB.CurrentData.GetID());
-	ТекущийПараметр.ParameterType = TypeOf(ТекущийПараметр.ParameterValue);
+	CurrentParameter = Object.ParameterListB.FindByID(Items.ParameterListB.CurrentData.GetID());
+	CurrentParameter.ParameterType = TypeOf(CurrentParameter.ParameterValue);
 	
 EndProcedure
 
@@ -2323,7 +2350,7 @@ EndProcedure
 &AtClient
 Procedure ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча(Item)
 	
-	ОбновитьРеквизитыПроизвольныйКод();
+	UpdateAttributesArbitraryCode();
 	
 EndProcedure
 
@@ -2340,7 +2367,7 @@ Procedure CommandVisibilityTypesColumnsKey(Command)
 	Items.ResultCommandVisibilityTypesColumnsKey.Check = Not Items.ResultCommandVisibilityTypesColumnsKey.Check;
 	Object.DisplayKeyColumnTypes = Items.ResultCommandVisibilityTypesColumnsKey.Check;
 	If Object.DisplayKeyColumnTypes Then
-		ЗаполнитьТипыСтолбцовКлючаВоВсехСтроках();
+		FillColumnTypesKeyInAllRows();
 	EndIf;
 	UpdateVisibilityAccessibilityFormItems();
 	
@@ -2371,14 +2398,14 @@ Procedure CommandUploadResultToFileOnServer(Command)
 EndProcedure
 
 &AtClient
-Procedure CommandUploadResultToFileOnServerEnd(РезультатВопроса, AdditionalParameters) Export
+Procedure CommandUploadResultToFileOnServerEnd(Result, AdditionalParameters) Export
 	
-	Ответ = РезультатВопроса; 
+	Ответ = Result; 
 	If Ответ = DialogReturnCode.None Then
 		Return;
 	EndIf;
 	
-	ВыгрузитьРезультатВФайлНаСервере(False, RepresentationHeadersAttributes);
+	UploadResultToFileAtServer(False, RepresentationHeadersAttributes);
 
 EndProcedure
 
@@ -2394,24 +2421,24 @@ Procedure PathToDownloadFileStartChoice(Item, ChoiceData, StandardProcessing)
 	EndIf;
 	
 	Mode = FileDialogMode.Save;
-	ДиалогВыбора = New FileDialog(Mode);
-	ДиалогВыбора.FullFileName = Object.Title;
+	SelectionDialog = New FileDialog(Mode);
+	SelectionDialog.FullFileName = Object.Title;
 	Filter = "File " + Object.UploadFileFormat + " (*." + Object.UploadFileFormat + ")|*." + Object.UploadFileFormat + "";
-	ДиалогВыбора.Filter = Filter;
-	ДиалогВыбора.Title = "Укажите файл для сохранения результата сравнения";   
+	SelectionDialog.Filter = Filter;
+	SelectionDialog.Title = "Укажите файл для сохранения результата сравнения";   
 
-	ДиалогВыбора.Show(New NotifyDescription("ПутьКФайлуВыгрузкиНачалоВыбораЗавершение", ThisForm, New Structure("ДиалогВыбора", ДиалогВыбора)));
+	SelectionDialog.Show(New NotifyDescription("ПутьКФайлуВыгрузкиНачалоВыбораЗавершение", ThisForm, New Structure("SelectionDialog", SelectionDialog)));
 	
 EndProcedure
 
 &AtClient
 Procedure ПутьКФайлуВыгрузкиНачалоВыбораЗавершение(SelectedFiles, AdditionalParameters) Export
 	
-	ДиалогВыбора = AdditionalParameters.ДиалогВыбора;	
+	SelectionDialog = AdditionalParameters.SelectionDialog;	
 	
 	If (SelectedFiles <> Undefined) Then
 		
-		Object.PathToDownloadFile =  ДиалогВыбора.FullFileName;
+		Object.PathToDownloadFile =  SelectionDialog.FullFileName;
 		
 	EndIf;
 
@@ -2473,21 +2500,21 @@ EndProcedure
 &AtClient
 Procedure ConditionsOutputRowsDisabledOnChange(Item)
 	
-	ОбновитьВидимостьДоступностьВкладкиУсловияВыводаСтрок();
+	UpdateVisibilityAvailabilityPage_GroupConditionsOutputRows();
 	
 EndProcedure
 
 &AtClient
 Procedure ConditionsProhibitOutputRowsDisabledOnChange(Item)
 	
-	ОбновитьВидимостьДоступностьВкладкиУсловияЗапретаВыводаСтрок();
+	UpdateVisibilityAvailabilityPage_GroupConditionsProhibitOutputRows();
 	
 EndProcedure
 
 &AtClient
 Procedure SortTableDifferencesOnChange(Item)
 	
-	ОбновитьВидимостьДоступностьПорядкаСортировкиТаблицыРасхождений();
+	UpdateVisibilityAvailabilityOrderSortTableDifferences();
 		
 EndProcedure
 

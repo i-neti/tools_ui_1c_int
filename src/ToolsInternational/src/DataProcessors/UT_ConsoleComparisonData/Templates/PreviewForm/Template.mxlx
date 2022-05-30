@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://v8.1c.ru/8.2/data/spreadsheet" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<languageSettings>
-		<currentLanguage>ru</currentLanguage>
-		<defaultLanguage>ru</defaultLanguage>
+		<currentLanguage>en</currentLanguage>
+		<defaultLanguage>en</defaultLanguage>
 		<languageInfo>
 			<id>ru</id>
-			<code>Русский</code>
-			<description>Русский</description>
+			<code>Russian</code>
+		</languageInfo>
+		<languageInfo>
+			<id>en</id>
+			<code>English</code>
 		</languageInfo>
 	</languageSettings>
 	<columns>
@@ -179,55 +182,55 @@
 			<c>
 				<c>
 					<f>8</f>
-					<parameter>Ключ1</parameter>
+					<parameter>Key1</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>8</f>
-					<parameter>Ключ2</parameter>
+					<parameter>Key2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>8</f>
-					<parameter>Ключ3</parameter>
+					<parameter>Key3</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>9</f>
-					<parameter>ЧислоСтрок</parameter>
+					<parameter>NumberOfRows</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>9</f>
-					<parameter>Реквизит1</parameter>
+					<parameter>Attribute1</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>10</f>
-					<parameter>Реквизит2</parameter>
+					<parameter>Attribute2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>10</f>
-					<parameter>Реквизит3</parameter>
+					<parameter>Attribute3</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>10</f>
-					<parameter>Реквизит4</parameter>
+					<parameter>Attribute4</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>10</f>
-					<parameter>Реквизит5</parameter>
+					<parameter>Attribute5</parameter>
 				</c>
 			</c>
 		</row>
@@ -238,55 +241,55 @@
 			<c>
 				<c>
 					<f>11</f>
-					<parameter>Ключ1</parameter>
+					<parameter>Key1</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>11</f>
-					<parameter>Ключ2</parameter>
+					<parameter>Key2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>11</f>
-					<parameter>Ключ3</parameter>
+					<parameter>Key3</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>12</f>
-					<parameter>ЧислоСтрок</parameter>
+					<parameter>NumberOfRows</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>13</f>
-					<parameter>Реквизит1</parameter>
+					<parameter>Attribute1</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>13</f>
-					<parameter>Реквизит2</parameter>
+					<parameter>Attribute2</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>13</f>
-					<parameter>Реквизит3</parameter>
+					<parameter>Attribute3</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>13</f>
-					<parameter>Реквизит4</parameter>
+					<parameter>Attribute4</parameter>
 				</c>
 			</c>
 			<c>
 				<c>
 					<f>13</f>
-					<parameter>Реквизит5</parameter>
+					<parameter>Attribute5</parameter>
 				</c>
 			</c>
 		</row>
@@ -296,7 +299,7 @@
 	<height>5</height>
 	<vgRows>5</vgRows>
 	<namedItem xsi:type="NamedItemCells">
-		<name>Ключ1</name>
+		<name>Key1</name>
 		<area>
 			<type>Columns</type>
 			<beginRow>-1</beginRow>
@@ -306,7 +309,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>Ключ2</name>
+		<name>Key2</name>
 		<area>
 			<type>Columns</type>
 			<beginRow>-1</beginRow>
@@ -316,7 +319,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>Ключ3</name>
+		<name>Key3</name>
 		<area>
 			<type>Columns</type>
 			<beginRow>-1</beginRow>
@@ -326,7 +329,7 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>Реквизиты</name>
+		<name>Attributes</name>
 		<area>
 			<type>Columns</type>
 			<beginRow>-1</beginRow>
@@ -336,7 +339,17 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>СтрокаБезОшибок</name>
+		<name>Header</name>
+		<area>
+			<type>Rows</type>
+			<beginRow>0</beginRow>
+			<endRow>0</endRow>
+			<beginColumn>-1</beginColumn>
+			<endColumn>-1</endColumn>
+		</area>
+	</namedItem>
+	<namedItem xsi:type="NamedItemCells">
+		<name>RowWithoutErrors</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>2</beginRow>
@@ -346,21 +359,11 @@
 		</area>
 	</namedItem>
 	<namedItem xsi:type="NamedItemCells">
-		<name>СтрокаСОшибками</name>
+		<name>RowWithErrors</name>
 		<area>
 			<type>Rows</type>
 			<beginRow>4</beginRow>
 			<endRow>4</endRow>
-			<beginColumn>-1</beginColumn>
-			<endColumn>-1</endColumn>
-		</area>
-	</namedItem>
-	<namedItem xsi:type="NamedItemCells">
-		<name>Шапка</name>
-		<area>
-			<type>Rows</type>
-			<beginRow>0</beginRow>
-			<endRow>0</endRow>
 			<beginColumn>-1</beginColumn>
 			<endColumn>-1</endColumn>
 		</area>
