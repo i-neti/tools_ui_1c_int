@@ -11770,6 +11770,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Table</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Таблица</value>
             </title>
