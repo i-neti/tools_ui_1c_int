@@ -4175,7 +4175,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If RowTP_ConditionsOutputRows.Condition <> "Заполнен" Then
+				If RowTP_ConditionsOutputRows.Condition <> "Filled" Then
 				
 					If RowTP_ConditionsOutputRows.ComparisonType = "Attribute" And Not ValueIsFilled(RowTP_ConditionsOutputRows.NameComparedAttribute2) Then
 						AttributesFilledOutCorrectly = False;
@@ -4241,7 +4241,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 					ErrorsText = ErrorsText + Chars.LF + ErrorText;
 				EndIf;
 				
-				If RowTP_ConditionsProhibitOutputRows.Condition <> "Заполнен" Then
+				If RowTP_ConditionsProhibitOutputRows.Condition <> "Filled" Then
 					
 					If RowTP_ConditionsProhibitOutputRows.ComparisonType = "Attribute" And Not ValueIsFilled(RowTP_ConditionsProhibitOutputRows.NameComparedAttribute2) Then
 						AttributesFilledOutCorrectly = False;
@@ -4610,7 +4610,7 @@ Procedure FillVariablesPWithDefaultValues()
 	
 EndProcedure
 
-Function ВыгрузитьРезультатВФайлНаСервере(ForClient = False) Export
+Function UploadResultToFileAtServer(ForClient = False) Export
 	
 	UploadFileFormat = Upper(UploadFileFormat);
 	
