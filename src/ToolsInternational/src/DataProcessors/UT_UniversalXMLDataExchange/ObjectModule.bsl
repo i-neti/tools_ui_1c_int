@@ -1,114 +1,114 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2019, ООО 1С-Софт
-// Все права защищены. Эта программа и сопроводительные материалы предоставляются 
-// в соответствии с условиями лицензии Attribution 4.0 International (CC BY 4.0)
-// Текст лицензии доступен по ссылке:
+// Copyright (c) 2019, 1C-Soft LLC
+// All Rights reserved. This application and supporting materials are provided under the terms of 
+// Attribution 4.0 International license (CC BY 4.0)
+// The license text is available at:
 // https://creativecommons.org/licenses/by/4.0/legalcode
+// Translated by Neti Company
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-#Область ОписаниеПеременных
+#Region Variables
 
 ////////////////////////////////////////////////////////////////////////////////
-// ИСПОЛЬЗУЕМЫЕ СОКРАЩЕНИЯ ИМЕН ПЕРЕМЕННЫХ (АБРЕВИАТУРЫ)
+// ACRONYMS IN VARIABLE NAMES
 
-//  ПКО  - правило конвертации объектов.
-//  ПКС  - правило конвертации свойств объектов.
-//  ПКГС - правило конвертации группы свойств объектов.
-//  ПКЗ  - правило конвертации значений объектов.
-//  ПВД  - правило выгрузки данных.
-//  ПОД  - правило очистки данных.
-
-////////////////////////////////////////////////////////////////////////////////
-// ВСПОМОГАТЕЛЬНЫЕ ПЕРЕМЕННЫЕ МОДУЛЯ ДЛЯ НАПИСАНИЯ АЛГОРИТМОВ (ОБЩИЕ ДЛЯ ВЫГРУЗКИ И ЗАГРУЗКИ)
-
-Перем Конвертация Экспорт;  // Структура свойств конвертации (Имя, Ид, обработчики событий обмена).
-
-Перем Алгоритмы Экспорт;  // Структура, содержащая используемые алгоритмы.
-Перем Запросы Экспорт;  // Структура, содержащая используемые запросы.
-Перем ДопОбработки Экспорт;  // Структура, содержащая используемые внешние обработки.
-
-Перем Правила Экспорт;  // Структура, содержащая ссылки на ПКО.
-
-Перем Менеджеры Экспорт;  // Соответствие, содержащее поля Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД, ПКО.
-Перем МенеджерыДляПлановОбмена Экспорт;
-Перем ФайлОбмена Экспорт;            // Последовательно записываемый/читаемый файл обмена.
-
-Перем ПараметрыДопОбработок Экспорт;  // Структура, содержащая параметры, используемых внешних обработок.
-
-Перем ПараметрыИнициализированы Экспорт;  // Если Истина, то необходимые параметры конвертации проинициализированы.
-
-Перем мФайлПротоколаДанных Экспорт; // Файл для ведения протокола обмена данными.
-Перем ФлагКомментироватьОбработкуОбъектов Экспорт;
-
-Перем ВнешняяОбработкаОбработчиковСобытий Экспорт; // Объект "ВнешниеОбработкиМенеджер" для вызова экспортных процедур
-                                                   // обработчиков при отладке загрузки/выгрузки.
-
-Перем ОбщиеПроцедурыФункции;  // Переменная хранит ссылку на данный экземпляр обработки - ЭтотОбъект.
-                              // Необходима для вызова экспортных процедур из обработчиков событий.
-
-Перем мМакетПараметровОбработчиков; // Табличный документ с параметрами обработчиков.
-Перем мМакетОбщиеПроцедурыФункции;  // Текстовый документ с комментариями, глобальными переменными и обертками общих
-                                    // процедур и функций.
-
-Перем мРежимыОбработкиДанных; // Структура, содержащая режимы использования этой обработки.
-Перем РежимОбработкиДанных;   // Содержит текущее значение режима обработки данных.
-
-Перем мРежимыОтладкиАлгоритмов; // Структура, содержащая режимы отладки алгоритмов.
-Перем АлгоритмыИнтегрированные; // Структура, содержащая алгоритмы с интегрированным кодом вложенных алгоритмов.
-
-Перем ИменаОбработчиков; // Структура, содержащая имена всех обработчиков правил обмена.
-
-Перем РазделителиКонфигурации; // Массив: содержащий разделители конфигурации.
+//  OCR is an object conversion rule.
+//  PCR is an object property conversion rule.
+//  PGCR is an object property group conversion rule.
+//  VCR is an object value conversion rule.
+//  DER is a data export rule.
+//  DCR is a data clearing rule.
 
 ////////////////////////////////////////////////////////////////////////////////
-// ФЛАГИ НАЛИЧИЯ ГЛОБАЛЬНЫХ ОБРАБОТЧИКОВ СОБЫТИЙ
+// AUXILIARY MODULE VARIABLES FOR CREATING ALGORITHMS (FOR BOTH IMPORT AND EXPORT)
 
-Перем ЕстьГлобальныйОбработчикПередВыгрузкойОбъекта;
-Перем ЕстьГлобальныйОбработчикПослеВыгрузкиОбъекта;
+Var Conversion  Export;  // Conversion property structure (name, ID, and exchange event handlers).
 
-Перем ЕстьГлобальныйОбработчикПередКонвертациейОбъекта;
+Var Algorithms    Export;  // Structure containing used algorithms.
+Var Queries      Export;  // Structure containing used queries.
+Var AdditionalDataProcessors Export;  // Structure containing used external data processors.
 
-Перем ЕстьГлобальныйОбработчикПередЗагрузкойОбъекта;
-Перем ЕстьГлобальныйОбработчикПослеЗагрузкиОбъекта;
+Var Rules      Export;  // Structure containing references to OCR.
 
-Перем ВерсияПлатформыПриемника;
-Перем ПлатформаПриемника;
+Var Managers    Export;  // Map containing the following fields: Name, TypeName, RefTypeAsString, Manager, MetadataObject, and OCR.
+Var ManagersForExchangePlans Export;
+Var ExchangeFile Export;            // Sequentially written or read exchange file.
+
+Var AdditionalDataProcessorParameters Export;  // Structure containing parameters of used external data processors.
+
+Var ParametersInitialized Export;  // If True, necessary conversion parameters are initialized.
+
+Var mDataProtocolFile Export; // Data exchange log file.
+Var CommentObjectProcessingFlag Export;
+
+Var EventHandlersExternalDataProcessor Export; // The ExternalDataProcessorsManager object to call export procedures of handlers when debugging 
+                                                   // import or export.
+
+Var CommonProceduresFunctions;  // The variable stores a reference to the current instance of the data processor called ThisObject.
+                              // It is required to call export procedures from event handlers.
+
+Var mHandlerParameterTemplate; // Spreadsheet document with handler parameters.
+Var mCommonProceduresFunctionsTemplate;  // Text document with comments, global variables and bind methods
+											// of common procedures and functions.
+
+Var mDataProcessingModes; // The structure that contains modes of using this data processor.
+Var DataProcessingMode;   // It contains current value of data processing mode.
+
+Var mAlgorithmDebugModes; // The structure that contains modes of debugging algorithms.
+Var IntegratedAlgorithms; // The structure containing algorithms with integrated codes of nested algorithms.
+
+Var HandlersNames; // The structure that contains names of all exchange rule handlers.
+
+Var ConfigurationSeparators; // Array: contains configuration separators.
 
 ////////////////////////////////////////////////////////////////////////////////
-// ПЕРЕМЕННЫЕ ОБРАБОТОК ОБМЕНА (ОБЩИЕ ДЛЯ ВЫГРУЗКИ И ЗАГРУЗКИ)
+// FLAGS THAT SHOW WHETHER GLOBAL EVENT HANDLERS EXIST
 
-Перем одТипСтрока;                  // Тип("Строка")
-Перем одТипБулево;                  // Тип("Булево")
-Перем одТипЧисло;                   // Тип("Число")
-Перем одТипДата;                    // Тип("Дата")
-Перем одТипХранилищеЗначения;       // Тип("ХранилищеЗначения")
-Перем одТипУникальныйИдентификатор; // Тип("УникальныйИдентификатор")
-Перем одТипДвоичныеДанные;          // Тип("ДвоичныеДанные")
-Перем одТипВидДвиженияНакопления;   // Тип("ВидДвиженияНакопления")
-Перем одТипУдалениеОбъекта;         // Тип("УдалениеОбъекта")
-Перем одТипВидСчета;			    // Тип("ВидСчета")
-Перем одТипТип;			  		    // Тип("Тип")
-Перем одТипСоответствие;		    // Тип("Соответствие").
+Var HasBeforeExportObjectGlobalHandler;
+Var HasAfterExportObjectGlobalHandler;
 
-Перем одТипУзлаXML_КонецЭлемента Экспорт;
-Перем одТипУзлаXML_НачалоЭлемента Экспорт;
-Перем одТипУзлаXML_Текст Экспорт;
+Var HasBeforeConvertObjectGlobalHandler;
 
-Перем ЗначениеПустаяДата Экспорт;
+Var HasBeforeImportObjectGlobalHandler;
+Var HasAfterObjectImportGlobalHandler;
 
-Перем одСообщения;             // Соответствие. Ключ - код ошибки,  Значение - описание ошибки.
+Var DestinationPlatformVersion;
+Var DestinationPlatform;
 
-Перем мСписокМакетовПравилОбмена Экспорт;
+////////////////////////////////////////////////////////////////////////////////
+// VARIABLES THAT ARE USED IN EXCHANGE HANDLERS (BOTH FOR IMPORT AND EXPORT)
+
+Var deStringType;                  // Type("String")
+Var deBooleanType;                  // Type("Boolean")
+Var deNumberType;                   // Type("Number")
+Var deDateType;                    // Type("Date")
+Var deValueStorageType;       // Type("ValueStorage")
+Var deUUIDType; // Type("UUID")
+Var deBinaryDataType;          // Type("BinaryData")
+Var deAccumulationRecordTypeType;   // Type("AccumulationRecordType")
+Var deObjectDeletionType;         // Type("ObjectDeletion")
+Var deAccountTypeType;			    // Type("AccountType")
+Var deTypeType;			  		    // Type("Type")
+Var deMapType;		    // Type("Map").
+
+Var deXMLNodeType_EndElement  Export;
+Var deXMLNodeType_StartElement Export;
+Var deXMLNodeType_Text          Export;
+
+Var BlankDateValue Export;
+
+Var deMessages;             // Map. Key - an error code, Value - error details.
+
+Var mExchangeRuleTemplateList Export;
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// ПЕРЕМЕННЫЕ МОДУЛЯ ОБРАБОТКИ ВЫГРУЗКИ
+// IMPORT PROCESSING MODULE VARIABLES
 
-Перем мСчетчикВыгруженныхОбъектов Экспорт;   // Число - счетчик выгруженных объектов.
-Перем мСчетчикНПП Экспорт;   // Число - счетчик НПП
-Перем мТаблицаПравилКонвертацииСвойств;      // ТаблицаЗначений - шаблон для воссоздания структуры таблицы путем
-                                             //                   копирования.
-Перем мXMLПравила;                           // Xml-Строка, содержащая описание правил обмена.
-Перем мСтрокаТиповДляПриемника;
+Var mImportedObjectCounter Export;// Number - imported object counter.
+Var mSNCounter Export;   // Number - SN counter
+Var mPropertyConversionRulesTable;      // ValueTable -a template to restore table structure by copying.
+Var mXMLRules;                           // Xml-Line that contains exchange rules details.
+Var mTypeStringForDestination;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1436,7 +1436,7 @@
 	СтруктураПравил.Алгоритмы = Алгоритмы;
 	СтруктураПравил.Запросы = ЗапросыДляСохранения;
 	СтруктураПравил.Конвертация = Конвертация;
-	СтруктураПравил.мXMLПравила = мXMLПравила;
+	СтруктураПравил.mXMLRules = mXMLRules;
 	СтруктураПравил.ParametersSettingsTable = ParametersSettingsTable;
 	СтруктураПравил.Parameters = ПараметрыДляСохранения;
 
@@ -1757,8 +1757,8 @@
 
 		Если НПП = 0 Тогда
 
-			мСчетчикНПП = мСчетчикНПП + 1;
-			НПП         = мСчетчикНПП;
+			mSNCounter = mSNCounter + 1;
+			НПП         = mSNCounter;
 
 		КонецЕсли;
 		
@@ -3352,7 +3352,7 @@
 // 
 Функция КоллекцияПравилаКонвертацииСвойств()
 
-	Возврат мТаблицаПравилКонвертацииСвойств;
+	Возврат mPropertyConversionRulesTable;
 
 КонецФункции
 
@@ -3373,7 +3373,7 @@
 //     * Алгоритмы - Структура -
 //     * Запросы - Структура -
 //     * Конвертация - Произвольный -
-//     * мXMLПравила - Произвольный -
+//     * mXMLRules - Произвольный -
 //     * ParametersSettingsTable - ТаблицаЗначений -
 //     * Parameters - Структура -
 //     * ВерсияПлатформыПриемника - Строка -
@@ -3387,7 +3387,7 @@
 	СтруктураПравил.Вставить("Алгоритмы");
 	СтруктураПравил.Вставить("Запросы");
 	СтруктураПравил.Вставить("Конвертация");
-	СтруктураПравил.Вставить("мXMLПравила");
+	СтруктураПравил.Вставить("mXMLRules");
 	СтруктураПравил.Вставить("ParametersSettingsTable");
 	СтруктураПравил.Вставить("Parameters");
 
@@ -3848,8 +3848,8 @@
 
 		ИначеЕсли ИмяУзла = "Свойства" Тогда
 
-			НоваяСтрока.СвойстваПоиска	= мТаблицаПравилКонвертацииСвойств.Скопировать();
-			НоваяСтрока.Свойства		= мТаблицаПравилКонвертацииСвойств.Скопировать();
+			НоваяСтрока.СвойстваПоиска	= mPropertyConversionRulesTable.Скопировать();
+			НоваяСтрока.Свойства		= mPropertyConversionRulesTable.Скопировать();
 			Если НоваяСтрока.СинхронизироватьПоИдентификатору <> Неопределено
 				И НоваяСтрока.СинхронизироватьПоИдентификатору Тогда
 
@@ -5942,7 +5942,7 @@
 	Алгоритмы                  = СтруктураПравил.Алгоритмы;
 	ЗапросыДляВосстановления   = СтруктураПравил.Запросы;
 	Конвертация                = СтруктураПравил.Конвертация;
-	мXMLПравила                = СтруктураПравил.мXMLПравила;
+	mXMLRules                = СтруктураПравил.mXMLRules;
 	ParametersSettingsTable = СтруктураПравил.ParametersSettingsTable;
 	Parameters                  = СтруктураПравил.Parameters;
 
@@ -12268,8 +12268,8 @@
 
 	СоздатьСтруктуруКонвертации();
 
-	мТаблицаПравилКонвертацииСвойств = Новый ТаблицаЗначений;
-	ИнициализацияТаблицыПравилКонвертацииСвойств(мТаблицаПравилКонвертацииСвойств);
+	mPropertyConversionRulesTable = Новый ТаблицаЗначений;
+	ИнициализацияТаблицыПравилКонвертацииСвойств(mPropertyConversionRulesTable);
 	ДополнитьСлужебныеТаблицыКолонками();
 	
 	// Возможно выбраны встроенные правила обмена (один из макетов).
@@ -12555,7 +12555,7 @@
 		КонецЕсли;
 	КонецЦикла;
 	ЗаписьXML.ЗаписатьКонецЭлемента();
-	мXMLПравила = ЗаписьXML.Закрыть();
+	mXMLRules = ЗаписьXML.Закрыть();
 
 	Для Каждого СтрокаПравилВыгрузки Из ExportRulesTable.Строки Цикл
 		ОбновитьПометкиВсехРодителейУПравилВыгрузки(СтрокаПравилВыгрузки, Истина);
@@ -12586,7 +12586,7 @@
 	СтруктураДанных = Новый Соответствие;
 	ЗаполнитьИнформациюПоТипамДанныхПриемника(СтруктураДанных, ConversionRulesTable);
 
-	мСтрокаТиповДляПриемника = СоздатьСтрокуСТипамиДляПриемника(СтруктураДанных);
+	mTypeStringForDestination = СоздатьСтрокуСТипамиДляПриемника(СтруктураДанных);
 
 	Если SafeMode Тогда
 		УстановитьБезопасныйРежим(Истина);
@@ -13097,7 +13097,7 @@
 		Возврат Истина;
 	КонецЕсли;
 
-	ТекущаяСтрокаДляЗаписи = ТекущаяСтрокаДляЗаписи + Символы.ПС + мXMLПравила + Символы.ПС + "</ФайлОбмена>"
+	ТекущаяСтрокаДляЗаписи = ТекущаяСтрокаДляЗаписи + Символы.ПС + mXMLRules + Символы.ПС + "</ФайлОбмена>"
 		+ Символы.ПС;
 
 	РаботаВозможна = мОбработкаДляЗагрузкиДанных.ВыполнитьДействияПередЧтениемДанных(ТекущаяСтрокаДляЗаписи);
@@ -13177,8 +13177,8 @@
 
 Процедура ПередатьИнформациюОТипахВПриемник()
 
-	Если Не ПустаяСтрока(мСтрокаТиповДляПриемника) Тогда
-		ЗаписатьВФайл(мСтрокаТиповДляПриемника);
+	Если Не ПустаяСтрока(mTypeStringForDestination) Тогда
+		ЗаписатьВФайл(mTypeStringForDestination);
 	КонецЕсли;
 
 КонецПроцедуры
@@ -13244,7 +13244,7 @@
 	ИнициализироватьМенеджерыИСообщения();
 
 	мСчетчикВыгруженныхОбъектов = 0;
-	мСчетчикНПП 				= 0;
+	mSNCounter 				= 0;
 	ErrorFlag                  = Ложь;
 
 	// Загрузка правил обмена
@@ -13302,7 +13302,7 @@
 	Попытка
 	
 		// Включаем правила обмена в файл.
-		ФайлОбмена.ЗаписатьСтроку(мXMLПравила);
+		ФайлОбмена.ЗаписатьСтроку(mXMLRules);
 
 		Отказ = Не ВыполнитьПередачуИнформацииОНачалеОбменаВПриемник(ТекущаяСтрокаДляЗаписи);
 
@@ -14113,7 +14113,7 @@
 
 	ЗначениеПустаяДата		   = Дата('00010101');
 
-	мXMLПравила  = Неопределено;
+	mXMLRules  = Неопределено;
 	
 	// Типы узлов xml
 
