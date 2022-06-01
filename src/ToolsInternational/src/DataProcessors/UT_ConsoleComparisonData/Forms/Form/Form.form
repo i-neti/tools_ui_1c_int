@@ -137,7 +137,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -199,7 +199,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -261,7 +261,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -323,7 +323,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -385,7 +385,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -447,7 +447,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -509,7 +509,7 @@
         <extInfo xsi:type="form:ImageFieldExtInfo">
           <handlers>
             <event>Click</event>
-            <name>ОперацияНажатие</name>
+            <name>OperationClick</name>
           </handlers>
           <width>5</width>
           <autoMaxWidth>true</autoMaxWidth>
@@ -1928,6 +1928,10 @@
                 <headerHorizontalAlign>Left</headerHorizontalAlign>
                 <showInFooter>true</showInFooter>
                 <extInfo xsi:type="form:InputFieldExtInfo">
+                  <handlers>
+                    <event>StartChoice</event>
+                    <name>OrderSortTableDifferencesStartChoice</name>
+                  </handlers>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
                   <wrap>true</wrap>
@@ -2456,7 +2460,7 @@
               <titleLocation>Left</titleLocation>
               <handlers>
                 <event>OnChange</event>
-                <name>ТипПериодаПриИзменении</name>
+                <name>PeriodTypeOnChange</name>
               </handlers>
               <extendedTooltip>
                 <name>PeriodTypeExtendedTooltip</name>
@@ -3144,7 +3148,7 @@
             </dataPath>
             <handlers>
               <event>OnChange</event>
-              <name>RowOutputConditionsDisabledOnChange</name>
+              <name>ConditionsOutputRowsDisabledOnChange</name>
             </handlers>
             <extendedTooltip>
               <name>ConditionsOutputRowsDisabledExtendedTooltip</name>
@@ -3310,7 +3314,7 @@
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>ЛогическийОператорДляУсловийВыводаСтрокПриИзменении</name>
+                <name>BooleanOperatorForConditionsOutputRowsOnChange</name>
               </handlers>
               <extendedTooltip>
                 <name>BooleanOperatorForConditionsOutputRowsExtendedTooltip</name>
@@ -3384,7 +3388,7 @@
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>КодДляВыводаСтрокРедактируетсяВручнуюПриИзменении</name>
+                <name>CodeForOutputRowsEditedManuallyOnChange</name>
               </handlers>
               <extendedTooltip>
                 <name>CodeForOutputRowsEditedManuallyExtendedTooltip</name>
@@ -4414,7 +4418,7 @@
             </dataPath>
             <handlers>
               <event>OnChange</event>
-              <name>УсловияЗапретаВыводаСтрокОтключеныПриИзменении</name>
+              <name>ConditionsProhibitOutputRowsDisabledOnChange</name>
             </handlers>
             <extendedTooltip>
               <name>ConditionsProhibitOutputRowsDisabledExtendedTooltip</name>
@@ -5968,7 +5972,7 @@
               <titleLocation>None</titleLocation>
               <handlers>
                 <event>OnChange</event>
-                <name>ПриИзмененииКлючевогоРеквизита</name>
+                <name>OnChangeKeyAttribute</name>
               </handlers>
               <extendedTooltip>
                 <name>BaseTypeAExtendedTooltip</name>
@@ -6004,6 +6008,10 @@
                 <radioButtonsType>Tumbler</radioButtonsType>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>Current IB 1C 8</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Текущая ИБ 1С 8</value>
                   </presentation>
@@ -6012,6 +6020,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>External IB 1C 8</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>Внешняя ИБ 1С 8</value>
@@ -6022,6 +6034,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>External IB 1C 7.7</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Внешняя ИБ 1С 7.7</value>
                   </presentation>
@@ -6030,6 +6046,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>DB SQL</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>БД SQL</value>
@@ -6040,6 +6060,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>File</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Файл</value>
                   </presentation>
@@ -6049,6 +6073,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>Table</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Таблица</value>
                   </presentation>
@@ -6057,6 +6085,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>JSON</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>JSON</value>
@@ -6143,7 +6175,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>WorkOptionExternalBaseAExtendedTooltip</name>
@@ -6810,7 +6842,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>ConnectionToExternalBaseAFileFormatExtendedTooltip</name>
@@ -6958,7 +6990,7 @@
                     <extInfo xsi:type="form:InputFieldExtInfo">
                       <handlers>
                         <event>StartChoice</event>
-                        <name>ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбора</name>
+                        <name>ConnectionToExternalBaseAPathToFileStartChoice</name>
                       </handlers>
                       <autoMaxWidth>true</autoMaxWidth>
                       <autoMaxHeight>true</autoMaxHeight>
@@ -7911,7 +7943,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKeyUniqueIdentifierAExtendedTooltip</name>
@@ -8050,7 +8082,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKeyToStringAExtendedTooltip</name>
@@ -8206,7 +8238,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode1AExtendedTooltip</name>
@@ -8672,7 +8704,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKey2UniqueIdentifierAExtendedTooltip</name>
@@ -8811,7 +8843,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKey2ToStringAExtendedTooltip</name>
@@ -8968,7 +9000,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode2AExtendedTooltip</name>
@@ -9430,7 +9462,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKey3UniqueIdentifierAExtendedTooltip</name>
@@ -9569,7 +9601,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKey3ToStringAExtendedTooltip</name>
@@ -9725,7 +9757,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode3AExtendedTooltip</name>
@@ -12245,7 +12277,7 @@
               <titleLocation>None</titleLocation>
               <handlers>
                 <event>OnChange</event>
-                <name>ПриИзмененииКлючевогоРеквизита</name>
+                <name>OnChangeKeyAttribute</name>
               </handlers>
               <extendedTooltip>
                 <name>BaseTypeBExtendedTooltip</name>
@@ -12281,6 +12313,10 @@
                 <radioButtonsType>Tumbler</radioButtonsType>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>Current IB 1C 8</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Текущая ИБ 1С 8</value>
                   </presentation>
@@ -12289,6 +12325,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>External IB 1C 8</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>Внешняя ИБ 1С 8</value>
@@ -12299,6 +12339,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>External IB 1C 7.7</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Внешняя ИБ 1С 7.7</value>
                   </presentation>
@@ -12307,6 +12351,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>DB SQL</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>БД SQL</value>
@@ -12317,6 +12365,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>File</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Файл</value>
                   </presentation>
@@ -12326,6 +12378,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>Table</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>Таблица</value>
                   </presentation>
@@ -12334,6 +12390,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>JSON</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>JSON</value>
@@ -12416,7 +12476,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>WorkOptionExternalBaseBExtendedTooltip</name>
@@ -13083,7 +13143,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>ConnectionToExternalBaseBFileFormatExtendedTooltip</name>
@@ -14180,7 +14240,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKeyUniqueIdentifierBExtendedTooltip</name>
@@ -14319,7 +14379,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKeyToStringBExtendedTooltip</name>
@@ -14475,7 +14535,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode1BExtendedTooltip</name>
@@ -14937,7 +14997,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKey2UniqueIdentifierBExtendedTooltip</name>
@@ -15076,7 +15136,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKey2ToStringBExtendedTooltip</name>
@@ -15232,7 +15292,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode2BExtendedTooltip</name>
@@ -15694,7 +15754,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>UseAsKey3UniqueIdentifierBExtendedTooltip</name>
@@ -15833,7 +15893,7 @@
                     </dataPath>
                     <handlers>
                       <event>OnChange</event>
-                      <name>ПриИзмененииКлючевогоРеквизита</name>
+                      <name>OnChangeKeyAttribute</name>
                     </handlers>
                     <extendedTooltip>
                       <name>CastKey3ToStringBExtendedTooltip</name>
@@ -15989,7 +16049,7 @@
                       <titleLocation>Right</titleLocation>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча</name>
+                        <name>OnChangeFlagExecuteArbitraryKeyCode</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ExecuteArbitraryKeyCode3BExtendedTooltip</name>
@@ -20035,7 +20095,7 @@
             <name>ResultGroupUnload</name>
             <id>1002</id>
             <items xsi:type="form:Button">
-              <name>РезультатКомандаВыгрузитьРезультатВФайлНаКлиенте</name>
+              <name>CommandUploadResultToFileOnClient</name>
               <id>1052</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -20043,7 +20103,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>РезультатКомандаВыгрузитьРезультатВФайлНаКлиентеРасширеннаяПодсказка</name>
+                <name>CommandUploadResultToFileOnClientExtendedTooltip</name>
                 <id>1053</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -20065,7 +20125,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>РезультатКомандаВыгрузитьРезультатВФайлНаСервере</name>
+              <name>CommandUploadResultToFileOnServer</name>
               <id>1000</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -20073,7 +20133,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>РезультатКомандаВыгрузитьРезультатВФайлНаСервереРасширеннаяПодсказка</name>
+                <name>CommandUploadResultToFileOnServerExtendedTooltip</name>
                 <id>1001</id>
                 <visible>true</visible>
                 <enabled>true</enabled>

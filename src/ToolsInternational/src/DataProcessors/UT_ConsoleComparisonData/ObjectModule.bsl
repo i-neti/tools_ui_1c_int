@@ -99,18 +99,18 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 		ThisObject["VisibilityAttributeB" + AttributesCounter] = ThisObject["VisibilityAttributeB" + AttributesCounter] And NumberOfColumnsValueTable_B >= AttributesCounter;
 		
 		TotalsByAttributesMap.Insert("AttributeA" + AttributesCounter, New Structure(
-			"ОшибкаПриВычислении,CalculateTotal,AggregateFunctionCalculationTotal,ValueTotal,СуммаЗначений,ЧислоЗначений"
+			"ErrorWhenCalculating, CalculateTotal, AggregateFunctionCalculationTotal, ValueTotal, SumOfValues, NumberOfValues"
 				, False
 				, ?(SettingsFileA.Count() < AttributesCounter, False, SettingsFileA[AttributesCounter - 1].CalculateTotal)
-				, ?(SettingsFileA.Count() < AttributesCounter, "Сумма", SettingsFileA[AttributesCounter - 1].AggregateFunctionCalculationTotal)
+				, ?(SettingsFileA.Count() < AttributesCounter, "Sum", SettingsFileA[AttributesCounter - 1].AggregateFunctionCalculationTotal)
 				, Undefined
 				, 0
 				, 0));
 		TotalsByAttributesMap.Insert("AttributeB" + AttributesCounter, New Structure(
-			"ОшибкаПриВычислении,CalculateTotal,AggregateFunctionCalculationTotal,ValueTotal,СуммаЗначений,ЧислоЗначений"
+			"ErrorWhenCalculating, CalculateTotal, AggregateFunctionCalculationTotal, ValueTotal, SumOfValues, NumberOfValues"
 				, False
 				, ?(SettingsFileB.Count() < AttributesCounter, False, SettingsFileB[AttributesCounter - 1].CalculateTotal)
-				, ?(SettingsFileB.Count() < AttributesCounter, "Сумма", SettingsFileB[AttributesCounter - 1].AggregateFunctionCalculationTotal)
+				, ?(SettingsFileB.Count() < AttributesCounter, "Sum", SettingsFileB[AttributesCounter - 1].AggregateFunctionCalculationTotal)
 				, Undefined
 				, 0
 				, 0));
@@ -276,7 +276,7 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 					EndTry;
 				EndIf;
 				
-				//Условия вывода строк, установленные пользователем
+				//Row output conditions set by the user
 				If Not ConditionsOutputRowCompleted Or ConditionsProhibitOutputRowCompleted Then					
 					
 					Result.Delete(RowTP_Result);
@@ -287,71 +287,75 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 				For AttributesCounter = 1 По NumberOfRequisites Do
 					
 					AttributeName = "AttributeA" + AttributesCounter;
-					If TotalsByAttributesMap[AttributeName].РассчитыватьИтог And TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = False Then
+					If TotalsByAttributesMap[AttributeName].CalculateTotal And TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = False Then
 						Try
-							пЗначениеРеквизита = RowTP_Result[AttributeName];
-							Если ЗначениеЗаполнено(пЗначениеРеквизита) Then
-								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
-								//Количество
-								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Then
-									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Then
-									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
-									//Сумма
-									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Then
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-									//Среднее
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Then
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-									//Максимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Then
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Max(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
-									//Минимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Then
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Min(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+							vAttributeValue = RowTP_Result[AttributeName];
+							If ValueIsFilled(vAttributeValue) Then
+								vTypeValue = TypeOf(vAttributeValue);
+								//Count
+								If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Count" Then
+									TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+								ElsIf vTypeValue = Type("Number") Или vTypeValue = Type("String") Then
+									vAttributeValueNumber = Number(vAttributeValue);																		
+									//Sum
+									If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Sum" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+									//Mid
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Mid" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+										TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+									//Max
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Max" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Max(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
+									//Min
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Min" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Min(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
 									EndIf;
-								Иначе
-									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								Else
+									TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
 								EndIf;
 							EndIf;
 						Except
-							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = True;
+							TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
 						EndTry;
 					EndIf;
 					
 					AttributeName = "AttributeB" + AttributesCounter;
-					Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог И TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = False Then
-						Попытка
-							пЗначениеРеквизита = RowTP_Result[AttributeName];
-							Если ЗначениеЗаполнено(пЗначениеРеквизита) Then
-								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
-								//Количество
-								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Then
-									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Then
-									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
-									//Сумма
-									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Then
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-									//Среднее
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Then
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-									//Максимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Then
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Max(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
-									//Минимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Then
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Undefined, Min(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+					If TotalsByAttributesMap[AttributeName].CalculateTotal И TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = False Then
+						Try
+							vAttributeValue = RowTP_Result[AttributeName];
+							If ValueIsFilled(vAttributeValue) Then
+								vTypeValue = TypeOf(vAttributeValue);
+								//Count
+								If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Count" Then
+									TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+								ElsIf vTypeValue = Type("Number") Или vTypeValue = Type("String") Then
+									vAttributeValueNumber = Number(vAttributeValue);																		
+									//Sum
+									If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Sum" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+									//Mid
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Mid" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+										TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+									//Max
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Max" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Max(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
+									//Min
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Min" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Min(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
 									EndIf;
-								Иначе
-									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								Else
+									TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
 								EndIf;
 							EndIf;
-						Исключение
-							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
-						КонецПопытки;
+						Except
+							TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
+						EndTry;
 					EndIf;
 					
 				EndDo;
@@ -449,7 +453,7 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 			
 				If RowValueTable_B <> Undefined Then
 					
-					//Values реквизитов выводятся только при наличии единственной записи по ключу
+					//Values ​​of attributes are displayed only if there is a single entry by key
 					If RowTP_Result.NumberOfRecordsB = 1 Then
 						For CounterColumnB = 1 To Min(NumberOfRequisites, NumberOfColumnsValueTable_B - NumberColumnsInKey) Do
 							RowTP_Result["AttributeB" + CounterColumnB] = RowValueTable_B.Get(CounterColumnB + OffsetNumberAttribute);
@@ -460,8 +464,8 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 				
 			EndIf;
 			
-			//If число строк с одним ключом больше 1, результирующую строку нужно вывести обязательно, 
-			//т.к. условия в данном случае некорректно применять вообще
+			//If the number of rows with the same key is greater than 1, the resulting row must be displayed,
+			//because conditions in this case it is incorrect to apply at all
 			If RowTP_Result.NumberOfRecordsA <= 1 And RowTP_Result.NumberOfRecordsB <= 1 Then
 				
 				ConditionsOutputRowCompleted = True;
@@ -492,7 +496,7 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 					EndTry;
 				EndIf;
 				
-				//Условия вывода строк, установленные пользователем
+				//Conditions for string output set by the user
 				If Not ConditionsOutputRowCompleted Or ConditionsProhibitOutputRowCompleted Then					
 					
 					Result.Delete(RowTP_Result);
@@ -502,37 +506,39 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 				For AttributesCounter = 1 По NumberOfRequisites Цикл
 															
 					AttributeName = "AttributeB" + AttributesCounter;
-					Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог И TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Ложь Тогда
-						Попытка
-							пЗначениеРеквизита = RowTP_Result[AttributeName];
-							Если ЗначениеЗаполнено(пЗначениеРеквизита) Тогда
-								пТипЗначения = ТипЗнч(пЗначениеРеквизита);
-								//Количество
-								Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
-									TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-								ИначеЕсли пТипЗначения = Тип("Число") Или пТипЗначения = Тип("Строка") Тогда
-									пЗначениеРеквизитаЧисло = Число(пЗначениеРеквизита);																		
-									//Сумма
-									Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-									//Среднее
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
-										TotalsByAttributesMap[AttributeName].СуммаЗначений = TotalsByAttributesMap[AttributeName].СуммаЗначений + пЗначениеРеквизитаЧисло;
-										TotalsByAttributesMap[AttributeName].ЧислоЗначений = TotalsByAttributesMap[AttributeName].ЧислоЗначений + 1;
-									//Максимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Максимум" Тогда
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Неопределено, Макс(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
-									//Минимум
-									ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Минимум" Тогда
-										TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЗначениеИтога <> Неопределено, Мин(TotalsByAttributesMap[AttributeName].ЗначениеИтога, пЗначениеРеквизитаЧисло), пЗначениеРеквизитаЧисло);
+					If TotalsByAttributesMap[AttributeName].CalculateTotal И TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = False Then
+						Try
+							vAttributeValue = RowTP_Result[AttributeName];
+							If ValueIsFilled(vAttributeValue) Then
+								vTypeValue = TypeOf(vAttributeValue);
+								//Count
+								If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Count" Then
+									TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+								ElsIf vTypeValue = Type("Number") Или vTypeValue = Type("String") Then
+									vAttributeValueNumber = Number(vAttributeValue);																		
+									//Sum
+									If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Sum" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+									//Mid
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Mid" Then
+										TotalsByAttributesMap[AttributeName].SumOfValues = TotalsByAttributesMap[AttributeName].SumOfValues + vAttributeValueNumber;
+										TotalsByAttributesMap[AttributeName].NumberOfValues = TotalsByAttributesMap[AttributeName].NumberOfValues + 1;
+									//Max
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Max" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Max(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
+									//Min
+									ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Min" Then
+										TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].ValueTotal <> Undefined
+											, Min(TotalsByAttributesMap[AttributeName].ValueTotal, vAttributeValueNumber), vAttributeValueNumber);
 									EndIf;
-								Иначе
-									TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
+								Else
+									TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
 								EndIf;
 							EndIf;
-						Исключение
-							TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении = Истина;
-						КонецПопытки;
+						Except
+							TotalsByAttributesMap[AttributeName].ErrorWhenCalculating = True;
+						EndTry;
 					EndIf;
 					
 				EndDo;
@@ -551,59 +557,63 @@ Procedure CompareDataOnServer(ErrorsText = "") Export
 	For AttributesCounter = 1 По NumberOfRequisites Цикл
 					
 		AttributeName = "AttributeA" + AttributesCounter;
-		Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог Тогда
-			Если TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении Тогда
-				TotalsByAttributesMap[AttributeName].ЗначениеИтога = "Ошибка";
-			Иначе
-				//Сумма
-				Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].СуммаЗначений;
-				//Среднее
-				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЧислоЗначений <> 0, TotalsByAttributesMap[AttributeName].СуммаЗначений / TotalsByAttributesMap[AttributeName].ЧислоЗначений, 0);
-				//Количество
-				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].ЧислоЗначений;
+		If TotalsByAttributesMap[AttributeName].CalculateTotal Then
+			If TotalsByAttributesMap[AttributeName].ErrorWhenCalculating Then
+				TotalsByAttributesMap[AttributeName].ValueTotal = "Ошибка";
+			Else
+				//Sum
+				If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Sum" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = TotalsByAttributesMap[AttributeName].SumOfValues;
+				//Mid
+				ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Mid" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].NumberOfValues <> 0
+						, TotalsByAttributesMap[AttributeName].SumOfValues / TotalsByAttributesMap[AttributeName].NumberOfValues, 0);
+				//Count
+				ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Count" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = TotalsByAttributesMap[AttributeName].NumberOfValues;
 				EndIf;
 			EndIf;
 		
-			ThisObject["ЗначениеИтога" + AttributeName] = "A" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ЗначениеИтога;
+			ThisObject["ValueTotal" + AttributeName] = "A" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ValueTotal;
 		
-		Иначе
-			ThisObject["ЗначениеИтога" + AttributeName] = "";
+		Else
+			ThisObject["ValueTotal" + AttributeName] = "";
 		EndIf;
 		
 		AttributeName = "AttributeB" + AttributesCounter;
-		Если TotalsByAttributesMap[AttributeName].РассчитыватьИтог Тогда
-			Если TotalsByAttributesMap[AttributeName].ОшибкаПриВычислении Тогда
-				TotalsByAttributesMap[AttributeName].ЗначениеИтога = "Ошибка";
-			Иначе
-				//Сумма
-				Если TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Сумма" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].СуммаЗначений;
-				//Среднее
-				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Среднее" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = ?(TotalsByAttributesMap[AttributeName].ЧислоЗначений <> 0, TotalsByAttributesMap[AttributeName].СуммаЗначений / TotalsByAttributesMap[AttributeName].ЧислоЗначений, 0);
-					//Количество
-				ИначеЕсли TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Количество" Тогда
-					TotalsByAttributesMap[AttributeName].ЗначениеИтога = TotalsByAttributesMap[AttributeName].ЧислоЗначений;
+		If TotalsByAttributesMap[AttributeName].CalculateTotal Then
+			If TotalsByAttributesMap[AttributeName].ErrorWhenCalculating Then
+				TotalsByAttributesMap[AttributeName].ValueTotal = "Error";
+			Else
+				//Sum
+				If TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Sum" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = TotalsByAttributesMap[AttributeName].SumOfValues;
+				//Mid
+				ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Mid" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = ?(TotalsByAttributesMap[AttributeName].NumberOfValues <> 0
+						, TotalsByAttributesMap[AttributeName].SumOfValues / TotalsByAttributesMap[AttributeName].NumberOfValues, 0);
+					//Count
+				ElsIf TotalsByAttributesMap[AttributeName].AggregateFunctionCalculationTotal = "Count" Then
+					TotalsByAttributesMap[AttributeName].ValueTotal = TotalsByAttributesMap[AttributeName].NumberOfValues;
 				EndIf;
 			EndIf;
 			
-			ThisObject["ЗначениеИтога" + AttributeName] = "B" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ЗначениеИтога;
+			ThisObject["ValueTotal" + AttributeName] = "B" + AttributesCounter + ": " + TotalsByAttributesMap[AttributeName].ValueTotal;
 			
-		Иначе
-			ThisObject["ЗначениеИтога" + AttributeName] = "";
+		Else
+			ThisObject["ValueTotal" + AttributeName] = "";
 		EndIf;
 		
 	EndDo;
 
-	Если SortTableDifferences Тогда
-		Result.Сортировать(OrderSortTableDifferences);
+	If SortTableDifferences Then
+		Result.Sort(OrderSortTableDifferences);
 	EndIf;
 		
 	If MessageHaveMultipleRowsOneKey Then
-		Message(Формат(ТекущаяДата(),"DLF=DT") + ": Обнаружены дубликаты (подсвечены красным цветом), настройки отбора на них не распространяются. Просмотреть дублирующиеся строки можно на форме предварительного просмотра.");
+		MessageText = StrTemplate(Nstr("ru = '%1: Обнаружены дубликаты (подсвечены красным цветом), настройки отбора на них не распространяются. Просмотреть дублирующиеся строки можно на форме предварительного просмотра.';en = '%1: Duplicates were found (highlighted in red), filtering settings do not apply to them. You can view duplicate lines on the preview form.'")
+			, Format(CurrentDate(),"DLF=DT") ); 
+		Message(MessageText);
 	EndIf;
 	
 EndProcedure
@@ -1545,14 +1555,14 @@ Function ExecuteQuery1C77AndGetValueTable(BaseID, ErrorsText = "", Connection = 
 			ColumnsWithKeyRow = ColumnsWithKeyRow + "," + ColumnNameKey3;
 		EndIf;
 
-		ValueTable.Индексы.Добавить(ColumnsWithKeyRow);
+		ValueTable.Indexes.Add(ColumnsWithKeyRow);
 		
 		For AttributesCounter = 1 По ThisObject["SettingsFile" + BaseID].Count() Цикл
 			
 			AttributeName = Строка(BaseID) + AttributesCounter;
 			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Реквизит " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
@@ -1568,7 +1578,7 @@ Function ExecuteQuerySQLAndGetValueTable(BaseID, ErrorsText = "")
 	DSN 	= ThisObject["ConnectionToExternalBase" + BaseID + "PathBase"];                                                                                                           
 	UID 	= ThisObject["ConnectionToExternalBase" + BaseID + "Login"];
 	PWD 	= ThisObject["ConnectionToExternalBase" + BaseID + "Password"];
-	Driver 	= ThisObject["ConnectionToExternalBase" + BaseID + "ДрайверSQL"];
+	Driver 	= ThisObject["ConnectionToExternalBase" + BaseID + "DriverSQL"];
 	
 	Try              
 		ConnectString = "Driver={" + Driver + "};Server=" + ServerName + ";Database=" + DSN + ";Uid=" + UID + ";Pwd=" + PWD;
@@ -1640,9 +1650,9 @@ Function ExecuteQuerySQLAndGetValueTable(BaseID, ErrorsText = "")
 				
 				For AttributesCounter = 1 To Min(NumberOfcolumnsInValueTable - NumberColumnsInKey, NumberOfRequisites) Do
 					
-					Если ThisObject["SettingsFile" + BaseID].Count() >= AttributesCounter Тогда
+					If ThisObject["SettingsFile" + BaseID].Count() >= AttributesCounter Then
 						HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
-					Иначе
+					Else
 						HeaderAttributeFromSettings = "";
 					EndIf;
 					
@@ -1750,7 +1760,7 @@ Function ExecuteQuerySQLAndGetValueTable(BaseID, ErrorsText = "")
 				
 			EndIf;
 			          			
-#Region Arbitrary_key_processing_code
+//#Region Arbitrary_key_processing_code
 
 			KeyCurrent = Key1;
 			If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
@@ -1798,7 +1808,7 @@ Function ExecuteQuerySQLAndGetValueTable(BaseID, ErrorsText = "")
 				RowValueTable.Key3 = KeyCurrent;
 			EndIf;
 			
-#EndRegion 
+//#EndRegion 
 			
 			NumberOfcolumnsInSelection = RecordSet.Fields.Count;
 			
@@ -1892,7 +1902,8 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 		Try
 			NumberLastRow = File.Cells.SpecialCells(xlCellTypeLastCell).Row;			
 		Except
-			MessageText = Nstr("ru = 'Ошибка при определении номера последней строки в файле. Номер последней строки установлен в 1000';en = 'An error occurred while determining the number of the last line in the file. Last row number set to 1000'");			
+			ErrorText = Nstr("ru = 'Ошибка при определении номера последней строки в файле. Номер последней строки установлен в 1000';en = 'An error occurred while determining the number of the last line in the file. Last row number set to 1000'");			
+			Message(ErrorText);
 			NumberLastRow = 1000;
 		EndTry;
 		
@@ -1937,7 +1948,8 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 		Try
 			NumberLastRow = File.Rows.count;
 		Except
-			Message("Ошибка при определении номера последней строки в файле. Number последней строки установлен в 1000");
+			ErrorText = Nstr("ru = 'Ошибка при определении номера последней строки в файле. Номер последней строки установлен в 1000';en = 'An error occurred while determining the number of the last line in the file. Last row number set to 1000'");
+			Message(ErrorText);
 			NumberLastRow = 1000;
 		EndTry;
 		
@@ -1995,7 +2007,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 		
 	EndIf;
 	
-	//Processing строк
+	//Processing rows
 //#Region XML
 	
 	If FileFormat = "XML" Then
@@ -2018,7 +2030,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					
 //#Region XML_MethodStoringDataInXMLFile_In_Attributes
 				
-					If ThisObject["DataStorageMethodInXMLFile" + BaseID] = "В атрибутах" Then
+					If ThisObject["DataStorageMethodInXMLFile" + BaseID] = "In attributes" Then
 						
 						FillVariablesPWithDefaultValues();
 												
@@ -2154,17 +2166,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 							RowReceiver[AttributeName] = Item.Value;
 							
 							//FillType of variables to be used in arbitrary code
-							РВрем = RowReceiver[AttributeName];
+							TemporaryAttribute = RowReceiver[AttributeName];
 							If RowSettingsFile.LineNumber = 1 Then
-								Р1 = РВрем;
+								Р1 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 2 Then
-								Р2 = РВрем;
+								Р2 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 3 Then
-								Р3 = РВрем;
+								Р3 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 4 Then
-								Р4 = РВрем;
+								Р4 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 5 Then
-								Р5 = РВрем;
+								Р5 = TemporaryAttribute;
 							EndIf;
 
 						EndDo;
@@ -2173,7 +2185,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 
 //#Region XML_MethodStoringDataInXMLFile_In_Elements
 						
-					ElsIf ThisObject["DataStorageMethodInXMLFile" + BaseID] = "В элементах" Then
+					ElsIf ThisObject["DataStorageMethodInXMLFile" + BaseID] = "In items" Then
 						
 						FillVariablesPWithDefaultValues();
 						
@@ -2301,17 +2313,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 							
 							AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 							
-							РВрем = RowReceiver[AttributeName];
+							TemporaryAttribute = RowReceiver[AttributeName];
 							If RowSettingsFile.LineNumber = 1 Then
-								Р1 = РВрем;
+								Р1 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 2 Then
-								Р2 = РВрем;
+								Р2 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 3 Then
-								Р3 = РВрем;
+								Р3 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 4 Then
-								Р4 = РВрем;
+								Р4 = TemporaryAttribute;
 							ElsIf RowSettingsFile.LineNumber = 5 Then
-								Р5 = РВрем;
+								Р5 = TemporaryAttribute;
 							EndIf;
 							
 						EndDo;
@@ -2324,7 +2336,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					For Each RowSettingsFile In SettingsFile Do
 				
 						AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-						РТек = RowReceiver[AttributeName];
+						CurrentAttribute = RowReceiver[AttributeName];
 
 						Try
 							Execute RowSettingsFile.ArbitraryCode;
@@ -2340,11 +2352,11 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 							Try
 								Execute CodeCastingAttributeToTypeNumber;
 							Except
-								РТек = 0;
+								CurrentAttribute = 0;
 							EndTry;
 						EndIf;
 						
-						RowReceiver[AttributeName] = РТек;
+						RowReceiver[AttributeName] = CurrentAttribute;
 
 					EndDo;
 					
@@ -2544,17 +2556,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					RowReceiver[AttributeName] = TrimAll(File.Cells(NumberCurrentRow, RowSettingsFile.NumberColumn).Value);
 					
 					//FillType variables to be used in arbitrary code
-					РВрем = RowReceiver[AttributeName];
+					TemporaryAttribute = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
-						Р1 = РВрем;
+						Р1 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 2 Then
-						Р2 = РВрем;
+						Р2 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 3 Then
-						Р3 = РВрем;
+						Р3 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 4 Then
-						Р4 = РВрем;
+						Р4 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 5 Then
-						Р5 = РВрем;
+						Р5 = TemporaryAttribute;
 					EndIf;
 					
 				EndDo;
@@ -2700,17 +2712,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					RowReceiver[AttributeName] = ValueAttribute;
 					
 					//FillType variables to be used in arbitrary code
-					РВрем = RowReceiver[AttributeName];
+					TemporaryAttribute = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
-						Р1 = РВрем;
+						Р1 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 2 Then
-						Р2 = РВрем;
+						Р2 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 3 Then
-						Р3 = РВрем;
+						Р3 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 4 Then
-						Р4 = РВрем;
+						Р4 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 5 Then
-						Р5 = РВрем;
+						Р5 = TemporaryAttribute;
 					EndIf;
 					
 				EndDo;
@@ -2848,17 +2860,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					RowReceiver[AttributeName] = StrGetLine(RowMultilineText,RowSettingsFile.NumberColumn);
 					
 					//FillType variables to be used in arbitrary code
-					РВрем = RowReceiver[AttributeName];
+					TemporaryAttribute = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
-						Р1 = РВрем;
+						Р1 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 2 Then
-						Р2 = РВрем;
+						Р2 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 3 Then
-						Р3 = РВрем;
+						Р3 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 4 Then
-						Р4 = РВрем;
+						Р4 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 5 Then
-						Р5 = РВрем;
+						Р5 = TemporaryAttribute;
 					EndIf;
 					
 				EndDo;
@@ -2989,17 +3001,17 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					RowReceiver[AttributeName] = FileDBF[FileDBF.поля[RowSettingsFile.NumberColumn - 1].Name];
 					
 					//FillType variables to be used in arbitrary code
-					РВрем = RowReceiver[AttributeName];
+					TemporaryAttribute = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
-						Р1 = РВрем;
+						Р1 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 2 Then
-						Р2 = РВрем;
+						Р2 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 3 Then
-						Р3 = РВрем;
+						Р3 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 4 Then
-						Р4 = РВрем;
+						Р4 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 5 Then
-						Р5 = РВрем;
+						Р5 = TemporaryAttribute;
 					EndIf;
 					
 				EndDo;	
@@ -3016,7 +3028,7 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 			For Each RowSettingsFile In SettingsFile Do
 				
 				AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-				РТек = RowReceiver[AttributeName];
+				CurrentAttribute = RowReceiver[AttributeName];
 
 				Try
 					Execute RowSettingsFile.ArbitraryCode;
@@ -3032,11 +3044,11 @@ Function ReadDataFromFileAndGetValueTable(BaseID, ErrorsText = "")
 					Try
 						Execute CodeCastingAttributeToTypeNumber;
 					Except
-						РТек = 0;
+						CurrentAttribute = 0;
 					EndTry;
 				EndIf;
 				
-				RowReceiver[AttributeName] = РТек;
+				RowReceiver[AttributeName] = CurrentAttribute;
 								
 			EndDo;
 			
@@ -3120,23 +3132,23 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 	
 	JSONReader = New JSONReader;
 	JSONReader.SetString(ThisObject["QueryText" + BaseID]);
-	ДанныеJSON = ReadJSON(JSONReader);
+	DataJSON = ReadJSON(JSONReader);
 	JSONReader.Close();
 	
-	ЭлементНайден = False;
-	For Each CurrentData In ДанныеJSON Do
+	ItemFound = False;
+	For Each CurrentData In DataJSON Do
 		
 		//Array with data already found in previous iteration
-		If ЭлементНайден Then 
+		If ItemFound Then 
 			Break;
 		EndIf;
 		
 		If TrimAll(Upper(CurrentData.Key)) = TrimAll(Upper(ElementNameWithDataFile)) And
 			TypeOf(CurrentData.Value) = Type("Array") Then
 			
-			ЭлементНайден = True;
+			ItemFound = True;
 			
-			For каждого CurrentValueJSON In CurrentData.Value Do
+			For Each CurrentValueJSON In CurrentData.Value Do
 			
 				FillVariablesPWithDefaultValues();
 										
@@ -3226,7 +3238,7 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 					
 				EndIf;
 					
-#Region Arbitrary_key_processing_code
+//#Region Arbitrary_key_processing_code
 
 				KeyCurrent = Key1;
 				If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
@@ -3279,7 +3291,7 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 					
 				EndIf;
 				
-#EndRegion  
+//#EndRegion  
 
 				FillVariablesPWithDefaultValues();
 				For Each RowSettingsFile In SettingsFile Do
@@ -3306,28 +3318,28 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 					RowReceiver[AttributeName] = CurrentValueJSON[RowSettingsFile.ColumnName];
 										
 					//FillType variables to be used in arbitrary code
-					РВрем = RowReceiver[AttributeName];
+					TemporaryAttribute = RowReceiver[AttributeName];
 					If RowSettingsFile.LineNumber = 1 Then
-						Р1 = РВрем;
+						Р1 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 2 Then
-						Р2 = РВрем;
+						Р2 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 3 Then
-						Р3 = РВрем;
+						Р3 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 4 Then
-						Р4 = РВрем;
+						Р4 = TemporaryAttribute;
 					ElsIf RowSettingsFile.LineNumber = 5 Then
-						Р5 = РВрем;
+						Р5 = TemporaryAttribute;
 					EndIf;
 
 				EndDo;
 		
 		
-#Region Arbitrary_code_of_filling_details
+//#Region Arbitrary_code_of_filling_details
 		
 				For Each RowSettingsFile In SettingsFile Do
 					
 					AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-					РТек = RowReceiver[AttributeName];
+					CurrentAttribute = RowReceiver[AttributeName];
 
 					Try
 						Execute RowSettingsFile.ArbitraryCode;
@@ -3343,11 +3355,11 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 						Try
 							Execute CodeCastingAttributeToTypeNumber;
 						Except
-							РТек = 0;
+							CurrentAttribute = 0;
 						EndTry;
 					EndIf;
 				
-					RowReceiver[AttributeName] = РТек;
+					RowReceiver[AttributeName] = CurrentAttribute;
 				
 				EndDo;
 													
@@ -3355,7 +3367,7 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 		
 		EndIf;
 	
-#EndRegion 
+//#EndRegion 
 
 	EndDo;
 		
@@ -3369,7 +3381,8 @@ Function ReadDataFromJSONAndGetValueTable(BaseID, ErrorsText = "")
 			AttributeName = String(BaseID) + AttributesCounter;
 			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings)
+				, "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
@@ -3492,7 +3505,7 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 		
 		RowReceiver = ValueTable.Add();
 		
-#Region Arbitrary_key_processing_code
+//#Region Arbitrary_key_processing_code
 	
 		KeyCurrent = Key1;
 		If ThisObject["ExecuteArbitraryKeyCode1" + BaseID] Then
@@ -3544,25 +3557,25 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 			
 		EndIf;
 		
-#EndRegion 
+//#EndRegion 
 		
 		For Each RowSettingsFile In SettingsFile Do
 		
 			AttributeName = "Attribute" + RowSettingsFile.LineNumber;
 			RowReceiver[AttributeName] = TrimAll(ThisObject["Table" + BaseID].Region(NumberCurrentRow,RowSettingsFile.NumberColumn,NumberCurrentRow,RowSettingsFile.NumberColumn).Text);
 			
-			//FillType переменных, которые будут использоваться в произвольном коде
-			РВрем = RowReceiver[AttributeName];
+			//FillType variables to be used in arbitrary code
+			TemporaryAttribute = RowReceiver[AttributeName];
 			If RowSettingsFile.LineNumber = 1 Then
-				Р1 = РВрем;
+				Р1 = TemporaryAttribute;
 			ElsIf RowSettingsFile.LineNumber = 2 Then
-				Р2 = РВрем;
+				Р2 = TemporaryAttribute;
 			ElsIf RowSettingsFile.LineNumber = 3 Then
-				Р3 = РВрем;
+				Р3 = TemporaryAttribute;
 			ElsIf RowSettingsFile.LineNumber = 4 Then
-				Р4 = РВрем;
+				Р4 = TemporaryAttribute;
 			ElsIf RowSettingsFile.LineNumber = 5 Then
-				Р5 = РВрем;
+				Р5 = TemporaryAttribute;
 			EndIf;	
 			
 		EndDo;
@@ -3570,7 +3583,7 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 		For Each RowSettingsFile In SettingsFile Do
 				
 			AttributeName = "Attribute" + RowSettingsFile.LineNumber;
-			РТек = RowReceiver[AttributeName];
+			CurrentAttribute = RowReceiver[AttributeName];
 
 			Try
 				Execute RowSettingsFile.ArbitraryCode;
@@ -3586,11 +3599,11 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 				Try
 					Execute CodeCastingAttributeToTypeNumber;
 				Except
-					РТек = 0;
+					CurrentAttribute = 0;
 				EndTry;
 			EndIf;
 			
-			RowReceiver[AttributeName] = РТек;
+			RowReceiver[AttributeName] = CurrentAttribute;
 							
 		EndDo;
 		
@@ -3608,7 +3621,8 @@ Function GetDataFromSpreadsheetDocument(BaseID, ErrorsText = "")
 			AttributeName = String(BaseID) + AttributesCounter;
 			HeaderAttributeFromSettings = ThisObject["SettingsFile" + BaseID][AttributesCounter - 1].HeaderAttributeForUser;
 			
-			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings), "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
+			ViewsHeadersAttributes[AttributeName] = ?(IsBlankString(HeaderAttributeFromSettings)
+				, "Attribute " + BaseID + AttributesCounter, AttributeName + ": " + HeaderAttributeFromSettings);
 		
 		EndDo;
 		
@@ -3621,7 +3635,7 @@ EndFunction
 #EndRegion
 
 
-#Region Auxiliary_procedures_and_functions
+//#Region Auxiliary_procedures_and_functions
 
 Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 	
@@ -3688,7 +3702,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 #EndRegion 
 
 
-#Region Файл_Табличный_документ
+#Region File_Spreadsheet_Document
 
 	If IsBlankString(SourceForPreview) Or SourceForPreview = "A" Then
 	
@@ -4198,7 +4212,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 			
 			If ConditionsProhibitOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForProhibitingConditionsOutputRows) Then
 				AttributesFilledOutCorrectly = False;
-				ErrorText = StrTemplate(Nstr("ru = 'Не заполнен логический оператор для объединения условий запрета вывода строк';en = 'The logical operator for combining the conditions for prohibiting the output of rows is not filled'");
+				ErrorText = Nstr("ru = 'Не заполнен логический оператор для объединения условий запрета вывода строк';en = 'The logical operator for combining the conditions for prohibiting the output of rows is not filled'");
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForProhibitingConditionsOutputRows";
@@ -4282,7 +4296,7 @@ Function SaveSettingsToBaseAtServer(SettingRef, SaveSpreadsheetDocuments) Export
 		RelatedDataComparisonOperation = SettingRef;
 		Title = SettingObject.Title;
 	Except
-		ErrorText = StrTemplate(Nstr("ru = 'Ошибка при записи данных в операцию  %1 : %2';en = '%1 : %2'")
+		ErrorText = StrTemplate(Nstr("ru = 'Ошибка при записи данных в операцию  %1 : %2';en = 'Error writing data to operation %1 : %2'")
 			, SettingRef.Titl, ErrorDescription());
 		Message(ErrorText);
 		OperationCompletedSuccessfully = False;
@@ -4651,32 +4665,36 @@ Function UploadResultToFileAtServer(ForClient = False) Export
 		DeleteFiles(PathToTemporaryFile);	
 	Except EndTry;
 	
-	Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + PathToTemporaryFile + """ формата """ + UploadFileFormat + """ начата");
+	MessageText = StrTemplate(NStr("ru = '%1 Выгрузка в файл ""%2"" формата ""%3"" начата';en = '%1 Upload to file ""%2"" of format ""%3"" started'")
+		, Format(CurrentDate(), "DLF=DT")
+		, PathToTemporaryFile
+		, UploadFileFormat);
+	Message(MessageText);
 	
 	If UploadFileFormat = "CSV" Then
 		
 		ColumnSeparator = ";";
 		TextWriter = New TextWriter(PathToTemporaryFile, TextEncoding.UTF8);
-		ListHeaderString = "№ строки" + ColumnSeparator
-				+ ?(VisibilityKey1, "Ключ 1" + ColumnSeparator, "")
-				+ ?(NumberColumnsInKey > 1 И VisibilityKey2, "Ключ 2" + ColumnSeparator, "")
-				+ ?(NumberColumnsInKey > 2 И VisibilityKey3, "Ключ 3" + ColumnSeparator, "")
-				+ ?(VisibilityNumberOfRecordsA, "Число записей А" + ColumnSeparator, "")
-				+ ?(VisibilityNumberOfRecordsB, "Число записей Б" + ColumnSeparator, "");
+		ListHeaderString = "№ row" + ColumnSeparator
+				+ ?(VisibilityKey1, "Key 1" + ColumnSeparator, "")
+				+ ?(NumberColumnsInKey > 1 And VisibilityKey2, "Key 2" + ColumnSeparator, "")
+				+ ?(NumberColumnsInKey > 2 And VisibilityKey3, "Key 3" + ColumnSeparator, "")
+				+ ?(VisibilityNumberOfRecordsA, "Number of records A" + ColumnSeparator, "")
+				+ ?(VisibilityNumberOfRecordsB, "Number of records B" + ColumnSeparator, "");
 		
-		For AttributesCounter = 1 По NumberOfRequisites Цикл 
-			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
-				ListHeaderString = ListHeaderString + ColumnSeparator + СтрЗаменить(ViewsHeadersAttributes["A" + AttributesCounter], ColumnSeparator,",");
+		For AttributesCounter = 1 To NumberOfRequisites Do 
+			If ThisObject["VisibilityAttributeA" + AttributesCounter] Then
+				ListHeaderString = ListHeaderString + ColumnSeparator + StrReplace(ViewsHeadersAttributes["A" + AttributesCounter], ColumnSeparator,",");
 			EndIf;
 		EndDo;
 		
-		For AttributesCounter = 1 По NumberOfRequisites Цикл 
-			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
-				ListHeaderString = ListHeaderString + ColumnSeparator + СтрЗаменить(ViewsHeadersAttributes["B" + AttributesCounter], ColumnSeparator,",");
+		For AttributesCounter = 1 To NumberOfRequisites Do 
+			If ThisObject["VisibilityAttributeB" + AttributesCounter] Then
+				ListHeaderString = ListHeaderString + ColumnSeparator + StrReplace(ViewsHeadersAttributes["B" + AttributesCounter], ColumnSeparator,",");
 			EndIf;
 		EndDo;
 		
-		ListHeaderString = СтрЗаменить(ListHeaderString, "" + ColumnSeparator + ColumnSeparator, ColumnSeparator);
+		ListHeaderString = StrReplace(ListHeaderString, "" + ColumnSeparator + ColumnSeparator, ColumnSeparator);
 		TextWriter.Write(ListHeaderString);
 			
 		RowsCounter = 0;
@@ -4725,36 +4743,47 @@ Function UploadResultToFileAtServer(ForClient = False) Export
 		SpreadsheetDocument.PageOrientation = PageOrientation.Landscape;
 		SpreadsheetDocument.FitToPage = True;
 		
-		SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, 1, "№ строки",,7);
+		SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, 1, "№ row",,7);
 		If VisibilityKey1 Then
 			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, 2, "Key 1");
 		EndIf;
 		If NumberColumnsInKey > 1 AND VisibilityKey2 Then			
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + 2, "Ключ 2");			
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + 2, "Key 2");			
 		EndIf;
 		If NumberColumnsInKey > 2 AND VisibilityKey3 Then
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + ?(VisibilityKey2, 1, 0) + 2, "Ключ 3");			
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ?(VisibilityKey1, 1, 0) + ?(VisibilityKey2, 1, 0) + 2, "Key 3");			
 		EndIf;
 		
-		Если VisibilityNumberOfRecordsA Тогда
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, NumberOfUploadedKeys + 2,  		"Число записей А",, 7);
+		If VisibilityNumberOfRecordsA Then
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, NumberOfUploadedKeys + 2,  		"Number of records А",, 7);
 		EndIf; 
 		
-		Если VisibilityNumberOfRecordsB Тогда
-			SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2,  	"Число записей Б",, 7);
+		If VisibilityNumberOfRecordsB Then
+			SetCellValueSpreadsheetDocument(SpreadsheetDocument
+				, 1
+				, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2
+				,  	"Number of records B"
+				,
+				, 7);
 		EndIf;
 		
 		OffsetFromColumnWithFirstUploadedAttribute = 0;
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
-			Если ThisObject["VisibilityAttributeA" + AttributesCounter] Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, ViewsHeadersAttributes["A" + AttributesCounter]);
+			If ThisObject["VisibilityAttributeA" + AttributesCounter] Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument
+					, 1
+					, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute
+					, ViewsHeadersAttributes["A" + AttributesCounter]);
 				OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 			EndIf;
 		EndDo;
 		
 		For AttributesCounter = 1 По NumberOfRequisites Цикл 
-			Если ThisObject["VisibilityAttributeB" + AttributesCounter] Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, ViewsHeadersAttributes["B" + AttributesCounter]);
+			If ThisObject["VisibilityAttributeB" + AttributesCounter] Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument
+					, 1
+					, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute
+					, ViewsHeadersAttributes["B" + AttributesCounter]);
 				OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 			EndIf;
 		EndDo;
@@ -4778,22 +4807,22 @@ Function UploadResultToFileAtServer(ForClient = False) Export
 			
 			ColumnsSizesStructure.K1 = Max(2, ColumnsSizesStructure.K1, StrLen(RowTP_Result.Key1));
 			If NumberColumnsInKey > 1 And VisibilityKey2 Then
-				ColumnsSizesStructure.K2 = Макс(2,ColumnsSizesStructure.K2, StrLen(RowTP_Result.Key2));
+				ColumnsSizesStructure.K2 = Max(2,ColumnsSizesStructure.K2, StrLen(RowTP_Result.Key2));
 			EndIf;
 			If NumberColumnsInKey > 2 And VisibilityKey3 Then				
 				ColumnsSizesStructure.K3 = Max(2, ColumnsSizesStructure.K3, StrLen(RowTP_Result.Key3));
 			EndIf;
 			
-			ColumnsSizesStructure.A1 = Макс(2,ColumnsSizesStructure.A1,StrLen(RowTP_Result.AttributeA1));
-			ColumnsSizesStructure.A2 = Макс(2,ColumnsSizesStructure.A2,StrLen(RowTP_Result.AttributeA2));
-			ColumnsSizesStructure.A3 = Макс(2,ColumnsSizesStructure.A3,StrLen(RowTP_Result.AttributeA3));
-			ColumnsSizesStructure.A4 = Макс(2,ColumnsSizesStructure.A4,StrLen(RowTP_Result.AttributeA4));
-			ColumnsSizesStructure.A5 = Макс(2,ColumnsSizesStructure.A5,StrLen(RowTP_Result.AttributeA5));
-			ColumnsSizesStructure.B1 = Макс(2,ColumnsSizesStructure.B1,StrLen(RowTP_Result.AttributeB1));
-			ColumnsSizesStructure.B2 = Макс(2,ColumnsSizesStructure.B2,StrLen(RowTP_Result.AttributeB2));
-			ColumnsSizesStructure.B3 = Макс(2,ColumnsSizesStructure.B3,StrLen(RowTP_Result.AttributeB3));
-			ColumnsSizesStructure.B4 = Макс(2,ColumnsSizesStructure.B4,StrLen(RowTP_Result.AttributeB4));
-			ColumnsSizesStructure.B5 = Макс(2,ColumnsSizesStructure.B5,StrLen(RowTP_Result.AttributeB5));
+			ColumnsSizesStructure.A1 = Max(2,ColumnsSizesStructure.A1,StrLen(RowTP_Result.AttributeA1));
+			ColumnsSizesStructure.A2 = Max(2,ColumnsSizesStructure.A2,StrLen(RowTP_Result.AttributeA2));
+			ColumnsSizesStructure.A3 = Max(2,ColumnsSizesStructure.A3,StrLen(RowTP_Result.AttributeA3));
+			ColumnsSizesStructure.A4 = Max(2,ColumnsSizesStructure.A4,StrLen(RowTP_Result.AttributeA4));
+			ColumnsSizesStructure.A5 = Max(2,ColumnsSizesStructure.A5,StrLen(RowTP_Result.AttributeA5));
+			ColumnsSizesStructure.B1 = Max(2,ColumnsSizesStructure.B1,StrLen(RowTP_Result.AttributeB1));
+			ColumnsSizesStructure.B2 = Max(2,ColumnsSizesStructure.B2,StrLen(RowTP_Result.AttributeB2));
+			ColumnsSizesStructure.B3 = Max(2,ColumnsSizesStructure.B3,StrLen(RowTP_Result.AttributeB3));
+			ColumnsSizesStructure.B4 = Max(2,ColumnsSizesStructure.B4,StrLen(RowTP_Result.AttributeB4));
+			ColumnsSizesStructure.B5 = Max(2,ColumnsSizesStructure.B5,StrLen(RowTP_Result.AttributeB5));
 			
 			RowsCounter = RowsCounter + 1;
 			
@@ -4818,25 +4847,40 @@ Function UploadResultToFileAtServer(ForClient = False) Export
 					, ColumnsSizesStructure.K3);
 			EndIf;							
 		
-			Если VisibilityNumberOfRecordsA Тогда
+			If VisibilityNumberOfRecordsA Then
 				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, NumberOfUploadedKeys + 2,	RowTP_Result.NumberOfRecordsA, 1, 7);
 			EndIf;
 			
-			Если VisibilityNumberOfRecordsB Тогда
-				SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2, RowTP_Result.NumberOfRecordsB, 1, 7);
+			If VisibilityNumberOfRecordsB Then
+				SetCellValueSpreadsheetDocument(SpreadsheetDocument
+					, RowsCounter + 1
+					, NumberOfUploadedKeys + ?(VisibilityNumberOfRecordsA, 1, 0) + 2
+					, RowTP_Result.NumberOfRecordsB
+					, 1
+					, 7);
 			EndIf;
 			
 			OffsetFromColumnWithFirstUploadedAttribute = 0;
 			For CounterAttributes = 1 По NumberOfRequisites Цикл 
-				Если ThisObject["VisibilityAttributeA" + CounterAttributes] Тогда
-					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, RowTP_Result["AttributeA" + CounterAttributes],, ColumnsSizesStructure["A" + CounterAttributes]);
+				If ThisObject["VisibilityAttributeA" + CounterAttributes] Then
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument
+						, RowsCounter + 1
+						, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute
+						, RowTP_Result["AttributeA" + CounterAttributes]
+						,
+						, ColumnsSizesStructure["A" + CounterAttributes]);
 					OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 				EndIf;
 			EndDo;
 			
 			For CounterAttributes = 1 По NumberOfRequisites Цикл 
-				Если ThisObject["VisibilityAttributeB" + CounterAttributes] Тогда
-					SetCellValueSpreadsheetDocument(SpreadsheetDocument, RowsCounter + 1, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute, RowTP_Result["AttributeB" + CounterAttributes],, ColumnsSizesStructure["B" + CounterAttributes]);
+				If ThisObject["VisibilityAttributeB" + CounterAttributes] Then
+					SetCellValueSpreadsheetDocument(SpreadsheetDocument
+						, RowsCounter + 1
+						, ColumnNumberFirstPageDownAttributes + OffsetFromColumnWithFirstUploadedAttribute
+						, RowTP_Result["AttributeB" + CounterAttributes]
+						,
+						, ColumnsSizesStructure["B" + CounterAttributes]);
 					OffsetFromColumnWithFirstUploadedAttribute = OffsetFromColumnWithFirstUploadedAttribute + 1;
 				EndIf;
 			EndDo;
@@ -4869,8 +4913,12 @@ Function UploadResultToFileAtServer(ForClient = False) Export
 		Return FileAddress;
 		
 	Else
-		
-		Message(Format(CurrentDate(), "DLF=DT") + " Выгрузка в файл """ + PathToTemporaryFile + """ формата """ + UploadFileFormat + """ завершена (число строк: " + RowsCounter + ")");
+		MessageText = StrTemplate(NStr("ru = 'Выгрузка в файл ""%1"" формата ""%2"" завершена (число строк: %3)';en = 'Upload to file ""%1"" of format ""%2"" completed (number of rows: %3)'")
+			, Format(CurrentDate(), "DLF=DT")
+			, PathToTemporaryFile
+			, UploadFileFormat
+			, RowsCounter);
+		Message(MessageText);
 		Return Undefined;
 		
 	EndIf;
@@ -4988,10 +5036,10 @@ Function FindSlaveNodeXMLFileByName(CurrentNode, SearchNodeName)
 	
 EndFunction
 
-#EndRegion
+//#EndRegion
 
 NumberOfRequisites = 5;
-CodeCastingAttributeToTypeNumber = "РТек = Number(РТек);";
+CodeCastingAttributeToTypeNumber = "CurrentAttribute = Number(CurrentAttribute);";
 ViewsHeadersAttributes = New Map;
 
 For AttributesCounter = 1 To NumberOfRequisites Do
@@ -5000,4 +5048,3 @@ For AttributesCounter = 1 To NumberOfRequisites Do
 	ViewsHeadersAttributes.Insert("B" + AttributesCounter , "Attribute B" + AttributesCounter);
 
 EndDo;
- 
