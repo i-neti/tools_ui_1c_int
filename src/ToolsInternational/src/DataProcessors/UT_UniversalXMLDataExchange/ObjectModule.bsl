@@ -102,632 +102,632 @@ Var mExchangeRuleTemplateList Export;
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// EXPORT PROCESSING MODULE VARIABLES
+
+Var mExportedObjectCounter Export;   // Number - counter of exported objects.
+Var mSnCounter Export;   // Number - an sequence number counter.
+Var mPropertyConversionRuleTable;      // ValueTable - a template for restoring the table structure by copying.
+                                             //                   
+Var mXMLRules;                           // XML string that contains exchange rule description.
+Var mTypesForDestinationRow;
+
+
+////////////////////////////////////////////////////////////////////////////////
 // IMPORT PROCESSING MODULE VARIABLES
 
 Var mImportedObjectCounter Export;// Number - imported object counter.
-Var mSNCounter Export;   // Number - SN counter
-Var mPropertyConversionRulesTable;      // ValueTable -a template to restore table structure by copying.
-Var mXMLRules;                           // Xml-Line that contains exchange rules details.
-Var mTypeStringForDestination;
 
+Var mExchangeFileAttributes Export;       // Structure. After opening the file it contains exchange file attributes according to the format.
 
-////////////////////////////////////////////////////////////////////////////////
-// ПЕРЕМЕННЫЕ МОДУЛЯ ОБРАБОТКИ ЗАГРУЗКИ
+Var ImportedObjects Export;         // Map. Key - object sequence number in file,
+                                          // Value - a reference to the imported object.
+Var ImportedGlobalObjects Export;
+Var ImportedObjectToStoreCount Export;  // Number of stored imported objects. If the number of imported object exceeds the value of this 
+                                          // variable, the ImportedObjects map is cleared.
+                                          // 
+Var RememberImportedObjects Export;
 
-Перем мСчетчикЗагруженныхОбъектов Экспорт;// Число - счетчик загруженных объектов.
+Var mExtendedSearchParameterMap;
+Var mConversionRuleMap; // Map to define an object conversion rule by this object type.
 
-Перем мАтрибутыФайлаОбмена Экспорт;       // Структура. После открытия файла 
-                                          // содержит атрибуты файла обмена 
-                                          // согласно формату.
+Var mDataImportDataProcessor Export;
 
-Перем ЗагруженныеОбъекты Экспорт;         // Соответствие. Ключ - НПП объекта в файле,
-                                          // Значение - ссылка на загруженный объект.
-Перем ЗагруженныеГлобальныеОбъекты Экспорт;
-Перем ЧислоХранимыхЗагруженныхОбъектов Экспорт;  // Число хранимых загруженных объектов, 
-                                          // после которого Соответствие ЗагруженныеОбъекты 
-                                          // очищается.
-Перем ЗапоминатьЗагруженныеОбъекты Экспорт;
+Var mEmptyTypeValueMap;
+Var mTypeDescriptionMap;
 
-Перем мСоответствиеДопПараметровПоиска;
-Перем мСоответствиеПравилКонвертации; // Соответствие для определения правила конвертации объекта по типу этого объекта.
+Var mExchangeRulesReadOnImport Export;
 
-Перем мОбработкаДляЗагрузкиДанных Экспорт;
+Var mDataExportCallStack;
 
-Перем мСоответствиеПустыхЗначенийТипов;
-Перем мСоответствиеОписаниеТипов;
+Var mDataTypeMapForImport;
 
-Перем мБылиПрочитаныПравилаОбменаПриЗагрузке Экспорт;
+Var mNotWrittenObjectGlobalStack;
 
-Перем мСтекВызововВыгрузкиДанных;
+Var EventsAfterParametersImport Export;
 
-Перем мСоответствиеТиповДанныхДляЗагрузки;
-
-Перем мГлобальныйСтекНеЗаписанныхОбъектов;
-
-Перем СобытияПослеЗагрузкиПараметров Экспорт;
-
-Перем ТекущийУровеньВложенностиВыгрузитьПоПравилу;
+Var CurrentNestingLevelExportByRule;
 
 ////////////////////////////////////////////////////////////////////////////////
-// ПЕРЕМЕННЫЕ ДЛЯ ХРАНЕНИЯ МОДУЛЕЙ СТАНДАРТНЫХ ПОДСИСТЕМ
+// VARIABLES TO STORE STANDARD SUBSYSTEM MODULES
 
-Перем МодульДатыЗапретаИзменения;
+Var ModulePeriodClosingDates;
 
-#КонецОбласти
+#EndRegion
 
-#Область ПрограммныйИнтерфейс
+#Region Public
 
-#Область РаботаСоСтроками
+#Region StringOperations
 
-// Разбирает строку на две части: до подстроки разделителя и после.
+// Splits a string into two parts: before the separator substring and after it.
 //
 // Parameters:
-//  Стр          - Строка - разбираемая строка;
-//  Разделитель  - Строка - подстрока-разделитель:
-//  Режим        - Число -0 - разделитель в возвращаемые подстроки не включается;
-//                        1 - разделитель включается в левую подстроку;
-//                        2 - разделитель включается в правую подстроку.
+//  Str          - String - a string to be split;
+//  Separator  - String - a separator substring:
+//  Mode        - Number -0 - separator is not included in the returned substrings.
+//                        1 - separator is included in the left substring.
+//                        2 - separator is included in the right substring.
 //
-// Возвращаемое значение:
-//  Правая часть строки - до символа-разделителя.
+// Returns:
+//  The right part of the string - before the separator character.
 // 
-Функция ОтделитьРазделителем(Стр, Знач Разделитель, Режим = 0) Экспорт
+Function SplitWithSeparator(Str, Val Separator, Mode=0) Export
 
-	ПраваяЧасть         = "";
-	ПозРазделителя      = СтрНайти(Стр, Разделитель);
-	ДлинаРазделителя    = СтрДлина(Разделитель);
-	Если ПозРазделителя > 0 Тогда
-		ПраваяЧасть	 = Сред(Стр, ПозРазделителя + ?(Режим = 2, 0, ДлинаРазделителя));
-		Стр          = СокрЛП(Лев(Стр, ПозРазделителя - ?(Режим = 1, -ДлинаРазделителя + 1, 1)));
-	КонецЕсли;
+	RightPart         = "";
+	SeparatorPos      = StrFind(Str, Separator);
+	SeparatorLength    = StrLen(Separator);
+	If SeparatorPos > 0 Then
+		RightPart	 = Mid(Str, SeparatorPos + ?(Mode=2, 0, SeparatorLength));
+		Str          = TrimAll(Left(Str, SeparatorPos - ?(Mode=1, -SeparatorLength + 1, 1)));
+	EndIf;
 
-	Возврат (ПраваяЧасть);
+	Return(RightPart);
 
-КонецФункции
+EndFunction
 
-// Преобразует значения из строки в массив, используя указанный разделитель.
+// Converts values from a string to an array using the specified separator.
 //
 // Parameters:
-//  Стр            - Строка - Разбираемая строка.
-//  Разделитель    - Строка - подстрока разделитель.
+//  Str            - String - a string to be split.
+//  Separator    - String - a separator substring.
 //
-// Возвращаемое значение:
-//  Массив - полученный массив значений.
+// Returns:
+//  Array - received array of values.
 // 
-Функция МассивИзСтроки(Знач Стр, Разделитель = ",") Экспорт
+Function ArrayFromString(Val Str, Separator=",") Export
 
-	Массив      = Новый Массив;
-	ПраваяЧасть = ОтделитьРазделителем(Стр, Разделитель);
-
-	Пока Не ПустаяСтрока(Стр) Цикл
-		Массив.Добавить(СокрЛП(Стр));
-		Стр         = ПраваяЧасть;
-		ПраваяЧасть = ОтделитьРазделителем(Стр, Разделитель);
-	КонецЦикла;
-
-	Возврат (Массив);
-
-КонецФункции
-
-// Разбивает строку на несколько строк по разделителю. Разделитель может иметь любую длину.
-//
-// Parameters:
-//  Строка                 - Строка - текст с разделителями;
-//  Разделитель            - Строка - разделитель строк текста, минимум 1 символ;
-//  ПропускатьПустыеСтроки - Булево - признак необходимости включения в результат пустых строк.
-//    Если параметр не задан, то функция работает в режиме совместимости со своей предыдущей версией:
-//     - для разделителя-пробела пустые строки не включаются в результат, для остальных разделителей пустые строки
-//       включаются в результат.
-//     Е если параметр Строка не содержит значащих символов или не содержит ни одного символа (пустая строка), то в
-//       случае разделителя-пробела результатом функции будет массив, содержащий одно значение "" (пустая строка), а
-//       при других разделителях результатом функции будет пустой массив.
-//
-//
-// Возвращаемое значение:
-//  Массив - массив строк.
-//
-// Пример:
-//  РазложитьСтрокуВМассивПодстрок(",один,,два,", ",") - возвратит массив из 5 элементов, три из которых  - пустые
-//  строки;
-//  РазложитьСтрокуВМассивПодстрок(",один,,два,", ",", Истина) - возвратит массив из двух элементов;
-//  РазложитьСтрокуВМассивПодстрок(" один   два  ", " ") - возвратит массив из двух элементов;
-//  РазложитьСтрокуВМассивПодстрок("") - возвратит пустой массив;
-//  РазложитьСтрокуВМассивПодстрок("",,Ложь) - возвратит массив с одним элементом "" (пустой строкой);
-//  РазложитьСтрокуВМассивПодстрок("", " ") - возвратит массив с одним элементом "" (пустой строкой);
-//
-Функция РазложитьСтрокуВМассивПодстрок(Знач Строка, Знач Разделитель = ",", Знач ПропускатьПустыеСтроки = Неопределено) Экспорт
-
-	Результат = Новый Массив;
+	Array      = New Array;
+	RightPart = SplitWithSeparator(Str, Separator);
 	
-	// Для обеспечения обратной совместимости.
-	Если ПропускатьПустыеСтроки = Неопределено Тогда
-		ПропускатьПустыеСтроки = ?(Разделитель = " ", Истина, Ложь);
-		Если ПустаяСтрока(Строка) Тогда
-			Если Разделитель = " " Тогда
-				Результат.Добавить("");
-			КонецЕсли;
-			Возврат Результат;
-		КонецЕсли;
-	КонецЕсли;
+	While Not IsBlankString(Str) Do
+		Array.Add(TrimAll(Str));
+		Str         = RightPart;
+		RightPart = SplitWithSeparator(Str, Separator);
+	EndDo; 
+
+	Return(Array);
+	
+EndFunction
+
+// Splits the string into several strings by the separator. The separator can be any length.
+//
+// Parameters:
+//  String                 - String - delimited text;
+//  Separator            - String - a text separator, at least 1 character;
+//  SkipBlankStrings - Boolean - indicates whether blank strings must be included in the result.
+//    If this parameter is not set, the function executes in compatibility with its earlier version.
+//     - if space is used as a separator, blank strings are not included in the result, for other 
+//       separators blank strings are included in the result.
+//     - if the String parameter does not contain significant characters (or it is an blank string) and 
+//       space is used as a separator, the function returns an array with a single blank string value (""). 
+//     - if the String parameter does not contain significant characters (or it is an blank string) and 
+//       any character except space is used as a separator, the function returns an empty array.
+//
+//
+//// Returns:
+//  Array - an array of strings.
+//
+// Example:
+//  SplitStringIntoSubstringsArray(",One,,Two,", ",") - returns an array of 5 items, three of 
+//  which are blank strings;
+//  SplitStringIntoSubstringsArray(",one,,two,", ",", True) - returns an array of two items;
+//  SplitStringIntoSubstringsArray(" one   two  ", " ") - returns an array of two items;
+//  SplitStringIntoSubstringsArray("") - returns an emtpy array;
+//  SplitStringIntoSubstringsArray("",,False) - returns an array of one item "" (blank string);
+//  SplitStringIntoSubstringsArray - returns an array of one item "" (blank string);
+//
+Function SplitStringIntoSubstringsArray(Val String, Val Separator = ",", Val SkipBlankStrings = Undefined) Export
+	
+	Result = New Array;
+	
+	// This procedure ensures backward compatibility.
+	If SkipBlankStrings = Undefined Then
+		SkipBlankStrings = ?(Separator = " ", True, False);
+		If IsBlankString(String) Then 
+			If Separator = " " Then
+				Result.Add("");
+			EndIf;
+			Return Result;
+		EndIf;
+	EndIf;
 	//
-
-	Позиция = СтрНайти(Строка, Разделитель);
-	Пока Позиция > 0 Цикл
-		Подстрока = Лев(Строка, Позиция - 1);
-		Если Не ПропускатьПустыеСтроки Или Не ПустаяСтрока(Подстрока) Тогда
-			Результат.Добавить(Подстрока);
-		КонецЕсли;
-		Строка = Сред(Строка, Позиция + СтрДлина(Разделитель));
-		Позиция = СтрНайти(Строка, Разделитель);
-	КонецЦикла;
-
-	Если Не ПропускатьПустыеСтроки Или Не ПустаяСтрока(Строка) Тогда
-		Результат.Добавить(Строка);
-	КонецЕсли;
-
-	Возврат Результат;
-
-КонецФункции 
-
-// Возвращает строку номера без символьных префиксов.
-// Например:
-//  ПолучитьСтроковыйНомерБезПрефиксов("УТ0000001234") = "0000001234"
-//
-// Parameters:
-//  Номер - Строка - номер, из которого необходимо вычислить результат функции.
-// 
-// Возвращаемое значение:
-//   Строка - строка номера без символьных префиксов.
-//
-Функция ПолучитьСтроковыйНомерБезПрефиксов(Номер) Экспорт
-
-	НомерБезПрефиксов = "";
-	Сч = СтрДлина(Номер);
-
-	Пока Сч > 0 Цикл
-
-		Символ = Сред(Номер, Сч, 1);
-
-		Если (Символ >= "0" И Символ <= "9") Тогда
-
-			НомерБезПрефиксов = Символ + НомерБезПрефиксов;
-
-		Иначе
-
-			Возврат НомерБезПрефиксов;
-
-		КонецЕсли;
-
-		Сч = Сч - 1;
-
-	КонецЦикла;
-
-	Возврат НомерБезПрефиксов;
-
-КонецФункции
-
-// Разбирает строку, выделяя из нее префикс и числовую часть.
-//
-// Parameters:
-//  Стр            - Строка - Разбираемая строка;
-//  ЧисловаяЧасть  - Число - Переменная, в которую возвратится числовая часть строки;
-//  Режим          - Строка -  Если "Число", то возвратит числовую часть, иначе - префикс.
-//
-// Возвращаемое значение:
-//  Строка - Префикс строки
-//
-Функция ПолучитьПрефиксЧислоНомера(Знач Стр, ЧисловаяЧасть = "", Режим = "") Экспорт
-
-	ЧисловаяЧасть = 0;
-	Префикс = "";
-	Стр = СокрЛП(Стр);
-	Длина   = СтрДлина(Стр);
-
-	СтроковыйНомерБезПрефикса = ПолучитьСтроковыйНомерБезПрефиксов(Стр);
-	ДлинаСтроковойЧасти = СтрДлина(СтроковыйНомерБезПрефикса);
-	Если ДлинаСтроковойЧасти > 0 Тогда
-		ЧисловаяЧасть = Число(СтроковыйНомерБезПрефикса);
-		Префикс = Сред(Стр, 1, Длина - ДлинаСтроковойЧасти);
-	Иначе
-		Префикс = Стр;
-	КонецЕсли;
-
-	Если Режим = "Число" Тогда
-		Возврат (ЧисловаяЧасть);
-	Иначе
-		Возврат (Префикс);
-	КонецЕсли;
-
-КонецФункции
-
-// Приводит номер (код) к требуемой длине. При этом выделяется префикс,
-// и числовая часть номера, остальное пространство между префиксом и
-// номером заполняется нулями.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-// Сообщение "Не обнаружено ссылок на функцию" при проверке конфигурации 
-// не является ошибкой проверки конфигурации.
-//
-// Parameters:
-//  Стр          - Строка - преобразовываемая строка.
-//  Длина        - Число - требуемая длина строки.
-//  ДобавлятьНулиЕслиДлинаНеМеньшеТекущейДлиныНомера - Булево - признак необходимости дополнять нулями.
-//  Префикс      - Строка - префикс который следует добавить к номеру.
-//
-// Возвращаемое значение:
-//  Строка       - код или номер, приведенная к требуемой длине.
-// 
-Функция ПривестиНомерКДлине(Знач Стр, Длина, ДобавлятьНулиЕслиДлинаНеМеньшеТекущейДлиныНомера = Истина, Префикс = "") Экспорт
-
-	Если ПустаяСтрока(Стр) Или СтрДлина(Стр) = Длина Тогда
-
-		Возврат Стр;
-
-	КонецЕсли;
-
-	Стр             = СокрЛП(Стр);
-	ВходящаяДлинаНомера = СтрДлина(Стр);
-
-	ЧисловаяЧасть   = "";
-	ПрефиксНомераСтроки   = ПолучитьПрефиксЧислоНомера(Стр, ЧисловаяЧасть);
-
-	ИтоговыйПрефикс = ?(ПустаяСтрока(Префикс), ПрефиксНомераСтроки, Префикс);
-	ДлинаИтоговогоПрефикса = СтрДлина(ИтоговыйПрефикс);
-
-	СтрокаЧисловойЧасти = Формат(ЧисловаяЧасть, "ЧГ=0");
-	ДлинаЧисловойЧасти = СтрДлина(СтрокаЧисловойЧасти);
-
-	Если (Длина >= ВходящаяДлинаНомера И ДобавлятьНулиЕслиДлинаНеМеньшеТекущейДлиныНомера) Или (Длина
-		< ВходящаяДлинаНомера) Тогда
-
-		Для ВременнаяПеременная = 1 По Длина - ДлинаИтоговогоПрефикса - ДлинаЧисловойЧасти Цикл
-
-			СтрокаЧисловойЧасти = "0" + СтрокаЧисловойЧасти;
-
-		КонецЦикла;
-
-	КонецЕсли;
 	
-	// обрезаем лишние символы
-	СтрокаЧисловойЧасти = Прав(СтрокаЧисловойЧасти, Длина - ДлинаИтоговогоПрефикса);
+	Position = StrFind(String, Separator);
+	While Position > 0 Do
+		Substring = Left(String, Position - 1);
+		If Not SkipBlankStrings Or Not IsBlankString(Substring) Then
+			Result.Add(Substring);
+		EndIf;
+		String = Mid(String, Position + StrLen(Separator));
+		Position = StrFind(String, Separator);
+	EndDo;
+	
+	If Not SkipBlankStrings Or Not IsBlankString(String) Then
+		Result.Add(String);
+	EndIf;
+	
+	Return Result;
+	
+EndFunction 
 
-	Результат = ИтоговыйПрефикс + СтрокаЧисловойЧасти;
-
-	Возврат Результат;
-
-КонецФункции
-
-// Добавляет к префиксу номера или кода подстроку.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-// Сообщение "Не обнаружено ссылок на функцию" при проверке конфигурации 
-// не является ошибкой проверки конфигурации.
+// Returns a number in the string format without a character prefix.
+// Example:
+//  GetStringNumberWithoutPrefixes("TM0000001234") = "0000001234"
 //
 // Parameters:
-//  Стр          - Строка - Номер или код;
-//  Добавок      - Строка - добавляемая к префиксу подстрока;
-//  Длина        - Число - требуемая результирующая длина строки;
-//  Режим        - Строка - "Слева" - подстрока добавляется слева к префиксу, иначе - справа.
-//
-// Возвращаемое значение:
-//  Строка       - номер или код, к префиксу которого добавлена указанная подстрока.
-//
-Функция ДобавитьКПрефиксу(Знач Стр, Добавок = "", Длина = "", Режим = "Слева") Экспорт
-
-	Стр = СокрЛП(Формат(Стр, "ЧГ=0"));
-
-	Если ПустаяСтрока(Длина) Тогда
-		Длина = СтрДлина(Стр);
-	КонецЕсли;
-
-	ЧисловаяЧасть   = "";
-	Префикс         = ПолучитьПрефиксЧислоНомера(Стр, ЧисловаяЧасть);
-
-	Если Режим = "Слева" Тогда
-		Результат = СокрЛП(Добавок) + Префикс;
-	Иначе
-		Результат = Префикс + СокрЛП(Добавок);
-	КонецЕсли;
-
-	Пока Длина - СтрДлина(Результат) - СтрДлина(Формат(ЧисловаяЧасть, "ЧГ=0")) > 0 Цикл
-		Результат = Результат + "0";
-	КонецЦикла;
-
-	Результат = Результат + Формат(ЧисловаяЧасть, "ЧГ=0");
-
-	Возврат Результат;
-
-КонецФункции
-
-// Дополняет строку указанным символом до указанной длины.
-//
-// Параметры: 
-//  Стр          - Строка - дополняемая строка;
-//  Длина        - Число - требуемая длина результирующей строки;
-//  Чем          - Строка - символ, которым дополняется строка.
-//
-// Возвращаемое значение:
-//  Строка - полученная строка, дополненная указанным символом до указанной длины.
-//
-Функция одДополнитьСтроку(Стр, Длина, Чем = " ") Экспорт
-
-	Результат = СокрЛП(Стр);
-	Пока Длина - СтрДлина(Результат) > 0 Цикл
-		Результат = Результат + Чем;
-	КонецЦикла;
-
-	Возврат (Результат);
-
-КонецФункции
-
-#КонецОбласти
-
-#Область РаботаСДанными
-
-// Возвращает строку - имя переданного значения перечисления.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-// Сообщение "Не обнаружено ссылок на функцию" при проверке конфигурации 
-// не является ошибкой проверки конфигурации.
-//
-// Параметры:
-//  Значение - ПеречислениеСсылка - значение перечисления.
-//
-// Возвращаемое значение:
-//   Строка - имя переданного значения перечисления.
-//
-Функция одИмяЗначенияПеречисления(Значение) Экспорт
-
-	ОбъектМД = Значение.Метаданные();
-
-	МенеджерПеречисления = Перечисления[ОбъектМД.Имя]; // ПеречислениеМенеджер
-	ИндексЗначения = МенеджерПеречисления.Индекс(Значение);
-
-	Возврат ОбъектМД.ЗначенияПеречисления.Получить(ИндексЗначения).Имя;
-
-КонецФункции
-
-// Определяет заполнено ли переданное значение.
-//
-// Параметры:
-//  Значение       - Произвольный - СправочникСсылка, ДокументСсылка, Строка или любой другой тип.
-//                   Значение, заполнение которого надо проверить.
-//  ЭтоNULL        - Булево - в эту переменную возвращается Истина, если переданное значение NULL.
-//
-// Возвращаемое значение:
-//   Булево - Истина         - значение не заполнено, ложь - иначе.
-//
-Функция одПустое(Значение, ЭтоNULL = Ложь) Экспорт
-
-	// Сначала примитивные типы
-	Если Значение = Неопределено Тогда
-		Возврат Истина;
-	ИначеЕсли Значение = Null Тогда
-		ЭтоNULL   = Истина;
-		Возврат Истина;
-	КонецЕсли;
-
-	ТипЗначения = ТипЗнч(Значение);
-
-	Если ТипЗначения = одТипХранилищеЗначения Тогда
-
-		Результат = одПустое(Значение.Получить());
-		Возврат Результат;
-
-	ИначеЕсли ТипЗначения = одТипДвоичныеДанные Тогда
-
-		Возврат Ложь;
-
-	Иначе
-		
-		// Для остальных будем считать значение пустым, если оно равно
-		// значению по умолчанию своего типа.
-		Попытка
-			Возврат Не ЗначениеЗаполнено(Значение);
-		Исключение
-			// На случай мутабельных значений.
-			Возврат Ложь;
-		КонецПопытки;
-	КонецЕсли;
-
-КонецФункции
-
-// Возвращает объект ОписаниеТипов, содержащий указанный тип.
-//
-// Параметры:
-//  ЗначениеТипа - Строка, Тип - Содержит имя типа или значение типа Тип.
-//  
-// Возвращаемое значение:
-//  ОписаниеТипов - объект Описание типов.
-//
-Функция одОписаниеТипа(ЗначениеТипа) Экспорт
-
-	ОписаниеТипов = мСоответствиеОписаниеТипов[ЗначениеТипа];
-
-	Если ОписаниеТипов = Неопределено Тогда
-
-		МассивТипов = Новый Массив;
-		Если ТипЗнч(ЗначениеТипа) = одТипСтрока Тогда
-			МассивТипов.Добавить(Тип(ЗначениеТипа));
-		Иначе
-			МассивТипов.Добавить(ЗначениеТипа);
-		КонецЕсли;
-		ОписаниеТипов	= Новый ОписаниеТипов(МассивТипов);
-
-		мСоответствиеОписаниеТипов.Вставить(ЗначениеТипа, ОписаниеТипов);
-
-	КонецЕсли;
-
-	Возврат ОписаниеТипов;
-
-КонецФункции
-
-// Возвращает пустое (дефолтное) значение указанного типа.
-//
-// Параметры:
-//  Тип          - Строка, Тип - имя типа или значение типа Тип.
-//
-// Возвращаемое значение:
-//  Произвольный - Пустое значение указанного типа.
+//  Number - String - a number, from which the function result must be calculated.
 // 
-Функция одПолучитьПустоеЗначение(Тип) Экспорт
-
-	ПустоеЗначениеТипа = мСоответствиеПустыхЗначенийТипов[Тип];
-
-	Если ПустоеЗначениеТипа = Неопределено Тогда
-
-		ПустоеЗначениеТипа = одОписаниеТипа(Тип).ПривестиЗначение(Неопределено);
-		мСоответствиеПустыхЗначенийТипов.Вставить(Тип, ПустоеЗначениеТипа);
-
-	КонецЕсли;
-
-	Возврат ПустоеЗначениеТипа;
-
-КонецФункции
-
-// Осуществляет простой поиск объекта информационной базы по указанному свойству.
+// Returns:
+//   String - a number string without character prefixes.
 //
-// Параметры:
-//  Менеджер       - СправочникМенеджер, ДокументМенеджер - Менеджер искомого объекта;
-//  Свойство       - Строка - свойство, по которому осуществляем поиск: Имя, Код, 
-//                   Наименование или Имя индексируемого реквизита.
-//  Значение       - Строка, Число, Дата - Значение свойства, по которому ищем объект.
-//  НайденныйОбъектПоУникальномуИдентификатору - СправочникОбъект, ДокументОбъект - Объект информационной базы, 
-//                   который был найден по уникальному идентификатору в ходе выполнения функции.
-//  ОбщаяСтруктураСвойств - структура - свойства искомого объекта.
-//  ОбщиеСвойстваПоиска - Структура - общие свойства поиска.
-//  СтрокаЗапросаПоискаПоУникальномуИдентификатору - Строка - текст запроса для поиска по уникальному идентификатору.
-//
-// Возвращаемое значение:
-//  Произвольный - найденный объект информационной базы.
-//
-Функция НайтиОбъектПоСвойству(Менеджер, Свойство, Значение, НайденныйОбъектПоУникальномуИдентификатору,
-	ОбщаяСтруктураСвойств = Неопределено, ОбщиеСвойстваПоиска = Неопределено,
-	СтрокаЗапросаПоискаПоУникальномуИдентификатору = "") Экспорт
-
-	Если ОбщаяСтруктураСвойств = Неопределено Тогда
-		Попытка
-			ТекСтруктураСвойств = Менеджеры[ТипЗнч(Менеджер.ПустаяСсылка())];
-			ИмяТипа = ТекСтруктураСвойств.ИмяТипа;
-		Исключение
-			ИмяТипа = "";
-		КонецПопытки;
-	Иначе
-		ИмяТипа = ОбщаяСтруктураСвойств.ИмяТипа;
-	КонецЕсли;
-
-	Если Свойство = "Имя" Тогда
-
-		Возврат Менеджер[Значение];
-
-	ИначеЕсли Свойство = "Код" И (ИмяТипа = "Справочник" Или ИмяТипа = "ПланВидовХарактеристик" Или ИмяТипа = "ПланСчетов"
-		Или ИмяТипа = "ПланОбмена" Или ИмяТипа = "ПланВидовРасчета") Тогда
-
-		Возврат Менеджер.НайтиПоКоду(Значение);
-
-	ИначеЕсли Свойство = "Наименование" И (ИмяТипа = "Справочник" Или ИмяТипа = "ПланВидовХарактеристик" Или ИмяТипа = "ПланСчетов"
-		Или ИмяТипа = "ПланОбмена" Или ИмяТипа = "ПланВидовРасчета" Или ИмяТипа = "Задача") Тогда
-
-		Возврат Менеджер.НайтиПоНаименованию(Значение, Истина);
-
-	ИначеЕсли Свойство = "Номер" И (ИмяТипа = "Документ" Или ИмяТипа = "БизнесПроцесс" Или ИмяТипа = "Задача") Тогда
-
-		Возврат Менеджер.НайтиПоНомеру(Значение);
-
-	ИначеЕсли Свойство = "{УникальныйИдентификатор}" Тогда
-
-		СсылкаПоИдентификатору = Менеджер.ПолучитьСсылку(Новый УникальныйИдентификатор(Значение));
-
-		Ссылка = ПроверитьСуществованиеСсылки(СсылкаПоИдентификатору, Менеджер,
-			НайденныйОбъектПоУникальномуИдентификатору, СтрокаЗапросаПоискаПоУникальномуИдентификатору);
-
-		Возврат Ссылка;
-
-	ИначеЕсли Свойство = "{ИмяПредопределенногоЭлемента}" Тогда
-
-		Попытка
-
-			Ссылка = Менеджер[Значение];
-
-		Исключение
-
-			Ссылка = Менеджер.НайтиПоКоду(Значение);
-
-		КонецПопытки;
-
-		Возврат Ссылка;
-
-	Иначе
+Function GetStringNumberWithoutPrefixes(Number) Export
+	
+	NumberWithoutPrefixes = "";
+	Cnt = StrLen(Number);
+	
+	While Cnt > 0 Do
 		
-		// Можно найти только по реквизиту, кроме строк произвольной длины и хранилища значений.
-		Если Не (Свойство = "Дата" Или Свойство = "Проведен" Или Свойство = "ПометкаУдаления" Или Свойство = "Владелец"
-			Или Свойство = "Родитель" Или Свойство = "ЭтоГруппа") Тогда
+		Char = Mid(Number, Cnt, 1);
+		
+		If (Char >= "0" And Char <= "9") Then
+			
+			NumberWithoutPrefixes = Char + NumberWithoutPrefixes;
+			
+		Else
+			
+			Return NumberWithoutPrefixes;
+			
+		EndIf;
+		
+		Cnt = Cnt - 1;
+		
+	EndDo;
+	
+	Return NumberWithoutPrefixes;
+	
+EndFunction
 
-			Попытка
-
-				СтрокаНеограниченнойДлины = ОпределитьЭтотПараметрНеограниченнойДлинны(ОбщаяСтруктураСвойств, Значение,
-					Свойство);
-
-			Исключение
-
-				СтрокаНеограниченнойДлины = Ложь;
-
-			КонецПопытки;
-
-			Если Не СтрокаНеограниченнойДлины Тогда
-
-				Возврат Менеджер.НайтиПоРеквизиту(Свойство, Значение);
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		СсылкаНаОбъект = НайтиЭлементЗапросом(ОбщаяСтруктураСвойств, ОбщиеСвойстваПоиска, , Менеджер);
-		Возврат СсылкаНаОбъект;
-
-	КонецЕсли;
-
-КонецФункции
-
-// Осуществляет простой поиск объекта информационной базы по указанному свойству.
+// Splits a string into a prefix and numerical part.
 //
-// Параметры:
-//  Стр            - Строка - значение свойства, по которому осуществляется 
-//                   поиск объект;
-//  Тип            - Тип - тип искомого объекта;
-//  Свойство       - Строка - имя свойства, по-которому ищем объект.
+// Parameters:
+//  Str            - String - a string to be split;
+//  NumericalPart  - Number - a variable that contains numeric part of the passed string.
+//  Mode          - String -  if "Number", then returns the numerical part otherwise returns a prefix.
 //
-// Возвращаемое значение:
-//  Произвольный - Найденный объект информационной базы.
+// Returns:
+//  String - a string prefix.
 //
-Функция одПолучитьЗначениеПоСтроке(Стр, Тип, Свойство = "") Экспорт
+Function GetNumberPrefixAndNumericalPart(Val Str, NumericalPart = "", Mode = "") Export
 
-	Если ПустаяСтрока(Стр) Тогда
-		Возврат Новый (Тип);
-	КонецЕсли;
+	NumericalPart = 0;
+	Prefix = "";
+	Str = TrimAll(Str);
+	Length   = StrLen(Str);
+	
+	StringNumberWithoutPrefix = GetStringNumberWithoutPrefixes(Str);
+	StringPartLength = StrLen(StringNumberWithoutPrefix);
+	If StringPartLength > 0 Then
+		NumericalPart = Number(StringNumberWithoutPrefix);
+		Prefix = Mid(Str, 1, Length - StringPartLength);
+	Else
+		Prefix = Str;	
+	EndIf;
 
-	Свойства = Менеджеры[Тип];
+	If Mode = "Number" Then
+		Return(NumericalPart);
+	Else
+		Return(Prefix);
+	EndIf;
 
-	Если Свойства = Неопределено Тогда
+EndFunction
 
-		ОписаниеТипов = одОписаниеТипа(Тип);
-		Возврат ОписаниеТипов.ПривестиЗначение(Стр);
+// Casts the number (code) to the required length, splitting the number into a prefix and numeric part. 
+// The space between the prefix and number is filled with zeros.
+// 
+// Can be used in the event handlers whose script is stored in data exchange rules.
+//  Is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+//
+// Parameters:
+//  Str          - String - a string to be converted.
+//  Length        - Number - required length of a string.
+//  AddZerosIfLengthNotLessNumberCurrentLength - Boolean - indicates that it is necessary to add zeros.
+//  Prefix      - String - a prefix to be added to the number.
+//
+// Returns:
+//  String       - a code or number cast to the required length.
+// 
+Function CastNumberToLength(Val Str, Length, AddZerosIfLengthNotLessNumberCurrentLength = True, Prefix = "") Export
 
-	КонецЕсли;
+	If IsBlankString(Str)
+		Or StrLen(Str) = Length Then
+		
+		Return Str;
+		
+	EndIf;
+	
+	Str             = TrimAll(Str);
+	NumberIncomingLength = StrLen(Str);
 
-	Если ПустаяСтрока(Свойство) Тогда
+	NumericalPart   = "";
+	StringNumberPrefix   = GetNumberPrefixAndNumericalPart(Str, NumericalPart);
+	
+	FinalPrefix = ?(IsBlankString(Prefix), StringNumberPrefix, Prefix);
+	ResultingPrefixLength = StrLen(FinalPrefix);
+	
+	NumericPartString = Format(NumericalPart, "NG=0");
+	NumericPartLength = StrLen(NumericPartString);
 
-		Если Свойства.ИмяТипа = "Перечисление" Тогда
-			Свойство = "Имя";
-		Иначе
-			Свойство = "{ИмяПредопределенногоЭлемента}";
-		КонецЕсли;
+	If (Length >= NumberIncomingLength And AddZerosIfLengthNotLessNumberCurrentLength)
+		Or (Length < NumberIncomingLength) Then
+		
+		For TemporaryVariable = 1 To Length - ResultingPrefixLength - NumericPartLength Do
+			
+			NumericPartString = "0" + NumericPartString;
+			
+		EndDo;
+	
+	EndIf;
+	
+	// Cutting excess symbols
+	NumericPartString = Right(NumericPartString, Length - ResultingPrefixLength);
+		
+	Result = FinalPrefix + NumericPartString;
 
-	КонецЕсли;
+	Return Result;
 
-	Возврат НайтиОбъектПоСвойству(Свойства.Менеджер, Свойство, Стр, Неопределено);
+EndFunction
 
-КонецФункции
+// Adds a substring to a number of code prefix.
+// Can be used in the event handlers whose script is stored in data exchange rules.
+//  Is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Str          - String - a number or code.
+//  Additive      - String - a substring to be added to a prefix.
+//  Length        - Number - required resulting length of a string.
+//  Mode        - String - pass "Left" if you want to add substring from the left, otherwise the substring will be added from the right.
+//
+// Returns:
+//  String       - a number or code with the specified substring added to the prefix.
+//
+Function AddToPrefix(Val Str, Additive = "", Length = "", Mode = "Left") Export
+
+	Str = TrimAll(Format(Str,"NG=0"));
+
+	If IsBlankString(Length) Then
+		Length = StrLen(Str);
+	EndIf;
+
+	NumericalPart   = "";
+	Prefix         = GetNumberPrefixAndNumericalPart(Str, NumericalPart);
+
+	If Mode = "Left" Then
+		Result = TrimAll(Additive) + Prefix;
+	Else
+		Result = Prefix + TrimAll(Additive);
+	EndIf;
+
+	While Length - StrLen(Result) - StrLen(Format(NumericalPart, "NG=0")) > 0 Do
+		Result = Result + "0";
+	EndDo;
+
+	Result = Result + Format(NumericalPart, "NG=0");
+
+	Return Result;
+
+EndFunction
+
+// Supplements string with the specified symbol to the specified length.
+//
+// Parameters:
+//  Str          - String - string to be supplemented;
+//  Length        - Number - required length of a resulting string.
+//  Symbol          - String - a character used for supplementing the string.
+//
+// Returns:
+//  String - the received string that is supplemented with the specified symbol to the specified length.
+//
+Function deSupplementString(Str, Length, Symbol = " ") Export
+
+	Result = TrimAll(Str);
+	While Length - StrLen(Result) > 0 Do
+		Result = Result + Symbol;
+	EndDo;
+
+	Return(Result);
+
+EndFunction
+
+#EndRegion
+
+#Region DataOperations
+
+// Returns a string - a name of the passed enumeration value.
+// Can be used in the event handlers whose script is stored in data exchange rules.
+//  Is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Value     - EnumRef - an enumeration value.
+//
+// Returns:
+//  String       - a name of the passed enumeration value.
+//
+Function deEnumValueName(Value) Export
+
+	MDObject = Value.Metadata();
+
+	EnumManager = Enums[MDobject.Name]; // EnumManager
+	ValueIndex = EnumManager.IndexOf(Value);
+
+	Return MDobject.EnumValues.Get(ValueIndex).Name;
+
+EndFunction
+
+// Defines whether the passed value is filled.
+//
+// Parameters:
+//  Value       - Arbitrary - CatalogRef, DocumentRef, string or any other type.
+//                   Value to be checked.
+//  IsNULL        - Boolean - if the passed value is NULL, this variable is set to True.
+//
+// Returns:
+//  Boolean - True, if the value is not filled in.
+//
+Function deEmpty(Value, IsNULL=False) Export
+
+	// Primitive types first
+	If Value = Undefined Then
+		Return True;
+	ElsIf Value = NULL Then
+		IsNULL   = True;
+		Return True;
+	EndIf;
+	
+	ValueType = TypeOf(Value);
+	
+	If ValueType = deValueStorageType Then
+		
+		Result = deEmpty(Value.Get());
+		Return Result;
+		
+	ElsIf ValueType = deBinaryDataType Then
+		
+		Return False;
+		
+	Else
+		
+		// The value is considered empty if it is equal to the default value of its type. 
+		Try
+			Return Not ValueIsFilled(Value);
+		Except
+			// In case of mutable values.
+			Return False;
+		EndTry;
+	EndIf;
+	
+EndFunction
+
+// Returns the TypeDescription object that contains the specified type.
+//
+// Parameters:
+//  TypeValue - String, Type - contains a type name or value of the Type type.
+//  
+// Returns:
+//  TypeDescription - the Type description object.
+//
+Function deTypeDescription(TypeValue) Export
+	
+	TypeDescription = mTypeDescriptionMap[TypeValue];
+	
+	If TypeDescription = Undefined Then
+		
+		TypesArray = New Array;
+		If TypeOf(TypeValue) = deStringType Then
+			TypesArray.Add(Type(TypeValue));
+		Else
+			TypesArray.Add(TypeValue);
+		EndIf; 
+		TypeDescription	= New TypeDescription(TypesArray);
+		
+		mTypeDescriptionMap.Insert(TypeValue, TypeDescription);
+		
+	EndIf;
+	
+	Return TypeDescription;
+	
+EndFunction
+
+// Returns the empty (default) value of the specified type.
+//
+// Parameters:
+//  Type          - String, Type - a type name or value of the Type type.
+//
+// Returns:
+//  Arbitrary - an empty value of the specified type.
+// 
+Function deGetEmptyValue(Type) Export
+
+	EmptyTypeValue = mEmptyTypeValueMap[Type];
+	
+	If EmptyTypeValue = Undefined Then
+		
+		EmptyTypeValue = deTypeDescription(Type).AdjustValue(Undefined);
+		mEmptyTypeValueMap.Insert(Type, EmptyTypeValue);
+		
+	EndIf;
+	
+	Return EmptyTypeValue;
+
+EndFunction
+
+// Performs a simple search for infobase object by the specified property.
+//
+// Parameters:
+//  Manager       - CatalogManager, DocumentManager - manager of the object to be searched.
+//  Property       - String - a property to implement the search: Name, Code, 
+//                   Description or a Name of an indexed attribute.
+//  Value       - String, Number, Date - value of a property to be used for searching the object.
+//  FoundByUUIDObject - CatalogObject, DocumentObject - an infobase object that was found by UUID 
+//                   while executing function.
+//  CommonPropertyStructure - structure - properties of the object to be searched.
+//  CommonSearchProperties - Structure - common properties of the search.
+//  SearchByUUIDQueryString - String - a query text for to search by UUID.
+//
+// Returns:
+//  Arbitrary - found infobase object.
+//
+Function FindObjectByProperty(Manager, Property, Value, FoundByUUIDObject,
+	CommonPropertyStructure = Undefined, CommonSearchProperties = Undefined,
+	SearchByUUIDQueryString = "") Export
+	
+	If CommonPropertyStructure = Undefined Then
+		Try
+			CurrPropertiesStructure = Managers[TypeOf(Manager.EmptyRef())];
+			TypeName = CurrPropertiesStructure.TypeName;
+		Except
+			TypeName = "";
+		EndTry;
+	Else
+		TypeName = CommonPropertyStructure.TypeName;
+	EndIf;
+	
+	If Property = "Name" Then
+		
+		Return Manager[Value];
+
+	ElsIf Property = "Code"
+		And (TypeName = "Catalog" Or TypeName = "ChartOfCharacteristicTypes" Or TypeName = "ChartOfAccounts"
+		Or TypeName = "ExchangePlan" Or TypeName = "ChartOfCalculationTypes") Then
+		
+		Return Manager.FindByCode(Value);
+
+	ElsIf Property = "Description"
+		And (TypeName = "Catalog" Or TypeName = "ChartOfCharacteristicTypes" Or TypeName = "ChartOfAccounts"
+		Or TypeName = "ExchangePlan" Or TypeName = "ChartOfCalculationTypes" Or TypeName = "Task") Then
+		
+		Return Manager.FindByDescription(Value, True);
+
+	ElsIf Property = "Number" And (TypeName = "Document" Or TypeName = "BusinessProcess" Or TypeName = "Task") Then
+		
+		Return Manager.FindByNumber(Value);
+
+	ElsIf Property = "{UUID}" Then
+		
+		RefByUUID = Manager.GetRef(New UUID(Value));
+		
+		Ref = CheckRefExists(RefByUUID, Manager, FoundByUUIDObject,
+			SearchByUUIDQueryString);
+			
+		Return Ref;
+
+	ElsIf Property = "{PredefinedItemName}" Then
+		
+		Try
+			
+			Ref = Manager[Value];
+			
+		Except
+			
+			Ref = Manager.FindByCode(Value);
+			
+		EndTry;
+		
+		Return Ref;
+
+	Else
+		
+		// Search is possible only by attribute, except for strings of arbitrary length and value storages.
+		If Not (Property = "Date" Or Property = "Posted" Or Property = "DeletionMark" Or Property = "Owner"
+			Or Property = "Parent" Or Property = "IsFolder") Then
+
+			Try
+				
+				UnlimitedLengthString = IsUnlimitedLengthParameter(CommonPropertyStructure, Value, Property);
+				
+			Except
+				
+				UnlimitedLengthString = False;
+				
+			EndTry;
+			
+			If NOT UnlimitedLengthString Then
+				
+				Return Manager.FindByAttribute(Property, Value);
+				
+			EndIf;
+			
+		EndIf;
+		
+		ObjectRef = FindItemUsingRequest(CommonPropertyStructure, CommonSearchProperties, , Manager);
+		Return ObjectRef;
+		
+	EndIf;
+	
+EndFunction
+
+// Performs a simple search for infobase object by the specified property.
+//
+// Parameters:
+//  Str            - String - a property value, by which an object is searched.
+//                   
+//  Type            - Type - type of the document to be searched.
+//  Property       - String - a property name, by which an object is searched.
+//
+// Returns:
+//  Arbitrary - found infobase object.
+//
+Function deGetValueByString(Str, Type, Property = "") Export
+
+	If IsBlankString(Str) Then
+		Return New(Type);
+	EndIf; 
+
+	Properties = Managers[Type];
+
+	If Properties = Undefined Then
+		
+		TypeDescription = deTypeDescription(Type);
+		Return TypeDescription.AdjustValue(Str);
+		
+	EndIf;
+
+	If IsBlankString(Property) Then
+		
+		If Properties.TypeName = "Enum" Then
+			Property = "Name";
+		Else
+			Property = "{PredefinedItemName}";
+		EndIf;
+		
+	EndIf;
+	
+	Return FindObjectByProperty(Properties.Manager, Property, Str, Undefined);
+	
+EndFunction
 
 // Возвращает строковое представление типа значения.
 //
