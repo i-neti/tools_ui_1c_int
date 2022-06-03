@@ -729,521 +729,499 @@ Function deGetValueByString(Str, Type, Property = "") Export
 	
 EndFunction
 
-// Возвращает строковое представление типа значения.
-//
-// Параметры: 
-//  ЗначениеИлиТип - Произвольный - Значение любого типа или Тип.
-//
-// Возвращаемое значение:
-//  Строка - строковое представление типа значения.
-//
-Функция одТипЗначенияСтрокой(ЗначениеИлиТип) Экспорт
-
-	ТипЗначения	= ТипЗнч(ЗначениеИлиТип);
-
-	Если ТипЗначения = одТипТип Тогда
-		ТипЗначения	= ЗначениеИлиТип;
-	КонецЕсли;
-
-	Если (ТипЗначения = Неопределено) Или (ЗначениеИлиТип = Неопределено) Тогда
-		Результат = "";
-	ИначеЕсли ТипЗначения = одТипСтрока Тогда
-		Результат = "Строка";
-	ИначеЕсли ТипЗначения = одТипЧисло Тогда
-		Результат = "Число";
-	ИначеЕсли ТипЗначения = одТипДата Тогда
-		Результат = "Дата";
-	ИначеЕсли ТипЗначения = одТипБулево Тогда
-		Результат = "Булево";
-	ИначеЕсли ТипЗначения = одТипХранилищеЗначения Тогда
-		Результат = "ХранилищеЗначения";
-	ИначеЕсли ТипЗначения = одТипУникальныйИдентификатор Тогда
-		Результат = "УникальныйИдентификатор";
-	ИначеЕсли ТипЗначения = одТипВидДвиженияНакопления Тогда
-		Результат = "ВидДвиженияНакопления";
-	Иначе
-		Менеджер = Менеджеры[ТипЗначения];
-		Если Менеджер = Неопределено Тогда
-
-			Текст= НСтр("ru = 'Неизвестный тип:'") + Строка(ТипЗнч(ТипЗначения));
-			СообщитьПользователю(Текст);
-
-		Иначе
-			Результат = Менеджер.ТипСсылкиСтрокой;
-		КонецЕсли;
-	КонецЕсли;
-
-	Возврат Результат;
-
-КонецФункции
-
-// Возвращает XML представление объекта ОписаниеТипов.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными.
-// Параметры:
-//  ОписаниеТипов  - ОписаниеТипов - Объект ОписаниеТипов, XML представление которого требуется получить.
-//
-// Возвращаемое значение:
-//  Строка - XML представление переданного объекта ОписаниеТипов.
-//
-Функция одПолучитьXMLПредставлениеОписанияТипов(ОписаниеТипов) Экспорт
-
-	УзелТипов = СоздатьУзел("Типы");
-
-	Если ТипЗнч(ОписаниеТипов) = Тип("Структура") Тогда
-		УстановитьАтрибут(УзелТипов, "ДопустимыйЗнак", СокрЛП(ОписаниеТипов.ДопустимыйЗнак));
-		УстановитьАтрибут(УзелТипов, "Разрядность", СокрЛП(ОписаниеТипов.Разрядность));
-		УстановитьАтрибут(УзелТипов, "РазрядностьДробнойЧасти", СокрЛП(ОписаниеТипов.РазрядностьДробнойЧасти));
-		УстановитьАтрибут(УзелТипов, "Длина", СокрЛП(ОписаниеТипов.Длина));
-		УстановитьАтрибут(УзелТипов, "ДопустимаяДлина", СокрЛП(ОписаниеТипов.ДопустимаяДлина));
-		УстановитьАтрибут(УзелТипов, "СоставДаты", СокрЛП(ОписаниеТипов.ЧастиДаты));
-
-		Для Каждого СтрТип Из ОписаниеТипов.Типы Цикл
-			УзелТипа = СоздатьУзел("Тип");
-			УзелТипа.ЗаписатьТекст(СокрЛП(СтрТип));
-			ДобавитьПодчиненный(УзелТипов, УзелТипа);
-		КонецЦикла;
-	Иначе
-		КвЧисла       = ОписаниеТипов.КвалификаторыЧисла;
-		КвСтроки      = ОписаниеТипов.КвалификаторыСтроки;
-		КвДаты        = ОписаниеТипов.КвалификаторыДаты;
-
-		УстановитьАтрибут(УзелТипов, "ДопустимыйЗнак", СокрЛП(КвЧисла.ДопустимыйЗнак));
-		УстановитьАтрибут(УзелТипов, "Разрядность", СокрЛП(КвЧисла.Разрядность));
-		УстановитьАтрибут(УзелТипов, "РазрядностьДробнойЧасти", СокрЛП(КвЧисла.РазрядностьДробнойЧасти));
-		УстановитьАтрибут(УзелТипов, "Длина", СокрЛП(КвСтроки.Длина));
-		УстановитьАтрибут(УзелТипов, "ДопустимаяДлина", СокрЛП(КвСтроки.ДопустимаяДлина));
-		УстановитьАтрибут(УзелТипов, "СоставДаты", СокрЛП(КвДаты.ЧастиДаты));
-
-		Для Каждого Тип Из ОписаниеТипов.Типы() Цикл
-			УзелТипа = СоздатьУзел("Тип");
-			УзелТипа.ЗаписатьТекст(одТипЗначенияСтрокой(Тип));
-			ДобавитьПодчиненный(УзелТипов, УзелТипа);
-		КонецЦикла;
-	КонецЕсли;
-
-	УзелТипов.ЗаписатьКонецЭлемента();
-
-	Возврат (УзелТипов.Закрыть());
-
-КонецФункции
-
-#КонецОбласти
-
-#Область ПроцедурыИФункцииДляРаботыСОбъектомXMLЗапись
-
-// Заменяет недопустимые символы XML на другой символ.
-//
-// Параметры:
-//       Текст - Строка - Текст, в котором следует заменить символы.
-//       СимволЗамены - Строка - значение на которое следует заменять недопустимые символы.
-// Возвращаемое значение:
-//       Строка - результат замены.
-//
-Функция ЗаменитьНедопустимыеСимволыXML(Знач Текст, СимволЗамены = " ") Экспорт
-
-	Позиция = НайтиНедопустимыеСимволыXML(Текст);
-	Пока Позиция > 0 Цикл
-		Текст = СтрЗаменить(Текст, Сред(Текст, Позиция, 1), СимволЗамены);
-		Позиция = НайтиНедопустимыеСимволыXML(Текст);
-	КонецЦикла;
-
-	Возврат Текст;
-КонецФункции
-
-// Создает новый xml-узел
-// Функция может быть использована в обработчиках событий, программный код. 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-//
-// Параметры: 
-//   Имя - Строка - имя узла.
-//
-// Возвращаемое значение:
-//   ЗаписьXML - объект нового xml-узла.
-//
-Функция СоздатьУзел(Имя) Экспорт
-
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку();
-	ЗаписьXML.ЗаписатьНачалоЭлемента(Имя);
-
-	Возврат ЗаписьXML;
-
-КонецФункции
-
-// Добавляет новый xml-узел к указанному узлу-родителю.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-// Сообщение "Не обнаружено ссылок на функцию" при проверке конфигурации 
-// не является ошибкой проверки конфигурации.
-//
-// Параметры: 
-//  УзелРодитель   - xml-узел-родитель.
-//  Имя            - Строка - имя добавляемого узла.
-//
-// Возвращаемое значение:
-//  Новый xml-узел, добавленный к указанному узлу-родителю.
-//
-Функция ДобавитьУзел(УзелРодитель, Имя) Экспорт
-
-	УзелРодитель.ЗаписатьНачалоЭлемента(Имя);
-
-	Возврат УзелРодитель;
-
-КонецФункции
-
-// Копирует указанный xml-узел.
-// Функция может быть использована в обработчиках событий, программный код 
-// которых хранится в правила обмена данными. Вызывается методом Выполнить().
-// Сообщение "Не обнаружено ссылок на функцию" при проверке конфигурации 
-// не является ошибкой проверки конфигурации.
-//
-// Параметры: 
-//  Узел           - xml - узел.
-//
-// Возвращаемое значение:
-//  Новый xml - копия указанного узла.
-//
-Функция КопироватьУзел(Узел) Экспорт
-
-	Стр = Узел.Закрыть();
-
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку();
-
-	Если XMLWriterAdvancedMonitoring Тогда
-
-		Стр = УдалитьНедопустимыеСимволыXML(Стр);
-
-	КонецЕсли;
-
-	ЗаписьXML.ЗаписатьБезОбработки(Стр);
-
-	Возврат ЗаписьXML;
-
-КонецФункции
-
-// Осуществляет запись элемента и его значения в указанный объект.
-//
-// Параметры:
-//  Объект         - ЗаписьXML - объект типа XMLЗапись.
-//  Имя            - Строка - Имя элемента.
-//  Значение       - Произвольный - Значение элемента.
-//
-Процедура одЗаписатьЭлемент(Объект, Имя, Значение = "") Экспорт
-
-	Объект.ЗаписатьНачалоЭлемента(Имя);
-	Стр = XMLСтрока(Значение);
-
-	Если XMLWriterAdvancedMonitoring Тогда
-
-		Стр = УдалитьНедопустимыеСимволыXML(Стр);
-
-	КонецЕсли;
-
-	Объект.ЗаписатьТекст(Стр);
-	Объект.ЗаписатьКонецЭлемента();
-
-КонецПроцедуры
-
-// Подчиняет xml-узел указанному узлу-родителю.
-//
-// Параметры: 
-//  УзелРодитель   - xml-узел-родитель.
-//  Узел           - xml - подчиняемый узел.
-//
-Процедура ДобавитьПодчиненный(УзелРодитель, Узел) Экспорт
-
-	Если ТипЗнч(Узел) <> одТипСтрока Тогда
-		Узел.ЗаписатьКонецЭлемента();
-		ИнформацияДляЗаписиВФайл = Узел.Закрыть();
-	Иначе
-		ИнформацияДляЗаписиВФайл = Узел;
-	КонецЕсли;
-
-	УзелРодитель.ЗаписатьБезОбработки(ИнформацияДляЗаписиВФайл);
-
-КонецПроцедуры
-
-// Устанавливает атрибут указанного xml-узла.
-//
-// Parameters: 
-//  Узел           - xml-узел
-//  Имя            - Строка - имя атрибута.
-//  Значение       - Произвольный - устанавливаемое значение.
-//
-Процедура УстановитьАтрибут(Узел, Имя, Значение) Экспорт
-
-	СтрокаЗаписи = XMLСтрока(Значение);
-
-	Если XMLWriterAdvancedMonitoring Тогда
-
-		СтрокаЗаписи = УдалитьНедопустимыеСимволыXML(СтрокаЗаписи);
-
-	КонецЕсли;
-
-	Узел.ЗаписатьАтрибут(Имя, СтрокаЗаписи);
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыИФункцииДляРаботыСОбъектомXMLЧтение
-
-// Читает значение атрибута по имени из указанного объекта, приводит значение
-// к указанному примитивному типу.
+// Returns a string presentation of a value type.
 //
 // Parameters:
-//  Объект      - ЧтениеXML - объект типа XMLЧтение, спозиционированный на начале элемента,
-//                атрибут которого требуется получить.
-//  Тип         - Тип - Тип атрибута.
-//  Имя         - Строка - Имя атрибута.
+//  ValueOrType - Arbitrary - a value of any type or Type.
 //
-// Возвращаемое значение:
-//  Произвольный - Значение атрибута полученное по имени и приведенное к указанному типу.
+// Returns:
+//  String - a string presentation of the value type.
 //
-Функция одАтрибут(Объект, Тип, Имя) Экспорт
+Function deValueTypeAsString(ValueOrType) Export
 
-	СтрЗначение = Объект.ПолучитьАтрибут(Имя);
-	Если Не ПустаяСтрока(СтрЗначение) Тогда
-		Возврат XMLЗначение(Тип, СокрП(СтрЗначение));
-	ИначеЕсли Тип = одТипСтрока Тогда
-		Возврат "";
-	ИначеЕсли Тип = одТипБулево Тогда
-		Возврат Ложь;
-	ИначеЕсли Тип = одТипЧисло Тогда
-		Возврат 0;
-	ИначеЕсли Тип = одТипДата Тогда
-		Возврат ЗначениеПустаяДата;
-	КонецЕсли;
+	ValueType	= TypeOf(ValueOrType);
+	
+	If ValueType = deTypeType Then
+		ValueType	= ValueOrType;
+	EndIf; 
+	
+	If (ValueType = Undefined) Or (ValueOrType = Undefined) Then
+		Result = "";
+	ElsIf ValueType = deStringType Then
+		Result = "String";
+	ElsIf ValueType = deNumberType Then
+		Result = "Number";
+	ElsIf ValueType = deDateType Then
+		Result = "Date";
+	ElsIf ValueType = deBooleanType Then
+		Result = "Boolean";
+	ElsIf ValueType = deValueStorageType Then
+		Result = "ValueStorage";
+	ElsIf ValueType = deUUIDType Then
+		Result = "UUID";
+	ElsIf ValueType = deAccumulationRecordTypeType Then
+		Result = "AccumulationRecordType";
+	Else
+		Manager = Managers[ValueType];
+		If Manager = Undefined Then
+			
+			Text= NStr("ru='Неизвестный тип:'; en = 'Unknown type:'") + String(TypeOf(ValueType));
+			MessageToUser(Text);
+			
+		Else
+			Result = Manager.RefTypeString;
+		EndIf;
+	EndIf;
 
-КонецФункции
+	Return Result;
+	
+EndFunction
+
+// Returns an XML presentation of the TypeDescription object.
+// Can be used in the event handlers whose script is stored in data exchange rules.
+// 
+// Parameters:
+//  TypeDescription  - TypeDescription - a TypeDescription object whose XML presentation is being retrieved.
+//
+// Returns:
+//  String - an XML presentation of the passed TypeDescription object.
+//
+Function deGetTypesDescriptionXMLPresentation(TypeDescription) Export
+	
+	TypesNode = CreateNode("Types");
+	
+	If TypeOf(TypeDescription) = Type("Structure") Then
+		SetAttribute(TypesNode, "AllowedSign",          TrimAll(TypeDescription.AllowedSign));
+		SetAttribute(TypesNode, "Digits",             TrimAll(TypeDescription.Digits));
+		SetAttribute(TypesNode, "FractionDigits", TrimAll(TypeDescription.FractionDigits));
+		SetAttribute(TypesNode, "Length",                   TrimAll(TypeDescription.Length));
+		SetAttribute(TypesNode, "AllowedLength",         TrimAll(TypeDescription.AllowedLength));
+		SetAttribute(TypesNode, "DateComposition",              TrimAll(TypeDescription.DateFractions));
+		
+		For each StrType In TypeDescription.Types Do
+			NodeOfType = CreateNode("Type");
+			NodeOfType.WriteText(TrimAll(StrType));
+			AddSubordinateNode(TypesNode, NodeOfType);
+		EndDo;
+	Else
+		NumberQualifiers       = TypeDescription.NumberQualifiers;
+		StringQualifiers      = TypeDescription.StringQualifiers;
+		DateQualifiers        = TypeDescription.DateQualifiers;
+		
+		SetAttribute(TypesNode, "AllowedSign",          TrimAll(NumberQualifiers.AllowedSign));
+		SetAttribute(TypesNode, "Digits",             TrimAll(NumberQualifiers.Digits));
+		SetAttribute(TypesNode, "FractionDigits", TrimAll(NumberQualifiers.FractionDigits));
+		SetAttribute(TypesNode, "Length",                   TrimAll(StringQualifiers.Length));
+		SetAttribute(TypesNode, "AllowedLength",         TrimAll(StringQualifiers.AllowedLength));
+		SetAttribute(TypesNode, "DateComposition",              TrimAll(DateQualifiers.DateFractions));
+		
+		For each Type In TypeDescription.Types() Do
+			NodeOfType = CreateNode("Type");
+			NodeOfType.WriteText(deValueTypeAsString(Type));
+			AddSubordinateNode(TypesNode, NodeOfType);
+		EndDo;
+	EndIf;
+	
+	TypesNode.WriteEndElement();
+	
+	Return(TypesNode.Close());
+	
+EndFunction
+
+#EndRegion
+
+#Region ProceduresAndFunctionsToWorkWithXMLWriterObject
+
+// Replaces prohibited XML characters with other character.
+//
+// Parameters:
+//       Text - String - a text where the characters are to be changed.
+//       ReplacementChar - String - a value, by which the prohibited characters will be changed.
+// Returns:
+//       String - replacement result.
+//
+Function ReplaceProhibitedXMLChars(Val Text, ReplacementChar = " ") Export
+	
+	Position = FindDisallowedXMLCharacters(Text);
+	While Position > 0 Do
+		Text = StrReplace(Text, Mid(Text, Position, 1), ReplacementChar);
+		Position = FindDisallowedXMLCharacters(Text);
+	EndDo;
+	
+	Return Text;
+EndFunction
+
+// Creates a new XML node
+// The function can be used in event handlers, application code.
+// of which is stored in the data exchange rules. Is called with the Execute() method.
+//
+// Parameters:
+//  Name  - String - a node name.
+//
+// Returns:
+//  XMLWriter - an object of the new XML node.
+//
+Function CreateNode(Name) Export
+
+	XMLWriter = New XMLWriter;
+	XMLWriter.SetString();
+	XMLWriter.WriteStartElement(Name);
+
+	Return XMLWriter;
+
+EndFunction
+
+// Adds a new XML node to the specified parent node.
+// Can be used in the event handlers whose script is stored in data exchange rules.
+//  Is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  ParentNode - parent XML node.
+//  Name - String - a name of the node to be added.
+//
+// Returns:
+//  New XML node added to the specified parent node.
+//
+Function AddNode(ParentNode, Name) Export
+
+	ParentNode.WriteStartElement(Name);
+
+	Return ParentNode;
+
+EndFunction
+
+// Copies the specified xml node.
+// Can be used in the event handlers whose script is stored in data exchange rules.
+//  Is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Node - XML node.
+//
+// Returns:
+//  New xml is a copy of the specified node.
+//
+Function CopyNode(Node) Export
+
+	Str = Node.Close();
+
+	XMLWriter = New XMLWriter;
+	XMLWriter.SetString();
+	
+	If XMLWriterAdvancedMonitoring Then
+		
+		Str = DeleteProhibitedXMLChars(Str);
+		
+	EndIf;
+	
+	XMLWriter.WriteRaw(Str);
+
+	Return XMLWriter;
+	
+EndFunction
+
+// Writes an element and its value to the specified object.
+//
+// Parameters:
+//  Object - XMLWriter - an object of the XMLWriter type.
+//  Name            - String - an element name.
+//  Value       - Arbitrary - element value.
+// 
+Procedure deWriteElement(Object, Name, Value="") Export
+
+	Object.WriteStartElement(Name);
+	Str = XMLString(Value);
+	
+	If XMLWriterAdvancedMonitoring Then
+		
+		Str = DeleteProhibitedXMLChars(Str);
+		
+	EndIf;
+	
+	Object.WriteText(Str);
+	Object.WriteEndElement();
+	
+EndProcedure
+
+// Subordinates an xml node to the specified parent node.
+//
+// Parameters:
+//  ParentNode - parent XML node.
+//  Node           - XML - a node to be subordinated.
+//
+Procedure AddSubordinateNode(ParentNode, Node) Export
+
+	If TypeOf(Node) <> deStringType Then
+		Node.WriteEndElement();
+		InformationToWriteToFile = Node.Close();
+	Else
+		InformationToWriteToFile = Node;
+	EndIf;
+	
+	ParentNode.WriteRaw(InformationToWriteToFile);
+		
+EndProcedure
+
+// Sets an attribute of the specified xml node.
+//
+// Parameters:
+//  Node - XML node
+//  Name            - String - an attribute name.
+//  Value - Arbitrary - a value to set.
+//
+Procedure SetAttribute(Node, Name, Value) Export
+
+	StringToWrite = XMLString(Value);
+	
+	If XMLWriterAdvancedMonitoring Then
+		
+		StringToWrite = DeleteProhibitedXMLChars(StringToWrite);
+		
+	EndIf;
+	
+	Node.WriteAttribute(Name, StringToWrite);
+	
+EndProcedure
+
+#EndRegion
+
+#Region ProceeduresAndFunctionsToWorkWithXMLReaderObject
+
+// Reads the attribute value by the name from the specified object, converts the value to the 
+// specified primitive type.
+//
+// Parameters:
+//  Object      - XMLReader - XMLReader object positioned to the beginning of the item whose 
+//                attribute is required.
+//  Type        - Type - an attribute type.
+//  Name         - String - an attribute name.
+//
+// Returns:
+//  Arbitrary - an attribute value received by the name and cast to the specified type.
+//
+Function deAttribute(Object, Type, Name) Export
+
+	ValueStr = Object.GetAttribute(Name);
+	If Not IsBlankString(ValueStr) Then
+		Return XMLValue(Type, TrimR(ValueStr));
+	ElsIf Type = deStringType Then
+		Return ""; 
+	ElsIf Type = deBooleanType Then
+		Return False;
+	ElsIf Type = deNumberType Then
+		Return 0;
+	ElsIf Type = deDateType Then
+		Return BlankDateValue;
+	EndIf;
+		
+EndFunction
  
-// Пропускает узлы xml до конца указанного элемента (по умолчанию текущего).
+// Skips xml nodes to the end of the specified item (current item by default).
 //
 // Parameters:
-//  Объект   - ЧтениеXML - объект типа XMLЧтение.
-//  Имя      - Строка - имя узла, до конца которого пропускаем элементы.
+//  Object   - XMLReader - an object of the XMLReader type.
+//  Name      - String - a name of node, to the end of which items are skipped.
 //
-Процедура одПропустить(Объект, Имя = "") Экспорт
+Procedure deSkip(Object, Name = "") Export
 
-	КоличествоВложений = 0; // Количество одноименных вложений.
+	AttachmentsCount = 0; // Number of attachments with the same name.
 
-	Если Имя = "" Тогда
+	If Name = "" Then
+		
+		Name = Object.LocalName;
+		
+	EndIf; 
+	
+	While Object.Read() Do
+		
+		If Object.LocalName <> Name Then
+			Continue;
+		EndIf;
+		
+		NodeType = Object.NodeType;
+			
+		If NodeType = deXMLNodeType_EndElement Then
+				
+			If AttachmentsCount = 0 Then
+					
+				Break;
+					
+			Else
+					
+				AttachmentsCount = AttachmentsCount - 1;
+					
+			EndIf;
+				
+		ElsIf NodeType = deXMLNodeType_StartElement Then
+				
+			AttachmentsCount = AttachmentsCount + 1;
+				
+		EndIf;
+					
+	EndDo;
+	
+EndProcedure
 
-		Имя = Объект.ЛокальноеИмя;
-
-	КонецЕсли;
-
-	Пока Объект.Прочитать() Цикл
-
-		Если Объект.ЛокальноеИмя <> Имя Тогда
-			Продолжить;
-		КонецЕсли;
-
-		ТипУзла = Объект.ТипУзла;
-
-		Если ТипУзла = одТипУзлаXML_КонецЭлемента Тогда
-
-			Если КоличествоВложений = 0 Тогда
-
-				Прервать;
-
-			Иначе
-
-				КоличествоВложений = КоличествоВложений - 1;
-
-			КонецЕсли;
-
-		ИначеЕсли ТипУзла = одТипУзлаXML_НачалоЭлемента Тогда
-
-			КоличествоВложений = КоличествоВложений + 1;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Читает текст элемента и приводит значение к указанному типу.
+// Reads the element text and converts the value to the specified type.
 //
 // Parameters:
-//  Объект           - ЧтениеXML - объект типа XMLЧтение, из которого осуществляется чтение.
-//  Тип              - Тип - тип получаемого значения.
-//  ИскатьПоСвойству - Строка - для ссылочных типов может быть указано свойство, по которому.
-//                     следует искать объект: "Код", "Наименование", <ИмяРеквизита>, "Имя" (предопределенного значения).
-//  ОбрезатьСтрокуСправа - Булево - признак необходимости обрезать строку справа.
+//  Object           - XMLReader - XMLReader object whose data will be read.
+//  Type              - Type - type of the value to be received.
+//  SearchByProperty - String - for reference types, contains a property, by which
+//                     search will be implemented for the following object: Code, Description, <AttributeName>, Name (of the predefined value).
+//  TrimStringRight - Boolean - True, if it is needed to trim a string from the right.
 //
-// Возвращаемое значение:
-//  Значение xml-элемента, приведенное к соответствующему типу.
+// Returns:
+//  Value of an XML element converted to the relevant type.
 //
-Функция одЗначениеЭлемента(Объект, Тип, ИскатьПоСвойству = "", ОбрезатьСтрокуСправа = Истина) Экспорт
+Function deElementValue(Object, Type, SearchByProperty = "", TrimStringRight = True) Export
 
-	Значение = "";
-	Имя      = Объект.ЛокальноеИмя;
+	Value = "";
+	Name      = Object.LocalName;
 
-	Пока Объект.Прочитать() Цикл
-
-		ТипУзла = Объект.ТипУзла;
-
-		Если ТипУзла = одТипУзлаXML_Текст Тогда
-
-			Значение = Объект.Значение;
-
-			Если ОбрезатьСтрокуСправа Тогда
-
-				Значение = СокрП(Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли (Объект.ЛокальноеИмя = Имя) И (ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		Иначе
-
-			Возврат Неопределено;
-
-		КонецЕсли;
-
-	КонецЦикла;
-	Если (Тип = одТипСтрока) Или (Тип = одТипБулево) Или (Тип = одТипЧисло) Или (Тип = одТипДата) Или (Тип
-		= одТипХранилищеЗначения) Или (Тип = одТипУникальныйИдентификатор) Или (Тип = одТипВидДвиженияНакопления)
-		Или (Тип = одТипВидСчета) Тогда
-
-		Возврат XMLЗначение(Тип, Значение);
-
-	Иначе
-
-		Возврат одПолучитьЗначениеПоСтроке(Значение, Тип, ИскатьПоСвойству);
-
-	КонецЕсли;
-
-КонецФункции
+	While Object.Read() Do
+		
+		NodeType = Object.NodeType;
+		
+		If NodeType = deXMLNodeType_Text Then
+			
+			Value = Object.Value;
+			
+			If TrimStringRight Then
+				
+				Value = TrimR(Value);
+				
+			EndIf;
+						
+		ElsIf (Object.LocalName = Name) And (NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		Else
+			
+			Return Undefined;
+			
+		EndIf;
+		
+	EndDo;
+	If (Type = deStringType) Or (Type = deBooleanType) Or (Type = deNumberType) Or (Type = deDateType)
+		Or (Type = deValueStorageType) Or (Type = deUUIDType) Or (Type = deAccumulationRecordTypeType)
+		Or (Type = deAccountTypeType) Then
+		
+		Return XMLValue(Type, Value);
+		
+	Else
+		
+		Return deGetValueByString(Value, Type, SearchByProperty);
+		
+	EndIf;
+	
+EndFunction
 
 #КонецОбласти
 
-#Область ПроцедурыИФункцииРаботыСФайломОбмена
+#Region ExchangeFileOperationsProceduresAndFunctions
 
-// Сохраняет в файл указанный xml-узел.
+// Saves the specified xml node to the file.
 //
 // Parameters:
-//  Узел           - xml-узел, сохраняемый в файл.
+//  Node - XML node to be saved to the file.
 //
-Процедура ЗаписатьВФайл(Узел) Экспорт
+Procedure WriteToFile(Node) Export
 
-	Если ТипЗнч(Узел) <> одТипСтрока Тогда
-		ИнформацияДляЗаписиВФайл = Узел.Закрыть();
-	Иначе
-		ИнформацияДляЗаписиВФайл = Узел;
-	КонецЕсли;
+	If TypeOf(Node) <> deStringType Then
+		InformationToWriteToFile = Node.Close();
+	Else
+		InformationToWriteToFile = Node;
+	EndIf;
+	
+	If DirectReadFromDestinationIB Then
+		
+		ErrorStringInDestinationInfobase = "";
+		SendWriteInformationToDestination(InformationToWriteToFile, ErrorStringInDestinationInfobase);
+		If Not IsBlankString(ErrorStringInDestinationInfobase) Then
+			
+			Raise ErrorStringInDestinationInfobase;
+			
+		EndIf;
+		
+	Else
+		
+		ExchangeFile.WriteLine(InformationToWriteToFile);
+		
+	EndIf;
+	
+EndProcedure
 
-	Если DirectReadFromDestinationIB Тогда
+#EndRegion
 
-		СтрокаОшибкиВБазеПриемнике = "";
-		ПередатьИнформациюОЗаписиВПриемник(ИнформацияДляЗаписиВФайл, СтрокаОшибкиВБазеПриемнике);
-		Если Не ПустаяСтрока(СтрокаОшибкиВБазеПриемнике) Тогда
+#Region ExchangeLogOperationsProceduresAndFunctions
 
-			ВызватьИсключение СтрокаОшибкиВБазеПриемнике;
-
-		КонецЕсли;
-
-	Иначе
-
-		ФайлОбмена.ЗаписатьСтроку(ИнформацияДляЗаписиВФайл);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыИФункцииРаботыСПротоколомОбмена
-
-// Возвращает объект типа структура, содержащий все возможные поля
-// записи протокола выполнения (сообщения об ошибках и т.п.).
-//
-// Parameters:
-//  КодСообщения - Строка - код сообщения.
-//  СтрокаОшибки - Строка - строковое содержание ошибки.
-//
-// Возвращаемое значение:
-//  Структура - все возможные поля записи протокола выполнения.
-//
-Функция ПолучитьСтруктуруЗаписиПротокола(КодСообщения = "", СтрокаОшибки = "") Экспорт
-
-	СтруктураОшибки = Новый Структура("ИмяПКО,
-									  |ИмяПОД,
-									  |Нпп,
-									  |Гнпп,
-									  |Источник,
-									  |ТипОбъекта,
-									  |Свойство,
-									  |Значение,
-									  |ТипЗначения,
-									  |ПКО,
-									  |ПКС,
-									  |ПКГС,
-									  |ПВД,
-									  |ПОД,
-									  |Объект,
-									  |СвойствоПриемника,
-									  |КонвертируемоеЗначение,
-									  |Обработчик,
-									  |ОписаниеОшибки,
-									  |ПозицияМодуля,
-									  |Текст,
-									  |КодСообщения,
-									  |УзелПланаОбмена");
-
-	СтрокаМодуля = ОтделитьРазделителем(СтрокаОшибки, "{");
-	Если ПустаяСтрока(СтрокаОшибки) Тогда
-		ОписаниеОшибки = СокрЛП(ОтделитьРазделителем(СтрокаМодуля, "}:"));
-	Иначе
-		ОписаниеОшибки = СтрокаОшибки;
-		СтрокаМодуля   = "{" + СтрокаМодуля;
-	КонецЕсли;
-
-	Если ОписаниеОшибки <> "" Тогда
-		СтруктураОшибки.ОписаниеОшибки = ОписаниеОшибки;
-		СтруктураОшибки.ПозицияМодуля  = СтрокаМодуля;
-	КонецЕсли;
-
-	Если СтруктураОшибки.КодСообщения <> "" Тогда
-
-		СтруктураОшибки.КодСообщения = КодСообщения;
-
-	КонецЕсли;
-
-	Возврат СтруктураОшибки;
-
-КонецФункции 
-
-// Записывает информацию об ошибке в протокол выполнения обмена.
+// Returns a Structure type object containing all possible fields of the execution log record 
+// (such as error messages and others).
 //
 // Parameters:
-//  КодСообщения - Строка - код сообщения.
-//  СтрокаОшибки - Строка - строковое содержание ошибки.
-//  Объект - Произвольный - Объект, к которому относится ошибка.
-//  ТипОбъекта - Тип - тип объекта к которому относится ошибка.
+//  MessageCode - String - a message code.
+//  ErrorString - String - error string content.
 //
-// Возвращаемое значение:
-//  Строка - строка ошибки.
+// Returns:
+//  Structure - all possible fields of the execution log.
 //
-Функция ЗаписатьИнформациюОбОшибкеВПротокол(КодСообщения, СтрокаОшибки, Объект, ТипОбъекта = Неопределено) Экспорт
+Function GetProtocolRecordStructure(MessageCode = "", ErrorString = "") Export
 
-	ЗП         = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.Объект  = Объект;
+	ErrorStructure = New Structure("OCRName,DPRName,Sn,Gsn,Source,ObjectType,Property,Value,ValueType,OCR,PCR,PGCR,DER,DCR,Object,DestinationProperty,ConvertedValue,Handler,ErrorDescription,ModulePosition,Text,MessageCode,ExchangePlanNode");
+	
+	ModuleLine              = SplitWithSeparator(ErrorString, "{");
+	If IsBlankString(ErrorString) Then
+		ErrorDescription = TrimAll(SplitWithSeparator(ModuleLine, "}:"));
+	Else
+		ErrorDescription = ErrorString;
+		ModuleLine   = "{" + ModuleLine;
+	EndIf;
 
-	Если ТипОбъекта <> Неопределено Тогда
-		ЗП.ТипОбъекта     = ТипОбъекта;
-	КонецЕсли;
+	If ErrorDescription <> "" Then
+		ErrorStructure.ErrorDescription         = ErrorDescription;
+		ErrorStructure.ModulePosition          = ModuleLine;				
+	EndIf;
+	
+	If ErrorStructure.MessageCode <> "" Then
+		
+		ErrorStructure.MessageCode           = MessageCode;
+		
+	EndIf;
+	
+	Return ErrorStructure;
+	
+EndFunction 
 
-	СтрокаОшибки = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
-
-	Возврат СтрокаОшибки;
-
-КонецФункции
+// Writes error details to the exchange log.
+//
+// Parameters:
+//  MessageCode - String - a message code.
+//  ErrorString - String - error string content.
+//  Object - Arbitrary - object, which the error is related to.
+//  ObjectType - Type - type of the object, which the error is related to.
+//
+// Returns:
+//  String - an error string.
+//
+Function WriteErrorInfoToProtocol(MessageCode, ErrorString, Object, ObjectType = Undefined) Export
+	
+	WP         = GetProtocolRecordStructure(MessageCode, ErrorString);
+	WP.Object  = Object;
+	
+	If ObjectType <> Undefined Then
+		WP.ObjectType     = ObjectType;
+	EndIf;	
+		
+	ErrorRow = WriteToExecutionLog(MessageCode, WP);	
+	
+	Return ErrorRow;	
+	
+EndFunction
 
 // Регистрирует в протоколе выполнения ошибку обработчика ПКО (загрузка).
 //
