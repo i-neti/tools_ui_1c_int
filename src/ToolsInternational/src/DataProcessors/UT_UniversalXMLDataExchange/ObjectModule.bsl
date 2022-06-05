@@ -1223,380 +1223,376 @@ Function WriteErrorInfoToProtocol(MessageCode, ErrorString, Object, ObjectType =
 	
 EndFunction
 
-// Регистрирует в протоколе выполнения ошибку обработчика ПКО (загрузка).
+// Registers the error of object conversion rule handler (import) in the execution log.
 //
 // Parameters:
-//  КодСообщения - Строка - код сообщения.
-//  СтрокаОшибки - Строка - строковое содержание ошибки.
-//  ИмяПравила - строка - имя правила конвертации объекта.
-//  Источник - Произвольный - источник при конвертации которого возникла ошибка.
-//  ТипОбъекта - Тип - тип объекта при конвертации которого возникла ошибка.
-//  Объект - Произвольный - объект, полученный в результате конвертации.
-//  ИмяОбработчика - Строка - имя обработчика в котором возникла ошибка.
+//  MessageCode - String - a message code.
+//  ErrorString - String - error string content.
+//  RuleName - String - a name of an object conversion rule.
+//  Source - Arbitrary - source, which conversion caused an error.
+//  ObjectType - Type - type of the object, which conversion caused an error.
+//  Object - Arbitrary - an object received as a result of conversion.
+//  HandlerName - String - name of the handler where an error occurred.
 //
-Процедура ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(КодСообщения, СтрокаОшибки, ИмяПравила, Источник,
-	ТипОбъекта, Объект, ИмяОбработчика) Экспорт
+Procedure WriteInfoOnOCRHandlerImportError(MessageCode, ErrorString, RuleName, Source,
+	ObjectType, Object, HandlerName) Export
+	
+	LR            = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.OCRName     = RuleName;
+	LR.ObjectType = ObjectType;
+	LR.Handler = HandlerName;
+	
+	If Not IsBlankString(Source) Then
+		
+		LR.Source = Source;
+		
+	EndIf;
+	
+	If Object <> Undefined Then
+		
+		LR.Object = String(Object);
+		
+	EndIf;
+	
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
+	
+	If Not DebugModeFlag Then
+		Raise ErrorMessageString;
+	EndIf;
+	
+EndProcedure
 
-	ЗП            = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.ИмяПКО     = ИмяПравила;
-	ЗП.ТипОбъекта = ТипОбъекта;
-	ЗП.Обработчик = ИмяОбработчика;
-
-	Если Не ПустаяСтрока(Источник) Тогда
-
-		ЗП.Источник = Источник;
-
-	КонецЕсли;
-
-	Если Объект <> Неопределено Тогда
-
-		ЗП.Объект = Строка(Объект);
-
-	КонецЕсли;
-
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
-
-	Если Не DebugModeFlag Тогда
-		ВызватьИсключение СтрокаСообщенияОбОшибке;
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Регистрирует в протоколе выполнения ошибку обработчика ПКС.
-//
-// Parameters:
-//  КодСообщения - Строка - код сообщения.
-//  СтрокаОшибки - Строка - строковое содержание ошибки.
-//  ПКО - СтрокаТаблицыЗначений - Правило конвертации объекта.
-//  ПКС - СтрокаТаблицыЗначений - Правило конвертации свойства.
-//  Источник - Произвольный - источник при конвертации которого возникла ошибка. 
-//  ИмяОбработчика - Строка - имя обработчика в котором возникла ошибка.
-//  Значение - Произвольный - значение, при конвертации которого возникла ошибка.
-//  ЭтоПКС - Булево - ошибка возникла при обработке правила конвертации свойств.
-//
-Процедура ЗаписатьИнформациюОбОшибкеОбработчикиПКС(КодСообщения, СтрокаОшибки, ПКО, ПКС, Источник = "",
-	ИмяОбработчика = "", Значение = Неопределено, ЭтоПКС = Истина) Экспорт
-
-	ЗП                        = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.ПКО                    = ПКО.Имя + "  (" + ПКО.Наименование + ")";
-
-	ИмяПравила = ПКС.Имя + "  (" + ПКС.Наименование + ")";
-	Если ЭтоПКС Тогда
-		ЗП.ПКС                = ИмяПравила;
-	Иначе
-		ЗП.ПКГС               = ИмяПравила;
-	КонецЕсли;
-
-	ОписаниеТипов = Новый ОписаниеТипов("Строка");
-	ИсточникСтрока  = ОписаниеТипов.ПривестиЗначение(Источник);
-	Если Не ПустаяСтрока(ИсточникСтрока) Тогда
-		ЗП.Объект = ИсточникСтрока + "  (" + ТипЗнч(Источник) + ")";
-	Иначе
-		ЗП.Объект = "(" + ТипЗнч(Источник) + ")";
-	КонецЕсли;
-
-	Если ЭтоПКС Тогда
-		ЗП.СвойствоПриемника      = ПКС.Приемник + "  (" + ПКС.ТипПриемника + ")";
-	КонецЕсли;
-
-	Если ИмяОбработчика <> "" Тогда
-		ЗП.Обработчик         = ИмяОбработчика;
-	КонецЕсли;
-
-	Если Значение <> Неопределено Тогда
-		ЗП.КонвертируемоеЗначение = Строка(Значение) + "  (" + ТипЗнч(Значение) + ")";
-	КонецЕсли;
-
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
-
-	Если Не DebugModeFlag Тогда
-		ВызватьИсключение СтрокаСообщенияОбОшибке;
-	КонецЕсли;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыСозданияИнтерфейсаВызоваОбработчиковВПравилахОбмена
-
-// Дополняет имеющиеся коллекции с правилами обмена интерфейсами вызова обработчиков.
+// Registers the error of property conversion rule handler in the execution protocol.
 //
 // Parameters:
-//  СтруктураКонвертация - Структура - содержит правила конвертации и глобальные обработчики.
-//  ТаблицаПКО           - ТаблицаЗначений - содержит правила конвертации объектов.
-//  ТаблицаПВД           - ДеревоЗначений - содержит правила выгрузки данных.
-//  ТаблицаПОД           - ДеревоЗначений - содержит правила очистки данных.
+//  MessageCode - String - a message code.
+//  ErrorString - String - error string content.
+//  OCR - ValueTableRow - a property conversion rule.
+//  PCR - ValueTableRow - a property conversion rule.
+//  Source - Arbitrary - source, which conversion caused an error.
+//  HandlerName - String - name of the handler where an error occurred.
+//  Value - Arbitrary - value, which conversion caused an error.
+//  IsPCR - Boolean - an error occurred when processing the rule of property conversion.
+//
+Procedure WriteErrorInfoPCRHandlers(MessageCode, ErrorString, OCR, PCR, Source = "", 
+	HandlerName = "", Value = Undefined, IsPCR = True) Export
+
+	LR                        = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.OCR                    = OCR.Name + "  (" + OCR.Description + ")";
+
+	RuleName = PCR.Name + "  (" + PCR.Description + ")";
+	If IsPCR Then
+		LR.PCR                = RuleName;
+	Else
+		LR.PGCR               = RuleName;
+	EndIf;
+	
+	TypesDetails = New TypeDescription("String");
+	StringSource  = TypesDetails.AdjustValue(Source);
+	If Not IsBlankString(StringSource) Then
+		LR.Object = StringSource + "  (" + TypeOf(Source) + ")";
+	Else
+		LR.Object = "(" + TypeOf(Source) + ")";
+	EndIf;
+	
+	If IsPCR Then
+		LR.DestinationProperty      = PCR.Destination + "  (" + PCR.DestinationType + ")";
+	EndIf;
+	
+	If HandlerName <> "" Then
+		LR.Handler         = HandlerName;
+	EndIf;
+	
+	If Value <> Undefined Then
+		LR.ConvertedValue = String(Value) + "  (" + TypeOf(Value) + ")";
+	EndIf;
+	
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
+	
+	If Not DebugModeFlag Then
+		Raise ErrorMessageString;
+	EndIf;
+		
+EndProcedure
+
+#EndRegion
+
+#Region GeneratingHandlerCallInterfacesInExchangeRulesProcedures
+
+// Complements existing collections with rules for exchanging handler call interfaces.
+//
+// Parameters:
+//  ConversionStructure - Structure - contains the conversion rules and global handlers.
+//  OCRTable           - ValueTable - contains object conversion rules.
+//  DERTable           - ValuesTree - contains the data export rules.
+//  DCRTable           - ValuesTree - contains data clearing rules.
 //  
-Процедура ДополнитьПравилаИнтерфейсамиОбработчиков(СтруктураКонвертация, ТаблицаПКО, ТаблицаПВД, ТаблицаПОД) Экспорт
-
-	мМакетПараметровОбработчиков = ПолучитьМакет("ПараметрыОбработчиков");
+Procedure SupplementRulesWithHandlerInterfaces(ConversionStructure, OCRTable, DERTable, DCRTable) Export
 	
-	// Добавляем интерфейсы Конвертации (глобальные).
-	ДополнитьИнтерфейсамиОбработчиковПравилаКонвертации(СтруктураКонвертация);
+	mHandlerParameterTemplate = GetTemplate("HandlersParameters");
 	
-	// Добавляем интерфейсы ПВД
-	ДополнитьИнтерфейсамиОбработчиковПравилаВыгрузкиДанных(ТаблицаПВД, ТаблицаПВД.Строки);
+	// Adding the Conversion interfaces (global).
+	SupplementWithConversionRuleInterfaceHandler(ConversionStructure);
 	
-	// Добавляем интерфейсы ПОД
-	ДополнитьИнтерфейсамиОбработчиковПравилаОчисткиДанных(ТаблицаПОД, ТаблицаПОД.Строки);
+	// Adding the DER interfaces
+	SupplementDataExportRulesWithHandlerInterfaces(DERTable, DERTable.Rows);
 	
-	// Добавляем интерфейсы ПКО, ПКС, ПКГС.
-	ДополнитьИнтерфейсамиОбработчиковПравилаКонвертацииОбъектов(ТаблицаПКО);
+	// Adding DCR interfaces.
+	SupplementWithDataClearingRuleHandlerInterfaces(DCRTable, DCRTable.Rows);
+	
+	// Adding OCR, PCR, PGCR interfaces.
+	SupplementWithObjectConversionRuleHandlerInterfaces(OCRTable);
+	
+EndProcedure 
 
-КонецПроцедуры
+#EndRegion
 
-#КонецОбласти
+#Region ExchangeRulesOperationProcedures
 
-#Область ПроцедурыРаботыСПравиламиОбмена
-
-// Осуществляет поиск правила конвертации по имени или в соответствии с типом
-// переданного объекта.
-//
-// Parameters:
-//   Объект - Произвольный - объект-источник, для которого ищем правило конвертации.
-//   ИмяПравила - Строка - имя правила конвертации.
-//
-// Возвращаемое значение:
-//   СтрокаТаблицыЗначений - ссылка на правило конвертации (строка в таблице правил):
-//     * Имя - Строка -
-//     * Наименование - Строка -
-//     * Источник - Строка -
-//     * Свойства - см. КоллекцияПравилаКонвертацииСвойств
+// Searches for the conversion rule by name or according to the passed object type.
 // 
-Функция НайтиПравило(Объект = Неопределено, ИмяПравила = "") Экспорт
-
-	Если Не ПустаяСтрока(ИмяПравила) Тогда
-
-		Правило = Правила[ИмяПравила]; // см. НайтиПравило
-
-	Иначе
-
-		Правило = Менеджеры[ТипЗнч(Объект)];
-		Если Правило <> Неопределено Тогда
-			Правило = Правило.ПКО; // см. НайтиПравило
-
-			Если Правило <> Неопределено Тогда
-				ИмяПравила = Правило.Имя;
-			КонецЕсли;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Возврат Правило;
-
-КонецФункции
-
-// Сохраняет правила обмена во внутреннем формате.
-//
-Процедура СохранитьПравилаВоВнутреннемФормате() Экспорт
-
-	Для Каждого Правило Из ConversionRulesTable Цикл
-		Правило.Выгруженные.Очистить();
-		Правило.ВыгруженныеТолькоСсылки.Очистить();
-	КонецЦикла;
-
-	СтруктураПравил = ОписаниеСтруктурыПравил();
-	
-	// Сохраняем запросы
-	ЗапросыДляСохранения = Новый Структура;
-	Для Каждого ЭлементСтруктуры Из Запросы Цикл
-		ЗапросыДляСохранения.Вставить(ЭлементСтруктуры.Ключ, ЭлементСтруктуры.Значение.Текст);
-	КонецЦикла;
-
-	ПараметрыДляСохранения = Новый Структура;
-	Для Каждого ЭлементСтруктуры Из Parameters Цикл
-		ПараметрыДляСохранения.Вставить(ЭлементСтруктуры.Ключ, Неопределено);
-	КонецЦикла;
-
-	СтруктураПравил.ExportRulesTable = ExportRulesTable;
-	СтруктураПравил.ConversionRulesTable = ConversionRulesTable;
-	СтруктураПравил.Алгоритмы = Алгоритмы;
-	СтруктураПравил.Запросы = ЗапросыДляСохранения;
-	СтруктураПравил.Конвертация = Конвертация;
-	СтруктураПравил.mXMLRules = mXMLRules;
-	СтруктураПравил.ParametersSettingsTable = ParametersSettingsTable;
-	СтруктураПравил.Parameters = ПараметрыДляСохранения;
-
-	СтруктураПравил.Вставить("ВерсияПлатформыПриемника", ВерсияПлатформыПриемника);
-
-	SavedSettings  = Новый ХранилищеЗначения(СтруктураПравил);
-
-КонецПроцедуры
-
-// Устанавливает значения параметров в структуре Parameters 
-// по таблице ParametersSettingsTable.
-//
-Процедура УстановитьПараметрыИзДиалога() Экспорт
-
-	Для Каждого СтрокаТаблицы Из ParametersSettingsTable Цикл
-		Parameters.Вставить(СтрокаТаблицы.Имя, СтрокаТаблицы.Значение);
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Устанавливает значение параметра в таблице параметров в форме обработки.
 //
 // Parameters:
-//   ИмяПараметра - Строка - Имя параметра.
-//   ЗначениеПараметра - Произвольный - значение параметра.
+//  Object         -  a source object whose conversion rule will be searched.
+//  RuleName     - String - a conversion rule name.
 //
-Процедура УстановитьЗначениеПараметраВТаблице(ИмяПараметра, ЗначениеПараметра) Экспорт
-
-	СтрокаТаблицы = ParametersSettingsTable.Найти(ИмяПараметра, "Имя");
-
-	Если СтрокаТаблицы <> Неопределено Тогда
-
-		СтрокаТаблицы.Значение = ЗначениеПараметра;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ОбработкаПравилОчистки
-
-// Производит удаление (или помечает на удаление) объект выборки в соответствии с указанным правилом.
-//
-// Parameters:
-//  Объект         - Произвольный - удаляемый (помечаемый на удаление) объект выборки.
-//  Правило        - СтрокаТаблицыЗначений - ссылка на правило очистки данных.
-//  Свойства       - Менеджер - свойства объекта метаданного удаляемого объекта.
-//  ВходящиеДанные - Произвольный - произвольные вспомогательные данные.
+// Returns:
+//  ValueTableRow - a conversion rule reference (a row in the rules table):
+//     * Name - String -
+//     * Description - String -
+//     * Source - String -
+//     * Properties - see PropertyConversionRulesCollection.
 // 
-Процедура УдалениеОбъектаВыборки(Объект, Правило, Свойства = Неопределено, ВходящиеДанные = Неопределено) Экспорт
+Function FindRule(Object = Undefined, RuleName="") Export
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If Not IsBlankString(RuleName) Then
+		
+		Rule = Rules[RuleName];
+		
+	Else
+		
+		Rule = Managers[TypeOf(Object)];
+		If Rule <> Undefined Then
+			Rule    = Rule.OCR;
+			
+			If Rule <> Undefined Then 
+				RuleName = Rule.Name;
+			EndIf;
+			
+		EndIf; 
+		
+	EndIf;
+	
+	Return Rule; 
+	
+EndFunction
 
-	Отказ			       = Ложь;
-	УдалитьНепосредственно = Правило.Непосредственно;
+// Saves exchange rules in the internal format.
+//
+Procedure SaveRulesInInternalFormat() Export
+
+	For Each Rule In ConversionRulesTable Do
+		Rule.Exported.Clear();
+		Rule.OnlyRefsExported.Clear();
+	EndDo;
+
+	RulesStructure = RulesStructureDetails();
+	
+	// Saving queries
+	QueriesToSave = New Structure;
+	For Each StructureItem In Queries Do
+		QueriesToSave.Insert(StructureItem.Key, StructureItem.Value.Text);
+	EndDo;
+
+	ParametersToSave = New Structure;
+	For Each StructureItem In Parameters Do
+		ParametersToSave.Insert(StructureItem.Key, Undefined);
+	EndDo;
+
+	RulesStructure.ExportRulesTable = ExportRulesTable;
+	RulesStructure.ConversionRulesTable = ConversionRulesTable;
+	RulesStructure.Algorithms = Algorithms;
+	RulesStructure.Queries = QueriesToSave;
+	RulesStructure.Conversion = Conversion;
+	RulesStructure.mXMLRules = mXMLRules;
+	RulesStructure.ParametersSettingsTable = ParametersSettingsTable;
+	RulesStructure.Parameters = ParametersToSave;
+
+	RulesStructure.Insert("DestinationPlatformVersion",   DestinationPlatformVersion);
+
+	SavedSettings  = New ValueStorage(RulesStructure);
+
+EndProcedure
+
+// Sets parameter values in the Parameters structure by the ParametersSettingsTable table.
+//
+Procedure SetParametersFromDialog() Export
+
+	For Each TableRow In ParametersSettingsTable Do
+		Parameters.Insert(TableRow.Name, TableRow.Value);
+	EndDo;
+
+EndProcedure
+
+// Sets the parameter value in the parameter table in the data processor form.
+//
+// Parameters:
+//   ParameterName - String - a parameter name.
+//   ParameterValue - Arbitrary - parameter value.
+//
+Procedure SetParameterValueInTable(ParameterName, ParameterValue) Export
+	
+	TableRow = ParametersSettingsTable.Find(ParameterName, "Name");
+	
+	If TableRow <> Undefined Then
+		
+		TableRow.Value = ParameterValue;	
+		
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+#Region ClearingRuleProcessing
+
+// Deletes (or marks for deletion) a selection object according to the specified rule.
+//
+// Parameters:
+//  Object - Arbitrary - selection object to be deleted (or to be marked for deletion).
+//  Rule        - ValueTableRow - data clearing rule reference.
+//  Properties - Manager - metadata object properties of the object to be deleted.
+//  IncomingData - Arbitrary - arbitrary auxiliary data.
+// 
+Procedure SelectionObjectDeletion(Object, Rule, Properties=Undefined, IncomingData=Undefined) Export
+
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+	
+	Cancel			       = False;
+	DeleteDirectly = Rule.Directly;
 
 
-	// Обработчик ПередУдалениемОбъектаВыборки
-	Если Не ПустаяСтрока(Правило.ПередУдалением) Тогда
+	// BeforeSelectionObjectDeletion handler
+	If Not IsBlankString(Rule.BeforeDelete) Then
+	
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Rule, "BeforeDelete"));
+				
+			Else
+				
+				Execute(Rule.BeforeDelete);
+				
+			EndIf;
+			
+		Except
+			
+			WriteDataClearingHandlerErrorInfo(29, ErrorDescription(), Rule.Name, Object, "BeforeDeleteSelectionObject");
+									
+		EndTry;
+		
+		If Cancel Then
+		
+			Return;
+			
+		EndIf;
+			
+	EndIf;	 
 
-		Попытка
 
-			Если HandlersDebugModeFlag Тогда
+	Try
+		
+		ExecuteObjectDeletion(Object, Properties, DeleteDirectly);
+					
+	Except
+		
+		WriteDataClearingHandlerErrorInfo(24, ErrorDescription(), Rule.Name, Object, "");
+								
+	EndTry;	
 
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПередУдалением"));
+EndProcedure
 
-			Иначе
+#EndRegion
 
-				Выполнить (Правило.ПередУдалением);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикаОчисткиДанных(29, ОписаниеОшибки(), Правило.Имя, Объект,
-				"ПередУдалениемОбъектаВыборки");
-
-		КонецПопытки;
-
-		Если Отказ Тогда
-
-			Возврат;
-
-		КонецЕсли;
-
-	КонецЕсли;
-	Попытка
-
-		ВыполнитьУдалениеОбъекта(Объект, Свойства, УдалитьНепосредственно);
-
-	Исключение
-
-		ЗаписатьИнформациюОбОшибкеОбработчикаОчисткиДанных(24, ОписаниеОшибки(), Правило.Имя, Объект, "");
-
-	КонецПопытки;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыВыгрузкиДанных
+#Region DataExportProcedures
 
 // Производит выгрузку объекта в соответствии с указанным правилом конвертации.
 //
 // Параметры:
-//  Источник				 - Произвольный - источник данных.
-//  Приемник				 - ЗаписьXML - xml-узел объекта приемника.
-//  ВходящиеДанные			 - Произвольный - произвольные вспомогательные данные, 
-//                             для выполнения конвертации.
-//  ИсходящиеДанные			 - Произвольный - произвольные вспомогательные данные, передаваемые правилам
-//                             передаваемые правилу конвертации свойств.
-//  ИмяПКО					 - Строка - имя правила конвертации, согласно которому осуществляется выгрузка.
-//  УзелСсылки				 - xml-узел ссылки объекта приемника.
-//  ТолькоПолучитьУзелСсылки - Булево - если Истина, то выгрузка объекта не производится, 
-//                             только формируется xml-узел ссылки.
-//  ПКО						 - СтрокаТаблицыЗначений - строка таблицы правил конвертации.
-//  ЭтоПравилоСГлобальнойВыгрузкойОбъектов - Булево - признак правила с глобальной выгрузкой объектов.
-//  ВыборкаДляВыгрузкиДанных - ВыборкаРезультатаЗапроса - выборка содержащая данные для выгрузки. 
+//  Source				 - Arbitrary - a data source.
+//  Destination				 - XMLWriter - a destination object XML node.
+//  IncomingData			 - Arbitrary - auxiliary data to execute conversion.                           
+//  OutgoingData			 - Arbitrary - auxiliary data passed to property conversion rules.                           
+//  OCRName					 - String - a name of the conversion rule used to execute export.
+//  RefNode				 - a destination object reference XML node.
+//  GetRefNodeOnly - Boolean - if True, the object is not exported but the reference XML node is 
+//                             generated.
+//  OCR						 - ValueTableRow - conversion rule reference.
+//  IsRuleWithGlobalObjectExport - Boolean - a flag of a rule with global object export.
+//  SelectionForDataExport - QueryResultSelection - a selection containing data for export. 
 //
-// Возвращаемое значение:
-//   ЗаписьXML - xml-узел ссылки или значение приемника.
+// Returns:
+//  XMLWriter - a reference XML node or a destination value.
 //
-Функция ВыгрузитьПоПравилу(Источник = Неопределено, Приемник = Неопределено, ВходящиеДанные = Неопределено,
-	ИсходящиеДанные = Неопределено, ИмяПКО = "", УзелСсылки = Неопределено, ТолькоПолучитьУзелСсылки = Ложь,
-	ПКО = Неопределено, ЭтоПравилоСГлобальнойВыгрузкойОбъектов = Ложь, ВыборкаДляВыгрузкиДанных = Неопределено) Экспорт
+Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData = Undefined,
+	OutgoingData = Undefined, OCRName = "", RefNode	= Undefined, GetRefNodeOnly	= False,
+	OCR	= Undefined, IsRuleWithGlobalObjectExport = False, SelectionForDataExport = Undefined) Export
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 	
-	// Поиск ПКО
-	Если ПКО = Неопределено Тогда
+	// Searching for OCR
+	If OCR = Undefined Then
+		
+		OCR = FindRule(Source, OCRName);
+		
+	ElsIf (Not IsBlankString(OCRName)) And OCR.Name <> OCRName Then
+		
+		OCR = FindRule(Source, OCRName);
+				
+	EndIf;
 
-		ПКО = НайтиПравило(Источник, ИмяПКО);
+	If OCR = Undefined Then
+		
+		LR = GetLogRecordStructure(45);
+		
+		LR.Object = Source;
+		LR.ObjectType = TypeOf(Source);
+		
+		WriteToExecutionLog(45, LR, True); // OCR is not found
+		Return Undefined;
+		
+	EndIf;
 
-	ИначеЕсли (Не ПустаяСтрока(ИмяПКО)) И ПКО.Имя <> ИмяПКО Тогда
+	CurrentNestingLevelExportByRule = CurrentNestingLevelExportByRule + 1;
 
-		ПКО = НайтиПравило(Источник, ИмяПКО);
-
-	КонецЕсли;
-
-	Если ПКО = Неопределено Тогда
-
-		ЗП = ПолучитьСтруктуруЗаписиПротокола(45);
-
-		ЗП.Объект = Источник;
-		ЗП.ТипОбъекта = ТипЗнч(Источник);
-
-		ЗаписатьВПротоколВыполнения(45, ЗП, Истина); // не найдено ПКО
-		Возврат Неопределено;
-
-	КонецЕсли;
-
-	ТекущийУровеньВложенностиВыгрузитьПоПравилу = ТекущийУровеньВложенностиВыгрузитьПоПравилу + 1;
-
-	Если ФлагКомментироватьОбработкуОбъектов Тогда
-
-		ОписаниеТипа = Новый ОписаниеТипов("Строка");
-		ИсточникВСтроку = ОписаниеТипа.ПривестиЗначение(Источник);
-		ИсточникВСтроку = ?(ИсточникВСтроку = "", " ", ИсточникВСтроку);
-
-		ПрОбъекта = ИсточникВСтроку + "  (" + ТипЗнч(Источник) + ")";
-
-		СтрокаНазванияПКО = " ПКО: " + СокрЛП(ИмяПКО) + "  (" + СокрЛП(ПКО.Наименование) + ")";
-
-		СтрокаПользователю = ?(ТолькоПолучитьУзелСсылки, НСтр("ru = 'Конвертация ссылки на объект: %1'"), НСтр(
-			"ru = 'Конвертация объекта: %1'"));
-		СтрокаПользователю = ПодставитьПараметрыВСтроку(СтрокаПользователю, ПрОбъекта);
-
-		ЗаписатьВПротоколВыполнения(СтрокаПользователю + СтрокаНазванияПКО, , Ложь,
-			ТекущийУровеньВложенностиВыгрузитьПоПравилу + 1, 7);
-
-	КонецЕсли;
+	If CommentObjectProcessingFlag Then
+		
+		TypeDescription = New TypeDescription("String");
+		SourceToString = TypeDescription.AdjustValue(Source);
+		SourceToString = ?(SourceToString = "", " ", SourceToString);
+		
+		ObjectRul = SourceToString + "  (" + TypeOf(Source) + ")";
+		
+		OCRNameString = " OCR: " + TrimAll(OCRName) + "  (" + TrimAll(OCR.Description) + ")";
+		
+		StringForUser = ?(GetRefNodeOnly, NStr("ru = 'Конвертация ссылки на объект: %1'; en = 'Converting object reference: %1'"), NStr("ru = 'Конвертация объекта: %1'; en = 'Converting object: %1'"));
+		StringForUser = SubstituteParametersToString(StringForUser, ObjectRul);
+		
+		WriteToExecutionLog(StringForUser + OCRNameString, , False, CurrentNestingLevelExportByRule + 1, 7);
+		
+	EndIf;
 
 	ЭтоПравилоСГлобальнойВыгрузкойОбъектов = ExecuteDataExchangeInOptimizedFormat
 		И ПКО.ИспользоватьБыстрыйПоискПриЗагрузке;
@@ -3356,7 +3352,7 @@ EndFunction
 //     * Parameters - Структура -
 //     * ВерсияПлатформыПриемника - Строка -
 //
-Функция ОписаниеСтруктурыПравил()
+Функция RulesStructureDetails()
 
 	СтруктураПравил = Новый Структура;
 
@@ -5913,7 +5909,7 @@ EndFunction
 		Возврат;
 	КонецЕсли;
 
-	СтруктураПравил = SavedSettings.Получить(); // см. ОписаниеСтруктурыПравил
+	СтруктураПравил = SavedSettings.Получить(); // см. RulesStructureDetails
 
 	ExportRulesTable      = СтруктураПравил.ExportRulesTable;
 	ConversionRulesTable   = СтруктураПравил.ConversionRulesTable;
