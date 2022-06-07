@@ -37,7 +37,7 @@ Var AdditionalDataProcessorParameters Export;  // Structure containing parameter
 
 Var ParametersInitialized Export;  // If True, necessary conversion parameters are initialized.
 
-Var mDataProtocolFile Export; // Data exchange log file.
+Var mDataLogFile Export; // Data exchange log file.
 Var CommentObjectProcessingFlag Export;
 
 Var EventHandlersExternalDataProcessor Export; // The ExternalDataProcessorsManager object to call export procedures of handlers when debugging 
@@ -2705,298 +2705,303 @@ Procedure InitEventHandlerExternalDataProcessor(ExecutionPossible, OwnerObject) 
 	
 EndProcedure
 
-// Деструктор внешней обработки.
+// External data processor destructor.
 //
-// Параметры:
-//  ВключенРежимОтладки - Булево - Признак включения режима отладки.
+// Parameters:
+//  DebugModeEnabled - Boolean - indicates whether the debug mode is on.
 //  
-Процедура ДеструкторВнешнейОбработкиОбработчиковСобытий(ВключенРежимОтладки = Ложь) Экспорт
-
-	Если Не ВключенРежимОтладки Тогда
-
-		Если ВнешняяОбработкаОбработчиковСобытий <> Неопределено Тогда
-
-			Попытка
-
-				ВнешняяОбработкаОбработчиковСобытий.Деструктор();
-
-			Исключение
-				СообщитьПользователю(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-			КонецПопытки;
-
-		КонецЕсли;
-
-		ВнешняяОбработкаОбработчиковСобытий = Неопределено;
-		ОбщиеПроцедурыФункции               = Неопределено;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Удаляет временные файлы с заданным именем.
-//
-// Параметры:
-//  ИмяВременногоФайла - Строка - полное имя удаляемого файла. После выполнения процедуры очищается.
-//  
-Процедура УдалитьВременныеФайлы(ИмяВременногоФайла) Экспорт
-
-	Если Не ПустаяСтрока(ИмяВременногоФайла) Тогда
-
-		Попытка
-
-			УдалитьФайлы(ИмяВременногоФайла);
-
-			ИмяВременногоФайла = "";
-
-		Исключение
-			ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-				УровеньЖурналаРегистрации.Ошибка, , , ПодробноеПредставлениеОшибки(ИнформацияОбОшибке()));
-		КонецПопытки;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#КонецОбласти
-
-#Область СлужебныеПроцедурыИФункции
-
-#Область ПроцедурыИФункцииРаботыСФайломОбмена
-
-// Открывает файл обмена, записывает заголовок файла в соответствии с форматом обмена.
-//
-// Параметры:
-//  Нет.
-//
-Функция ОткрытьФайлВыгрузки(СтрокаСообщенияОбОшибке = "")
-
-	// Архивные файлы будем идентифицировать по расширению ".zip".
-
-	Если ArchiveFile Тогда
-		ExchangeFileName = СтрЗаменить(ExchangeFileName, ".zip", ".xml");
-	КонецЕсли;
-
-	ФайлОбмена = Новый ЗаписьТекста;
-	Попытка
-
-		Если DirectReadFromDestinationIB Тогда
-			ФайлОбмена.Открыть(ПолучитьИмяВременногоФайла(".xml"), КодировкаТекста.UTF8);
-		Иначе
-			ФайлОбмена.Открыть(ExchangeFileName, КодировкаТекста.UTF8);
-		КонецЕсли;
-
-	Исключение
-
-		СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(8);
-		Возврат "";
-
-	КонецПопытки;
-
-	СтрокаИнформацииОXML = "<?xml version=""1.0"" encoding=""UTF-8""?>";
-
-	ФайлОбмена.ЗаписатьСтроку(СтрокаИнформацииОXML);
-
-	ВременныйЗаписьXML = Новый ЗаписьXML;
-
-	ВременныйЗаписьXML.УстановитьСтроку();
-
-	ВременныйЗаписьXML.ЗаписатьНачалоЭлемента("ФайлОбмена");
-
-	УстановитьАтрибут(ВременныйЗаписьXML, "ВерсияФормата", "2.0");
-	УстановитьАтрибут(ВременныйЗаписьXML, "ДатаВыгрузки", ТекущаяДатаСеанса());
-	УстановитьАтрибут(ВременныйЗаписьXML, "НачалоПериодаВыгрузки", StartDate);
-	УстановитьАтрибут(ВременныйЗаписьXML, "ОкончаниеПериодаВыгрузки", EndDate);
-	УстановитьАтрибут(ВременныйЗаписьXML, "ИмяКонфигурацииИсточника", Конвертация().Источник);
-	УстановитьАтрибут(ВременныйЗаписьXML, "ИмяКонфигурацииПриемника", Конвертация().Приемник);
-	УстановитьАтрибут(ВременныйЗаписьXML, "ИдПравилКонвертации", Конвертация().Ид);
-	УстановитьАтрибут(ВременныйЗаписьXML, "Comment", Comment);
-
-	ВременныйЗаписьXML.ЗаписатьКонецЭлемента();
-
-	Стр = ВременныйЗаписьXML.Закрыть();
-
-	Стр = СтрЗаменить(Стр, "/>", ">");
-
-	ФайлОбмена.ЗаписатьСтроку(Стр);
-
-	Возврат СтрокаИнформацииОXML + Символы.ПС + Стр;
-
-КонецФункции
-
-// Закрывает файл обмена
-//
-// Параметры:
-//  Нет.
-//
-Процедура ЗакрытьФайл()
-
-	ФайлОбмена.ЗаписатьСтроку("</ФайлОбмена>");
-	ФайлОбмена.Закрыть();
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыИФункцииРаботыСВременнымиФайлами
-
-Функция ЗаписьТекстаВоВременныйФайл(СписокВременныхФайлов)
-
-	ИмяФайлаЗаписей = ПолучитьИмяВременногоФайла();
-
-	ВременныйФайлЗаписей = Новый ЗаписьТекста;
-
-	Если БезопасныйРежим() <> Ложь Тогда
-		УстановитьОтключениеБезопасногоРежима(Истина);
-	КонецЕсли;
-
-	Попытка
-		ВременныйФайлЗаписей.Открыть(ИмяФайлаЗаписей, КодировкаТекста.UTF8);
-	Исключение
-		ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(1000, ОписаниеОшибки(), НСтр(
-			"ru = 'Ошибка при создании временного файла для выгрузки данных'"));
-		ВызватьИсключение;
-	КонецПопытки;
+Procedure EventHandlerExternalDataProcessorDestructor(DebugModeEnabled = False) Export
 	
-	// Удаление временных файлов происходит не по месту,
-	// с помощью УдалитьФайлы(ИмяФайлаЗаписей), а централизованно.
-	СписокВременныхФайлов.Добавить(ИмяФайлаЗаписей);
+	If Not DebugModeEnabled Then
+		
+		If EventHandlersExternalDataProcessor <> Undefined Then
+			
+			Try
+				
+				EventHandlersExternalDataProcessor.Destructor();
+				
+			Except
+				MessageToUser(BriefErrorDescription(ErrorInfo()));
+			EndTry; 
+			
+		EndIf; 
+		
+		EventHandlersExternalDataProcessor = Undefined;
+		CommonProceduresFunctions               = Undefined;
+		
+	EndIf;
+	
+EndProcedure
 
-	Возврат ВременныйФайлЗаписей;
-
-КонецФункции
-
-Функция ЧтениеТекстаИзВременногоФайла(ИмяВременногоФайла)
-
-	ВременныйФайл = Новый ЧтениеТекста;
-
-	Если БезопасныйРежим() <> Ложь Тогда
-		УстановитьОтключениеБезопасногоРежима(Истина);
-	КонецЕсли;
-
-	Попытка
-		ВременныйФайл.Открыть(ИмяВременногоФайла, КодировкаТекста.UTF8);
-	Исключение
-		ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(1000, ОписаниеОшибки(), НСтр(
-			"ru = 'Ошибка при открытии временного файла для переноса данных в файл обмена'"));
-		ВызватьИсключение;
-	КонецПопытки;
-
-	Возврат ВременныйФайл;
-КонецФункции
-
-Процедура ПеренестиДанныеИзВременныхФайлов(СписокВременныхФайлов)
-
-	Для Каждого ИмяВременногоФайла Из СписокВременныхФайлов Цикл
-		ВременныйФайл = ЧтениеТекстаИзВременногоФайла(ИмяВременногоФайла);
-
-		СтрокаВременногоФайла = ВременныйФайл.ПрочитатьСтроку();
-		Пока СтрокаВременногоФайла <> Неопределено Цикл
-			ЗаписатьВФайл(СтрокаВременногоФайла);
-			СтрокаВременногоФайла = ВременныйФайл.ПрочитатьСтроку();
-		КонецЦикла;
-
-		ВременныйФайл.Закрыть();
-	КонецЦикла;
-
-	Если БезопасныйРежим() <> Ложь Тогда
-		УстановитьОтключениеБезопасногоРежима(Истина);
-	КонецЕсли;
-
-	Для Каждого ИмяВременногоФайла Из СписокВременныхФайлов Цикл
-		УдалитьФайлы(ИмяВременногоФайла);
-	КонецЦикла;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ПроцедурыИФункцииРаботыСПротоколомОбмена
-
-// Выполняет инициализацию файла для записи событий загрузки/выгрузки данных.
+// Deletes temporary files with the specified name.
 //
-// Параметры:
-//  Нет.
+// Parameters:
+//  TempFileName - String - a full name of the file to be deleted. It clears after the procedure is executed.
+//  
+Procedure DeleteTempFiles(TempFileName) Export
+	
+	If Not IsBlankString(TempFileName) Then
+		
+		Try
+			
+			DeleteFiles(TempFileName);
+			
+			TempFileName = "";
+			
+		Except
+			WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+				EventLogLevel.Error,,, DetailErrorDescription(ErrorInfo()));
+		EndTry;
+		
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+#EndRegion
+
+#Region Private
+
+#Region ExchangeFileOperationsProceduresAndFunctions
+
+// Opens an exchange file, writes a file header according to the exchange format.
+//
+// Parameters:
+//  No.
+//
+Function OpenExportFile(ErrorMessageString = "")
+
+	// Archive files are recognized by the ZIP extension.
+	
+	If ArchiveFile Then
+		ExchangeFileName = StrReplace(ExchangeFileName, ".zip", ".xml");
+	EndIf;
+    	
+	ExchangeFile = New TextWriter;
+	Try
+
+		If DirectReadFromDestinationIB Then
+			ExchangeFile.Open(GetTempFileName(".xml"), TextEncoding.UTF8);
+		Else
+			ExchangeFile.Open(ExchangeFileName, TextEncoding.UTF8);
+		EndIf;
+				
+	Except
+		
+		ErrorMessageString = WriteToExecutionLog(8);
+		Return "";
+		
+	EndTry;
+
+	XMLInfoString = "<?xml version=""1.0"" encoding=""UTF-8""?>";
+	
+	ExchangeFile.WriteLine(XMLInfoString);
+
+	TempXMLWriter = New XMLWriter();
+	
+	TempXMLWriter.SetString();
+	
+	TempXMLWriter.WriteStartElement("ExchangeFile");
+							
+	SetAttribute(TempXMLWriter, "FormatVersion", "2.0");
+	SetAttribute(TempXMLWriter, "ExportDate",				CurrentSessionDate());
+	SetAttribute(TempXMLWriter, "ExportPeriodStart",		StartDate);
+	SetAttribute(TempXMLWriter, "ExportPeriodEnd",	EndDate);
+	SetAttribute(TempXMLWriter, "SourceConfigurationName",	Conversion().Source);
+	SetAttribute(TempXMLWriter, "DestinationConfigurationName",	Conversion().Destination);
+	SetAttribute(TempXMLWriter, "ConversionRuleIDs",		Conversion().ID);
+	SetAttribute(TempXMLWriter, "Comment",				Comment);
+	
+	TempXMLWriter.WriteEndElement();
+	
+	Page = TempXMLWriter.Close(); 
+	
+	Page = StrReplace(Page, "/>", ">");
+	
+	ExchangeFile.WriteLine(Page);
+	
+	Return XMLInfoString + Chars.LF + Page;
+			
+EndFunction
+
+// Closes the exchange file.
+//
+// Parameters:
+//  No.
+//
+Procedure CloseFile()
+
+    ExchangeFile.WriteLine("</ExchangeFile>");
+	ExchangeFile.Close();
+	
+EndProcedure
+
+#EndRegion
+
+#Region ProceduresAndFunctionsOfTemporaryFilesOperations
+
+Function WriteTextToTemporaryFile(TempFileList)
+	
+	RecordFileName = GetTempFileName();
+	
+	RecordsTemporaryFile = New TextWriter;
+	
+	If SafeMode() <> False Then
+		SetSafeModeDisabled(True);
+	EndIf;
+	
+	Try
+		RecordsTemporaryFile.Open(RecordFileName, TextEncoding.UTF8);
+	Except
+		WriteErrorInfoConversionHandlers(1000,
+			ErrorDescription(),
+			NStr("ru = 'Ошибка при создании временного файла для выгрузки данных'; en = 'Error creating temporary file for data export'"));
+		Raise;
+	EndTry;
+	
+	TempFileList.Add(RecordFileName);
+		
+	Return RecordsTemporaryFile;
+	
+EndFunction
+
+Function ReadTextFromTemporaryFile(TempFileName)
+	
+	TempFile = New TextReader;
+	
+	If SafeMode() <> False Then
+		SetSafeModeDisabled(True);
+	EndIf;
+	
+	Try
+		TempFile.Open(TempFileName, TextEncoding.UTF8);
+	Except
+		WriteErrorInfoConversionHandlers(1000,
+			ErrorDescription(),
+			NStr("ru = 'Ошибка при открытии временного файла для переноса данных в файл обмена'; en = 'An error occurred when opening the temporary file to transfer data to the exchange file'"));
+		Raise;
+	EndTry;
+	
+	Return TempFile;
+EndFunction
+
+Procedure TransferDataFromTemporaryFiles(TempFileList)
+	
+	For Each TempFileName In TempFileList Do
+		TempFile = ReadTextFromTemporaryFile(TempFileName);
+		
+		TempFileLine = TempFile.ReadLine();
+		While TempFileLine <> Undefined Do
+			WriteToFile(TempFileLine);	
+			TempFileLine = TempFile.ReadLine();
+		EndDo;
+		
+		TempFile.Close();
+	EndDo;
+	
+	If SafeMode() <> False Then
+		SetSafeModeDisabled(True);
+	EndIf;
+	
+	For Each TempFileName In TempFileList Do
+		DeleteFiles(TempFileName);
+	EndDo;
+	
+EndProcedure
+
+#EndRegion
+
+#Region ProceduresAndFunctionsOfExchangeLogOperations
+
+// Initializes the file to write data import/export events.
+//
+// Parameters:
+//  No.
 // 
-Процедура ИнициализироватьВедениеПротоколаОбмена() Экспорт
+Procedure InitializeKeepExchangeLog() Export
+	
+	If IsBlankString(ExchangeLogFileName) Then
+		
+		mDataLogFile = Undefined;
+		CommentObjectProcessingFlag = DisplayInfoMessagesIntoMessageWindow;
+		Return;
 
-	Если ПустаяСтрока(ExchangeLogFileName) Тогда
+	Else
 
-		мФайлПротоколаДанных = Неопределено;
-		ФлагКомментироватьОбработкуОбъектов = DisplayInfoMessagesIntoMessageWindow;
-		Возврат;
+		CommentObjectProcessingFlag = WriteInfoMessagesToLog
+			Or DisplayInfoMessagesIntoMessageWindow;
 
-	Иначе
+	EndIf;
 
-		ФлагКомментироватьОбработкуОбъектов = WriteInfoMessagesToLog
-			Или DisplayInfoMessagesIntoMessageWindow;
-
-	КонецЕсли;
-
-	мФайлПротоколаДанных = Новый ЗаписьТекста(ExchangeLogFileName, КодировкаФайлаПротоколаОбмена(), ,
+	mDataLogFile = New TextWriter(ExchangeLogFileName, ExchangeLogFileEncoding(), ,
 		AppendDataToExchangeLog);
 
-КонецПроцедуры
+EndProcedure
 
-Процедура ИнициализироватьВедениеПротоколаОбменаДляЭкспортаОбработчиков()
+Procedure InitializeKeepExchangeProtocolForHandlersExport()
 
-	ExchangeLogTempFileName = ПолучитьНовоеУникальноеИмяВременногоФайла(ExchangeLogTempFileName);
+	ExchangeLogTempFileName = GetNewUniqueTempFileName(ExchangeLogTempFileName);
 
-	мФайлПротоколаДанных = Новый ЗаписьТекста(ExchangeLogTempFileName, КодировкаФайлаПротоколаОбмена());
+	mDataLogFile = New TextWriter(ExchangeLogTempFileName, ExchangeLogFileEncoding());
 
-	ФлагКомментироватьОбработкуОбъектов = Ложь;
+	CommentObjectProcessingFlag = False;
 
-КонецПроцедуры
+EndProcedure
 
-Функция КодировкаФайлаПротоколаОбмена()
+Function ExchangeLogFileEncoding()
 
-	ПредставлениеКодировки = СокрЛП(ExchangeLogFileEncoding);
+	EncodingPresentation = TrimAll(ExchangeLogFileEncoding);
 
-	Результат = КодировкаТекста.ANSI;
-	Если Не ПустаяСтрока(ExchangeLogFileEncoding) Тогда
-		Если СтрНачинаетсяС(ПредставлениеКодировки, "КодировкаТекста.") Тогда
-			ПредставлениеКодировки = СтрЗаменить(ПредставлениеКодировки, "КодировкаТекста.", "");
-			Попытка
-				Результат = КодировкаТекста[ПредставлениеКодировки];
-			Исключение
-				ТекстОшибки = ПодставитьПараметрыВСтроку(НСтр("ru = 'Неизвестная кодировка файла протокола обмена: %1.
-															  |Используется ANSI.'"), ПредставлениеКодировки);
-				ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-					УровеньЖурналаРегистрации.Предупреждение, , , ТекстОшибки);
-			КонецПопытки;
-		Иначе
-			Результат = ПредставлениеКодировки;
-		КонецЕсли;
-	КонецЕсли;
+	Result = TextEncoding.ANSI;
+	If Not IsBlankString(ExchangeLogFileEncoding) Then
+		If StrStartsWith(EncodingPresentation, "TextEncoding.") Then
+			EncodingPresentation = StrReplace(EncodingPresentation, "TextEncoding.", "");
+			Try
+				Result = TextEncoding[EncodingPresentation];
+			Except
+				ErrorText = SubstituteParametersToString(NStr("ru = 'Неизвестная кодировка файла протокола обмена: %1.
+				|Используется ANSI.'; 
+				|en = 'Unknown encoding of the exchange log file: %1.
+				|ANSI is used.'"), EncodingPresentation);
+				WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+					EventLogLevel.Warning, , , ErrorText);
+			EndTry;
+		Else
+			Result = EncodingPresentation;
+		EndIf;
+	EndIf;
+	
+	Return Result;
+	
+EndFunction
 
-	Возврат Результат;
-
-КонецФункции
-
-// Закрывает файл протокола обмена данными. Файл сохраняется на диск.
+// Closes a data exchange log file. File is saved to the disk.
 //
-Процедура ЗавершитьВедениеПротоколаОбмена() Экспорт
+Procedure FinishKeepExchangeLog() Export 
+	
+	If mDataLogFile <> Undefined Then
+		
+		mDataLogFile.Close();
+				
+	EndIf;	
+	
+	mDataLogFile = Undefined;
+	
+EndProcedure
 
-	Если мФайлПротоколаДанных <> Неопределено Тогда
-
-		мФайлПротоколаДанных.Закрыть();
-
-	КонецЕсли;
-
-	мФайлПротоколаДанных = Неопределено;
-
-КонецПроцедуры
-
-// Сохраняет в протокол выполнения (или выводит на экран) сообщения указанной структуры.
+// Writes to a log or displays messages of the specified structure.
 //
-// Параметры:
-//  Код               - Число. Код сообщения.
-//  СтруктураЗаписи   - Структура. Структура записи протокола.
-//  ВзвестиФлагОшибок - Если истина, то - это сообщение об ошибке. Взводится ФлагОшибки.
+// Parameters:
+//  Code - Number. Message code.
+//  RecordStructure - Structure. Log record structure.
+//  SetErrorFlag - if True, then it is an error message. Sets ErrorFlag.
+//  Level - Number. A message hierarchy level in the log.
+//  Align - Number. A resulting length to written string, see odSupplementString() function.
+//  UnconditionalWriteToExchangeLog - Boolean. If True, DisplayInfoMessagesIntoMessageWindow flag is ignored.
 // 
-Функция ЗаписатьВПротоколВыполнения(Код = "", СтруктураЗаписи = Неопределено, ВзвестиФлагОшибок = Истина, Уровень = 0,
-	Выравнивание = 22, БезусловнаяЗаписьВПротоколОбмена = Ложь) Экспорт
+Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=True, 
+	Level=0, Align=22, UnconditionalWriteToExchangeLog = False) Export
 
 	Отступ = "";
 	Для Сч = 0 По Уровень - 1 Цикл
