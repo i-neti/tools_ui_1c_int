@@ -1601,9 +1601,9 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 	ExportedObjects          = OCR.Exported;
 	ExportedObjectsOnlyRefs = OCR.OnlyRefsExported;
 	AllObjectsExported         = OCR.AllObjectsExported;
-	DontReplaceObjectOnImport = OCR.DoNotReplace;
-	DontCreateIfNotFound     = OCR.DoNotCreateIfNotFound;
-	OnExchangeObjectByRefSetGIUDOnly     = OCR.OnMoveObjectByRefSetGIUDOnly;
+	DoNotReplaceObjectOnImport = OCR.DoNotReplace;
+	DoNotCreateIfNotFound     = OCR.DoNotCreateIfNotFound;
+	OnMoveObjectByRefSetGIUDOnly     = OCR.OnMoveObjectByRefSetGIUDOnly;
 
 	AutonumberingPrefix		= "";
 	WriteMode     			= "";
@@ -1839,12 +1839,12 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 
 			ExportRefOnly = OCR.DoNotExportPropertyObjectsByRefs OR GetRefNodeOnly;
 			
-			If DontCreateIfNotFound Then
-				SetAttribute(RefNode, "DoNotCreateIfNotFound", DontCreateIfNotFound);
+			If DoNotCreateIfNotFound Then
+				SetAttribute(RefNode, "DoNotCreateIfNotFound", DoNotCreateIfNotFound);
 			EndIf;
 			
-			If OnExchangeObjectByRefSetGIUDOnly Then
-				SetAttribute(RefNode, "OnMoveObjectByRefSetGIUDOnly", OnExchangeObjectByRefSetGIUDOnly);
+			If OnMoveObjectByRefSetGIUDOnly Then
+				SetAttribute(RefNode, "OnMoveObjectByRefSetGIUDOnly", OnMoveObjectByRefSetGIUDOnly);
 			EndIf;
 			
 			ExportProperties(Source, Destination, IncomingData, OutgoingData, OCR, OCR.SearchProperties, 
@@ -2600,7 +2600,7 @@ Procedure InitPropertyConversionRuleTable(Tab) Export
 	AddMissingColumns(Columns, "Description");
 	AddMissingColumns(Columns, "Order");
 
-	AddMissingColumns(Columns, "IsFolder", 			deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "IsGroup", 			deTypeDescription("Boolean"));
     AddMissingColumns(Columns, "GroupRules");
 
 	AddMissingColumns(Columns, "SourceKind");
@@ -3003,459 +3003,456 @@ EndProcedure
 Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=True, 
 	Level=0, Align=22, UnconditionalWriteToExchangeLog = False) Export
 
-	Отступ = "";
-	Для Сч = 0 По Уровень - 1 Цикл
-		Отступ = Отступ + Символы.Таб;
-	КонецЦикла;
+	Indent = "";
+    For Cnt = 0 To Level-1 Do
+		Indent = Indent + Chars.Tab;
+	EndDo;
 
-	Если ТипЗнч(Код) = одТипЧисло Тогда
+	If TypeOf(Code) = deNumberType Then
+		
+		If deMessages = Undefined Then
+			InitMessages();
+		EndIf;
+		
+		Str = deMessages[Code];
+		
+	Else
+		
+		Str = String(Code);
+		
+	EndIf;
 
-		Если одСообщения = Неопределено Тогда
-			ИнициализацияСообщений();
-		КонецЕсли;
+	Str = Indent + Str;
+	
+	If RecordStructure <> Undefined Then
+		
+		For each Field In RecordStructure Do
+			
+			Value = Field.Value;
+			If Value = Undefined Then
+				Continue;
+			EndIf; 
+			Key = Field.Key;
+			Str  = Str + Chars.LF + Indent + Chars.Tab + odSupplementString(Key, Align) + " =  " + String(Value);
+			
+		EndDo;
+		
+	EndIf;
 
-		Стр = одСообщения[Код];
+	ResultingStringToWrite = Chars.LF + Str;
+	If SetErrorFlag Then
+		
+		SetErrorFlag(True);
+		MessageToUser(ResultingStringToWrite);
+		
+	Else
 
-	Иначе
+		If DoNotShowInfoMessagesToUser = False And (UnconditionalWriteToExchangeLog
+			Or DisplayInfoMessagesIntoMessageWindow) Then
 
-		Стр = Строка(Код);
+			MessageToUser(ResultingStringToWrite);
+			
+		EndIf;
+		
+	EndIf;
 
-	КонецЕсли;
+	If mDataLogFile <> Undefined Then
+		
+		If SetErrorFlag Then
+			
+			mDataLogFile.WriteLine(Chars.LF + "Error.");
+			
+		EndIf;
+		
+		If SetErrorFlag Or UnconditionalWriteToExchangeLog Or WriteInfoMessagesToLog Then
 
-	Стр = Отступ + Стр;
+			mDataLogFile.WriteLine(ResultingStringToWrite);
+		
+		EndIf;		
+		
+	EndIf;
+	
+	Return Str;
+		
+EndFunction
 
-	Если СтруктураЗаписи <> Неопределено Тогда
-
-		Для Каждого Поле Из СтруктураЗаписи Цикл
-
-			Значение = Поле.Значение;
-			Если Значение = Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
-			Ключ = Поле.Ключ;
-			Стр  = Стр + Символы.ПС + Отступ + Символы.Таб + одДополнитьСтроку(Ключ, Выравнивание) + " =  " + Строка(
-				Значение);
-
-		КонецЦикла;
-
-	КонецЕсли;
-
-	ИтоговаяСтрокаДляЗаписи = Символы.ПС + Стр;
-	Если ВзвестиФлагОшибок Тогда
-
-		УстановитьФлагОшибки(Истина);
-		СообщитьПользователю(ИтоговаяСтрокаДляЗаписи);
-
-	Иначе
-
-		Если DontShowInfoMessagesToUser = Ложь И (БезусловнаяЗаписьВПротоколОбмена
-			Или DisplayInfoMessagesIntoMessageWindow) Тогда
-
-			СообщитьПользователю(ИтоговаяСтрокаДляЗаписи);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если мФайлПротоколаДанных <> Неопределено Тогда
-
-		Если ВзвестиФлагОшибок Тогда
-
-			мФайлПротоколаДанных.ЗаписатьСтроку(Символы.ПС + "Ошибка.");
-
-		КонецЕсли;
-
-		Если ВзвестиФлагОшибок Или БезусловнаяЗаписьВПротоколОбмена Или WriteInfoMessagesToLog Тогда
-
-			мФайлПротоколаДанных.ЗаписатьСтроку(ИтоговаяСтрокаДляЗаписи);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Возврат Стр;
-
-КонецФункции
-
-// Записывает информацию об ошибке в протокол выполнения обмена для обработчика очистки данных.
+// Writes error details to the exchange log for data clearing handler.
 //
-Процедура ЗаписатьИнформациюОбОшибкеОбработчикаОчисткиДанных(КодСообщения, СтрокаОшибки, ИмяПравилаОчисткиДанных,
-	Объект = "", ИмяОбработчика = "")
+Procedure WriteDataClearingHandlerErrorInfo(MessageCode, ErrorString, DataClearingRuleName, Object = "", HandlerName = "")
 
-	ЗП                        = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.ПОД                    = ИмяПравилаОчисткиДанных;
+	LR                        = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.DCR                    = DataClearingRuleName;
 
-	Если Объект <> "" Тогда
-		ОписаниеТипов = Новый ОписаниеТипов("Строка");
-		ОбъектСтрока  = ОписаниеТипов.ПривестиЗначение(Объект);
-		Если Не ПустаяСтрока(ОбъектСтрока) Тогда
-			ЗП.Объект = ОбъектСтрока + "  (" + ТипЗнч(Объект) + ")";
-		Иначе
-			ЗП.Объект = "" + ТипЗнч(Объект) + "";
-		КонецЕсли;
-	КонецЕсли;
+	If Object <> "" Then
+		TypeDescription = New TypeDescription("String");
+		StringObject  = TypeDescription.AdjustValue(Object);
+		If Not IsBlankString(StringObject) Then
+			LR.Object = StringObject + "  (" + TypeOf(Object) + ")";
+		Else
+			LR.Object = "" + TypeOf(Object) + "";
+		EndIf;
+	EndIf;
 
-	Если ИмяОбработчика <> "" Тогда
-		ЗП.Обработчик             = ИмяОбработчика;
-	КонецЕсли;
+	If HandlerName <> "" Then
+		LR.Handler             = HandlerName;
+	EndIf;
 
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
 
-	Если Не DebugModeFlag Тогда
-		ВызватьИсключение СтрокаСообщенияОбОшибке;
-	КонецЕсли;
+	If Not DebugModeFlag Then
+		Raise ErrorMessageString;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-// Регистрирует в протоколе выполнения ошибку обработчика ПКО (выгрузка).
+// Registers the error of object conversion rule handler (export) in the execution protocol.
 //
-Процедура ЗаписатьИнформациюОбОшибкеВыгрузкиОбработчикаПКО(КодСообщения, СтрокаОшибки, ПКО, Источник, ИмяОбработчика)
+Procedure WriteInfoOnOCRHandlerExportError(MessageCode, ErrorString, OCR, Source, HandlerName)
+	
+	LR                        = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.OCR                    = OCR.Name + "  (" + OCR.Description + ")";
+	
+	TypeDescription = New TypeDescription("String");
+	StringSource  = TypeDescription.AdjustValue(Source);
+	If Not IsBlankString(StringSource) Then
+		LR.Object = StringSource + "  (" + TypeOf(Source) + ")";
+	Else
+		LR.Object = "(" + TypeOf(Source) + ")";
+	EndIf;
+	
+	LR.Handler = HandlerName;
+	
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
+	
+	If Not DebugModeFlag Then
+		Raise ErrorMessageString;
+	EndIf;
+		
+EndProcedure
 
-	ЗП                        = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.ПКО                    = ПКО.Имя + "  (" + ПКО.Наименование + ")";
+Procedure WriteErrorInfoDERHandlers(MessageCode, ErrorString, RuleName, HandlerName, Object = Undefined)
+	
+	LR                        = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.DER                    = RuleName;
+	
+	If Object <> Undefined Then
+		TypeDescription = New TypeDescription("String");
+		StringObject  = TypeDescription.AdjustValue(Object);
+		If Not IsBlankString(StringObject) Then
+			LR.Object = StringObject + "  (" + TypeOf(Object) + ")";
+		Else
+			LR.Object = "" + TypeOf(Object) + "";
+		EndIf;
+	EndIf;
+	
+	LR.Handler             = HandlerName;
+	
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
+	
+	If Not DebugModeFlag Then
+		Raise ErrorMessageString;
+	EndIf;
+	
+EndProcedure
 
-	ОписаниеТипов = Новый ОписаниеТипов("Строка");
-	ИсточникСтрока  = ОписаниеТипов.ПривестиЗначение(Источник);
-	Если Не ПустаяСтрока(ИсточникСтрока) Тогда
-		ЗП.Объект = ИсточникСтрока + "  (" + ТипЗнч(Источник) + ")";
-	Иначе
-		ЗП.Объект = "(" + ТипЗнч(Источник) + ")";
-	КонецЕсли;
+Function WriteErrorInfoConversionHandlers(MessageCode, ErrorString, HandlerName)
+	
+	LR                        = GetLogRecordStructure(MessageCode, ErrorString);
+	LR.Handler             = HandlerName;
+	ErrorMessageString = WriteToExecutionLog(MessageCode, LR);
+	Return ErrorMessageString;
+	
+EndFunction
 
-	ЗП.Обработчик = ИмяОбработчика;
+#EndRegion
 
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
+#Region CoolectionTypesDetails
 
-	Если Не DebugModeFlag Тогда
-		ВызватьИсключение СтрокаСообщенияОбОшибке;
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ЗаписатьИнформациюОбОшибкеОбработчикиПВД(КодСообщения, СтрокаОшибки, ИмяПравила, ИмяОбработчика,
-	Объект = Неопределено)
-
-	ЗП                        = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.ПВД                    = ИмяПравила;
-
-	Если Объект <> Неопределено Тогда
-		ОписаниеТипов = Новый ОписаниеТипов("Строка");
-		ОбъектСтрока  = ОписаниеТипов.ПривестиЗначение(Объект);
-		Если Не ПустаяСтрока(ОбъектСтрока) Тогда
-			ЗП.Объект = ОбъектСтрока + "  (" + ТипЗнч(Объект) + ")";
-		Иначе
-			ЗП.Объект = "" + ТипЗнч(Объект) + "";
-		КонецЕсли;
-	КонецЕсли;
-
-	ЗП.Обработчик             = ИмяОбработчика;
-
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
-
-	Если Не DebugModeFlag Тогда
-		ВызватьИсключение СтрокаСообщенияОбОшибке;
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(КодСообщения, СтрокаОшибки, ИмяОбработчика)
-
-	ЗП                        = ПолучитьСтруктуруЗаписиПротокола(КодСообщения, СтрокаОшибки);
-	ЗП.Обработчик             = ИмяОбработчика;
-	СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(КодСообщения, ЗП);
-	Возврат СтрокаСообщенияОбОшибке;
-
-КонецФункции
-
-#КонецОбласти
-
-#Область ОписаниеТиповКоллекций
-
-// Возвращаемое значение:
-//   ТаблицаЗначений - коллекция правил конвертации данных:
-//     * Имя - Строка - 
-//     * Наименование - Строка - 
-//     * Порядок - Число - 
-//     * СинхронизироватьПоИдентификатору - Булево -
-//     * НеСоздаватьЕслиНеНайден - Булево -
-//     * НеВыгружатьОбъектыСвойствПоСсылкам - Булево -
-//     * ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли - Булево -
-//     * ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD - Булево -
-//     * ИспользоватьБыстрыйПоискПриЗагрузке - Булево -
-//     * ГенерироватьНовыйНомерИлиКодЕслиНеУказан - Булево -
-//     * МаленькоеКоличествоОбъектов - Булево -
-//     * КоличествоОбращенийДляВыгрузкиСсылки - Число -
-//     * КоличествоЭлементовВИБ - Число -
-//     * СпособВыгрузки - Произвольный -
-//     * Источник - Произвольный -
-//     * Приемник - Произвольный -
-//     * ТипИсточника - Строка -
-//     * ПередВыгрузкой - Произвольный -
-//     * ПриВыгрузке - Произвольный -
-//     * ПослеВыгрузки - Произвольный -
-//     * ПослеВыгрузкиВФайл - Произвольный -
-//     * ЕстьОбработчикПередВыгрузкой - Булево -
-//     * ЕстьОбработчикПриВыгрузке - Булево -
-//     * ЕстьОбработчикПослеВыгрузки - Булево -
-//     * ЕстьОбработчикПослеВыгрузкиВФайл - Булево -
-//     * ПередЗагрузкой - Произвольный -
-//     * ПриЗагрузке - Произвольный -
-//     * ПослеЗагрузки - Произвольный -
-//     * ПоследовательностьПолейПоиска - Произвольный -
-//     * ПоискПоТабличнымЧастям - см. КоллекцияПоискПоТабличнымЧастям
-//     * ЕстьОбработчикПередЗагрузкой - Булево -
-//     * ЕстьОбработчикПриЗагрузке - Булево -
-//     * ЕстьОбработчикПослеЗагрузки - Булево -
-//     * ЕстьОбработчикПоследовательностьПолейПоиска - Булево -
-//     * СвойстваПоиска - см. КоллекцияПравилаКонвертацииСвойств
-//     * Свойства - см. КоллекцияПравилаКонвертацииСвойств
-//     * Выгруженные - ТаблицаЗначений -
-//     * ВыгружатьПредставлениеИсточника - Булево -
-//     * НеЗамещать - Булево -
-//     * ЗапоминатьВыгруженные - Булево -
-//     * ВсеОбъектыВыгружены - Булево -
+// Returns:
+//   ValueTable - Data conversion rules collection:
+//     * Name - String - 
+//     * Description - String - 
+//     * Order - Number - 
+//     * SynchronizeByID - Boolean -
+//     * НеСоздаватьЕслиНеНайден - Boolean -
+//     * DontExportPropertyObjectsByRefs - Boolean -
+//     * ContinueSearchBySearchFieldsIfDidNotFindByID - Boolean -
+//     * OnMoveObjectByRefSetGIUDOnly - Boolean -
+//     * UseFastSearchOnImport - Boolean -
+//     * GenerateNewNumberOrCodeIfNotSet - Boolean -
+//     * ObjectsSmallCount - Boolean -
+//     * RefExportRequestsCount - Number -
+//     * IBItemsCount - Number -
+//     * ExportMethod - Arbitrary -
+//     * Source - Arbitrary -
+//     * Destination - Arbitrary -
+//     * SourceType - String -
+//     * BeforeExport - Arbitrary -
+//     * OnExport - Arbitrary -
+//     * AfterExport - Arbitrary -
+//     * AfterExportToFile - Arbitrary -
+//     * HasBeforeExportHandler - Boolean -
+//     * HasOnExportHandler - Boolean -
+//     * HasAfterExportHandler - Boolean -
+//     * HasAfterExportToFileHandler - Boolean -
+//     * BeforeImport - Arbitrary -
+//     * OnImport - Arbitrary -
+//     * AfterImport - Arbitrary -
+//     * SearchFieldsSequence - Arbitrary -
+//     * SearchInTabularSections - see SearchInTabularSectionsCollection
+//     * HasBeforeImportHandler - Boolean -
+//     * HasOnImportHandler - Boolean -
+//     * HasAfterImportHandler - Boolean -
+//     * HasSearchFieldsSequenceHandler - Boolean -
+//     * SearchProperties - see PropertyConversionRulesCollection
+//     * Properties - см. PropertyConversionRulesCollection
+//     * Exported - ValueTable -
+//     * ExportSourcePresentation - Boolean -
+//     * DoNotReplace - Boolean -
+//     * RememberExported - Boolean -
+//     * AllObjectsExported - Boolean -
 // 
-Функция КоллекцияПравилаКонвертации()
+Function ConversionRulesCollection()
 
-	Возврат ConversionRulesTable;
+	Return ConversionRulesTable;
 
-КонецФункции
+EndFunction
 
-// Возвращаемое значение:
-//   ДеревоЗначений - коллекция правил выгрузки данных:
-//     * Включить - Число -
-//     * ЭтоГруппа - Булево -
-//     * Имя - Строка -
-//     * Наименование - Строка -
-//     * Порядок - Число -
-//     * СпособОтбораДанных - Произвольный -
-//     * ОбъектВыборки - Произвольный -
-//     * ПравилоКонвертации - Произвольный -
-//     * ПередОбработкой - Строка -
-//     * ПослеОбработки - Строка -
-//     * ПередВыгрузкой - Строка -
-//     * ПослеВыгрузки - Строка -
-//     * ИспользоватьОтбор - Булево -
-//     * НастройкиПостроителя - Произвольный -
-//     * ИмяОбъектаДляЗапроса - Строка -
-//     * ИмяОбъектаДляЗапросаРегистра - Строка -
-//     * ВыбиратьДанныеДляВыгрузкиОднимЗапросом - Булево -
-//     * СсылкаНаУзелОбмена - ПланОбменаСсылка -
+// Returns:
+//   ValueTree - Data export rules collection:
+//     * Enable - Number -
+//     * IsGroup - Boolean -
+//     * Name - String -
+//     * Description - String -
+//     * Order - Number -
+//     * DataSelectionMethod - Arbitrary -
+//     * SelectionObject - Arbitrary -
+//     * ConversionRule - Arbitrary -
+//     * BeforeProcess - String -
+//     * AfterProcess - String -
+//     * BeforeExport - String -
+//     * AfterExport - String -
+//     * UseFilter - Boolean -
+//     * BuilderSettings - Arbitrary -
+//     * ObjectNameForQuery - String -
+//     * ObjectNameForRegisterQuery - String -
+//     * SelectExportedDataWithOneQuery - Boolean -
+//     * ExchangeNodeRef - ExchangePlanRef -
 //
-Функция КоллекцияПравилаВыгрузки()
+Function ExportRulesCollection()
 
-	Возврат ExportRulesTable;
+	Return ExportRulesTable;
 
-КонецФункции
+EndFunction
 
-// Возвращаемое значение:
-//   ТаблицаЗначений - коллекция правил поиска по табличным частям:
-//     * ИмяЭлемента - Произвольный -
-//     * ПоляПоискаТЧ - Массив из Произвольный -
+// Returns:
+//   ValueTable - Search in tabular sections rules collection:
+//     * ItemName - Arbitrary -
+//     * VTSearchFields - Array of Arbitrary -
 // 
-Функция КоллекцияПоискПоТабличнымЧастям()
+Function SearchInTabularSectionsCollection()
 
-	ПоискПоТабличнымЧастям = Новый ТаблицаЗначений;
-	ПоискПоТабличнымЧастям.Колонки.Добавить("ИмяЭлемента");
-	ПоискПоТабличнымЧастям.Колонки.Добавить("ПоляПоискаТЧ");
+	SearchInTabularSections = New ValueTable;
+	SearchInTabularSections.Columns.Add("ItemName");
+	SearchInTabularSections.Columns.Add("VTSearchFields");
 
-	Возврат ПоискПоТабличнымЧастям;
+	Return SearchInTabularSections;
 
-КонецФункции
+EndFunction
 
-// Возвращаемое значение:
-//   ТаблицаЗначений - коллекция правил конвертации свойств данных:
-//     * Имя - Строка -
-//     * Наименование - Строка - 
-//     * Порядок - Число -
-//     * ЭтоГруппа - Булево -
-//     * ЭтоПолеПоиска - Булево -
-//     * ПравилаГруппы - см. КоллекцияПравилаКонвертацииСвойств
-//     * ПравилаГруппыОтключенные - Произвольный -
-//     * ВидИсточника - Произвольный -
-//     * ВидПриемника - Произвольный -
-//     * УпрощеннаяВыгрузкаСвойства - Булево -
-//     * НуженУзелXMLПриВыгрузке - Булево -
-//     * НуженУзелXMLПриВыгрузкеГруппы - Булево -
-//     * ТипИсточника - Строка -
-//     * ТипПриемника - Строка -
-//     * Источник - Произвольный -
-//     * Приемник - Произвольный -
-//     * ПравилоКонвертации - Произвольный -
-//     * ПолучитьИзВходящихДанных - Булево -
-//     * НеЗамещать - Булево -
-//     * ЭтоОбязательноеСвойство - Булево -
-//     * ПередВыгрузкой - Произвольный -
-//     * ИмяОбработчикаПередВыгрузкой - Произвольный -
-//     * ПриВыгрузке - Произвольный -
-//     * ИмяОбработчикаПриВыгрузке - Произвольный -
-//     * ПослеВыгрузки - Произвольный -
-//     * ИмяОбработчикаПослеВыгрузки - Произвольный -
-//     * ПередОбработкойВыгрузки - Произвольный -
-//     * ИмяОбработчикаПередОбработкойВыгрузки - Произвольный -
-//     * ПослеОбработкиВыгрузки - Произвольный -
-//     * ИмяОбработчикаПослеОбработкиВыгрузки - Произвольный -
-//     * ЕстьОбработчикПередВыгрузкой - Булево -
-//     * ЕстьОбработчикПриВыгрузке - Булево -
-//     * ЕстьОбработчикПослеВыгрузки - Булево -
-//     * ЕстьОбработчикПередОбработкойВыгрузки - Булево -
-//     * ЕстьОбработчикПослеОбработкиВыгрузки - Булево -
-//     * ПриводитьКДлине - Число -
-//     * ИмяПараметраДляПередачи - Строка -
-//     * ПоискПоДатеНаРавенство - Булево -
-//     * ВыгружатьГруппуЧерезФайл - Булево -
-//     * СтрокаПолейПоиска - Произвольный -
+// Returns:
+//   ValueTable - Data property conversion rules collection:
+//     * Name - String -
+//     * Description - String - 
+//     * Order - Number -
+//     * IsGroup - Boolean -
+//     * IsSearchField - Boolean -
+//     * GroupRules - see PropertyConversionRulesCollection
+//     * GroupDisabledRules - Arbitrary -
+//     * SourceKind - Arbitrary -
+//     * DestinationKind - Arbitrary -
+//     * SimplifiedPropertyExport - Boolean -
+//     * XMLNodeRequiredOnExport - Boolean -
+//     * XMLNodeRequiredOnExportGroup - Boolean -
+//     * SourceType - String -
+//     * DestinationType - String -
+//     * Source - Arbitrary -
+//     * Destination - Arbitrary -
+//     * ConversionRule - Arbitrary -
+//     * GetFromIncomingData - Boolean -
+//     * DoNotReplace - Boolean -
+//     * IsRequiredProperty - Boolean -
+//     * BeforeExport - Arbitrary -
+//     * BeforeExportHandlerName - Arbitrary -
+//     * OnExport - Arbitrary -
+//     * OnExportHandlerName - Arbitrary -
+//     * AfterExport - Arbitrary -
+//     * AfterExportHandlerName - Arbitrary -
+//     * BeforeProcessExport - Arbitrary -
+//     * BeforeProcessExportHandlerName - Arbitrary -
+//     * AfterProcessExport - Arbitrary -
+//     * AfterProcessExportHandlerName - Arbitrary -
+//     * HasBeforeExportHandler - Boolean -
+//     * HasOnExportHandler - Boolean -
+//     * HasAfterExportHandler - Boolean -
+//     * HasBeforeProcessExportHandler - Boolean -
+//     * HasAfterProcessExportHandler - Boolean -
+//     * CastToLength - Number -
+//     * ParameterForTransferName - String -
+//     * SearchByEqualDate - Boolean -
+//     * ExportGroupToFile - Boolean -
+//     * SearchFieldsString - Arbitrary -
 // 
-Функция КоллекцияПравилаКонвертацииСвойств()
+Function PropertyConversionRulesCollection()
 
-	Возврат mPropertyConversionRulesTable;
+	Return mPropertyConversionRulesTable;
 
-КонецФункции
+EndFunction
 
-// Возвращаемое значение:
-//   ТаблицаЗначений - стек выгрузки:
-//     * Ссылка - ЛюбаяСсылка - ссылка на выгружаемый объект.
+// Returns:
+//   ValueTable - an export stack:
+//     * Ref - AnyRef - a reference to the exported object.
 //
-Функция DataExportCallStackCollection()
+Function DataExportCallStackCollection()
 
-	Возврат мСтекВызововВыгрузкиДанных;
+	Return mDataExportCallStack;
 
-КонецФункции
+EndFunction
 
-// Возвращаемое значение:
-//   Структура - структура правил:
-//     * ExportRulesTable - см. КоллекцияПравилаВыгрузки
-//     * ConversionRulesTable - см. КоллекцияПравилаКонвертации
-//     * Алгоритмы - Структура -
-//     * Запросы - Структура -
-//     * Конвертация - Произвольный -
-//     * mXMLRules - Произвольный -
-//     * ParametersSettingsTable - ТаблицаЗначений -
-//     * Parameters - Структура -
-//     * ВерсияПлатформыПриемника - Строка -
+// Returns:
+//   Structure - a rules structure:
+//     * ExportRulesTable - see ExportRulesCollection
+//     * ConversionRulesTable - see ConversionRulesCollection
+//     * Algorythms - Structure -
+//     * Queries - Structure -
+//     * Conversion - Arbitrary -
+//     * mXMLRules - Arbitrary -
+//     * ParametersSettingsTable - ValueTable -
+//     * Parameters - Structure -
+//     * DestinationPlatformVersion - String -
 //
-Функция RulesStructureDetails()
+Function RulesStructureDetails()
 
-	СтруктураПравил = Новый Структура;
+	RulesStructure = New Structure;
 
-	СтруктураПравил.Вставить("ExportRulesTable");
-	СтруктураПравил.Вставить("ConversionRulesTable");
-	СтруктураПравил.Вставить("Алгоритмы");
-	СтруктураПравил.Вставить("Запросы");
-	СтруктураПравил.Вставить("Конвертация");
-	СтруктураПравил.Вставить("mXMLRules");
-	СтруктураПравил.Вставить("ParametersSettingsTable");
-	СтруктураПравил.Вставить("Parameters");
+	RulesStructure.Insert("ExportRulesTable");
+	RulesStructure.Insert("ConversionRulesTable");
+	RulesStructure.Insert("Algorythms");
+	RulesStructure.Insert("Queries");
+	RulesStructure.Insert("Conversion");
+	RulesStructure.Insert("mXMLRules");
+	RulesStructure.Insert("ParametersSettingsTable");
+	RulesStructure.Insert("Parameters");
 
-	СтруктураПравил.Вставить("ВерсияПлатформыПриемника");
+	RulesStructure.Insert("DestinationPlatformVersion");
 
-	Возврат СтруктураПравил;
+	Return RulesStructure;
 
-КонецФункции
+EndFunction
 
-#КонецОбласти
+#EndRegion
 
-#Область ПроцедурыЗагрузкиПравилОбмена
+#Region ExchangeRulesImportProcedures
 
-// Осуществляет загрузку правила конвертации группы свойств.
+// Imports the property group conversion rule.
 //
 // Parameters:
-//   ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//   ТаблицаСвойств - см. КоллекцияПравилаКонвертацииСвойств
+//  ExchangeRules - XMLReader object.
+//  PropertiesTable - see PropertyConversionRulesCollection
 //
-Процедура ЗагрузитьПКГС(ПравилаОбмена, ТаблицаСвойств)
+Procedure ImportPGCR(ExchangeRules, PropertiesTable)
 
-	Если одАтрибут(ПравилаОбмена, одТипБулево, "Отключить") Тогда
-		одПропустить(ПравилаОбмена);
-		Возврат;
-	КонецЕсли;
+	If deAttribute(ExchangeRules, deBooleanType, "Disable") Then
+		deSkip(ExchangeRules);
+		Return;
+	EndIf;
 
-	НоваяСтрока               = ТаблицаСвойств.Добавить();
-	НоваяСтрока.ЭтоГруппа     = Истина;
-	НоваяСтрока.ПравилаГруппы = КоллекцияПравилаКонвертацииСвойств().Скопировать();
 	
-	// Значения по умолчанию
+	NewRow               = PropertiesTable.Add();
+	NewRow.IsGroup     = True;
+	NewRow.GroupRules = PropertyConversionRulesCollection().Copy();
+	
+	// Default values
 
-	НоваяСтрока.НеЗамещать               = Ложь;
-	НоваяСтрока.ПолучитьИзВходящихДанных = Ложь;
-	НоваяСтрока.УпрощеннаяВыгрузкаСвойства = Ложь;
+	NewRow.DoNotReplace               = False;
+	NewRow.GetFromIncomingData = False;
+	NewRow.SimplifiedPropertyExport = False;
+	
+	SearchFieldsString = "";
 
-	СтрокаПолейПоиска = "";
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Source" Then
+			NewRow.Source		= deAttribute(ExchangeRules, deStringType, "Name");
+			NewRow.SourceKind	= deAttribute(ExchangeRules, deStringType, "Kind");
+			NewRow.SourceType	= deAttribute(ExchangeRules, deStringType, "Type");
+			deSkip(ExchangeRules);
+			
+		ElsIf NodeName = "Destination" Then
+			NewRow.Destination		= deAttribute(ExchangeRules, deStringType, "Name");
+			NewRow.DestinationKind	= deAttribute(ExchangeRules, deStringType, "Kind");
+			NewRow.DestinationType	= deAttribute(ExchangeRules, deStringType, "Type");
+			deSkip(ExchangeRules);
 
-	Пока ПравилаОбмена.Прочитать() Цикл
+		ElsIf NodeName = "Property" Then
+			ImportPCR(ExchangeRules, NewRow.GroupRules, , SearchFieldsString);
 
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
+		ElsIf NodeName = "BeforeProcessExport" Then
+			NewRow.BeforeProcessExport	= GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasBeforeProcessExportHandler = Not IsBlankString(NewRow.BeforeProcessExport);
+			
+		ElsIf NodeName = "AfterProcessExport" Then
+			NewRow.AfterProcessExport	= GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasAfterProcessExportHandler = Not IsBlankString(NewRow.AfterProcessExport);
+			
+		ElsIf NodeName = "Code" Then
+			NewRow.Name = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "Description" Then
+			NewRow.Description = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "Order" Then
+			NewRow.Order = deElementValue(ExchangeRules, deNumberType);
+			
+		ElsIf NodeName = "DoNotReplace" Then
+			NewRow.DoNotReplace = deElementValue(ExchangeRules, deBooleanType);
 
-		Если ИмяУзла = "Источник" Тогда
-			НоваяСтрока.Источник		= одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
-			НоваяСтрока.ВидИсточника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Вид");
-			НоваяСтрока.ТипИсточника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Тип");
-			одПропустить(ПравилаОбмена);
+		ElsIf NodeName = "ConversionRuleCode" Then
+			NewRow.ConversionRule = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "BeforeExport" Then
+			NewRow.BeforeExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasBeforeExportHandler = Not IsBlankString(NewRow.BeforeExport);
+			
+		ElsIf NodeName = "OnExport" Then
+			NewRow.OnExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasOnExportHandler    = Not IsBlankString(NewRow.OnExport);
+			
+		ElsIf NodeName = "AfterExport" Then
+			NewRow.AfterExport = GetHandlerValueFromText(ExchangeRules);
+	        NewRow.HasAfterExportHandler  = Not IsBlankString(NewRow.AfterExport);
+			
+		ElsIf NodeName = "ExportGroupToFile" Then
+			NewRow.ExportGroupToFile = deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf NodeName = "GetFromIncomingData" Then
+			NewRow.GetFromIncomingData = deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf (NodeName = "Group") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
+	
+	NewRow.SearchFieldsString = SearchFieldsString;
+	
+	NewRow.XMLNodeRequiredOnExport = NewRow.HasOnExportHandler Or NewRow.HasAfterExportHandler;
+	
+	NewRow.XMLNodeRequiredOnExportGroup = NewRow.HasAfterProcessExportHandler; 
 
-		ИначеЕсли ИмяУзла = "Приемник" Тогда
-			НоваяСтрока.Приемник		= одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
-			НоваяСтрока.ВидПриемника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Вид");
-			НоваяСтрока.ТипПриемника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Тип");
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "Свойство" Тогда
-			ЗагрузитьПКС(ПравилаОбмена, НоваяСтрока.ПравилаГруппы, , СтрокаПолейПоиска);
-
-		ИначеЕсли ИмяУзла = "ПередОбработкойВыгрузки" Тогда
-			НоваяСтрока.ПередОбработкойВыгрузки	= ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПередОбработкойВыгрузки = Не ПустаяСтрока(НоваяСтрока.ПередОбработкойВыгрузки);
-
-		ИначеЕсли ИмяУзла = "ПослеОбработкиВыгрузки" Тогда
-			НоваяСтрока.ПослеОбработкиВыгрузки	= ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПослеОбработкиВыгрузки = Не ПустаяСтрока(НоваяСтрока.ПослеОбработкиВыгрузки);
-
-		ИначеЕсли ИмяУзла = "Код" Тогда
-			НоваяСтрока.Имя = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-			НоваяСтрока.Наименование = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Порядок" Тогда
-			НоваяСтрока.Порядок = одЗначениеЭлемента(ПравилаОбмена, одТипЧисло);
-
-		ИначеЕсли ИмяУзла = "НеЗамещать" Тогда
-			НоваяСтрока.НеЗамещать = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "КодПравилаКонвертации" Тогда
-			НоваяСтрока.ПравилоКонвертации = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "ПередВыгрузкой" Тогда
-			НоваяСтрока.ПередВыгрузкой = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПередВыгрузкой = Не ПустаяСтрока(НоваяСтрока.ПередВыгрузкой);
-
-		ИначеЕсли ИмяУзла = "ПриВыгрузке" Тогда
-			НоваяСтрока.ПриВыгрузке = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПриВыгрузке    = Не ПустаяСтрока(НоваяСтрока.ПриВыгрузке);
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузки" Тогда
-			НоваяСтрока.ПослеВыгрузки = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПослеВыгрузки  = Не ПустаяСтрока(НоваяСтрока.ПослеВыгрузки);
-
-		ИначеЕсли ИмяУзла = "ВыгружатьГруппуЧерезФайл" Тогда
-			НоваяСтрока.ВыгружатьГруппуЧерезФайл = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "ПолучитьИзВходящихДанных" Тогда
-			НоваяСтрока.ПолучитьИзВходящихДанных = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли (ИмяУзла = "Группа") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	НоваяСтрока.СтрокаПолейПоиска = СтрокаПолейПоиска;
-
-	НоваяСтрока.НуженУзелXMLПриВыгрузке = НоваяСтрока.ЕстьОбработчикПриВыгрузке
-		Или НоваяСтрока.ЕстьОбработчикПослеВыгрузки;
-
-	НоваяСтрока.НуженУзелXMLПриВыгрузкеГруппы = НоваяСтрока.ЕстьОбработчикПослеОбработкиВыгрузки;
-
-КонецПроцедуры
+EndProcedure
 
 Процедура ДобавитьПолеКСтрокеПоиска(СтрокаПолейПоиска, ИмяПоля)
 
@@ -3687,7 +3684,7 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 
 	ЗаписьXML.ЗаписатьНачалоЭлемента("Правило");
 
-	НоваяСтрока = КоллекцияПравилаКонвертации().Добавить();
+	НоваяСтрока = ConversionRulesCollection().Добавить();
 	
 	// Значения по умолчанию
 
@@ -5749,7 +5746,7 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 // Дополняет коллекцию значений правил конвертации объектов интерфейсами обработчиков.
 //
 // Parameters:
-//  ТаблицаПКО - см. КоллекцияПравилаКонвертации
+//  ТаблицаПКО - см. ConversionRulesCollection
 //  
 Процедура ДополнитьИнтерфейсамиОбработчиковПравилаКонвертацииОбъектов(ТаблицаПКО)
 
@@ -5928,7 +5925,7 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 
 	Если ExchangeMode = "Выгрузка" Тогда
 
-		Для Каждого СтрокаТаблицы Из КоллекцияПравилаКонвертации() Цикл
+		Для Каждого СтрокаТаблицы Из ConversionRulesCollection() Цикл
 			Правила.Вставить(СтрокаТаблицы.Имя, СтрокаТаблицы);
 
 			Источник = СтрокаТаблицы.Источник;
@@ -13318,7 +13315,7 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 				СоответствиеУзловИПравилВыгрузки = Новый Соответствие;
 				СтруктураДляУдаленияРегистрацииИзменений = Новый Соответствие;
 
-				ОбработатьПравилаВыгрузки(КоллекцияПравилаВыгрузки().Строки, СоответствиеУзловИПравилВыгрузки);
+				ОбработатьПравилаВыгрузки(ExportRulesCollection().Строки, СоответствиеУзловИПравилВыгрузки);
 
 				УдачноВыгруженоПоПланамОбмена = ОбработатьВыгрузкуДляПлановОбмена(СоответствиеУзловИПравилВыгрузки,
 					СтруктураДляУдаленияРегистрацииИзменений);
@@ -14034,7 +14031,7 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 
 	XMLWriterAdvancedMonitoring = Ложь;
 	DirectReadFromDestinationIB = Ложь;
-	DontShowInfoMessagesToUser = Ложь;
+	DoNotShowInfoMessagesToUser = Ложь;
 
 	Менеджеры    = Неопределено;
 	одСообщения  = Неопределено;

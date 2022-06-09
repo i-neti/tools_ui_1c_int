@@ -6890,10 +6890,10 @@
       <segments>Объект.AutomaticDataImportSettings</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DontShowInfoMessagesToUser</segments>
+      <segments>Объект.DoNotShowInfoMessagesToUser</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DontRequestDataImportConfirmationOnOpenDataProcessor</segments>
+      <segments>Объект.DoNotRequestDataImportConfirmationOnOpenDataProcessor</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
       <segments>Объект.DirectReadFromDestinationIB</segments>
