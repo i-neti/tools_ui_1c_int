@@ -1077,7 +1077,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="619253bc-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>DontShowInfoMessagesToUser</name>
+    <name>DoNotShowInfoMessagesToUser</name>
     <synonym>
       <key>en</key>
       <value>Do not show any informational messages to users</value>
@@ -1101,7 +1101,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="619254f2-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>DontRequestDataImportConfirmationOnOpenDataProcessor</name>
+    <name>DoNotRequestDataImportConfirmationOnOpenDataProcessor</name>
     <synonym>
       <key>en</key>
       <value>Do not ask for confirmation when importing data on opening the data processor</value>
