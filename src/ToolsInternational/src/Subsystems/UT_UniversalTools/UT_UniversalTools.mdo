@@ -79,7 +79,7 @@
   <content>DataProcessor.UT_SettingsStoragesManager</content>
   <content>DataProcessor.UT_JSONEditor</content>
   <content>DataProcessor.UT_HTMLEditor</content>
-  <content>DataProcessor.UT_UniversalXMLDataExchange</content>
+  <content>DataProcessor.UT_UniversalDataExchangeXML</content>
   <content>CommonModule.UT_RegexpsClientServer</content>
   <content>CommonModule.UT_CodeEditorServer</content>
   <content>CommonModule.UT_CodeEditorClient</content>
