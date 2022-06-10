@@ -160,7 +160,7 @@
   <dataProcessors>DataProcessor.UT_RegisterChangesForDataExchange</dataProcessors>
   <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
   <dataProcessors>DataProcessor.UT_Support</dataProcessors>
-  <dataProcessors>DataProcessor.UT_UniversalXMLDataExchange</dataProcessors>
+  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
   <dataProcessors>DataProcessor.УИ_ДанныеДляОтладки</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>

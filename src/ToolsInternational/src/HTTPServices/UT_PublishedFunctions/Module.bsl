@@ -92,7 +92,7 @@ Function DataTransferSendFileAndUpload(Request)
 
 		UploadLogFileName=GetTempFileName("txt");
 
-		Processing = DataProcessors.UT_UniversalXMLDataExchange.Create();
+		Processing = DataProcessors.UT_UniversalDataExchangeXML.Create();
 		Processing.ExchangeMode = "Load";
 		Processing.ExchangeFileName = FileName;
 		Processing.ExchangeProtocolFileName=UploadLogFileName;

@@ -106,7 +106,7 @@ Var mExchangeRuleTemplateList Export;
 
 Var mExportedObjectCounter Export;   // Number - counter of exported objects.
 Var mSnCounter Export;   // Number - an sequence number counter.
-Var mPropertyConversionRuleTable;      // ValueTable - a template for restoring the table structure by copying.
+Var mPropertyConversionRulesTable;      // ValueTable - a template for restoring the table structure by copying.
                                              //                   
 Var mXMLRules;                           // XML string that contains exchange rule description.
 Var mTypesForDestinationRow;
@@ -128,7 +128,7 @@ Var ImportedObjectToStoreCount Export;  // Number of stored imported objects. If
 Var RememberImportedObjects Export;
 
 Var mExtendedSearchParameterMap;
-Var mConversionRuleMap; // Map to define an object conversion rule by this object type.
+Var mConversionRulesMap; // Map to define an object conversion rule by this object type.
 
 Var mDataImportDataProcessor Export;
 
@@ -1595,7 +1595,7 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 		
 	EndIf;
 
-	IsRuleWithGlobalObjectExport = ExecuteDataExchangeInOptimizedFormat AND OCR.UseQuickSearchOnImport;
+	IsRuleWithGlobalObjectExport = ExecuteDataExchangeInOptimizedFormat And OCR.UseQuickSearchOnImport;
 
 	RememberExported       = OCR.RememberExported;
 	ExportedObjects          = OCR.Exported;
@@ -3176,9 +3176,9 @@ EndFunction
 //     * SynchronizeByID - Boolean -
 //     * НеСоздаватьЕслиНеНайден - Boolean -
 //     * DontExportPropertyObjectsByRefs - Boolean -
-//     * ContinueSearchBySearchFieldsIfDidNotFindByID - Boolean -
+//     * SearchBySearchFieldsIfNotFoundByID - Boolean -
 //     * OnMoveObjectByRefSetGIUDOnly - Boolean -
-//     * UseFastSearchOnImport - Boolean -
+//     * UseQuickSearchOnImport - Boolean -
 //     * GenerateNewNumberOrCodeIfNotSet - Boolean -
 //     * ObjectsSmallCount - Boolean -
 //     * RefExportRequestsCount - Number -
@@ -3225,7 +3225,7 @@ EndFunction
 //     * Name - String -
 //     * Description - String -
 //     * Order - Number -
-//     * DataSelectionMethod - Arbitrary -
+//     * DataFilterMethod - Arbitrary -
 //     * SelectionObject - Arbitrary -
 //     * ConversionRule - Arbitrary -
 //     * BeforeProcess - String -
@@ -3454,838 +3454,834 @@ Procedure ImportPGCR(ExchangeRules, PropertiesTable)
 
 EndProcedure
 
-Процедура ДобавитьПолеКСтрокеПоиска(СтрокаПолейПоиска, ИмяПоля)
+Procedure AddFieldToSearchString(SearchFieldsString, FieldName)
+	
+	If IsBlankString(FieldName) Then
+		Return;
+	EndIf;
+	
+	If Not IsBlankString(SearchFieldsString) Then
+		SearchFieldsString = SearchFieldsString + ",";
+	EndIf;
+	
+	SearchFieldsString = SearchFieldsString + FieldName;
+	
+EndProcedure
 
-	Если ПустаяСтрока(ИмяПоля) Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если Не ПустаяСтрока(СтрокаПолейПоиска) Тогда
-		СтрокаПолейПоиска = СтрокаПолейПоиска + ",";
-	КонецЕсли;
-
-	СтрокаПолейПоиска = СтрокаПолейПоиска + ИмяПоля;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правила конвертации свойств.
+// Imports the property conversion rule.
 //
 // Parameters:
-//  ПравилаОбмена  - ЧтениеXML - объект, содержащий текст правил обмена.
-//  ТаблицаСвойств - см. КоллекцияПравилаКонвертацииСвойств
-//  ТаблицаПоиска - см. КоллекцияПравилаКонвертацииСвойств
+//  ExchangeRules - XMLReader object.
+//  PropertiesTable - see PropertyConversionRulesCollection
+//  SearchTable - see PropertyConversionRulesCollection
 //
-Процедура ЗагрузитьПКС(ПравилаОбмена, ТаблицаСвойств, ТаблицаПоиска = Неопределено, СтрокаПолейПоиска = "")
+Procedure ImportPCR(ExchangeRules, PropertiesTable, SearchTable = Undefined, SearchFieldsString = "")
 
-	Если одАтрибут(ПравилаОбмена, одТипБулево, "Отключить") Тогда
-		одПропустить(ПравилаОбмена);
-		Возврат;
-	КонецЕсли;
-	ЭтоПолеПоиска = одАтрибут(ПравилаОбмена, одТипБулево, "Поиск");
-
-	Если ЭтоПолеПоиска И ТаблицаПоиска <> Неопределено Тогда
-
-		НоваяСтрока = ТаблицаПоиска.Добавить();
-
-	Иначе
-
-		НоваяСтрока = ТаблицаСвойств.Добавить();
-
-	КонецЕсли;  
-
+	If deAttribute(ExchangeRules, deBooleanType, "Disable") Then
+		deSkip(ExchangeRules);
+		Return;
+	EndIf;
+	IsSearchField = deAttribute(ExchangeRules, deBooleanType, "Search");
 	
-	// Значения по умолчанию
-
-	НоваяСтрока.НеЗамещать               = Ложь;
-	НоваяСтрока.ПолучитьИзВходящихДанных = Ложь;
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Источник" Тогда
-			НоваяСтрока.Источник		= одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
-			НоваяСтрока.ВидИсточника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Вид");
-			НоваяСтрока.ТипИсточника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Тип");
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "Приемник" Тогда
-			НоваяСтрока.Приемник		= одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
-			НоваяСтрока.ВидПриемника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Вид");
-			НоваяСтрока.ТипПриемника	= одАтрибут(ПравилаОбмена, одТипСтрока, "Тип");
-
-			Если ЭтоПолеПоиска Тогда
-				ДобавитьПолеКСтрокеПоиска(СтрокаПолейПоиска, НоваяСтрока.Приемник);
-			КонецЕсли;
-
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "Код" Тогда
-			НоваяСтрока.Имя = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-			НоваяСтрока.Наименование = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Порядок" Тогда
-			НоваяСтрока.Порядок = одЗначениеЭлемента(ПравилаОбмена, одТипЧисло);
-
-		ИначеЕсли ИмяУзла = "НеЗамещать" Тогда
-			НоваяСтрока.НеЗамещать = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "КодПравилаКонвертации" Тогда
-			НоваяСтрока.ПравилоКонвертации = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "ПередВыгрузкой" Тогда
-			НоваяСтрока.ПередВыгрузкой = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПередВыгрузкой = Не ПустаяСтрока(НоваяСтрока.ПередВыгрузкой);
-
-		ИначеЕсли ИмяУзла = "ПриВыгрузке" Тогда
-			НоваяСтрока.ПриВыгрузке = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПриВыгрузке    = Не ПустаяСтрока(НоваяСтрока.ПриВыгрузке);
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузки" Тогда
-			НоваяСтрока.ПослеВыгрузки = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПослеВыгрузки  = Не ПустаяСтрока(НоваяСтрока.ПослеВыгрузки);
-
-		ИначеЕсли ИмяУзла = "ПолучитьИзВходящихДанных" Тогда
-			НоваяСтрока.ПолучитьИзВходящихДанных = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "ПриводитьКДлине" Тогда
-			НоваяСтрока.ПриводитьКДлине = одЗначениеЭлемента(ПравилаОбмена, одТипЧисло);
-
-		ИначеЕсли ИмяУзла = "ИмяПараметраДляПередачи" Тогда
-			НоваяСтрока.ИмяПараметраДляПередачи = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "ПоискПоДатеНаРавенство" Тогда
-			НоваяСтрока.ПоискПоДатеНаРавенство = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли (ИмяУзла = "Свойство") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	НоваяСтрока.УпрощеннаяВыгрузкаСвойства = Не НоваяСтрока.ПолучитьИзВходящихДанных И Не НоваяСтрока.ЕстьОбработчикПередВыгрузкой
-		И Не НоваяСтрока.ЕстьОбработчикПриВыгрузке И Не НоваяСтрока.ЕстьОбработчикПослеВыгрузки И ПустаяСтрока(
-		НоваяСтрока.ПравилоКонвертации) И НоваяСтрока.ТипИсточника = НоваяСтрока.ТипПриемника
-		И (НоваяСтрока.ТипИсточника = "Строка" Или НоваяСтрока.ТипИсточника = "Число" Или НоваяСтрока.ТипИсточника
-		= "Булево" Или НоваяСтрока.ТипИсточника = "Дата");
-
-	НоваяСтрока.НуженУзелXMLПриВыгрузке = НоваяСтрока.ЕстьОбработчикПриВыгрузке
-		Или НоваяСтрока.ЕстьОбработчикПослеВыгрузки;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правил конвертации свойств.
-//
-// Параметры:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ТаблицаСвойств - ТаблицаЗначений - таблица значений, содержащая ПКС.
-//  ТаблицаПоиска  - ТаблицаЗначений - таблица значений, содержащая ПКС (синхронизирующих).
-//
-Процедура ЗагрузитьСвойства(ПравилаОбмена, ТаблицаСвойств, ТаблицаПоиска)
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Свойство" Тогда
-			ЗагрузитьПКС(ПравилаОбмена, ТаблицаСвойств, ТаблицаПоиска);
-		ИначеЕсли ИмяУзла = "Группа" Тогда
-			ЗагрузитьПКГС(ПравилаОбмена, ТаблицаСвойств);
-		ИначеЕсли (ИмяУзла = "Свойства") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	ТаблицаСвойств.Сортировать("Порядок");
-	ТаблицаПоиска.Сортировать("Порядок");
-
-КонецПроцедуры
-
-// Осуществляет загрузку правила конвертации значений.
-//
-// Параметры:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  Значения       - соответствие значений объекта источника - строковым
-//                   представлениям объекта приемника.
-//  ТипИсточника   - значение Тип - типа Тип - тип объекта источника.
-//
-Процедура ЗагрузитьПКЗ(ПравилаОбмена, Значения, ТипИсточника)
-
-	Источник = "";
-	Приемник = "";
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Источник" Тогда
-			Источник = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-		ИначеЕсли ИмяУзла = "Приемник" Тогда
-			Приемник = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-		ИначеЕсли (ИмяУзла = "Значение") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если ExchangeMode <> "Загрузка" Тогда
-		Значения[одПолучитьЗначениеПоСтроке(Источник, ТипИсточника)] = Приемник;
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правил конвертации значений.
-//
-// Параметры:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  Значения       - соответствие значений объекта источника - строковым
-//                   представлениям объекта приемника.
-//  ТипИсточника   - значение Тип - типа Тип - тип объекта источника.
-//
-Процедура ЗагрузитьЗначения(ПравилаОбмена, Значения, ТипИсточника)
-	;
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Значение" Тогда
-			ЗагрузитьПКЗ(ПравилаОбмена, Значения, ТипИсточника);
-		ИначеЕсли (ИмяУзла = "Значения") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Процедура очистки ПКо у менеджеров для правил обмена.
-Процедура ОчиститьПКОМенеджеров()
-
-	Если Менеджеры = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	Для Каждого МенеджерПравила Из Менеджеры Цикл
-		МенеджерПравила.Значение.ПКО = Неопределено;
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правила конвертации объектов.
-//
-// Параметры:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
-//
-Процедура ЗагрузитьПравилоКонвертации(ПравилаОбмена, ЗаписьXML)
-
-	ЗаписьXML.ЗаписатьНачалоЭлемента("Правило");
-
-	НоваяСтрока = ConversionRulesCollection().Добавить();
-	
-	// Значения по умолчанию
-
-	НоваяСтрока.ЗапоминатьВыгруженные = Истина;
-	НоваяСтрока.НеЗамещать            = Ложь;
-
-	ТаблицаПоискПоТЧ = КоллекцияПоискПоТабличнымЧастям();
-	НоваяСтрока.ПоискПоТабличнымЧастям = ТаблицаПоискПоТЧ;
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Код" Тогда
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-			НоваяСтрока.Имя = Значение;
-
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-
-			НоваяСтрока.Наименование = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "СинхронизироватьПоИдентификатору" Тогда
-
-			НоваяСтрока.СинхронизироватьПоИдентификатору = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, НоваяСтрока.СинхронизироватьПоИдентификатору);
-
-		ИначеЕсли ИмяУзла = "НеСоздаватьЕслиНеНайден" Тогда
-
-			НоваяСтрока.НеСоздаватьЕслиНеНайден = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "НеВыгружатьОбъектыСвойствПоСсылкам" Тогда
-
-			НоваяСтрока.НеВыгружатьОбъектыСвойствПоСсылкам = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли" Тогда
-
-			НоваяСтрока.ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли = одЗначениеЭлемента(ПравилаОбмена,
-				одТипБулево);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, НоваяСтрока.ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли);
-
-		ИначеЕсли ИмяУзла = "ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD" Тогда
-
-			НоваяСтрока.ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD = одЗначениеЭлемента(ПравилаОбмена,
-				одТипБулево);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, НоваяСтрока.ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD);
-
-		ИначеЕсли ИмяУзла = "НеЗамещатьОбъектСозданныйВИнформационнойБазеПриемнике" Тогда
-			// не влияет на обмен
-			одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "ИспользоватьБыстрыйПоискПриЗагрузке" Тогда
-
-			НоваяСтрока.ИспользоватьБыстрыйПоискПриЗагрузке = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "ГенерироватьНовыйНомерИлиКодЕслиНеУказан" Тогда
-
-			НоваяСтрока.ГенерироватьНовыйНомерИлиКодЕслиНеУказан = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, НоваяСтрока.ГенерироватьНовыйНомерИлиКодЕслиНеУказан);
-
-		ИначеЕсли ИмяУзла = "НеЗапоминатьВыгруженные" Тогда
-
-			НоваяСтрока.ЗапоминатьВыгруженные = Не одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-
-		ИначеЕсли ИмяУзла = "НеЗамещать" Тогда
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-			НоваяСтрока.НеЗамещать = Значение;
-
-		ИначеЕсли ИмяУзла = "ПриоритетОбъектовОбмена" Тогда
-			
-			// В универсальном обмене не участвует.
-			одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Приемник" Тогда
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-			НоваяСтрока.Приемник = Значение;
-
-		ИначеЕсли ИмяУзла = "Источник" Тогда
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				НоваяСтрока.Источник = Значение;
-
-			Иначе
-
-				Если Не ПустаяСтрока(Значение) Тогда
-
-					НоваяСтрока.ТипИсточника = Значение;
-					НоваяСтрока.Источник     = Тип(Значение);
-
-					Попытка
-
-						Менеджеры[НоваяСтрока.Источник].ПКО = НоваяСтрока;
-
-					Исключение
-
-						ЗаписатьИнформациюОбОшибкеВПротокол(11, ОписаниеОшибки(), Строка(НоваяСтрока.Источник));
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-			КонецЕсли;
-			
-		// Свойства
-
-		ИначеЕсли ИмяУзла = "Свойства" Тогда
-
-			НоваяСтрока.СвойстваПоиска	= mPropertyConversionRulesTable.Скопировать();
-			НоваяСтрока.Свойства		= mPropertyConversionRulesTable.Скопировать();
-			Если НоваяСтрока.СинхронизироватьПоИдентификатору <> Неопределено
-				И НоваяСтрока.СинхронизироватьПоИдентификатору Тогда
-
-				СвойствоПоискаУИ = НоваяСтрока.СвойстваПоиска.Добавить();
-				СвойствоПоискаУИ.Имя = "{УникальныйИдентификатор}";
-				СвойствоПоискаУИ.Источник = "{УникальныйИдентификатор}";
-				СвойствоПоискаУИ.Приемник = "{УникальныйИдентификатор}";
-
-			КонецЕсли;
-
-			ЗагрузитьСвойства(ПравилаОбмена, НоваяСтрока.Свойства, НоваяСтрока.СвойстваПоиска);
-
-			
-		// Значения
-
-		ИначеЕсли ИмяУзла = "Значения" Тогда
-
-			ЗагрузитьЗначения(ПравилаОбмена, НоваяСтрока.Значения, НоваяСтрока.Источник);
+	If IsSearchField And SearchTable <> Undefined Then
 		
-		// Обработчики событий
+		NewRow = SearchTable.Add();
+		
+	Else
+		
+		NewRow = PropertiesTable.Add();
+		
+	EndIf;  
 
-		ИначеЕсли ИмяУзла = "ПередВыгрузкой" Тогда
+	
+	// Default values
 
-			НоваяСтрока.ПередВыгрузкой = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПередВыгрузкой = Не ПустаяСтрока(НоваяСтрока.ПередВыгрузкой);
-
-		ИначеЕсли ИмяУзла = "ПриВыгрузке" Тогда
-
-			НоваяСтрока.ПриВыгрузке = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПриВыгрузке    = Не ПустаяСтрока(НоваяСтрока.ПриВыгрузке);
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузки" Тогда
-
-			НоваяСтрока.ПослеВыгрузки = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПослеВыгрузки  = Не ПустаяСтрока(НоваяСтрока.ПослеВыгрузки);
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузкиВФайл" Тогда
-
-			НоваяСтрока.ПослеВыгрузкиВФайл = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			НоваяСтрока.ЕстьОбработчикПослеВыгрузкиВФайл  = Не ПустаяСтрока(НоваяСтрока.ПослеВыгрузкиВФайл);
+	NewRow.DoNotReplace               = False;
+	NewRow.GetFromIncomingData = False;
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Source" Then
+			NewRow.Source		= deAttribute(ExchangeRules, deStringType, "Name");
+			NewRow.SourceKind	= deAttribute(ExchangeRules, deStringType, "Kind");
+			NewRow.SourceType	= deAttribute(ExchangeRules, deStringType, "Type");
+			deSkip(ExchangeRules);
 			
-		// Для загрузки
+		ElsIf NodeName = "Destination" Then
+			NewRow.Destination		= deAttribute(ExchangeRules, deStringType, "Name");
+			NewRow.DestinationKind	= deAttribute(ExchangeRules, deStringType, "Kind");
+			NewRow.DestinationType	= deAttribute(ExchangeRules, deStringType, "Type");
+			
+			If IsSearchField Then
+				AddFieldToSearchString(SearchFieldsString, NewRow.Destination);
+			EndIf;
+			
+			deSkip(ExchangeRules);
 
-		ИначеЕсли ИмяУзла = "ПередЗагрузкой" Тогда
+		ElsIf NodeName = "Code" Then
+			NewRow.Name = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "Description" Then
+			NewRow.Description = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "Order" Then
+			NewRow.Order = deElementValue(ExchangeRules, deNumberType);
+			
+		ElsIf NodeName = "DoNotReplace" Then
+			NewRow.DoNotReplace = deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf NodeName = "ConversionRuleCode" Then
+			NewRow.ConversionRule = deElementValue(ExchangeRules, deStringType);
 
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-			Если ExchangeMode = "Загрузка" Тогда
+		ElsIf NodeName = "BeforeExport" Then
+			NewRow.BeforeExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasBeforeExportHandler = Not IsBlankString(NewRow.BeforeExport);
+			
+		ElsIf NodeName = "OnExport" Then
+			NewRow.OnExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasOnExportHandler    = Not IsBlankString(NewRow.OnExport);
+			
+		ElsIf NodeName = "AfterExport" Then
+			NewRow.AfterExport = GetHandlerValueFromText(ExchangeRules);
+	        NewRow.HasAfterExportHandler  = Not IsBlankString(NewRow.AfterExport);
+			
+		ElsIf NodeName = "GetFromIncomingData" Then
+			NewRow.GetFromIncomingData = deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf NodeName = "CastToLength" Then
+			NewRow.CastToLength = deElementValue(ExchangeRules, deNumberType);
+			
+		ElsIf NodeName = "ParameterForTransferName" Then
+			NewRow.ParameterForTransferName = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "SearchByEqualDate" Then
+			NewRow.SearchByEqualDate = deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf (NodeName = "Property") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
 
-				НоваяСтрока.ПередЗагрузкой               = Значение;
-				НоваяСтрока.ЕстьОбработчикПередЗагрузкой = Не ПустаяСтрока(Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПриЗагрузке" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				НоваяСтрока.ПриЗагрузке               = Значение;
-				НоваяСтрока.ЕстьОбработчикПриЗагрузке = Не ПустаяСтрока(Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПослеЗагрузки" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				НоваяСтрока.ПослеЗагрузки               = Значение;
-				НоваяСтрока.ЕстьОбработчикПослеЗагрузки = Не ПустаяСтрока(Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПоследовательностьПолейПоиска" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			НоваяСтрока.ЕстьОбработчикПоследовательностьПолейПоиска = Не ПустаяСтрока(Значение);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				НоваяСтрока.ПоследовательностьПолейПоиска = Значение;
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПоискПоТабличнымЧастям" Тогда
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-			Для Номер = 1 По СтрЧислоСтрок(Значение) Цикл
-
-				ТекущаяСтрока = СтрПолучитьСтроку(Значение, Номер);
-
-				СтрокаПоиска = ОтделитьРазделителем(ТекущаяСтрока, ":");
-
-				СтрокаТаблицы = ТаблицаПоискПоТЧ.Добавить();
-				СтрокаТаблицы.ИмяЭлемента = ТекущаяСтрока;
-
-				СтрокаТаблицы.ПоляПоискаТЧ = РазложитьСтрокуВМассивПодстрок(СтрокаПоиска);
-
-			КонецЦикла;
-
-		ИначеЕсли (ИмяУзла = "Правило") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	ИтоговаяСтрокаПоискаПоТЧ = "";
+	NewRow.SimplifiedPropertyExport = Not NewRow.GetFromIncomingData And Not NewRow.HasBeforeExportHandler
+		And Not NewRow.HasOnExportHandler And Not NewRow.HasAfterExportHandler
+		And IsBlankString(NewRow.ConversionRule) And NewRow.SourceType = NewRow.DestinationType
+		And (NewRow.SourceType = "String" Or NewRow.SourceType = "Number" Or NewRow.SourceType = "Boolean" Or NewRow.SourceType = "Date");
+		
+	NewRow.XMLNodeRequiredOnExport = NewRow.HasOnExportHandler OR NewRow.HasAfterExportHandler;
 	
-	// В приемник нужно передать информацию о полях поиска для табличных частей.
-	Для Каждого СтрокаСвойств Из НоваяСтрока.Свойства Цикл
+EndProcedure
 
-		Если Не СтрокаСвойств.ЭтоГруппа Или ПустаяСтрока(СтрокаСвойств.ВидИсточника) Или ПустаяСтрока(
-			СтрокаСвойств.Приемник) Тогда
+// Imports property conversion rules.
+//
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  PropertiesTable - ValueTable - a value table containing PCR.
+//  SearchTable  - ValueTable - a value table containing PCR (synchronizing).
+//
+Procedure ImportProperties(ExchangeRules, PropertiesTable, SearchTable)
 
-			Продолжить;
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If      NodeName = "Property" Then
+			ImportPCR(ExchangeRules, PropertiesTable, SearchTable);
+		ElsIf NodeName = "Group" Then
+			ImportPGCR(ExchangeRules, PropertiesTable);
+		ElsIf (NodeName = "Properties") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
 
-		КонецЕсли;
+	PropertiesTable.Sort("Order");
+	SearchTable.Sort("Order");
+	
+EndProcedure
 
-		Если ПустаяСтрока(СтрокаСвойств.СтрокаПолейПоиска) Тогда
-			Продолжить;
-		КонецЕсли;
+// Imports the value conversion rule.
+//
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  Values       - Map - a map of source object values to destination object presentation strings.
+//                   
+//  SourceType   - Type - source object type.
+//
+Procedure ImportVCR(ExchangeRules, Values, SourceType)
 
-		ИтоговаяСтрокаПоискаПоТЧ = ИтоговаяСтрокаПоискаПоТЧ + Символы.ПС + СтрокаСвойств.ВидИсточника + "."
-			+ СтрокаСвойств.Приемник + ":" + СтрокаСвойств.СтрокаПолейПоиска;
+	Source = "";
+	Destination = "";
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Source" Then
+			Source = deElementValue(ExchangeRules, deStringType);
+		ElsIf NodeName = "Destination" Then
+			Destination = deElementValue(ExchangeRules, deStringType);
+		ElsIf (NodeName = "Value") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
+	
+	If ExchangeMode <> "Load" Then
+		Values[deGetValueByString(Source, SourceType)] = Destination;
+	EndIf;
+	
+EndProcedure
 
-	КонецЦикла;
+// Imports value conversion rules.
+//
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  Values       - Map - a map of source object values to destination object presentation strings.
+//                   
+//  SourceType   - Type - source object type.
+//
+Procedure ImportValues(ExchangeRules, Values, SourceType);
 
-	ИтоговаяСтрокаПоискаПоТЧ = СокрЛП(ИтоговаяСтрокаПоискаПоТЧ);
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Value" Then
+			ImportVCR(ExchangeRules, Values, SourceType);
+		ElsIf (NodeName = "Values") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
 
-	Если Не ПустаяСтрока(ИтоговаяСтрокаПоискаПоТЧ) Тогда
+// Clears OCR for exchange rule managers.
+Procedure ClearManagersOCR()
+	
+	If Managers = Undefined Then
+		Return;
+	EndIf;
+	
+	For Each RuleManager In Managers Do
+		RuleManager.Value.OCR = Undefined;
+	EndDo;
+	
+EndProcedure
 
-		одЗаписатьЭлемент(ЗаписьXML, "ПоискПоТабличнымЧастям", ИтоговаяСтрокаПоискаПоТЧ);
+// Imports the object conversion rule.
+//
+// Parameters:
+//  ExchangeRules - XMLReader.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
+//
+Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 
-	КонецЕсли;
+	XMLWriter.WriteStartElement("Rule");
 
-	ЗаписьXML.ЗаписатьКонецЭлемента();
+	NewRow = ConversionRulesCollection().Add();
+	
+	// Default values
+	
+	NewRow.RememberExported = True;
+	NewRow.DoNotReplace            = False;
+
+	SearchInTSTable = SearchInTabularSectionsCollection();
+	NewRow.SearchInTabularSections = SearchInTSTable;
+
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+				
+		If NodeName = "Code" Then
+			
+			Value = deElementValue(ExchangeRules, deStringType);
+			deWriteElement(XMLWriter, NodeName, Value);
+			NewRow.Name = Value;
+			
+		ElsIf NodeName = "Description" Then
+			
+			NewRow.Description = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "SynchronizeByID" Then
+			
+			NewRow.SynchronizeByID = deElementValue(ExchangeRules, deBooleanType);
+			deWriteElement(XMLWriter, NodeName, NewRow.SynchronizeByID);
+			
+		ElsIf NodeName = "DoNotCreateIfNotFound" Then
+			
+			NewRow.DoNotCreateIfNotFound = deElementValue(ExchangeRules, deBooleanType);
+
+		ElsIf NodeName = "DoNotExportPropertyObjectsByRefs" Then
+			
+			NewRow.DoNotExportPropertyObjectsByRefs = deElementValue(ExchangeRules, deBooleanType);
+						
+		ElsIf NodeName = "SearchBySearchFieldsIfNotFoundByID" Then
+			
+			NewRow.SearchBySearchFieldsIfNotFoundByID = deElementValue(ExchangeRules, deBooleanType);	
+			deWriteElement(XMLWriter, NodeName, NewRow.SearchBySearchFieldsIfNotFoundByID);
+			
+		ElsIf NodeName = "OnMoveObjectByRefSetGIUDOnly" Then
+			
+			NewRow.OnMoveObjectByRefSetGIUDOnly = deElementValue(ExchangeRules, deBooleanType);	
+			deWriteElement(XMLWriter, NodeName, NewRow.OnMoveObjectByRefSetGIUDOnly);
+
+		ElsIf NodeName = "DoNotReplaceObjectCreatedInDestinationInfobase" Then
+			// Has no effect on the exchange
+			deElementValue(ExchangeRules, deBooleanType);	
+						
+		ElsIf NodeName = "UseQuickSearchOnImport" Then
+			
+			NewRow.UseQuickSearchOnImport = deElementValue(ExchangeRules, deBooleanType);
+
+		ElsIf NodeName = "GenerateNewNumberOrCodeIfNotSet" Then
+			
+			NewRow.GenerateNewNumberOrCodeIfNotSet = deElementValue(ExchangeRules, deBooleanType);
+			deWriteElement(XMLWriter, NodeName, NewRow.GenerateNewNumberOrCodeIfNotSet);
+			
+		ElsIf NodeName = "DoNotRememberExported" Then
+			
+			NewRow.RememberExported = Not deElementValue(ExchangeRules, deBooleanType);
+			
+		ElsIf NodeName = "DoNotReplace" Then
+			
+			Value = deElementValue(ExchangeRules, deBooleanType);
+			deWriteElement(XMLWriter, NodeName, Value);
+			NewRow.DoNotReplace = Value;
+
+		ElsIf NodeName = "ExchangeObjectsPriority" Then
+			
+			// Does not use in the universal exchange.
+			deElementValue(ExchangeRules, deStringType);
+
+		ElsIf NodeName = "Destination" Then
+			
+			Value = deElementValue(ExchangeRules, deStringType);
+			deWriteElement(XMLWriter, NodeName, Value);
+			NewRow.Destination = Value;
+
+		ElsIf NodeName = "Source" Then
+			
+			Value = deElementValue(ExchangeRules, deStringType);
+			deWriteElement(XMLWriter, NodeName, Value);
+			
+			If ExchangeMode = "Load" Then
+				
+				NewRow.Source	= Value;
+				
+			Else
+				
+				If Not IsBlankString(Value) Then
+					          
+					NewRow.SourceType = Value;
+					NewRow.Source	= Type(Value);
+					
+					Try
+						
+						Managers[NewRow.Source].OCR = NewRow;
+						
+					Except
+						
+						WriteErrorInfoToLog(11, ErrorDescription(), String(NewRow.Source));
+						
+					EndTry; 
+					
+				EndIf;
+				
+			EndIf;
+			
+		// Properties
+		
+		ElsIf NodeName = "Properties" Then
+		
+			NewRow.SearchProperties	= mPropertyConversionRulesTable.Copy();
+			NewRow.Properties		= mPropertyConversionRulesTable.Copy();
+			
+			
+			If NewRow.SynchronizeByID <> Undefined And NewRow.SynchronizeByID Then
+				
+				SearchPropertyUUID = NewRow.SearchProperties.Add();
+				SearchPropertyUUID.Name = "{UUID}";
+				SearchPropertyUUID.Source = "{UUID}";
+				SearchPropertyUUID.Destination = "{UUID}";
+				
+			EndIf;
+			
+			ImportProperties(ExchangeRules, NewRow.Properties, NewRow.SearchProperties);
+
+			
+		// Values
+		
+		ElsIf NodeName = "Values" Then
+		
+			LoadValues(ExchangeRules, NewRow.Values, NewRow.Source);
+			
+		// Event handlers
+		
+		ElsIf NodeName = "BeforeExport" Then
+		
+			NewRow.BeforeExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasBeforeExportHandler = Not IsBlankString(NewRow.BeforeExport);
+			
+		ElsIf NodeName = "OnExport" Then
+			
+			NewRow.OnExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasOnExportHandler    = Not IsBlankString(NewRow.OnExport);
+			
+		ElsIf NodeName = "AfterExport" Then
+			
+			NewRow.AfterExport = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasAfterExportHandler  = Not IsBlankString(NewRow.AfterExport);
+			
+		ElsIf NodeName = "AfterExportToFile" Then
+			
+			NewRow.AfterExportToFile = GetHandlerValueFromText(ExchangeRules);
+			NewRow.HasAfterExportToFileHandler  = Not IsBlankString(NewRow.AfterExportToFile);
+			
+		// For import
+		
+		ElsIf NodeName = "BeforeImport" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+ 			If ExchangeMode = "Load" Then
+				
+				NewRow.BeforeImport               = Value;
+				NewRow.HasBeforeImportHandler = Not IsBlankString(Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "OnImport" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				NewRow.OnImport               = Value;
+				NewRow.HasOnImportHandler = Not IsBlankString(Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "AfterImport" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				NewRow.AfterImport               = Value;
+				NewRow.HasAfterImportHandler = Not IsBlankString(Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+	 		EndIf;
+
+		ElsIf NodeName = "SearchFieldSequence" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			NewRow.HasSearchFieldSequenceHandler = Not IsBlankString(Value);
+			
+			If ExchangeMode = "Load" Then
+				
+				NewRow.SearchFieldSequence = Value;
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "SearchInTabularSections" Then
+			
+			Value = deElementValue(ExchangeRules, deStringType);
+			
+			For Number = 1 To StrLineCount(Value) Do
+				
+				CurrentLine = StrGetLine(Value, Number);
+				
+				SearchString = SplitWithSeparator(CurrentLine, ":");
+				
+				TableRow = SearchInTSTable.Add();
+				TableRow.ItemName = CurrentLine;
+				
+				TableRow.TSSearchFields = SplitStringIntoSubstringsArray(SearchString);
+				
+			EndDo;
+
+		ElsIf (NodeName = "Rule") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+
+	ResultingTSSearchString = "";
+	
+	// Sending details of tabular section search fields to the destination.
+	For Each PropertyString In NewRow.Properties Do
+		
+		If Not PropertyString.IsFolder Or IsBlankString(PropertyString.SourceKind)
+			Or IsBlankString(PropertyString.Destination) Then
+			
+			Continue;
+			
+		EndIf;
+		
+		If IsBlankString(PropertyString.SearchFieldsString) Then
+			Continue;
+		EndIf;
+		
+		ResultingTSSearchString = ResultingTSSearchString + Chars.LF + PropertyString.SourceKind + "." + PropertyString.Destination + ":" + PropertyString.SearchFieldsString;
+		
+	EndDo;
+
+	ResultingTSSearchString = TrimAll(ResultingTSSearchString);
+	
+	If Not IsBlankString(ResultingTSSearchString) Then
+		
+		deWriteElement(XMLWriter, "SearchInTabularSections", ResultingTSSearchString);	
+		
+	EndIf;
+
+	XMLWriter.WriteEndElement();
 
 	
-	// Быстрый доступ к ПКО по имени.
-
-	Правила.Вставить(НоваяСтрока.Имя, НоваяСтрока);
-
-КонецПроцедуры
+	// Quick access to OCR by name.
+	
+	Rules.Insert(NewRow.Name, NewRow);
+	
+EndProcedure
  
-// Осуществляет загрузку правил конвертации объектов.
+// Imports object conversion rules.
 //
-// Параметры:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
 //
-Процедура ЗагрузитьПравилаКонвертации(ПравилаОбмена, ЗаписьXML)
+Procedure ImportConversionRules(ExchangeRules, XMLWriter)
 
-	ConversionRulesTable.Очистить();
-	ОчиститьПКОМенеджеров();
+	ConversionRulesTable.Clear();
+	ClearManagersOCR();
+	
+	XMLWriter.WriteStartElement("ObjectConversionRules");
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If      NodeName = "Rule" Then
+			
+			ImportConversionRule(ExchangeRules, XMLWriter);
+			
+		ElsIf (NodeName = "ObjectConversionRules") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		EndIf;
+		
+	EndDo;
 
-	ЗаписьXML.ЗаписатьНачалоЭлемента("ПравилаКонвертацииОбъектов");
+	XMLWriter.WriteEndElement();
+	
+	ConversionRulesTable.Indexes.Add("Destination");
+	
+EndProcedure
 
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Правило" Тогда
-
-			ЗагрузитьПравилоКонвертации(ПравилаОбмена, ЗаписьXML);
-
-		ИначеЕсли (ИмяУзла = "ПравилаКонвертацииОбъектов") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	ЗаписьXML.ЗаписатьКонецЭлемента();
-
-	ConversionRulesTable.Индексы.Добавить("Приемник");
-
-КонецПроцедуры
-
-// Осуществляет загрузку группы правил очистки данных в соответствии с форматом правил обмена.
+// Imports the data clearing rules group according to the exchange rules format.
 //
-// Параметры:
-//  НоваяСтрока - СтрокаДереваЗначений - структура, описывающая группу правил очистки данных:
-//    * Имя - Строка - идентификатор правила.
-//    * Наименование - Строка - пользовательское представление правила.
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  NewRow - ValueTreeRow - a structure that describes the data clearing rules group.
+//    * Name - String - a rule ID.
+//    * Description - String - a user presentation of the rule.
 // 
-Процедура ЗагрузитьГруппуПОД(ПравилаОбмена, НоваяСтрока)
+Procedure ImportDCRGroup(ExchangeRules, NewRow)
 
-	НоваяСтрока.ЭтоГруппа = Истина;
-	НоваяСтрока.Включить  = Число(Не одАтрибут(ПравилаОбмена, одТипБулево, "Отключить"));
+	NewRow.IsFolder = True;
+	NewRow.Enable  = Number(Not deAttribute(ExchangeRules, deBooleanType, "Disable"));
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		NodeType = ExchangeRules.NodeType;
+		
+		If NodeName = "Code" Then
+			NewRow.Name = deElementValue(ExchangeRules, deStringType);
 
-	Пока ПравилаОбмена.Прочитать() Цикл
+		ElsIf NodeName = "Description" Then
+			NewRow.Description = deElementValue(ExchangeRules, deStringType);
+		
+		ElsIf NodeName = "Order" Then
+			NewRow.Order = deElementValue(ExchangeRules, deNumberType);
+			
+		ElsIf NodeName = "Rule" Then
+			VTRow = NewRow.Rows.Add();
+			ImportDCR(ExchangeRules, VTRow);
 
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-		ТипУзла = ПравилаОбмена.ТипУзла;
+		ElsIf (NodeName = "Group") And (NodeType = deXMLNodeType_StartElement) Then
+			VTRow = NewRow.Rows.Add();
+			ImportDCRGroup(ExchangeRules, VTRow);
+			
+		ElsIf (NodeName = "Group") And (NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
 
-		Если ИмяУзла = "Код" Тогда
-			НоваяСтрока.Имя = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
+	
+	If IsBlankString(NewRow.Description) Then
+		NewRow.Description = NewRow.Name;
+	EndIf; 
+	
+EndProcedure
 
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-			НоваяСтрока.Наименование = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Порядок" Тогда
-			НоваяСтрока.Порядок = одЗначениеЭлемента(ПравилаОбмена, одТипЧисло);
-
-		ИначеЕсли ИмяУзла = "Правило" Тогда
-			СтрокаДЗ = НоваяСтрока.Строки.Добавить();
-			ЗагрузитьПОД(ПравилаОбмена, СтрокаДЗ);
-
-		ИначеЕсли (ИмяУзла = "Группа") И (ТипУзла = одТипУзлаXML_НачалоЭлемента) Тогда
-			СтрокаДЗ = НоваяСтрока.Строки.Добавить();
-			ЗагрузитьГруппуПОД(ПравилаОбмена, СтрокаДЗ);
-
-		ИначеЕсли (ИмяУзла = "Группа") И (ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если ПустаяСтрока(НоваяСтрока.Наименование) Тогда
-		НоваяСтрока.Наименование = НоваяСтрока.Имя;
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правила очистки данных в соответствии с форматом правил обмена.
+// Imports the data clearing rule according to the format of exchange rules.
 //
-// Параметры:
-//  НоваяСтрока - СтрокаДереваЗначений - структура, описывающая правило очистки данных:
-//    * Имя - Строка - идентификатор правила.
-//    * Наименование - Строка - пользовательское представление правила.
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  NewRow - ValueTreeRow - a structure that describes the data clearing rule.
+//    * Name - String - a rule ID.
+//    * Description - String - a user presentation of the rule.
 // 
-Процедура ЗагрузитьПОД(ПравилаОбмена, НоваяСтрока)
+Procedure ImportDCR(ExchangeRules, NewRow)
 
-	НоваяСтрока.Включить = Число(Не одАтрибут(ПравилаОбмена, одТипБулево, "Отключить"));
+	NewRow.Enable = Number(Not deAttribute(ExchangeRules, deBooleanType, "Disable"));
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Code" Then
+			Value = deElementValue(ExchangeRules, deStringType);
+			NewRow.Name = Value;
 
-	Пока ПравилаОбмена.Прочитать() Цикл
+		ElsIf NodeName = "Description" Then
+			NewRow.Description = deElementValue(ExchangeRules, deStringType);
+		
+		ElsIf NodeName = "Order" Then
+			NewRow.Order = deElementValue(ExchangeRules, deNumberType);
+			
+		ElsIf NodeName = "DataFilterMethod" Then
+			NewRow.DataFilterMethod = deElementValue(ExchangeRules, deStringType);
 
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
+		ElsIf NodeName = "SelectionObject" Then
+			SelectionObject = deElementValue(ExchangeRules, deStringType);
+			If Not IsBlankString(SelectionObject) Then
+				NewRow.SelectionObject = Type(SelectionObject);
+			EndIf; 
 
-		Если ИмяУзла = "Код" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			НоваяСтрока.Имя = Значение;
-
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-			НоваяСтрока.Наименование = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Порядок" Тогда
-			НоваяСтрока.Порядок = одЗначениеЭлемента(ПравилаОбмена, одТипЧисло);
-
-		ИначеЕсли ИмяУзла = "СпособОтбораДанных" Тогда
-			НоваяСтрока.СпособОтбораДанных = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "ОбъектВыборки" Тогда
-			ОбъектВыборки = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Если Не ПустаяСтрока(ОбъектВыборки) Тогда
-				НоваяСтрока.ОбъектВыборки = Тип(ОбъектВыборки);
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "УдалятьЗаПериод" Тогда
-			НоваяСтрока.УдалятьЗаПериод = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-		ИначеЕсли ИмяУзла = "Непосредственно" Тогда
-			НоваяСтрока.Непосредственно = одЗначениеЭлемента(ПравилаОбмена, одТипБулево);
+		ElsIf NodeName = "DeleteForPeriod" Then
+			NewRow.DeleteForPeriod = deElementValue(ExchangeRules, deStringType);
+			
+		ElsIf NodeName = "Directly" Then
+			NewRow.Directly = deElementValue(ExchangeRules, deBooleanType);
 
 		
-		// Обработчики событий
+		// Event handlers
 
-		ИначеЕсли ИмяУзла = "ПередОбработкойПравила" Тогда
-			НоваяСтрока.ПередОбработкой = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
+		ElsIf NodeName = "BeforeProcessRule" Then
+			NewRow.BeforeProcess = GetHandlerValueFromText(ExchangeRules);
+			
+		ElsIf NodeName = "AfterProcessRule" Then
+			NewRow.AfterProcess = GetHandlerValueFromText(ExchangeRules);
+		
+		ElsIf NodeName = "BeforeDeleteObject" Then
+			NewRow.BeforeDelete = GetHandlerValueFromText(ExchangeRules);
 
-		ИначеЕсли ИмяУзла = "ПослеОбработкиПравила" Тогда
-			НоваяСтрока.ПослеОбработки = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
+		// Exit
+		ElsIf (NodeName = "Rule") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+			
+		EndIf;
+		
+	EndDo;
 
-		ИначеЕсли ИмяУзла = "ПередУдалениемОбъекта" Тогда
-			НоваяСтрока.ПередУдалением = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
+	
+	If IsBlankString(NewRow.Description) Then
+		NewRow.Description = NewRow.Name;
+	EndIf; 
+	
+EndProcedure
 
-		// Выход
-		ИначеЕсли (ИмяУзла = "Правило") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-	Если ПустаяСтрока(НоваяСтрока.Наименование) Тогда
-		НоваяСтрока.Наименование = НоваяСтрока.Имя;
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Осуществляет загрузку правил очистки данных.
+// Imports data clearing rules.
 //
 // Parameters:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
+//  ExchangeRules - XMLReader object.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
 //
-Процедура ЗагрузитьПравилаОчистки(ПравилаОбмена, ЗаписьXML)
+Procedure ImportClearingRules(ExchangeRules, XMLWriter)
+	
+ 	CleanupRulesTable.Rows.Clear();
+	VTRows = CleanupRulesTable.Rows;
+	
+	XMLWriter.WriteStartElement("DataClearingRules");
 
-	CleanupRulesTable.Строки.Очистить();
-	СтрокиДЗ = CleanupRulesTable.Строки;
+	While ExchangeRules.Read() Do
+		
+		NodeType = ExchangeRules.NodeType;
+		
+		If NodeType = deXMLNodeType_StartElement Then
+			NodeName = ExchangeRules.LocalName;
+			If ExchangeMode <> "Load" Then
+				XMLWriter.WriteStartElement(ExchangeRules.Name);
+				While ExchangeRules.ReadAttribute() Do
+					XMLWriter.WriteAttribute(ExchangeRules.Name, ExchangeRules.Value);
+				EndDo;
+			Else
+				If NodeName = "Rule" Then
+					VTRow = VTRows.Add();
+					ImportDCR(ExchangeRules, VTRow);
+				ElsIf NodeName = "Group" Then
+					VTRow = VTRows.Add();
+					ImportDCRGroup(ExchangeRules, VTRow);
+				EndIf;
+			EndIf;
+		ElsIf NodeType = deXMLNodeType_EndElement Then
+			NodeName = ExchangeRules.LocalName;
+			If NodeName = "DataClearingRules" Then
+				Break;
+			Else
+				If ExchangeMode <> "Load" Then
+					XMLWriter.WriteEndElement();
+				EndIf;
+			EndIf;
+		ElsIf NodeType = deXMLNodeType_Text Then
+			If ExchangeMode <> "Load" Then
+				XMLWriter.WriteText(ExchangeRules.Value);
+			EndIf;
+		EndIf; 
+	EndDo;
 
-	ЗаписьXML.ЗаписатьНачалоЭлемента("ПравилаОчисткиДанных");
+	VTRows.Sort("Order", True);
+	
+ 	XMLWriter.WriteEndElement();
+	
+EndProcedure
 
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ТипУзла = ПравилаОбмена.ТипУзла;
-
-		Если ТипУзла = одТипУзлаXML_НачалоЭлемента Тогда
-			ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-			Если ExchangeMode <> "Загрузка" Тогда
-				ЗаписьXML.ЗаписатьНачалоЭлемента(ПравилаОбмена.Имя);
-				Пока ПравилаОбмена.ПрочитатьАтрибут() Цикл
-					ЗаписьXML.ЗаписатьАтрибут(ПравилаОбмена.Имя, ПравилаОбмена.Значение);
-				КонецЦикла;
-			Иначе
-				Если ИмяУзла = "Правило" Тогда
-					СтрокаДЗ = СтрокиДЗ.Добавить();
-					ЗагрузитьПОД(ПравилаОбмена, СтрокаДЗ);
-				ИначеЕсли ИмяУзла = "Группа" Тогда
-					СтрокаДЗ = СтрокиДЗ.Добавить();
-					ЗагрузитьГруппуПОД(ПравилаОбмена, СтрокаДЗ);
-				КонецЕсли;
-			КонецЕсли;
-		ИначеЕсли ТипУзла = одТипУзлаXML_КонецЭлемента Тогда
-			ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-			Если ИмяУзла = "ПравилаОчисткиДанных" Тогда
-				Прервать;
-			Иначе
-				Если ExchangeMode <> "Загрузка" Тогда
-					ЗаписьXML.ЗаписатьКонецЭлемента();
-				КонецЕсли;
-			КонецЕсли;
-		ИначеЕсли ТипУзла = одТипУзлаXML_Текст Тогда
-			Если ExchangeMode <> "Загрузка" Тогда
-				ЗаписьXML.ЗаписатьТекст(ПравилаОбмена.Значение);
-			КонецЕсли;
-		КонецЕсли;
-	КонецЦикла;
-
-	СтрокиДЗ.Сортировать("Порядок", Истина);
-
-	ЗаписьXML.ЗаписатьКонецЭлемента();
-
-КонецПроцедуры
-
-// Осуществляет загрузку алгоритма в соответствии с форматом правил обмена.
-//
-// Parameters:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
-//
-Процедура ЗагрузитьАлгоритм(ПравилаОбмена, ЗаписьXML)
-
-	ИспользуетсяПриЗагрузке = одАтрибут(ПравилаОбмена, одТипБулево, "ИспользуетсяПриЗагрузке");
-	Имя                     = одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Текст" Тогда
-			Текст = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-		ИначеЕсли (ИмяУзла = "Алгоритм") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		Иначе
-			одПропустить(ПравилаОбмена);
-		КонецЕсли;
-
-	КонецЦикла;
-	Если ИспользуетсяПриЗагрузке Тогда
-		Если ExchangeMode = "Загрузка" Тогда
-			Алгоритмы.Вставить(Имя, Текст);
-		Иначе
-			ЗаписьXML.ЗаписатьНачалоЭлемента("Алгоритм");
-			УстановитьАтрибут(ЗаписьXML, "ИспользуетсяПриЗагрузке", Истина);
-			УстановитьАтрибут(ЗаписьXML, "Имя", Имя);
-			одЗаписатьЭлемент(ЗаписьXML, "Текст", Текст);
-			ЗаписьXML.ЗаписатьКонецЭлемента();
-		КонецЕсли;
-	Иначе
-		Если ExchangeMode <> "Загрузка" Тогда
-			Алгоритмы.Вставить(Имя, Текст);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-// Осуществляет загрузку алгоритмов в соответствии с форматом правил обмена.
+// Imports the algorithm according to the exchange rules format.
 //
 // Parameters:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
+//  ExchangeRules - XMLReader object.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
 //
-Процедура ЗагрузитьАлгоритмы(ПравилаОбмена, ЗаписьXML)
+Procedure ImportAlgorithm(ExchangeRules, XMLWriter)
 
-	Алгоритмы.Очистить();
+	UsedOnImport = deAttribute(ExchangeRules, deBooleanType, "UsedOnImport");
+	Name                     = deAttribute(ExchangeRules, deStringType, "Name");
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Text" Then
+			Text = GetHandlerValueFromText(ExchangeRules);
+		ElsIf (NodeName = "Algorithm") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		Else
+			deSkip(ExchangeRules);
+		EndIf;
+		
+	EndDo;
+	If UsedOnImport Then
+		If ExchangeMode = "Load" Then
+			Algorithms.Insert(Name, Text);
+		Else
+			XMLWriter.WriteStartElement("Algorithm");
+			SetAttribute(XMLWriter, "UsedOnImport", True);
+			SetAttribute(XMLWriter, "Name",   Name);
+			deWriteElement(XMLWriter, "Text", Text);
+			XMLWriter.WriteEndElement();
+		EndIf;
+	Else
+		If ExchangeMode <> "Load" Then
+			Algorithms.Insert(Name, Text);
+		EndIf;
+	EndIf;
+	
+	
+EndProcedure
 
-	ЗаписьXML.ЗаписатьНачалоЭлемента("Алгоритмы");
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-		Если ИмяУзла = "Алгоритм" Тогда
-			ЗагрузитьАлгоритм(ПравилаОбмена, ЗаписьXML);
-		ИначеЕсли (ИмяУзла = "Алгоритмы") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	ЗаписьXML.ЗаписатьКонецЭлемента();
-
-КонецПроцедуры
-
-// Осуществляет загрузку запроса в соответствии с форматом правил обмена.
+// Imports algorithms according to the exchange rules format.
 //
 // Parameters:
-//  ПравилаОбмена  - ЧтениеXML - Объект типа ЧтениеXML.
-//  ЗаписьXML      - ЗаписьXML - Объект типа ЗаписьXML - правила, сохраняемые в файл обмена и
-//                   используемые при загрузке данных.
+//  ExchangeRules - XMLReader object.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
 //
-Процедура ЗагрузитьЗапрос(ПравилаОбмена, ЗаписьXML)
+Procedure ImportAlgorithms(ExchangeRules, XMLWriter)
 
-	ИспользуетсяПриЗагрузке = одАтрибут(ПравилаОбмена, одТипБулево, "ИспользуетсяПриЗагрузке");
-	Имя                     = одАтрибут(ПравилаОбмена, одТипСтрока, "Имя");
+	Algorithms.Clear();
 
-	Пока ПравилаОбмена.Прочитать() Цикл
+	XMLWriter.WriteStartElement("Algorithms");
+	
+	While ExchangeRules.Read() Do
+		NodeName = ExchangeRules.LocalName;
+		If NodeName = "Algorithm" Then
+			ImportAlgorithm(ExchangeRules, XMLWriter);
+		ElsIf (NodeName = "Algorithms") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		EndIf;
+		
+	EndDo;
 
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
+	XMLWriter.WriteEndElement();
+	
+EndProcedure
 
-		Если ИмяУзла = "Текст" Тогда
-			Текст = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-		ИначеЕсли (ИмяУзла = "Запрос") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		Иначе
-			одПропустить(ПравилаОбмена);
-		КонецЕсли;
+// Imports the query according to the exchange rules format.
+//
+// Parameters:
+//  ExchangeRules - XMLReader object.
+//  XMLWriter - XMLWriter - rules to be saved into the exchange file and used on data import.
+//
+Procedure ImportQuery(ExchangeRules, XMLWriter)
 
-	КонецЦикла;
+	UsedOnImport = deAttribute(ExchangeRules, deBooleanType, "UsedOnImport");
+	Name                     = deAttribute(ExchangeRules, deStringType, "Name");
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If NodeName = "Text" Then
+			Text = GetHandlerValueFromText(ExchangeRules);
+		ElsIf (NodeName = "Query") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		Else
+			deSkip(ExchangeRules);
+		EndIf;
+		
+	EndDo;
 
-	Если ИспользуетсяПриЗагрузке Тогда
-		Если ExchangeMode = "Загрузка" Тогда
-			Запрос	= Новый Запрос(Текст);
-			Запросы.Вставить(Имя, Запрос);
-		Иначе
-			ЗаписьXML.ЗаписатьНачалоЭлемента("Запрос");
-			УстановитьАтрибут(ЗаписьXML, "ИспользуетсяПриЗагрузке", Истина);
-			УстановитьАтрибут(ЗаписьXML, "Имя", Имя);
-			одЗаписатьЭлемент(ЗаписьXML, "Текст", Текст);
-			ЗаписьXML.ЗаписатьКонецЭлемента();
-		КонецЕсли;
-	Иначе
-		Если ExchangeMode <> "Загрузка" Тогда
-			Запрос	= Новый Запрос(Текст);
-			Запросы.Вставить(Имя, Запрос);
-		КонецЕсли;
-	КонецЕсли;
-
-КонецПроцедуры
+	If UsedOnImport Then
+		If ExchangeMode = "Load" Then
+			Query	= New Query(Text);
+			Queries.Insert(Name, Query);
+		Else
+			XMLWriter.WriteStartElement("Query");
+			SetAttribute(XMLWriter, "UsedOnImport", True);
+			SetAttribute(XMLWriter, "Name",   Name);
+			deWriteElement(XMLWriter, "Text", Text);
+			XMLWriter.WriteEndElement();
+		EndIf;
+	Else
+		If ExchangeMode <> "Load" Then
+			Query	= New Query(Text);
+			Queries.Insert(Name, Query);
+		EndIf;
+	EndIf;
+	
+EndProcedure
 
 // Осуществляет загрузку запросов в соответствии с форматом правил обмена.
 //

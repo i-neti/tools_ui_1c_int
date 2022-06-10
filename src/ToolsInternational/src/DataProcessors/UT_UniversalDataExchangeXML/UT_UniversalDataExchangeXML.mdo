@@ -4,17 +4,17 @@
     <objectType typeId="6bf72865-e3d8-44f0-a83b-874834784088" valueTypeId="a4e7907d-2d40-42d3-8782-e09ddb384776"/>
     <managerType typeId="af610791-143e-43ec-9e86-78f3bf727c0f" valueTypeId="c581ba8e-ce70-492f-924d-6a734c276ac6"/>
   </producedTypes>
-  <name>UT_UniversalXMLDataExchange</name>
+  <name>UT_UniversalDataExchangeXML</name>
   <synonym>
     <key>en</key>
-    <value>Universal XML data exchange (with filters and export to HTTP service) [UT]</value>
+    <value>Universal data exchange XML (with filters and export to HTTP service) [UT]</value>
   </synonym>
   <synonym>
     <key>ru</key>
     <value>Универсальный обмен данными в формате XML(с фильтрами и выгрузкой на HTTP сервис) [УИ]</value>
   </synonym>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_UniversalXMLDataExchange.Form.УправляемаяФорма</defaultForm>
+  <defaultForm>DataProcessor.UT_UniversalDataExchangeXML.Form.УправляемаяФорма</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -22,7 +22,7 @@
   </help>
   <extendedPresentation>
     <key>en</key>
-    <value>Universal XML data exchange (with filters and export to HTTP service)</value>
+    <value>Universal data exchange XML (with filters and export to HTTP service)</value>
   </extendedPresentation>
   <extendedPresentation>
     <key>ru</key>
