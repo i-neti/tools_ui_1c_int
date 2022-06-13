@@ -4763,475 +4763,468 @@ Procedure ExportEventHandlers(Cancel) Export
 	
 EndProcedure
 
-// Очищает переменные со структурой правил обмена.
-//
-// Параметры:
-//  Нет.
-//  
-Процедура ОчиститьПравилаОбмена()
-
-	ExportRulesTable.Строки.Очистить();
-	CleanupRulesTable.Строки.Очистить();
-	ConversionRulesTable.Очистить();
-	Алгоритмы.Очистить();
-	Запросы.Очистить();
-
-	// Обработки
-	ДопОбработки.Очистить();
-	ПараметрыДопОбработок.Очистить();
-	ExportSettingsDataProcessors.Очистить();
-	ImportSettingsDataProcessors.Очистить();
-
-КонецПроцедуры  
-
-// Производит загрузку правил обмена из файла-правил или файла-данных.
-//
-// Параметры:
-//  Нет.
-//  
-Процедура ЗагрузитьПравилаОбменаДляЭкспортаОбработчиков()
-
-	ОчиститьПравилаОбмена();
-
-	Если ReadEventHandlersFromExchangeRulesFile Тогда
-
-		ExchangeMode = ""; // Выгрузка
-
-		ЗагрузитьПравилаОбмена();
-
-		мБылиПрочитаныПравилаОбменаПриЗагрузке = Ложь;
-
-		ИнициализироватьПервоначальныеЗначенияПараметров();
-
-	Иначе // файл данных
-
-		ExchangeMode = "Загрузка";
-
-		Если ПустаяСтрока(ExchangeFileName) Тогда
-			ЗаписатьВПротоколВыполнения(15);
-			Возврат;
-		КонецЕсли;
-
-		ОткрытьФайлЗагрузки(Истина);
-		
-		// При наличии флага обработка потребует перечитать
-		// правила при попытке выгрузки данных.
-		мБылиПрочитаныПравилаОбменаПриЗагрузке = Истина;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Выгружает глобальные обработчики конвертации в текстовый файл.
-// При выгрузке обработчиков из файла с данными содержимое обработчика "Конвертация_ПослеЗагрузкиПараметров"
-// не выгружается, т.к. код обработчика находится не в узле правил обмена, а в отдельном узле.
-// При выгрузке обработчиков из файла правил этот алгоритм выгружается как и другие.
-//
-// Параметры:
-//  Результат - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//
-Процедура ВыгрузитьОбработчикиКонвертации(Результат)
-
-	ДобавитьВПотокКомментарий(Результат, "Конвертация");
-
-	Для Каждого Элемент Из ИменаОбработчиков.Конвертация Цикл
-
-		ДобавитьВПотокОбработчикКонвертации(Результат, Элемент.Ключ);
-
-	КонецЦикла;
-
-КонецПроцедуры 
-
-// Выгружает обработчики правил выгрузки данных в текстовый файл.
-//
-// Параметры:
-//  Результат    - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//  СтрокиДерева - КоллекцияСтрокДереваЗначений - Объект типа КоллекцияСтрокДереваЗначений - содержит ПВД данного уровня
-//                                                дерева значений.
-//
-Процедура ВыгрузитьОбработчикиПравилВыгрузкиДанных(Результат, СтрокиДерева)
-
-	Для Каждого Правило Из СтрокиДерева Цикл
-
-		Если Правило.ЭтоГруппа Тогда
-
-			ВыгрузитьОбработчикиПравилВыгрузкиДанных(Результат, Правило.Строки);
-
-		Иначе
-
-			Для Каждого Элемент Из ИменаОбработчиков.ПВД Цикл
-
-				ДобавитьВПотокОбработчик(Результат, Правило, "ПВД", Элемент.Ключ);
-
-			КонецЦикла;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры  
-
-// Выгружает обработчики правил очистки данных в текстовый файл.
-//
-// Параметры:
-//  Результат    - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//  СтрокиДерева - КоллекцияСтрокДереваЗначений - Объект типа КоллекцияСтрокДереваЗначений - содержит ПОД данного уровня
-//                                                дерева значений.
-//
-Процедура ВыгрузитьОбработчикиПравилОчисткиДанных(Результат, СтрокиДерева)
-
-	Для Каждого Правило Из СтрокиДерева Цикл
-
-		Если Правило.ЭтоГруппа Тогда
-
-			ВыгрузитьОбработчикиПравилОчисткиДанных(Результат, Правило.Строки);
-
-		Иначе
-
-			Для Каждого Элемент Из ИменаОбработчиков.ПОД Цикл
-
-				ДобавитьВПотокОбработчик(Результат, Правило, "ПОД", Элемент.Ключ);
-
-			КонецЦикла;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры  
-
-// Выгружает обработчики правил конвертации: ПКО, ПКС, ПКГС в текстовый файл.
-//
-// Параметры:
-//  Результат    - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//
-Процедура ВыгрузитьОбработчикиПравилКонвертации(Результат)
-
-	ВывестиКомментарий = ConversionRulesTable.Количество() <> 0;
-	
-	// Выгружаем ПКО.
-	ДобавитьВПотокКомментарий(Результат, "ПКО", ВывестиКомментарий);
-
-	Для Каждого ПКО Из ConversionRulesTable Цикл
-
-		Для Каждого Элемент Из ИменаОбработчиков.ПКО Цикл
-
-			ДобавитьВПотокОбработчикПКО(Результат, ПКО, Элемент.Ключ);
-
-		КонецЦикла;
-
-	КонецЦикла; 
-	
-	// Выгружаем ПКС и ПКГС.
-	ДобавитьВПотокКомментарий(Результат, "ПКС", ВывестиКомментарий);
-
-	Для Каждого ПКО Из ConversionRulesTable Цикл
-
-		ВыгрузитьОбработчикиПравилКонвертацииСвойств(Результат, ПКО.СвойстваПоиска);
-		ВыгрузитьОбработчикиПравилКонвертацииСвойств(Результат, ПКО.Свойства);
-
-	КонецЦикла;
-
-КонецПроцедуры 
-
-// Выгружает обработчики правил конвертации свойств в текстовый файл.
-//
-// Параметры:
-//  Результат - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//  ПКС       - ТаблицаЗначений - содержит правила конвертации свойств или групп свойств объекта.
-//
-Процедура ВыгрузитьОбработчикиПравилКонвертацииСвойств(Результат, ПКС)
-
-	Для Каждого Правило Из ПКС Цикл
-
-		Если Правило.ЭтоГруппа Тогда // ПКГС
-
-			Для Каждого Элемент Из ИменаОбработчиков.ПКГС Цикл
-
-				ДобавитьВПотокОбработчикПКО(Результат, Правило, Элемент.Ключ);
-
-			КонецЦикла;
-
-			ВыгрузитьОбработчикиПравилКонвертацииСвойств(Результат, Правило.ПравилаГруппы);
-
-		Иначе
-
-			Для Каждого Элемент Из ИменаОбработчиков.ПКС Цикл
-
-				ДобавитьВПотокОбработчикПКО(Результат, Правило, Элемент.Ключ);
-
-			КонецЦикла;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Выгружает алгоритмы в текстовый файл.
-//
-// Параметры:
-//  Результат - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода алгоритмов в текстовый файл.
-//
-Процедура ВыгрузитьАлгоритмы(Результат)
-	
-	// Комментарий к блоку "Алгоритмы".
-	ДобавитьВПотокКомментарий(Результат, "Алгоритмы", Алгоритмы.Количество() <> 0);
-
-	Для Каждого Алгоритм Из Алгоритмы Цикл
-
-		ДобавитьВПотокАлгоритм(Результат, Алгоритм);
-
-	КонецЦикла;
-
-КонецПроцедуры  
-
-// Выгружает конструктор внешней обработки в текстовый файл.
-//  Если режим отладки алгоритмов - "алгоритмы отлаживать как процедуры", то в конструктор добавляется структура
-//  "Алгоритмы".
-//  Ключ элемента структуры - имя алгоритма, значение - интерфейс вызова процедуры, содержащей код алгоритма.
-//
-// Параметры:
-//  Результат    - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчиков в текстовый файл.
-//
-Процедура ВыгрузитьКонструкторВнешнейОбработки(Результат)
-	
-	// Выводим комментарий
-	ДобавитьВПотокКомментарий(Результат, "Конструктор");
-
-	ТелоПроцедуры = ПолучитьСлужебныйКод("Конструктор_ТелоПроцедуры");
-
-	Если AlgorithmDebugMode = мРежимыОтладкиАлгоритмов.ПроцедурныйВызов Тогда
-
-		ТелоПроцедуры = ТелоПроцедуры + ПолучитьСлужебныйКод("Конструктор_ТелоПроцедуры_ПроцедурныйВызовАлгоритмов");
-		
-		// Добавляем в тело конструктора вызовы Алгоритмов.
-		Для Каждого Алгоритм Из Алгоритмы Цикл
-
-			КлючАлгоритма = СокрЛП(Алгоритм.Ключ);
-
-			ИнтерфейсАлгоритма = ПолучитьИнтерфейсАлгоритма(КлючАлгоритма) + ";";
-
-			ИнтерфейсАлгоритма = СтрЗаменить(СтрЗаменить(ИнтерфейсАлгоритма, Символы.ПС, " "), " ", "");
-
-			ТелоПроцедуры = ТелоПроцедуры + Символы.ПС + "Алгоритмы.Вставить(""" + КлючАлгоритма + """, """
-				+ ИнтерфейсАлгоритма + """);";
-		КонецЦикла;
-
-	ИначеЕсли AlgorithmDebugMode = мРежимыОтладкиАлгоритмов.ИнтеграцияКода Тогда
-
-		ТелоПроцедуры = ТелоПроцедуры + ПолучитьСлужебныйКод("Конструктор_ТелоПроцедуры_ИнтеграцияКодаАлгоритмов");
-
-	ИначеЕсли AlgorithmDebugMode = мРежимыОтладкиАлгоритмов.НеИспользовать Тогда
-
-		ТелоПроцедуры = ТелоПроцедуры + ПолучитьСлужебныйКод(
-			"Конструктор_ТелоПроцедуры_НеИспользоватьОтладкуАлгоритмов");
-
-	КонецЕсли;
-
-	ИнтерфейсПроцедурыВнешнейОбработки = "Процедура " + ПолучитьИнтерфейсПроцедурыВнешнейОбработки("Конструктор")
-		+ " Экспорт";
-
-	ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсПроцедурыВнешнейОбработки, ТелоПроцедуры);
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" обработчик ПКО, ПКС или ПКГС.
-//
-// Параметры:
-//  Результат      - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчика в текстовый файл.
-//  Правило        - строка таблицы значений с правилами конвертации объекта.
-//  ИмяОбработчика - строка - имя обработчика.
-//
-Процедура ДобавитьВПотокОбработчикПКО(Результат, Правило, ИмяОбработчика)
-
-	Если Не Правило["ЕстьОбработчик" + ИмяОбработчика] Тогда
-		Возврат;
-	КонецЕсли;
-
-	ИнтерфейсОбработчика = "Процедура " + Правило["ИнтерфейсОбработчика" + ИмяОбработчика] + " Экспорт";
-
-	ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсОбработчика, Правило[ИмяОбработчика]);
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" код алгоритма.
-//
-// Параметры:
-//  Результат - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчика в текстовый файл.
-//  Алгоритм  - элемент структуры - алгоритм для выгрузки.
-//
-Процедура ДобавитьВПотокАлгоритм(Результат, Алгоритм)
-
-	ИнтерфейсАлгоритма = "Процедура " + ПолучитьИнтерфейсАлгоритма(Алгоритм.Ключ);
-
-	ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсАлгоритма, Алгоритм.Значение);
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" обработчик ПВД или ПОД.
-//
-// Параметры:
-//  Результат      - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчика в текстовый файл.
-//  Правило        - строка дерева значений с правилами.
-//  ПрефиксОбработчика - строка - префикс обработчика: "ПВД" или "ПОД".
-//  ИмяОбработчика - строка - имя обработчика.
-//
-Процедура ДобавитьВПотокОбработчик(Результат, Правило, ПрефиксОбработчика, ИмяОбработчика)
-
-	Если ПустаяСтрока(Правило[ИмяОбработчика]) Тогда
-		Возврат;
-	КонецЕсли;
-
-	ИнтерфейсОбработчика = "Процедура " + Правило["ИнтерфейсОбработчика" + ИмяОбработчика] + " Экспорт";
-
-	ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсОбработчика, Правило[ИмяОбработчика]);
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" глобальный обработчик конвертации.
+// Clears variables with structure of exchange rules.
 //
 // Parameters:
-//  Результат      - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода обработчика в текстовый файл.
-//  ИмяОбработчика - строка - имя обработчика.
-//
-Процедура ДобавитьВПотокОбработчикКонвертации(Результат, ИмяОбработчика)
+//  No.
+//  
+Procedure ClearExchangeRules()
+	
+	ExportRulesTable.Rows.Clear();
+	CleanupRulesTable.Rows.Clear();
+	ConversionRulesTable.Clear();
+	Algorithms.Clear();
+	Queries.Clear();
 
-	АлгоритмОбработчика = "";
+	// Data processors
+	AdditionalDataProcessors.Clear();
+	AdditionalDataProcessorParameters.Clear();
+	ExportSettingsDataProcessors.Clear();
+	ImportSettingsDataProcessors.Clear();
 
-	Если Конвертация.Свойство(ИмяОбработчика, АлгоритмОбработчика) И Не ПустаяСтрока(АлгоритмОбработчика) Тогда
+EndProcedure  
 
-		ИнтерфейсОбработчика = "Процедура " + Конвертация["ИнтерфейсОбработчика" + ИмяОбработчика] + " Экспорт";
-
-		ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсОбработчика, АлгоритмОбработчика);
-
-	КонецЕсли;
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" процедуру с кодом обработчика или кодом алгоритма.
+// Exports exchange rules from rule file or data file.
 //
 // Parameters:
-//  Результат            - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода процедуры в текстовый файл.
-//  ИнтерфейсОбработчика - Строка - полное описание интерфейса обработчика:
-//                         имя процедуры, параметры процедуры, ключевое слово "Экспорт".
-//  Обработчик           - Строка - тело обработчика или алгоритма.
-//
-Процедура ДобавитьВПотокПолныйОбработчик(Результат, ИнтерфейсОбработчика, Обработчик)
-
-	СтрокаПрефикса = Символы.Таб;
-
-	Результат.ЗаписатьСтроку("");
-
-	Результат.ЗаписатьСтроку(ИнтерфейсОбработчика);
-
-	Результат.ЗаписатьСтроку("");
-
-	Для Индекс = 1 По СтрЧислоСтрок(Обработчик) Цикл
-
-		СтрокаОбработчика = СтрПолучитьСтроку(Обработчик, Индекс);
+//  No.
+//  
+Procedure ImportExchangeRulesForHandlerExport()
+	
+	ClearExchangeRules();
+	
+	If ReadEventHandlersFromExchangeRulesFile Then
 		
-		// В режиме отладки алгоритмов "Интеграция кода" вставляем код алгоритмов 
-		// непосредственно в код обработчика. Код алгоритма вставляем взамен его вызова.
-		// В коде алгоритмов уже учтена вложенность алгоритмов друг в друга.
-		Если AlgorithmDebugMode = мРежимыОтладкиАлгоритмов.ИнтеграцияКода Тогда
+		ExchangeMode = ""; // Exporting data.
 
-			АлгоритмыОбработчика = ПолучитьАлгоритмыОбработчика(СтрокаОбработчика);
+		ImportExchangeRules();
+		
+		mExchangeRulesReadOnImport = False;
+		
+		InitializeInitialParameterValues();
+		
+	Else // Data file
+		
+		ExchangeMode = "Load"; 
+		
+		If IsBlankString(ExchangeFileName) Then
+			WriteToExecutionLog(15);
+			Return;
+		EndIf;
+		
+		OpenImportFile(True);
+		
+		// If the flag is set, the data processor requires to reimport rules on data export start.
+		mExchangeRulesReadOnImport = True;
 
-			Если АлгоритмыОбработчика.Количество() <> 0 Тогда // В этой строке есть вызовы алгоритмов.
+	EndIf;
+	
+EndProcedure
+
+// Exports global conversion handlers to a text file.
+// During the handler export from the data file, the content of the Conversion_AfterParametersImport handler
+// is not exported, because the handler script is is in the different node.
+// During the handler export from the rule file, this algorithm exported as all others.
+//
+// Parameters:
+//  Result - TextWriter - an object to export handlers to a text file.
+//
+Procedure ExportConversionHandlers(Result)
+	
+	AddCommentToStream(Result, "Conversion");
+	
+	For Each Item In HandlersNames.Conversion Do
+		
+		AddConversionHandlerToStream(Result, Item.Key);
+		
+	EndDo; 
+	
+EndProcedure 
+
+// Exports handlers of data export rules to the text file.
+//
+// Parameters:
+//  Result    - TextWriter - an object to output handlers to a text file.
+//  TreeRows - ValueTreeRowCollection - a DER of this value tree level.
+//
+Procedure ExportDataExportRuleHandlers(Result, TreeRows)
+	
+	For Each Rule In TreeRows Do
+		
+		If Rule.IsGroup Then
+			
+			ExportDataExportRuleHandlers(Result, Rule.Rows); 
+			
+		Else
+			
+			For Each Item In HandlersNames.DER Do
 				
-				// Получаем начальное смещение кода алгоритма относительно текущего кода обработчика.
-				СтрокаПрефиксаДляВложенногоКода = ПолучитьПрефиксДляВложенногоАлгоритма(СтрокаОбработчика,
-					СтрокаПрефикса);
+				AddHandlerToStream(Result, Rule, "DER", Item.Key);
+				
+			EndDo; 
+			
+		EndIf; 
+		
+	EndDo; 
+	
+EndProcedure  
 
-				Для Каждого Алгоритм Из АлгоритмыОбработчика Цикл
-
-					ОбработчикАлгоритма = АлгоритмыИнтегрированные[Алгоритм];
-
-					Для ИндексСтрокиАлгоритма = 1 По СтрЧислоСтрок(ОбработчикАлгоритма) Цикл
-
-						Результат.ЗаписатьСтроку(СтрокаПрефиксаДляВложенногоКода + СтрПолучитьСтроку(
-							ОбработчикАлгоритма, ИндексСтрокиАлгоритма));
-
-					КонецЦикла;
-
-				КонецЦикла;
-
-			КонецЕсли;
-		КонецЕсли;
-
-		Результат.ЗаписатьСтроку(СтрокаПрефикса + СтрокаОбработчика);
-
-	КонецЦикла;
-
-	Результат.ЗаписатьСтроку("");
-	Результат.ЗаписатьСтроку("КонецПроцедуры");
-
-КонецПроцедуры
-
-// Добавляет в объект "Результат" комментарий.
+// Exports handlers of data clearing rules to the text file.
 //
 // Parameters:
-//  Результат          - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода комментария в текстовый файл.
-//  ИмяОбласти         - Строка - имя области текстового макета "мМакетОбщиеПроцедурыФункции"
-//                       в которой содержится требуемый комментарий.
-//  ВывестиКомментарий - Булево - признак необходимости вывода комментария.
+//  Result    - TextWriter - an object to output handlers to a text file.
+//  TreeRows - ValueTreeRowCollection - a DCR of this value tree level.
 //
-Процедура ДобавитьВПотокКомментарий(Результат, ИмяОбласти, ВывестиКомментарий = Истина)
-
-	Если Не ВывестиКомментарий Тогда
-		Возврат;
-	КонецЕсли; 
+Procedure ExportDataClearingRuleHandlers(Result, TreeRows)
 	
-	// Получаем комментарии обработчиков по названию области.
-	ТекущаяОбласть = мМакетОбщиеПроцедурыФункции.ПолучитьОбласть(ИмяОбласти + "_Комментарий");
-
-	КомментарийИзМакета = СокрЛП(ПолучитьТекстПоОбластиБезНазванияОбласти(ТекущаяОбласть));
+	For Each Rule In TreeRows Do
+		
+		If Rule.IsGroup Then
+			
+			ExportDataClearingRuleHandlers(Result, Rule.Rows); 
+			
+		Else
+			
+			For Each Item In HandlersNames.DCR Do
+				
+				AddHandlerToStream(Result, Rule, "DCR", Item.Key);
+				
+			EndDo; 
+			
+		EndIf; 
+		
+	EndDo; 
 	
-	// Исключаем последний перевод строки.
-	КомментарийИзМакета = Сред(КомментарийИзМакета, 1, СтрДлина(КомментарийИзМакета));
+EndProcedure  
 
-	Результат.ЗаписатьСтроку(Символы.ПС + Символы.ПС + КомментарийИзМакета);
-
-КонецПроцедуры  
-
-// Добавляет в объект "Результат" служебный код: параметры, общие процедуры и функции, деструктор внешней обработки.
+// Exports the following conversion rule handlers into a text file: OCR, PCR, and PGCR.
 //
 // Parameters:
-//  Результат          - ЗаписьТекста - Объект типа ЗаписьТекста - для вывода служебного кода в текстовый файл.
-//  ИмяОбласти         - Строка - имя области текстового макета "мМакетОбщиеПроцедурыФункции"
-//                       в которой содержится требуемый служебный код.
+//  Result    - TextWriter - an object to output handlers to a text file.
 //
-Процедура ДобавитьВПотокСлужебныйКод(Результат, ИмяОбласти)
+Procedure ExportConversionRuleHandlers(Result)
 	
-	// Получаем текст области
-	ТекущаяОбласть = мМакетОбщиеПроцедурыФункции.ПолучитьОбласть(ИмяОбласти);
+	OutputComment = ConversionRulesTable.Count() <> 0;
+	
+	// Exporting OCR.
+	AddCommentToStream(Result, "OCR", OutputComment);
+	
+	For Each OCR In ConversionRulesTable Do
+		
+		For Each Item In HandlersNames.OCR Do
+			
+			AddOCRHandlerToStream(Result, OCR, Item.Key);
+			
+		EndDo; 
+		
+	EndDo; 
+	
+	// Exporting PCR and PGCR.
+	AddCommentToStream(Result, "PCR", OutputComment);
+	
+	For Each OCR In ConversionRulesTable Do
+		
+		ExportPropertyConversionRuleHandlers(Result, OCR.SearchProperties);
+		ExportPropertyConversionRuleHandlers(Result, OCR.Properties);
+		
+	EndDo; 
+	
+EndProcedure 
 
-	Текст = СокрЛП(ПолучитьТекстПоОбластиБезНазванияОбласти(ТекущаяОбласть));
-
-	Текст = Сред(Текст, 1, СтрДлина(Текст)); // Исключаем последний перевод строки.
-
-	Результат.ЗаписатьСтроку(Символы.ПС + Символы.ПС + Текст);
-
-КонецПроцедуры  
-
-// Получает служебный код из указанной области макета "мМакетОбщиеПроцедурыФункции".
+// Exports handlers of property conversion rules to a text file.
 //
 // Parameters:
-//  ИмяОбласти - Строка - имя области текстового макета "мМакетОбщиеПроцедурыФункции".
+//  Result - TextWriter - an object to output handlers to a text file.
+//  PCR       - ValueTable - contains rules of conversion of object properties or property groups.
+//
+Procedure ExportPropertyConversionRuleHandlers(Result, PCR)
+	
+	For Each Rule In PCR Do
+		
+		If Rule.IsGroup Then // PGCR
+			
+			For Each Item In HandlersNames.PGCR Do
+				
+				AddOCRHandlerToStream(Result, Rule, Item.Key);
+				
+			EndDo; 
+
+			ExportPropertyConversionRuleHandlers(Result, Rule.GroupRules);
+			
+		Else
+			
+			For Each Item In HandlersNames.PCR Do
+				
+				AddOCRHandlerToStream(Result, Rule, Item.Key);
+				
+			EndDo;
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
+
+// Exports algorithms to the text file.
+//
+// Parameters:
+//  Result - TextWriter - an object to output algorithms to a text file.
+// 
+Procedure ExportAlgorithms(Result)
+	
+	// Commenting the Algorithms block.
+	AddCommentToStream(Result, "Algorithms", Algorithms.Count() <> 0);
+	
+	For Each Algorithm In Algorithms Do
+		
+		AddAlgorithmToSteam(Result, Algorithm);
+		
+	EndDo; 
+	
+EndProcedure  
+
+// Exports the external data processor constructor to the text file.
+//  If algorithm debug mode is "debug algorithms as procedures", then the constructor receives structure
+//  "Algorithms".
+//  Structure item key is algorithm name and its value is the interface of procedure call that contains algorithm code.
+//
+// Parameters:
+//  Result    - TextWriter - an object to output handlers to a text file.
+//
+Procedure ExportExternalDataProcessorConstructor(Result)
+	
+	// Displaying the comment
+	AddCommentToStream(Result, "Constructor");
+
+	ProcedureBody = GetServiceCode("Constructor_ProcedureBody");
+
+	If AlgorithmDebugMode = mAlgorithmDebugModes.ProceduralCall Then
+		
+		ProcedureBody = ProcedureBody + GetServiceCode("Constructor_ProcedureBody_ProceduralAlgorithmCall");
+		
+		// Adding algorithm calls to the constructor body.
+		For Each Algorithm In Algorithms Do
+			
+			AlgorithmKey = TrimAll(Algorithm.Key);
+			
+			AlgorithmInterface = GetAlgorithmInterface(AlgorithmKey) + ";";
+			
+			AlgorithmInterface = StrReplace(StrReplace(AlgorithmInterface, Chars.LF, " ")," ","");
+			
+			ProcedureBody = ProcedureBody + Chars.LF 
+			   + "Algorithms.Insert(""" + AlgorithmKey + """, """ + AlgorithmInterface + """);";
+		EndDo;
+
+	ElsIf AlgorithmDebugMode = mAlgorithmDebugModes.CodeIntegration Then
+		
+		ProcedureBody = ProcedureBody + GetServiceCode("Constructor_ProcedureBody_AlgorithmCodeIntegration");
+		
+	ElsIf AlgorithmDebugMode = mAlgorithmDebugModes.DontUse Then
+		
+		ProcedureBody = ProcedureBody + GetServiceCode("Constructor_ProcedureBody_DoNotUseAlgorithmDebug");
+		
+	EndIf; 
+	
+	ExternalDataProcessorProcedureInterface = "Procedure " + GetExternalDataProcessorProcedureInterface("Constructor") + " Export";
+	
+	AddFullHandlerToStream(Result, ExternalDataProcessorProcedureInterface, ProcedureBody);
+	
+EndProcedure  
+
+// Adds an OCR, PCR, or PGCR handler to the Result object.
+//
+// Parameters:
+//  Result      - TextWriter - an object to output a handler to a text file.
+//  Rule        - ValueTableRow - an object conversion rules.
+//  HandlerName - String - a handler name.
+//
+Procedure AddOCRHandlerToStream(Result, Rule, HandlerName)
+	
+	If Not Rule["HasHandler" + HandlerName] Then
+		Return;
+	EndIf; 
+	
+	HandlerInterface = "Procedure " + Rule["HandlerInterface" + HandlerName] + " Export";
+	
+	AddFullHandlerToStream(Result, HandlerInterface, Rule[HandlerName]);
+	
+EndProcedure  
+
+// Adds an algorithm code to the Result object.
+//
+// Parameters:
+//  Result - TextWriter - an object to output a handler to a text file.
+//  Algorithm  - structure item - an algorithm to export.
+//
+Procedure AddAlgorithmToSteam(Result, Algorithm)
+	
+	AlgorithmInterface = "Procedure " + GetAlgorithmInterface(Algorithm.Key);
+
+	AddFullHandlerToStream(Result, AlgorithmInterface, Algorithm.Value);
+	
+EndProcedure  
+
+// Adds to the Result object a DER or DCR handler.
+//
+// Parameters:
+//  Result      - TextWriter - an object to output a handler to a text file.
+//  Rule        - ValueTreeRow - rules.
+//  HandlerPrefix - String - a handler prefix: DER or DCR.
+//  HandlerName - String - a handler name.
+//
+Procedure AddHandlerToStream(Result, Rule, HandlerPrefix, HandlerName)
+	
+	If IsBlankString(Rule[HandlerName]) Then
+		Return;
+	EndIf;
+	
+	HandlerInterface = "Procedure " + Rule["HandlerInterface" + HandlerName] + " Export";
+	
+	AddFullHandlerToStream(Result, HandlerInterface, Rule[HandlerName]);
+	
+EndProcedure  
+
+// Adds a global conversion handler to the Result object.
+//
+// Parameters:
+//  Result      - TextWriter - an object to output a handler to a text file.
+//  HandlerName - String - a handler name.
+//
+Procedure AddConversionHandlerToStream(Result, HandlerName)
+	
+	HandlerAlgorithm = "";
+	
+	If Conversion.Property(HandlerName, HandlerAlgorithm) And Not IsBlankString(HandlerAlgorithm) Then
+		
+		HandlerInterface = "Procedure " + Conversion["HandlerInterface" + HandlerName] + " Export";
+		
+		AddFullHandlerToStream(Result, HandlerInterface, HandlerAlgorithm);
+		
+	EndIf;
+	
+EndProcedure  
+
+// Adds a procedure with a handler or algorithm code to the Result object.
+//
+// Parameters:
+//  Result            - TextWriter - an object to output procedure to a text file.
+//  HandlerInterface - String - full handler interface description:
+//                         procedure name, parameters, Export keyword.
+//  Handler           - String - a body of a handler or an algorithm.
+//
+Procedure AddFullHandlerToStream(Result, HandlerInterface, Handler)
+	
+	PrefixString = Chars.Tab;
+	
+	Result.WriteLine("");
+	
+	Result.WriteLine(HandlerInterface);
+	
+	Result.WriteLine("");
+
+	For Index = 1 To StrLineCount(Handler) Do
+		
+		HandlerRow = StrGetLine(Handler, Index);
+		
+		// In the "Script integration" algorithm debugging mode the algorithm script is inserted directly 
+		// into the handler script. The algorithm script is inserted instead of this algorithm call.
+		// Algorithms can be nested. The algorithm scripts support nested algorithms.
+		If AlgorithmDebugMode = mAlgorithmDebugModes.CodeIntegration Then
+			
+			HandlerAlgorithms = GetHandlerAlgorithms(HandlerRow);
+			
+			If HandlerAlgorithms.Count() <> 0 Then // There are algorithm calls in the line.
+				
+				// Receiving the initial algorithm code offset relative to the current handler code.
+				PrefixStringForInlineCode = GetInlineAlgorithmPrefix(HandlerRow, PrefixString);
+				
+				For Each Algorithm In HandlerAlgorithms Do
+					
+					AlgorithmHandler = IntegratedAlgorithms[Algorithm];
+					
+					For AlgorithmRowIndex = 1 To StrLineCount(AlgorithmHandler) Do
+						
+						Result.WriteLine(PrefixStringForInlineCode + StrGetLine(AlgorithmHandler, AlgorithmRowIndex));
+						
+					EndDo;	
+					
+				EndDo;
+				
+			EndIf;
+		EndIf;
+
+		Result.WriteLine(PrefixString + HandlerRow);
+		
+	EndDo;
+	
+	Result.WriteLine("");
+	Result.WriteLine("EndProcedure");
+	
+EndProcedure
+
+// Adds a comment to the Result object.
+//
+// Parameters:
+//  Result          - TextWriter - an object to output comment to a text file.
+//  AreaName         - String - a name of the mCommonProceduresFunction text template area
+//                       that contains the required comment.
+//  OutputComment - Boolean - if True, it is necessary to display a comment.
+//
+Procedure AddCommentToStream(Result, AreaName, OutputComment = True)
+	
+	If Not OutputComment Then
+		Return;
+	EndIf; 
+	
+	// Getting handler comments by the area name.
+	CurrentArea = mCommonProceduresFunctionsTemplate.GetArea(AreaName+"_Comment");
+	
+	CommentFromTemplate = TrimAll(GetTextByAreaWithoutAreaTitle(CurrentArea));
+	
+	// Excluding last line feed character.
+	CommentFromTemplate = Mid(CommentFromTemplate, 1, StrLen(CommentFromTemplate));
+	
+	Result.WriteLine(Chars.LF + Chars.LF + CommentFromTemplate);
+	
+EndProcedure  
+
+// Adds service code to the Result object: parameters, common procedures and functions, and destructor of external data processor.
+//
+// Parameters:
+//  Result          - TextWriter - an object to output service code to a text file.
+//  AreaName         - String - a name of the mCommonProceduresFunction text template area
+//                       that contains the required service code.
+//
+Procedure AddServiceCodeToStream(Result, AreaName)
+	
+	// Getting the area text
+	CurrentArea = mCommonProceduresFunctionsTemplate.GetArea(AreaName);
+	
+	Text = TrimAll(GetTextByAreaWithoutAreaTitle(CurrentArea));
+	
+	Text = Mid(Text, 1, StrLen(Text)); // Excluding last line feed character.
+	
+	Result.WriteLine(Chars.LF + Chars.LF + Text);
+	
+EndProcedure  
+
+// Retrieves the service code from the specified mCommonProceduresFunctionsTemplate template area.
+//
+// Parameters:
+//  AreaName - String - a name of the mCommonProceduresFunction text template area.
 //  
-// Возвращаемое значение:
-//  Текст из макета
+// Returns:
+//  - String - a text from the template.
 //
-Функция ПолучитьСлужебныйКод(ИмяОбласти)
+Function GetServiceCode(AreaName)
 	
-	// Получаем текст области
-	ТекущаяОбласть = мМакетОбщиеПроцедурыФункции.ПолучитьОбласть(ИмяОбласти);
+	// Getting the area text
+	CurrentArea = mCommonProceduresFunctionsTemplate.GetArea(AreaName);
+	
+	Return GetTextByAreaWithoutAreaTitle(CurrentArea);
+EndFunction
 
-	Возврат ПолучитьТекстПоОбластиБезНазванияОбласти(ТекущаяОбласть);
-КонецФункции
-
-#КонецОбласти
+#EndRegion
 
 #Область ПроцедурыИФункцииПолученияПолногоКодаАлгоритмовСУчетомИхВложенности
 
