@@ -6272,465 +6272,462 @@ EndProcedure
 // Returns:
 //  New infobase object.
 // 
-Функция СоздатьНовыйОбъект(Тип, СвойстваПоиска, Объект = Неопределено, ЗаписыватьОбъектСразуПослеСоздания = Истина,
-	НаборЗаписейРегистра = Неопределено, НоваяСсылка = Неопределено, НПП = 0, ГНПП = 0, ПараметрыОбъекта = Неопределено,
-	УстанавливатьУОбъектаВсеСвойстваПоиска = Истина)
+Function CreateNewObject(Type, SearchProperties, Object = Undefined, 
+	WriteObjectImmediatelyAfterCreation = True, RegisterRecordSet = Undefined,
+	NewRef = Undefined, SN = 0, GSN = 0, ObjectParameters = Undefined,
+	SetAllObjectSearchProperties = True)
 
-	СвойстваМД      = Менеджеры[Тип];
-	ИмяТипа         = СвойстваМД.ИмяТипа;
-	Менеджер        = СвойстваМД.Менеджер; // СправочникМенеджер, ДокументМенеджер, РегистрСведенийМенеджер, и т.п.
+	MDProperties      = Managers[Type];
+	TypeName         = MDProperties.TypeName;
+	Manager        = MDProperties.Manager; // CatalogManager, DocumentManager, InformationRegisterManager, etc.
 
-	Если ИмяТипа = "Справочник" Или ИмяТипа = "ПланВидовХарактеристик" Тогда
-
-		ЭтоГруппа = СвойстваПоиска["ЭтоГруппа"];
-
-		Если ЭтоГруппа = Истина Тогда
-
-			Объект = Менеджер.СоздатьГруппу();
-
-		Иначе
-
-			Объект = Менеджер.СоздатьЭлемент();
-
-		КонецЕсли;
-
-	ИначеЕсли ИмяТипа = "Документ" Тогда
-
-		Объект = Менеджер.СоздатьДокумент();
-
-	ИначеЕсли ИмяТипа = "ПланСчетов" Тогда
-
-		Объект = Менеджер.СоздатьСчет();
-
-	ИначеЕсли ИмяТипа = "ПланВидовРасчета" Тогда
-
-		Объект = Менеджер.СоздатьВидРасчета();
-
-	ИначеЕсли ИмяТипа = "РегистрСведений" Тогда
-
-		Если WriteRegistersAsRecordSets Тогда
-
-			НаборЗаписейРегистра = Менеджер.СоздатьНаборЗаписей();
-			Объект = НаборЗаписейРегистра.Добавить();
-
-		Иначе
-
-			Объект = Менеджер.СоздатьМенеджерЗаписи();
-
-		КонецЕсли;
-
-		Возврат Объект;
-
-	ИначеЕсли ИмяТипа = "ПланОбмена" Тогда
-
-		Объект = Менеджер.СоздатьУзел();
-
-	ИначеЕсли ИмяТипа = "Задача" Тогда
-
-		Объект = Менеджер.СоздатьЗадачу();
-
-	ИначеЕсли ИмяТипа = "БизнесПроцесс" Тогда
-
-		Объект = Менеджер.СоздатьБизнесПроцесс();
-
-	ИначеЕсли ИмяТипа = "Перечисление" Тогда
-
-		Объект = СвойстваМД.ПустаяСсылка;
-		Возврат Объект;
-
-	ИначеЕсли ИмяТипа = "ТочкаМаршрутаБизнесПроцесса" Тогда
-
-		Возврат Неопределено;
-
-	КонецЕсли;
-
-	НоваяСсылка = УстановитьСсылкуНового(Объект, Менеджер, СвойстваПоиска);
-
-	Если УстанавливатьУОбъектаВсеСвойстваПоиска Тогда
-		УстановитьРеквизитыПоискаУОбъекта(Объект, СвойстваПоиска, Неопределено, Ложь, Ложь);
-	КонецЕсли;
-	
-	// Проверки
-	Если ИмяТипа = "Документ" Или ИмяТипа = "Задача" Или ИмяТипа = "БизнесПроцесс" Тогда
-
-		Если Не ЗначениеЗаполнено(Объект.Дата) Тогда
-
-			Объект.Дата = ТекущаяДатаСеанса();
-
-		КонецЕсли;
-
-	КонецЕсли;
+	If TypeName = "Catalog" Or TypeName = "ChartOfCharacteristicTypes" Then
 		
-	// Если Владелец не установлен, то нужно поле добавить
-	// в возможные поля поиска, а в событии ПОЛЯПОИСКА указать поля без Владельца, если по нему поиск реально не нужен.
-
-	Если ЗаписыватьОбъектСразуПослеСоздания Тогда
-
-		Если Не ImportReferencedObjectsWithoutDeletionMark Тогда
-			Объект.ПометкаУдаления = Истина;
-		КонецЕсли;
-
-		Если ГНПП <> 0 Или Не OptimizedObjectsWriting Тогда
-
-			ЗаписатьОбъектВИБ(Объект, Тип);
-
-		Иначе
+		IsFolder = SearchProperties["IsFolder"];
+		
+		If IsFolder = True Then
 			
-			// Записывать объект сразу не будем, а только запомним что нужно записать
-			// сохраним эту информацию в специальном стеке объектов для записи
-			// вернем и новую ссылку и сам объект, хотя он еще не записан.
-			Если НоваяСсылка = Неопределено Тогда
+			Object = Manager.CreateFolder();
+						
+		Else
+			
+			Object = Manager.CreateItem();
+			
+		EndIf;
+
+	ElsIf TypeName = "Document" Then
+		
+		Object = Manager.CreateDocument();
 				
-				// Самостоятельно генерируем новую ссылку.
-				НовыйУникальныйИдентификатор = Новый УникальныйИдентификатор;
-				НоваяСсылка = Менеджер.ПолучитьСсылку(НовыйУникальныйИдентификатор);
-				Объект.УстановитьСсылкуНового(НоваяСсылка);
+	ElsIf TypeName = "ChartOfAccounts" Then
+		
+		Object = Manager.CreateAccount();
+				
+	ElsIf TypeName = "ChartOfCalculationTypes" Then
+		
+		Object = Manager.CreateCalculationType();
 
-			КонецЕсли;
+	ElsIf TypeName = "InformationRegister" Then
+		
+		If WriteRegistersAsRecordSets Then
+			
+			RegisterRecordSet = Manager.CreateRecordSet();
+			Object = RegisterRecordSet.Add();
+			
+		Else
+			
+			Object = Manager.CreateRecordManager();
+						
+		EndIf;
+		
+		Return Object;
+		
+	ElsIf TypeName = "ExchangePlan" Then
+		
+		Object = Manager.CreateNode();
+				
+	ElsIf TypeName = "Task" Then
+		
+		Object = Manager.CreateTask();
+		
+	ElsIf TypeName = "BusinessProcess" Then
+		
+		Object = Manager.CreateBusinessProcess();	
+		
+	ElsIf TypeName = "Enum" Then
+		
+		Object = MDProperties.EmptyRef;	
+		Return Object;
+		
+	ElsIf TypeName = "BusinessProcessRoutePoint" Then
+		
+		Return Undefined;
+				
+	EndIf;
 
-			ДополнитьСтекНеЗаписанныхОбъектов(НПП, ГНПП, Объект, НоваяСсылка, Тип, ПараметрыОбъекта);
+	NewRef = SetNewObjectRef(Object, Manager, SearchProperties);
+	
+	If SetAllObjectSearchProperties Then
+		SetObjectSearchAttributes(Object, SearchProperties, Undefined, False, False);
+	EndIf;
+	
+	// Checks
+	If TypeName = "Document" Or TypeName = "Task" Or TypeName = "BusinessProcess" Then
+		
+		If Not ValueIsFilled(Object.Date) Then
+			
+			Object.Date = CurrentSessionDate();
+			
+		EndIf;
+		
+	EndIf;
 
-			Возврат НоваяСсылка;
+	If WriteObjectImmediatelyAfterCreation Then
+		
+		If NOT ImportReferencedObjectsWithoutDeletionMark Then
+			Object.DeletionMark = True;
+		EndIf;
+		
+		If GSN <> 0 Or Not OptimizedObjectsWriting Then
+		
+			WriteObjectToIB(Object, Type);
+			
+		Else
+			
+			// The object is not written immediately. Instead of this, the object is stored to the stack of 
+			// objects to be written. Both the new reference and the object are returned, although the object is 
+			// not written.
+			If NewRef = Undefined Then
+				
+				// Generating the new reference.
+				NewUUID = New UUID;
+				NewRef = Manager.GetRef(NewUUID);
+				Object.SetNewObjectRef(NewRef);
+				
+			EndIf;			
+			
+			SupplementNotWrittenObjectsStack(SN, GSN, Object, NewRef, Type, ObjectParameters);
+			
+			Return NewRef;
+			
+		EndIf;
+		
+	Else
+		
+		Return Undefined;
+		
+	EndIf;
+	
+	Return Object.Ref;
+	
+EndFunction
 
-		КонецЕсли;
-
-	Иначе
-
-		Возврат Неопределено;
-
-	КонецЕсли;
-
-	Возврат Объект.Ссылка;
-
-КонецФункции
-
-// Читает из файла узел свойства объекта, устанавливает значение свойства.
+// Reads the object property node from the file and sets the property value.
 //
-// Параметры:
-//  Тип            - тип значения свойства.
-//  ОбъектНайден   - если после выполнения функции - Ложь, то значит
-//                   объект свойства не найден в информационной базе и создан новый.
+// Parameters:
+//  Type - property value type.
+//  OCRName   - an object convetation rule name.
 //
-// Возвращаемое значение:
-//  Значение свойства
+// Returns:
+//  Property value
 // 
-Функция ПрочитатьСвойство(Тип, ИмяПКО = "")
+Function ReadProperty(Type, OCRName = "")
+	
+	Value = Undefined;
+	PropertyExistence = False;
+	
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+		
+		If NodeName = "Value" Then
+			
+			SearchByProperty = deAttribute(ExchangeFile, deStringType, "Property");
+			Value         = deElementValue(ExchangeFile, Type, SearchByProperty, RemoveTrailingSpaces);
+			PropertyExistence = True;
+			
+		ElsIf NodeName = "Ref" Then
+			
+			Value       = FindObjectByRef(Type, OCRName);
+			PropertyExistence = True;
+			
+		ElsIf NodeName = "Sn" Then
+			
+			deSkip(ExchangeFile);
+			
+		ElsIf NodeName = "Gsn" Then
+			
+			ExchangeFile.Read();
+			GSN = Number(ExchangeFile.Value);
+			If GSN <> 0 Then
+				Value  = FindObjectByGlobalNumber(GSN);
+				PropertyExistence = True;
+			EndIf;
+			
+			ExchangeFile.Read();
 
-	Значение = Неопределено;
-	НаличиеСвойств = Ложь;
-
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Значение" Тогда
-
-			ИскатьПоСвойству = одАтрибут(ФайлОбмена, одТипСтрока, "Свойство");
-			Значение         = одЗначениеЭлемента(ФайлОбмена, Тип, ИскатьПоСвойству, RemoveTrailingSpaces);
-			НаличиеСвойств = Истина;
-
-		ИначеЕсли ИмяУзла = "Ссылка" Тогда
-
-			Значение       = НайтиОбъектПоСсылке(Тип, ИмяПКО);
-			НаличиеСвойств = Истина;
-
-		ИначеЕсли ИмяУзла = "Нпп" Тогда
-
-			одПропустить(ФайлОбмена);
-
-		ИначеЕсли ИмяУзла = "ГНпп" Тогда
-
-			ФайлОбмена.Прочитать();
-			ГНПП = Число(ФайлОбмена.Значение);
-			Если ГНПП <> 0 Тогда
-				Значение  = НайтиОбъектПоГлобальномуНомеру(ГНПП);
-				НаличиеСвойств = Истина;
-			КонецЕсли;
-
-			ФайлОбмена.Прочитать();
-
-		ИначеЕсли (ИмяУзла = "Свойство" Или ИмяУзла = "ЗначениеПараметра") И (ФайлОбмена.ТипУзла
-			= одТипУзлаXML_КонецЭлемента) Тогда
-
-			Если Не НаличиеСвойств И ЗначениеЗаполнено(Тип) Тогда
+		ElsIf (NodeName = "Property" Or NodeName = "ParameterValue") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			If Not PropertyExistence And ValueIsFilled(Type) Then
 				
-				// Если вообще ничего нет - значит пустое значение.
-				Значение = одПолучитьПустоеЗначение(Тип);
-
-			КонецЕсли;
-
-			Прервать;
-
-		ИначеЕсли ИмяУзла = "Выражение" Тогда
-
-			Выражение = одЗначениеЭлемента(ФайлОбмена, одТипСтрока, , Ложь);
-			Значение  = ВычислитьВыражение(Выражение);
-
-			НаличиеСвойств = Истина;
-
-		ИначеЕсли ИмяУзла = "Пусто" Тогда
-
-			Значение = одПолучитьПустоеЗначение(Тип);
-			НаличиеСвойств = Истина;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Возврат Значение;
-
-КонецФункции
-
-Функция УстановитьРеквизитыПоискаУОбъекта(НайденныйОбъект, СвойстваПоиска, СвойстваПоискаНеЗамещать,
-	НужноСравниватьСТекущимиРеквизитами = Истина, НЕЗаменятьСвойстваНеПодлежащиеИзменению = Истина)
-
-	ИзмененыРеквизитыОбъекта = Ложь;
-
-	Для Каждого Свойство Из СвойстваПоиска Цикл
-
-		Имя      = Свойство.Ключ;
-		Значение = Свойство.Значение;
-
-		Если НЕЗаменятьСвойстваНеПодлежащиеИзменению И СвойстваПоискаНеЗамещать[Имя] <> Неопределено Тогда
-
-			Продолжить;
-
-		КонецЕсли;
-
-		Если Имя = "ЭтоГруппа" Или Имя = "{УникальныйИдентификатор}" Или Имя = "{ИмяПредопределенногоЭлемента}" Тогда
-
-			Продолжить;
-
-		ИначеЕсли Имя = "ПометкаУдаления" Тогда
-
-			Если Не НужноСравниватьСТекущимиРеквизитами Или НайденныйОбъект.ПометкаУдаления <> Значение Тогда
-
-				НайденныйОбъект.ПометкаУдаления = Значение;
-				ИзмененыРеквизитыОбъекта = Истина;
-
-			КонецЕсли;
-
-		Иначе
+				// If there is no data, empty value.
+				Value = deGetEmptyValue(Type);
 				
-			// Отличные реквизиты устанавливаем.
-			Если НайденныйОбъект[Имя] <> Null Тогда
+			EndIf;
+			
+			Break;
+			
+		ElsIf NodeName = "Expression" Then
+			
+			Expression = deElementValue(ExchangeFile, deStringType, , False);
+			Value  = EvalExpression(Expression);
+			
+			PropertyExistence = True;
+			
+		ElsIf NodeName = "Empty" Then
+			
+			Value = deGetEmptyValue(Type);
+			PropertyExistence = True;		
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+	
+	Return Value;	
+	
+EndFunction
 
-				Если Не НужноСравниватьСТекущимиРеквизитами Или НайденныйОбъект[Имя] <> Значение Тогда
+Function SetObjectSearchAttributes(FoundObject, SearchProperties, SearchPropertiesDontReplace, 
+	CompareWithCurrentAttributes = True, DontReplacePropertiesNotToChange = True)
 
-					НайденныйОбъект[Имя] = Значение;
-					ИзмененыРеквизитыОбъекта = Истина;
+	ObjectAttributesChanged = False;
+				
+	For Each Property In SearchProperties Do
+					
+		Name      = Property.Key;
+		Value = Property.Value;
+		
+		If DontReplacePropertiesNotToChange And SearchPropertiesDontReplace[Name] <> Undefined Then
+			
+			Continue;
+			
+		EndIf;
+					
+		If Name = "IsFolder" Or Name = "{UUID}" Or Name = "{PredefinedItemName}" Then
+						
+			Continue;
+						
+		ElsIf Name = "DeletionMark" Then
+						
+			If Not CompareWithCurrentAttributes Or FoundObject.DeletionMark <> Value Then
+							
+				FoundObject.DeletionMark = Value;
+				ObjectAttributesChanged = True;
+							
+			EndIf;
 
-				КонецЕсли;
+		Else
+				
+			// Setting attributes that are different.
+			If FoundObject[Name] <> NULL Then
+			
+				If Not CompareWithCurrentAttributes Or FoundObject[Name] <> Value Then
+						
+					FoundObject[Name] = Value;
+					ObjectAttributesChanged = True;
+						
+				EndIf;
+				
+			EndIf;
+				
+		EndIf;
+					
+	EndDo;
+	
+	Return ObjectAttributesChanged;
+	
+EndFunction
 
-			КонецЕсли;
+Function FindCreateObjectByProperty(PropertyStructure, ObjectType, SearchProperties, SearchPropertiesDontReplace,
+	ObjectTypeName, SearchProperty, SearchPropertyValue, ObjectFound,
+	CreateNewItemIfNotFound, FoundCreatedObject,
+	MainObjectSearchMode, ObjectPropertiesModified, SN, GSN,
+	ObjectParameters, NewUUIDRef = Undefined)
 
-		КонецЕсли;
+	IsEnum = PropertyStructure.TypeName = "Enum";
+	
+	If IsEnum Then
+		
+		SearchString = "";
+		
+	Else
+		
+		SearchString = PropertyStructure.SearchString;
+		
+	EndIf;
 
-	КонецЦикла;
+	If MainObjectSearchMode Or IsBlankString(SearchString) Then
+		SearchByUUIDQueryString = "";
+	EndIf;
 
-	Возврат ИзмененыРеквизитыОбъекта;
+	Object = FindObjectByProperty(PropertyStructure.Manager, SearchProperty, SearchPropertyValue,
+		FoundCreatedObject, , , SearchByUUIDQueryString);
+		
+	ObjectFound = Not (Object = Undefined Or Object.IsEmpty());
+		
+	If Not ObjectFound Then
+		If CreateNewItemIfNotFound Then
+		
+			Object = CreateNewObject(ObjectType, SearchProperties, FoundCreatedObject, 
+				Not MainObjectSearchMode,,NewUUIDRef, SN, GSN, ObjectParameters);
+				
+			ObjectPropertiesModified = True;
+		EndIf;
+		Return Object;
+	
+	EndIf;
 
-КонецФункции
+	If IsEnum Then
+		Return Object;
+	EndIf;			
+	
+	If MainObjectSearchMode Then
+		
+		If FoundCreatedObject = Undefined Then
+			FoundCreatedObject = Object.GetObject();
+		EndIf;
+			
+		ObjectPropertiesModified = SetObjectSearchAttributes(FoundCreatedObject, SearchProperties, SearchPropertiesDontReplace);
+				
+	EndIf;
+		
+	Return Object;
+	
+EndFunction
 
-Функция НайтиИлиСоздатьОбъектПоСвойству(СтруктураСвойств, ТипОбъекта, СвойстваПоиска, СвойстваПоискаНеЗамещать,
-	ИмяТипаОбъекта, СвойствоПоиска, ЗначениеСвойстваПоиска, ОбъектНайден, СоздаватьНовыйЭлементЕслиНеНайден,
-	НайденныйИлиСозданныйОбъект, РежимПоискаОсновногоОбъекта, СвойстваОбъектаМодифицированы, НПП, ГНПП,
-	ПараметрыОбъекта, НоваяСсылкаУникальногоИдентификатора = Неопределено)
+Function GetPropertyType()
+	
+	PropertyTypeString = deAttribute(ExchangeFile, deStringType, "Type");
+	If IsBlankString(PropertyTypeString) Then
+		Return Undefined;
+	EndIf;
+	
+	Return Type(PropertyTypeString);
+	
+EndFunction
 
-	ЭтоПеречисление = СтруктураСвойств.ИмяТипа = "Перечисление";
+Function GetPropertyTypeByAdditionalData(TypesInformation, PropertyName)
+	
+	PropertyType = GetPropertyType();
+				
+	If PropertyType = Undefined And TypesInformation <> Undefined Then
+		
+		PropertyType = TypesInformation[PropertyName];
+		
+	EndIf;
+	
+	Return PropertyType;
+	
+EndFunction
 
-	Если ЭтоПеречисление Тогда
+Procedure ReadSearchPropertiesFromFile(SearchProperties, SearchPropertiesDontReplace, TypesInformation, 
+	SearchByEqualDate = False, ObjectParameters = Undefined)
+	
+	SearchByEqualDate = False;
+	
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+				
+		If NodeName = "Property"
+			Or NodeName = "ParameterValue" Then
+					
+			IsParameter = (NodeName = "ParameterValue");
+			
+			Name = deAttribute(ExchangeFile, deStringType, "Name");
+			
+			If Name = "{UUID}" 
+				Or Name = "{PredefinedItemName}" Then
+				
+				PropertyType = deStringType;
+				
+			Else
+			
+				PropertyType = GetPropertyTypeByAdditionalData(TypesInformation, Name);
+			
+			EndIf;
 
-		СтрокаПоиска = "";
-
-	Иначе
-
-		СтрокаПоиска = СтруктураСвойств.СтрокаПоиска;
-
-	КонецЕсли;
-
-	Если РежимПоискаОсновногоОбъекта Или ПустаяСтрока(СтрокаПоиска) Тогда
-		СтрокаЗапросаПоискаПоУникальномуИдентификатору = "";
-	КонецЕсли;
-
-	Объект = НайтиОбъектПоСвойству(СтруктураСвойств.Менеджер, СвойствоПоиска, ЗначениеСвойстваПоиска,
-		НайденныйИлиСозданныйОбъект, , , СтрокаЗапросаПоискаПоУникальномуИдентификатору);
-
-	ОбъектНайден = Не (Объект = Неопределено Или Объект.Пустая());
-
-	Если Не ОбъектНайден Тогда
-		Если СоздаватьНовыйЭлементЕслиНеНайден Тогда
-
-			Объект = СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, НайденныйИлиСозданныйОбъект,
-				Не РежимПоискаОсновногоОбъекта, , НоваяСсылкаУникальногоИдентификатора, НПП, ГНПП, ПараметрыОбъекта);
-
-			СвойстваОбъектаМодифицированы = Истина;
-		КонецЕсли;
-		Возврат Объект;
-
-	КонецЕсли;
-
-	Если ЭтоПеречисление Тогда
-		Возврат Объект;
-	КонецЕсли;
-
-	Если РежимПоискаОсновногоОбъекта Тогда
-
-		Если НайденныйИлиСозданныйОбъект = Неопределено Тогда
-			НайденныйИлиСозданныйОбъект = Объект.ПолучитьОбъект();
-		КонецЕсли;
-
-		СвойстваОбъектаМодифицированы = УстановитьРеквизитыПоискаУОбъекта(НайденныйИлиСозданныйОбъект, СвойстваПоиска,
-			СвойстваПоискаНеЗамещать);
-
-	КонецЕсли;
-
-	Возврат Объект;
-
-КонецФункции
-
-Функция ПолучитьТипСвойства()
-
-	СтроковыйТипСвойства = одАтрибут(ФайлОбмена, одТипСтрока, "Тип");
-	Если ПустаяСтрока(СтроковыйТипСвойства) Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Возврат Тип(СтроковыйТипСвойства);
-
-КонецФункции
-
-Функция ПолучитьТипСвойстваПоДополнительнымДанным(ИнформацияОТипах, ИмяСвойства)
-
-	ТипСвойства = ПолучитьТипСвойства();
-
-	Если ТипСвойства = Неопределено И ИнформацияОТипах <> Неопределено Тогда
-
-		ТипСвойства = ИнформацияОТипах[ИмяСвойства];
-
-	КонецЕсли;
-
-	Возврат ТипСвойства;
-
-КонецФункции
-
-Процедура ПрочитатьСвойстваПоискаИзФайла(СвойстваПоиска, СвойстваПоискаНеЗамещать, ИнформацияОТипах,
-	ПоискПоДатеНаРавенство = Ложь, ПараметрыОбъекта = Неопределено)
-
-	ПоискПоДатеНаРавенство = Ложь;
-
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Свойство" Или ИмяУзла = "ЗначениеПараметра" Тогда
-
-			ЭтоПараметр = (ИмяУзла = "ЗначениеПараметра");
-
-			Имя = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-
-			Если Имя = "{УникальныйИдентификатор}" Или Имя = "{ИмяПредопределенногоЭлемента}" Тогда
-
-				ТипСвойства = одТипСтрока;
-
-			Иначе
-
-				ТипСвойства = ПолучитьТипСвойстваПоДополнительнымДанным(ИнформацияОТипах, Имя);
-
-			КонецЕсли;
-
-			НеЗамещатьСвойство = одАтрибут(ФайлОбмена, одТипБулево, "НеЗамещать");
-			ПоискПоДатеНаРавенство = ПоискПоДатеНаРавенство Или одАтрибут(ФайлОбмена, одТипБулево,
-				"ПоискПоДатеНаРавенство");
+			DontReplaceProperty = deAttribute(ExchangeFile, deBooleanType, "DoNotReplace");
+			SearchByEqualDate = SearchByEqualDate Or deAttribute(ExchangeFile, deBooleanType, "SearchByEqualDate");
 			//
-			ИмяПКО = одАтрибут(ФайлОбмена, одТипСтрока, "ИмяПКО");
+			OCRName = deAttribute(ExchangeFile, deStringType, "OCRName");
+			
+			PropertyValue = ReadProperty(PropertyType, OCRName);
+			
+			If (Name = "IsFolder") AND (PropertyValue <> True) Then
+				
+				PropertyValue = False;
+												
+			EndIf;
+			
+			If IsParameter Then
+				AddParameterIfNecessary(ObjectParameters, Name, PropertyValue);
 
-			ЗначениеСвойства = ПрочитатьСвойство(ТипСвойства, ИмяПКО);
+			Else
+			
+				SearchProperties[Name] = PropertyValue;
+				
+				If DontReplaceProperty Then
+					
+					SearchPropertiesDontReplace[Name] = True;
+					
+				EndIf;
+				
+			EndIf;
+			
+		ElsIf (NodeName = "Ref") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;	
+	
+EndProcedure
 
-			Если (Имя = "ЭтоГруппа") И (ЗначениеСвойства <> Истина) Тогда
+Function UnlimitedLengthField(TypeManager, ParameterName)
+	
+	LongStrings = Undefined;
+	If Not TypeManager.Property("LongStrings", LongStrings) Then
+		
+		LongStrings = New Map;
+		For Each Attribute In TypeManager.MDObject.Attributes Do
 
-				ЗначениеСвойства = Ложь;
+			If Attribute.Type.ContainsType(deStringType) And (Attribute.Type.StringQualifiers.Length = 0) Then
+				
+				LongStrings.Insert(Attribute.Name, Attribute.Name);	
+				
+			EndIf;
+			
+		EndDo;
+		
+		TypeManager.Insert("LongStrings", LongStrings);
+		
+	EndIf;
+	
+	Return (LongStrings[ParameterName] <> Undefined);
+		
+EndFunction
 
-			КонецЕсли;
-
-			Если ЭтоПараметр Тогда
-				ДобавитьПараметрПриНеобходимости(ПараметрыОбъекта, Имя, ЗначениеСвойства);
-
-			Иначе
-
-				СвойстваПоиска[Имя] = ЗначениеСвойства;
-
-				Если НеЗамещатьСвойство Тогда
-
-					СвойстваПоискаНеЗамещать[Имя] = Истина;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		ИначеЕсли (ИмяУзла = "Ссылка") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Функция ОпределитьУПоляНеограниченнаяДлина(МенеджерТипа, ИмяПараметра)
-
-	ДлинныеСтроки = Неопределено;
-	Если Не МенеджерТипа.Свойство("ДлинныеСтроки", ДлинныеСтроки) Тогда
-
-		ДлинныеСтроки = Новый Соответствие;
-		Для Каждого Реквизит Из МенеджерТипа.ОбъектМД.Реквизиты Цикл
-
-			Если Реквизит.Тип.СодержитТип(одТипСтрока) И (Реквизит.Тип.КвалификаторыСтроки.Длина = 0) Тогда
-
-				ДлинныеСтроки.Вставить(Реквизит.Имя, Реквизит.Имя);
-
-			КонецЕсли;
-
-		КонецЦикла;
-
-		МенеджерТипа.Вставить("ДлинныеСтроки", ДлинныеСтроки);
-
-	КонецЕсли;
-
-	Возврат (ДлинныеСтроки[ИмяПараметра] <> Неопределено);
-
-КонецФункции
-
-Функция ОпределитьЭтотПараметрНеограниченнойДлинны(МенеджерТипа, ЗначениеПараметра, ИмяПараметра)
-
-	Попытка
-
-		Если ТипЗнч(ЗначениеПараметра) = одТипСтрока Тогда
-			СтрокаНеограниченнойДлины = ОпределитьУПоляНеограниченнаяДлина(МенеджерТипа, ИмяПараметра);
-		Иначе
-			СтрокаНеограниченнойДлины = Ложь;
-		КонецЕсли;
-
-	Исключение
-
-		СтрокаНеограниченнойДлины = Ложь;
-
-	КонецПопытки;
-
-	Возврат СтрокаНеограниченнойДлины;
-
-КонецФункции
+Function IsUnlimitedLengthParameter(TypeManager, ParameterValue, ParameterName)
+	
+	Try
+			
+		If TypeOf(ParameterValue) = deStringType Then
+			UnlimitedLengthString = UnlimitedLengthField(TypeManager, ParameterName);
+		Else
+			UnlimitedLengthString = False;
+		EndIf;		
+												
+	Except
+				
+		UnlimitedLengthString = False;
+				
+	EndTry;
+	
+	Return UnlimitedLengthString;	
+	
+EndFunction
 
 Функция НайтиЭлементЗапросом(СтруктураСвойств, СвойстваПоиска, ТипОбъекта = Неопределено, МенеджерТипа = Неопределено,
 	КоличествоРеальныхСвойствДляПоиска = Неопределено)
@@ -8276,7 +8273,7 @@ EndProcedure
 
 КонецПроцедуры
 
-Процедура ДополнитьСтекНеЗаписанныхОбъектов(НПП, ГНПП, Объект, ИзвестнаяСсылка, ТипОбъекта, ПараметрыОбъекта)
+Процедура SupplementNotWrittenObjectsStack(НПП, ГНПП, Объект, ИзвестнаяСсылка, ТипОбъекта, ПараметрыОбъекта)
 
 	НомерДляСтека = ?(НПП = 0, ГНПП, НПП);
 
@@ -8666,7 +8663,7 @@ EndProcedure
 
 				Если Ссылка = Неопределено Тогда
 
-					ДополнитьСтекНеЗаписанныхОбъектов(НПП, ГНПП, СозданныйОбъект,
+					SupplementNotWrittenObjectsStack(НПП, ГНПП, СозданныйОбъект,
 						ИзвестнаяСсылкаУникальногоИдентификатора, ТипОбъекта, ПараметрыОбъекта);
 
 				КонецЕсли;
