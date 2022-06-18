@@ -6202,7 +6202,8 @@ EndFunction
 // Searches for the object by number in the imported objects list.
 //
 // Parameters:
-//  SN          - a number of the object to be searched in the exchange file.
+//  SN - Number - a number of the object to be searched in the exchange file.
+//  MainObjectSearchMode - Boolean - if False and a dummy ref was imported, an object ref will be return.  
 //
 // Returns:
 //   Found object reference. If object is not found, Undefined is returned.
@@ -6266,8 +6267,16 @@ EndProcedure
 // SearchProperties structure.
 //
 // Parameters:
-//  Type - type of the object to be created.
-//  SearchProperties - Structure - contains attributes of a new object to be set.
+//  Type - Type - type of the object to be created.
+//  SearchProperties - Map - contains attributes of a new object to be set.
+//  Object - CatalogObject, DocumentObject, etc - a variable to return a created object.
+//  WriteObjectImmediatelyAfterCreation - Boolean - if True, the created object will be written immediately after creation.
+//  RegisterRecordSet - InformationRegisterRecordSet - a variable to return the record set.
+//  NewRef - CatalogRef, DocumentRef, etc - a varialbe to return a new object reference.
+//  SN - Number - a number of a created object into the non-written objects stack.
+//  GSN - Number - a global number of a created object into the non-written objects stack.
+//  ObjectParameters - Structure - an object parameters for a non-written objects stack.
+//  SetAllObjectSearchProperties - Boolean - if True, all of the object search attributes will be set. 
 //
 // Returns:
 //  New infobase object.
@@ -6729,674 +6738,656 @@ Function IsUnlimitedLengthParameter(TypeManager, ParameterValue, ParameterName)
 	
 EndFunction
 
-Функция НайтиЭлементЗапросом(СтруктураСвойств, СвойстваПоиска, ТипОбъекта = Неопределено, МенеджерТипа = Неопределено,
-	КоличествоРеальныхСвойствДляПоиска = Неопределено)
-
-	КоличествоСвойствДляПоиска = ?(КоличествоРеальныхСвойствДляПоиска = Неопределено, СвойстваПоиска.Количество(),
-		КоличествоРеальныхСвойствДляПоиска);
-
-	Если КоличествоСвойствДляПоиска = 0 И СтруктураСвойств.ИмяТипа = "Перечисление" Тогда
-
-		Возврат СтруктураСвойств.ПустаяСсылка;
-
-	КонецЕсли;
-
-	ТекстЗапроса       = СтруктураСвойств.СтрокаПоиска;
-
-	Если ПустаяСтрока(ТекстЗапроса) Тогда
-		Возврат СтруктураСвойств.ПустаяСсылка;
-	КонецЕсли;
-
-	ЗапросПоиска       = Новый Запрос;
-	КоличествоСвойствПоКоторымУстановленПоиск = 0;
-
-	Для Каждого Свойство Из СвойстваПоиска Цикл
-
-		ИмяПараметра      = Свойство.Ключ;
-		
-		// Не по всем параметрам можно искать.
-		Если ИмяПараметра = "{УникальныйИдентификатор}" Или ИмяПараметра = "{ИмяПредопределенногоЭлемента}" Тогда
-
-			Продолжить;
-
-		КонецЕсли;
-
-		ЗначениеПараметра = Свойство.Значение;
-		ЗапросПоиска.УстановитьПараметр(ИмяПараметра, ЗначениеПараметра);
-
-		Попытка
-
-			СтрокаНеограниченнойДлины = ОпределитьЭтотПараметрНеограниченнойДлинны(СтруктураСвойств, ЗначениеПараметра,
-				ИмяПараметра);
-
-		Исключение
-
-			СтрокаНеограниченнойДлины = Ложь;
-
-		КонецПопытки;
-
-		КоличествоСвойствПоКоторымУстановленПоиск = КоличествоСвойствПоКоторымУстановленПоиск + 1;
-
-		Если СтрокаНеограниченнойДлины Тогда
-
-			ТекстЗапроса = ТекстЗапроса + ?(КоличествоСвойствПоКоторымУстановленПоиск > 1, " И ", "") + ИмяПараметра
-				+ " ПОДОБНО &" + ИмяПараметра;
-
-		Иначе
-
-			ТекстЗапроса = ТекстЗапроса + ?(КоличествоСвойствПоКоторымУстановленПоиск > 1, " И ", "") + ИмяПараметра
-				+ " = &" + ИмяПараметра;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если КоличествоСвойствПоКоторымУстановленПоиск = 0 Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	ЗапросПоиска.Текст = ТекстЗапроса;
-	Результат = ЗапросПоиска.Выполнить();
-
-	Если Результат.Пустой() Тогда
-
-		Возврат Неопределено;
-
-	Иначе
-		
-		// Возвращаем первый найденный объект.
-		Выборка = Результат.Выбрать();
-		Выборка.Следующий();
-		СсылкаНаОбъект = Выборка.Ссылка;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция ОпределитьПоТипуОбъектаИспользоватьДополнительныйПоискПоПолямПоиска(ТипСсылкиСтрокой)
-
-	ЗначениеСоответствия = мСоответствиеДопПараметровПоиска.Получить(ТипСсылкиСтрокой);
-
-	Если ЗначениеСоответствия <> Неопределено Тогда
-		Возврат ЗначениеСоответствия;
-	КонецЕсли;
-
-	Попытка
-
-		Для Каждого Элемент Из Правила Цикл
-
-			Если Элемент.Значение.Приемник = ТипСсылкиСтрокой Тогда
-
-				Если Элемент.Значение.СинхронизироватьПоИдентификатору = Истина Тогда
-
-					НужноПродолжитьПоиск = (Элемент.Значение.ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли
-						= Истина);
-					мСоответствиеДопПараметровПоиска.Вставить(ТипСсылкиСтрокой, НужноПродолжитьПоиск);
-
-					Возврат НужноПродолжитьПоиск;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		КонецЦикла;
-
-		мСоответствиеДопПараметровПоиска.Вставить(ТипСсылкиСтрокой, Ложь);
-		Возврат Ложь;
-
-	Исключение
-
-		мСоответствиеДопПараметровПоиска.Вставить(ТипСсылкиСтрокой, Ложь);
-		Возврат Ложь;
-
-	КонецПопытки;
-
-КонецФункции
-
-// Определяет по типу объекта приемника правило конвертации объекта (ПКО).
-//
-// Параметры:
-//  ТипСсылкиСтрокой - Строка - тип объекта в строковом представлении, например, "СправочникСсылка.Номенклатура".
-// 
-// Возвращаемое значение:
-//  ЗначениеСоответствия = Правило конвертации объекта.
-// 
-Функция ОпределитьПоТипуОбъектаПриемникаПравилоКонвертацииКотороеСодержитАлгоритмПоиска(ТипСсылкиСтрокой)
-
-	ЗначениеСоответствия = мСоответствиеПравилКонвертации.Получить(ТипСсылкиСтрокой);
-
-	Если ЗначениеСоответствия <> Неопределено Тогда
-		Возврат ЗначениеСоответствия;
-	КонецЕсли;
-
-	Попытка
-
-		Для Каждого Элемент Из Правила Цикл
-
-			Если Элемент.Значение.Приемник = ТипСсылкиСтрокой Тогда
-
-				Если Элемент.Значение.ЕстьОбработчикПоследовательностьПолейПоиска = Истина Тогда
-
-					Правило = Элемент.Значение;
-
-					мСоответствиеПравилКонвертации.Вставить(ТипСсылкиСтрокой, Правило);
-
-					Возврат Правило;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		КонецЦикла;
-
-		мСоответствиеПравилКонвертации.Вставить(ТипСсылкиСтрокой, Неопределено);
-		Возврат Неопределено;
-
-	Исключение
-
-		мСоответствиеПравилКонвертации.Вставить(ТипСсылкиСтрокой, Неопределено);
-		Возврат Неопределено;
-
-	КонецПопытки;
-
-КонецФункции
-
-Функция НайтиСсылкуНаОбъектПоОдномуСвойству(СвойстваПоиска, СтруктураСвойств)
-
-	Для Каждого Свойство Из СвойстваПоиска Цикл
-
-		ИмяПараметра      = Свойство.Ключ;
-					
-		// Не по всем параметрам можно искать.
-		Если ИмяПараметра = "{УникальныйИдентификатор}" Или ИмяПараметра = "{ИмяПредопределенногоЭлемента}" Тогда
-
-			Продолжить;
-
-		КонецЕсли;
-
-		ЗначениеПараметра = Свойство.Значение;
-		СсылкаНаОбъект = НайтиОбъектПоСвойству(СтруктураСвойств.Менеджер, ИмяПараметра, ЗначениеПараметра,
-			Неопределено, СтруктураСвойств, СвойстваПоиска);
-
-	КонецЦикла;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаДокумент(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом,
-	ПоискПоДатеНаРавенство)
+Function FindItemUsingRequest(PropertyStructure, SearchProperties, ObjectType = Undefined, 
+	TypeManager = Undefined, RealSearchPropertiesCount = Undefined)
 	
-	// Попробуем документ по дате и номеру найти.
-	ИскатьЗапросом = ПоискПоДатеНаРавенство Или (КоличествоРеальныхСвойствДляПоиска <> 2);
+	SearchPropertiesCount = ?(RealSearchPropertiesCount = Undefined, SearchProperties.Count(), RealSearchPropertiesCount);
 
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
+	If SearchPropertiesCount = 0 And PropertyStructure.TypeName = "Enum" Then
+		
+		Return PropertyStructure.EmptyRef;
+		
+	EndIf;
 
-	НомерДокумента = СвойстваПоиска["Номер"];
-	ДатаДокумента  = СвойстваПоиска["Дата"];
+	QueryText       = PropertyStructure.SearchString;
+	
+	If IsBlankString(QueryText) Then
+		Return PropertyStructure.EmptyRef;
+	EndIf;
+	
+	SearchQuery       = New Query();
+	PropertyUsedInSearchCount = 0;
 
-	Если (НомерДокумента <> Неопределено) И (ДатаДокумента <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНомеру(НомерДокумента, ДатаДокумента);
-
-	Иначе
+	For each Property In SearchProperties Do
+				
+		ParameterName      = Property.Key;
+		
+		// The following parameters cannot be search fields.
+		If ParameterName = "{UUID}" Or ParameterName = "{PredefinedItemName}" Then
 						
-		// По дате и номеру найти не удалось - надо искать запросом.
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаСправочник(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом)
-
-	Владелец     = СвойстваПоиска["Владелец"];
-	Родитель     = СвойстваПоиска["Родитель"];
-	Код          = СвойстваПоиска["Код"];
-	Наименование = СвойстваПоиска["Наименование"];
-
-	Кол          = 0;
-
-	Если Владелец <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли;
-	Если Родитель <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли;
-	Если Код <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли;
-	Если Наименование <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли;
-
-	ИскатьЗапросом = (Кол <> КоличествоРеальныхСвойствДляПоиска);
-
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Если (Код <> Неопределено) И (Наименование = Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоКоду(Код, , Родитель, Владелец);
-
-	ИначеЕсли (Код = Неопределено) И (Наименование <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНаименованию(Наименование, Истина, Родитель, Владелец);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаПВХ(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом)
-
-	Родитель     = СвойстваПоиска["Родитель"];
-	Код          = СвойстваПоиска["Код"];
-	Наименование = СвойстваПоиска["Наименование"];
-	Кол          = 0;
-
-	Если Родитель <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-	Если Код <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-	Если Наименование <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-
-	ИскатьЗапросом = (Кол <> КоличествоРеальныхСвойствДляПоиска);
-
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Если (Код <> Неопределено) И (Наименование = Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоКоду(Код, Родитель);
-
-	ИначеЕсли (Код = Неопределено) И (Наименование <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНаименованию(Наименование, Истина, Родитель);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаПланОбмена(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом)
-
-	Код          = СвойстваПоиска["Код"];
-	Наименование = СвойстваПоиска["Наименование"];
-	Кол          = 0;
-
-	Если Код <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-	Если Наименование <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-
-	ИскатьЗапросом = (Кол <> КоличествоРеальныхСвойствДляПоиска);
-
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Если (Код <> Неопределено) И (Наименование = Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоКоду(Код);
-
-	ИначеЕсли (Код = Неопределено) И (Наименование <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНаименованию(Наименование, Истина);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаЗадачу(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом)
-
-	Код          = СвойстваПоиска["Номер"];
-	Наименование = СвойстваПоиска["Наименование"];
-	Кол          = 0;
-
-	Если Код <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-	Если Наименование <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-
-	ИскатьЗапросом = (Кол <> КоличествоРеальныхСвойствДляПоиска);
-
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-	Если (Код <> Неопределено) И (Наименование = Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНомеру(Код);
-
-	ИначеЕсли (Код = Неопределено) И (Наименование <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНаименованию(Наименование, Истина);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Функция НайтиСсылкуНаБизнесПроцесс(СвойстваПоиска, СтруктураСвойств, КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом)
-
-	Код          = СвойстваПоиска["Номер"];
-	Кол          = 0;
-
-	Если Код <> Неопределено Тогда
-		Кол = 1 + Кол;
-	КонецЕсли
-	;
-
-	ИскатьЗапросом = (Кол <> КоличествоРеальныхСвойствДляПоиска);
-
-	Если ИскатьЗапросом Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Если (Код <> Неопределено) Тогда
-
-		СсылкаНаОбъект = СтруктураСвойств.Менеджер.НайтиПоНомеру(Код);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Процедура ДобавитьСсылкуВСписокЗагруженныхОбъектов(ГНППСсылки, НППСсылки, СсылкаНаОбъект, СсылкаФиктивная = Ложь)
-	
-	// Запоминаем ссылку на объект.
-	Если Не ЗапоминатьЗагруженныеОбъекты Или СсылкаНаОбъект = Неопределено Тогда
-
-		Возврат;
-
-	КонецЕсли;
-
-	СтруктураЗаписи = Новый Структура("СсылкаНаОбъект, СсылкаФиктивная", СсылкаНаОбъект, СсылкаФиктивная);
-	
-	// Запоминаем ссылку на объект.
-	Если ГНППСсылки <> 0 Тогда
-
-		ЗагруженныеГлобальныеОбъекты[ГНППСсылки] = СтруктураЗаписи;
-
-	ИначеЕсли НППСсылки <> 0 Тогда
-
-		ЗагруженныеОбъекты[НППСсылки] = СтруктураЗаписи;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция НайтиЭлементПоСвойствамПоиска(ТипОбъекта, ИмяТипаОбъекта, СвойстваПоиска, СтруктураСвойств,
-	СтрокаИменСвойствПоиска, ПоискПоДатеНаРавенство)
-	
-	// Не нужно искать по имени предопределенного элемента и по уникальной ссылке на объект
-	// нужно искать только по тем свойствам, которые имеются в строке имен свойств. Если там пусто, то по
-	// всем имеющимся свойствам поиска.
-
-	ИскатьЗапросом = Ложь;
-
-	Если ПустаяСтрока(СтрокаИменСвойствПоиска) Тогда
-
-		ВременныеСвойстваПоиска = СвойстваПоиска;
-
-	Иначе
-
-		ГотоваяСтрокаДляРазбора = СтрЗаменить(СтрокаИменСвойствПоиска, " ", "");
-		ДлинаСтроки = СтрДлина(ГотоваяСтрокаДляРазбора);
-		Если Сред(ГотоваяСтрокаДляРазбора, ДлинаСтроки, 1) <> "," Тогда
-
-			ГотоваяСтрокаДляРазбора = ГотоваяСтрокаДляРазбора + ",";
-
-		КонецЕсли;
-
-		ВременныеСвойстваПоиска = Новый Соответствие;
-		Для Каждого ЭлементСвойств Из СвойстваПоиска Цикл
-
-			ИмяПараметра = ЭлементСвойств.Ключ;
-			Если СтрНайти(ГотоваяСтрокаДляРазбора, ИмяПараметра + ",") > 0 Тогда
-
-				ВременныеСвойстваПоиска.Вставить(ИмяПараметра, ЭлементСвойств.Значение);
-
-			КонецЕсли;
-
-		КонецЦикла;
-
-	КонецЕсли;
-
-	СвойствоУникальныйИдентификатор = ВременныеСвойстваПоиска["{УникальныйИдентификатор}"];
-	СвойствоИмяПредопределенного = ВременныеСвойстваПоиска["{ИмяПредопределенногоЭлемента}"];
-
-	КоличествоРеальныхСвойствДляПоиска = ВременныеСвойстваПоиска.Количество();
-	КоличествоРеальныхСвойствДляПоиска = КоличествоРеальныхСвойствДляПоиска - ?(СвойствоУникальныйИдентификатор
-		<> Неопределено, 1, 0);
-	КоличествоРеальныхСвойствДляПоиска = КоличествоРеальныхСвойствДляПоиска - ?(СвойствоИмяПредопределенного
-		<> Неопределено, 1, 0);
-	Если КоличествоРеальныхСвойствДляПоиска = 1 Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаОбъектПоОдномуСвойству(ВременныеСвойстваПоиска, СтруктураСвойств);
-
-	ИначеЕсли ИмяТипаОбъекта = "Документ" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаДокумент(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом, ПоискПоДатеНаРавенство);
-
-	ИначеЕсли ИмяТипаОбъекта = "Справочник" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаСправочник(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом);
-
-	ИначеЕсли ИмяТипаОбъекта = "ПланВидовХарактеристик" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаПВХ(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом);
-
-	ИначеЕсли ИмяТипаОбъекта = "ПланОбмена" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаПланОбмена(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом);
-
-	ИначеЕсли ИмяТипаОбъекта = "Задача" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаЗадачу(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом);
-
-	ИначеЕсли ИмяТипаОбъекта = "БизнесПроцесс" Тогда
-
-		СсылкаНаОбъект = НайтиСсылкуНаБизнесПроцесс(ВременныеСвойстваПоиска, СтруктураСвойств,
-			КоличествоРеальныхСвойствДляПоиска, ИскатьЗапросом);
-
-	Иначе
-
-		ИскатьЗапросом = Истина;
-
-	КонецЕсли;
-
-	Если ИскатьЗапросом Тогда
-
-		СсылкаНаОбъект = НайтиЭлементЗапросом(СтруктураСвойств, ВременныеСвойстваПоиска, ТипОбъекта, ,
-			КоличествоРеальныхСвойствДляПоиска);
-
-	КонецЕсли;
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-Процедура ОбработатьУстановкуСвойствПоискаУОбъекта(УстанавливатьУОбъектаВсеСвойстваПоиска, ТипОбъекта, СвойстваПоиска,
-	СвойстваПоискаНеЗамещать, СсылкаНаОбъект, СозданныйОбъект, ЗаписыватьНовыйОбъектВИнформационнуюБазу = Истина,
-	ИзмененыРеквизитыОбъекта = Ложь)
-
-	Если УстанавливатьУОбъектаВсеСвойстваПоиска <> Истина Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если Не ЗначениеЗаполнено(СсылкаНаОбъект) Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если СозданныйОбъект = Неопределено Тогда
-		СозданныйОбъект = СсылкаНаОбъект.ПолучитьОбъект();
-	КонецЕсли;
-
-	ИзмененыРеквизитыОбъекта = УстановитьРеквизитыПоискаУОбъекта(СозданныйОбъект, СвойстваПоиска,
-		СвойстваПоискаНеЗамещать);
-	
-	// Если было то что изменено, тогда перезаписываем объект.
-	Если ИзмененыРеквизитыОбъекта И ЗаписыватьНовыйОбъектВИнформационнуюБазу Тогда
-
-		ЗаписатьОбъектВИБ(СозданныйОбъект, ТипОбъекта);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция ОбработатьПоискОбъектаПоСтруктуре(НомерОбъекта, ТипОбъекта, СозданныйОбъект, РежимПоискаОсновногоОбъекта,
-	СвойстваОбъектаМодифицированы, ОбъектНайден, ЭтоГлобальныйНомер, ПараметрыОбъекта)
-
-	СтруктураДанных = мГлобальныйСтекНеЗаписанныхОбъектов[НомерОбъекта];
-
-	Если СтруктураДанных <> Неопределено Тогда
-
-		СвойстваОбъектаМодифицированы = Истина;
-		СозданныйОбъект = СтруктураДанных.Объект;
-
-		Если СтруктураДанных.ИзвестнаяСсылка = Неопределено Тогда
-
-			УстановитьСсылкуДляОбъекта(СтруктураДанных);
-
-		КонецЕсли;
-
-		СсылкаНаОбъект = СтруктураДанных.ИзвестнаяСсылка;
-		ПараметрыОбъекта = СтруктураДанных.ПараметрыОбъекта;
-
-		ОбъектНайден = Ложь;
-
-	Иначе
-
-		СозданныйОбъект = Неопределено;
-
-		Если ЭтоГлобальныйНомер Тогда
-			СсылкаНаОбъект = НайтиОбъектПоГлобальномуНомеру(НомерОбъекта, РежимПоискаОсновногоОбъекта);
-		Иначе
-			СсылкаНаОбъект = НайтиОбъектПоНомеру(НомерОбъекта, РежимПоискаОсновногоОбъекта);
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если СсылкаНаОбъект <> Неопределено Тогда
-
-		Если РежимПоискаОсновногоОбъекта Тогда
-
-			СвойстваПоиска = "";
-			СвойстваПоискаНеЗамещать = "";
-			ПрочитатьИнформациюОСвойствахПоиска(ТипОбъекта, СвойстваПоиска, СвойстваПоискаНеЗамещать, ,
-				ПараметрыОбъекта);
+			Continue;
+						
+		EndIf;
+
+		ParameterValue = Property.Value;
+		SearchQuery.SetParameter(ParameterName, ParameterValue);
+				
+		Try
 			
-			// Для основного поиска нужно поля поиска еще раз проверить, возможно нужно их переустановить...
-			Если СозданныйОбъект = Неопределено Тогда
+			UnlimitedLengthString = IsUnlimitedLengthParameter(PropertyStructure, ParameterValue, ParameterName);		
+													
+		Except
+					
+			UnlimitedLengthString = False;
+					
+		EndTry;
+		
+		PropertyUsedInSearchCount = PropertyUsedInSearchCount + 1;
+				
+		If UnlimitedLengthString Then
+					
+			QueryText = QueryText + ?(PropertyUsedInSearchCount > 1, " AND ", "") + ParameterName + " LIKE &" + ParameterName;
+					
+		Else
+					
+			QueryText = QueryText + ?(PropertyUsedInSearchCount > 1, " AND ", "") + ParameterName + " = &" + ParameterName;
+					
+		EndIf;
+								
+	EndDo;
 
-				СозданныйОбъект = СсылкаНаОбъект.ПолучитьОбъект();
+	If PropertyUsedInSearchCount = 0 Then
+		Return Undefined;
+	EndIf;
+	
+	SearchQuery.Text = QueryText;
+	Result = SearchQuery.Execute();
+			
+	If Result.IsEmpty() Then
+		
+		Return Undefined;
+								
+	Else
+		
+		// Returning the first found object.
+		Selection = Result.Select();
+		Selection.Next();
+		ObjectRef = Selection.Ref;
+				
+	EndIf;
+	
+	Return ObjectRef;
+	
+EndFunction
 
-			КонецЕсли;
+Function GetAdditionalSearchBySearchFieldsUsageByObjectType(RefTypeString)
+	
+	MapValue = mExtendedSearchParameterMap.Get(RefTypeString);
+	
+	If MapValue <> Undefined Then
+		Return MapValue;
+	EndIf;
+	
+	Try
+	
+		For Each Item In Rules Do
+			
+			If Item.Value.Destination = RefTypeString Then
+				
+				If Item.Value.SynchronizeByID = True Then
+					
+					ContinueSearch = (Item.Value.SearchBySearchFieldsIfNotFoundByID = True);
+					mExtendedSearchParameterMap.Insert(RefTypeString, ContinueSearch);
+					
+					Return ContinueSearch;
+					
+				EndIf;
+				
+			EndIf;
+			
+		EndDo;
+		
+		mExtendedSearchParameterMap.Insert(RefTypeString, False);
+		Return False;
+	
+	Except
+		
+		mExtendedSearchParameterMap.Insert(RefTypeString, False);
+		Return False;
+	
+    EndTry;
+	
+EndFunction
 
-			СвойстваОбъектаМодифицированы = УстановитьРеквизитыПоискаУОбъекта(СозданныйОбъект, СвойстваПоиска,
-				СвойстваПоискаНеЗамещать);
-
-		Иначе
-
-			одПропустить(ФайлОбмена);
-
-		КонецЕсли;
-
-		Возврат СсылкаНаОбъект;
-
-	КонецЕсли;
-
-	Возврат Неопределено;
-
-КонецФункции
-
-Процедура ПрочитатьИнформациюОСвойствахПоиска(ТипОбъекта, СвойстваПоиска, СвойстваПоискаНеЗамещать,
-	ПоискПоДатеНаРавенство = Ложь, ПараметрыОбъекта = Неопределено)
-
-	Если СвойстваПоиска = "" Тогда
-		СвойстваПоиска = Новый Соответствие;
-	КонецЕсли;
-
-	Если СвойстваПоискаНеЗамещать = "" Тогда
-		СвойстваПоискаНеЗамещать = Новый Соответствие;
-	КонецЕсли;
-
-	ИнформацияОТипах = мСоответствиеТиповДанныхДляЗагрузки[ТипОбъекта];
-	ПрочитатьСвойстваПоискаИзФайла(СвойстваПоиска, СвойстваПоискаНеЗамещать, ИнформацияОТипах, ПоискПоДатеНаРавенство,
-		ПараметрыОбъекта);
-
-КонецПроцедуры
-
-// Производит поиск объекта в информационной базе, если не найден создает новый.
+// Determines the object conversion rule (OCR) by destination object type.
 //
-// Параметры:
-//  ТипОбъекта     - тип искомого объекта.
-//  СвойстваПоиска - структура, содержащая свойства по которым производится поиск объекта.
-//  ОбъектНайден   - если Ложь, то объект не найден, а создан новый.
+// Parameters:
+//  RefTypeString - String - an object type as a string, for example, "CatalogRef.Products".
+// 
+// Returns:
+//  MapValue - an object conversion rule.
+// 
+Function GetConversionRuleWithSearchAlgorithmByDestinationObjectType(RefTypeString)
+	
+	MapValue = mConversionRulesMap.Get(RefTypeString);
+
+	If MapValue <> Undefined Then
+		Return MapValue;
+	EndIf;
+	
+	Try
+	
+		For Each Item In Rules Do
+			
+			If Item.Value.Destination = RefTypeString Then
+				
+				If Item.Value.HasSearchFieldSequenceHandler = True Then
+					
+					Rule = Item.Value;
+					
+					mConversionRulesMap.Insert(RefTypeString, Rule);
+					
+					Return Rule;
+					
+				EndIf;
+				
+			EndIf;
+			
+		EndDo;
+		
+		mConversionRulesMap.Insert(RefTypeString, Undefined);
+		Return Undefined;
+	
+	Except
+		
+		mConversionRulesMap.Insert(RefTypeString, Undefined);
+		Return Undefined;
+	
+	EndTry;
+	
+EndFunction
+
+Function FindObjectRefBySingleProperty(SearchProperties, PropertyStructure)
+	
+	For Each Property In SearchProperties Do
+					
+		ParameterName      = Property.Key;
+					
+		// The following parameters cannot be search fields.
+		If ParameterName = "{UUID}" Or ParameterName = "{PredefinedItemName}" Then
+						
+			Continue;
+						
+		EndIf;
+					
+		ParameterValue = Property.Value;
+		ObjectRef = FindObjectByProperty(PropertyStructure.Manager, ParameterName, ParameterValue, Undefined, PropertyStructure, SearchProperties);
+		
+	EndDo;
+	
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindDocumentRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery, SearchByEqualDate)
+	
+	// Attempting to search for the document by the date and number.
+	SearchWithQuery = SearchByEqualDate OR (RealSearchPropertiesCount <> 2);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+					
+	DocumentNumber = SearchProperties["Number"];
+	DocumentDate  = SearchProperties["Date"];
+					
+	If (DocumentNumber <> Undefined) AND (DocumentDate <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByNumber(DocumentNumber, DocumentDate);
+																		
+	Else
+						
+		// Cannot find by date and number. Search using a query.
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+						
+	EndIf;
+	
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindCatalogRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery)
+	
+	Owner     = SearchProperties["Owner"];
+	Parent     = SearchProperties["Parent"];
+	Code          = SearchProperties["Code"];
+	Description = SearchProperties["Description"];
+				
+	Qty          = 0;
+				
+	If Owner <> Undefined Then
+		Qty = 1 + Qty; 
+	EndIf;
+	If Parent <> Undefined Then	
+		Qty = 1 + Qty; 
+	EndIf;
+	If Code <> Undefined Then 
+		Qty = 1 + Qty; 
+	EndIf;
+	If Description <> Undefined Then
+		Qty = 1 + Qty; 
+	EndIf;
+
+	SearchWithQuery = (Qty <> RealSearchPropertiesCount);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+					
+	If (Code <> Undefined) And (Description = Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByCode(Code, , Parent, Owner);
+																		
+	ElsIf (Code = Undefined) And (Description <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByDescription(Description, True, Parent, Owner);
+											
+	Else
+						
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+						
+	EndIf;
+															
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindCCTRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery)
+	
+	Parent     = SearchProperties["Parent"];
+	Code          = SearchProperties["Code"];
+	Description = SearchProperties["Description"];
+	Qty          = 0;
+				
+	If Parent <> Undefined Then	
+		Qty = 1 + Qty 
+	EndIf;
+	If Code <> Undefined Then 
+		Qty = 1 + Qty 
+	EndIf;
+	If Description <> Undefined Then
+		Qty = 1 + Qty 
+	EndIf;
+				
+	SearchWithQuery = (Qty <> RealSearchPropertiesCount);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+					
+	If (Code <> Undefined) And (Description = Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByCode(Code, Parent);
+												
+	ElsIf (Code = Undefined) And (Description <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByDescription(Description, True, Parent);
+																	
+	Else
+						
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+			
+	EndIf;
+															
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindExchangePlanRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery)
+	
+	Code          = SearchProperties["Code"];
+	Description = SearchProperties["Description"];
+	Qty          = 0;
+				
+	If Code <> Undefined Then 
+		Qty = 1 + Qty 
+	EndIf;
+	If Description <> Undefined Then
+		Qty = 1 + Qty 
+	EndIf;
+				
+	SearchWithQuery = (Qty <> RealSearchPropertiesCount);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+					
+	If (Code <> Undefined) And (Description = Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByCode(Code);
+												
+	ElsIf (Code = Undefined) And (Description <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByDescription(Description, TRUE);
+																	
+	Else
+						
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+						
+	EndIf;
+															
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindTaskRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery)
+	
+	Code          = SearchProperties["Number"];
+	Description = SearchProperties["Description"];
+	Qty          = 0;
+				
+	If Code <> Undefined Then 
+		Qty = 1 + Qty 
+	EndIf;
+	If Description <> Undefined Then
+		Qty = 1 + Qty 
+	EndIf;
+				
+	SearchWithQuery = (Qty <> RealSearchPropertiesCount);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+	If (Code <> Undefined) And (Description = Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByNumber(Code);
+												
+	ElsIf (Code = Undefined) And (Description <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByDescription(Description, True);
+																	
+	Else
+						
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+						
+	EndIf;
+															
+	Return ObjectRef;
+	
+EndFunction
+
+Function FindBusinessProcessRef(SearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery)
+	
+	Code          = SearchProperties["Number"];
+	Qty          = 0;
+				
+	If Code <> Undefined Then 
+		Qty = 1 + Qty 
+	EndIf;
+								
+	SearchWithQuery = (Qty <> RealSearchPropertiesCount);
+				
+	If SearchWithQuery Then
+		Return Undefined;
+	EndIf;
+					
+	If  (Code <> Undefined) Then
+						
+		ObjectRef = PropertyStructure.Manager.FindByNumber(Code);
+												
+	Else
+						
+		SearchWithQuery = True;
+		ObjectRef = Undefined;
+						
+	EndIf;
+															
+	Return ObjectRef;
+	
+EndFunction
+
+Procedure AddRefToImportedObjectList(GSNRef, SNRef, ObjectRef, DummyRef = False)
+	
+	// Remembering the object reference.
+	If Not RememberImportedObjects Or ObjectRef = Undefined Then
+		
+		Return;
+		
+	EndIf;
+	
+	RecordStructure = New Structure("ObjectRef, DummyRef", ObjectRef, DummyRef);
+	
+	// Remembering the object reference.
+	If GSNRef <> 0 Then
+		
+		ImportedGlobalObjects[GSNRef] = RecordStructure;
+		
+	ElsIf SNRef <> 0 Then
+		
+		ImportedObjects[SNRef] = RecordStructure;
+						
+	EndIf;	
+	
+EndProcedure
+
+Function FindItemBySearchProperties(ObjectType, ObjectTypeName, SearchProperties, 
+	PropertyStructure, SearchPropertyNameString, SearchByEqualDate)
+	
+	// Searching by properties that are in the property name string. If this parameter is empty, searching by all available search properties. 
+	// If it is empty, then search by all existing search properties.
+
+	SearchWithQuery = False;	
+	
+	If IsBlankString(SearchPropertyNameString) Then
+		
+		TemporarySearchProperties = SearchProperties;
+		
+	Else
+		
+		ResultingStringForParsing = StrReplace(SearchPropertyNameString, " ", "");
+		StringLength = StrLen(ResultingStringForParsing);
+		If Mid(ResultingStringForParsing, StringLength, 1) <> "," Then
+			
+			ResultingStringForParsing = ResultingStringForParsing + ",";
+			
+		EndIf;
+		
+		TemporarySearchProperties = New Map;
+		For Each PropertyItem In SearchProperties Do
+			
+			ParameterName = PropertyItem.Key;
+			If StrFind(ResultingStringForParsing, ParameterName + ",") > 0 Then
+				
+				TemporarySearchProperties.Insert(ParameterName, PropertyItem.Value); 	
+				
+			EndIf;
+			
+		EndDo;
+		
+	EndIf;
+
+	UUIDProperty = TemporarySearchProperties["{UUID}"];
+	PredefinedNameProperty = TemporarySearchProperties["{PredefinedItemName}"];
+	
+	RealSearchPropertiesCount = TemporarySearchProperties.Count();
+	RealSearchPropertiesCount = RealSearchPropertiesCount - ?(UUIDProperty <> Undefined, 1, 0);
+	RealSearchPropertiesCount = RealSearchPropertiesCount - ?(PredefinedNameProperty <> Undefined, 1, 0);
+	If RealSearchPropertiesCount = 1 Then
+				
+		ObjectRef = FindObjectRefBySingleProperty(TemporarySearchProperties, PropertyStructure);
+																						
+	ElsIf ObjectTypeName = "Document" Then
+				
+		ObjectRef = FindDocumentRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery, SearchByEqualDate);
+											
+	ElsIf ObjectTypeName = "Catalog" Then
+				
+		ObjectRef = FindCatalogRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery);
+								
+	ElsIf ObjectTypeName = "ChartOfCharacteristicTypes" Then
+				
+		ObjectRef = FindCCTRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery);
+							
+	ElsIf ObjectTypeName = "ExchangePlan" Then
+				
+		ObjectRef = FindExchangePlanRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery);
+							
+	ElsIf ObjectTypeName = "Task" Then
+				
+		ObjectRef = FindTaskRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery);
+												
+	ElsIf ObjectTypeName = "BusinessProcess" Then
+				
+		ObjectRef = FindBusinessProcessRef(TemporarySearchProperties, PropertyStructure, RealSearchPropertiesCount, SearchWithQuery);
+									
+	Else
+				
+		SearchWithQuery = True;
+				
+	EndIf;
+		
+	If SearchWithQuery Then
+			
+		ObjectRef = FindItemUsingRequest(PropertyStructure, TemporarySearchProperties, ObjectType, , RealSearchPropertiesCount);
+				
+	EndIf;
+	
+	Return ObjectRef;
+	
+EndFunction
+
+Procedure ProcessObjectSearchPropertiesSetup(SetAllObjectSearchProperties, ObjectType, SearchProperties, 
+	SearchPropertiesDontReplace, ObjectRef, CreatedObject, WriteNewObjectToInfobase = True, ObjectAttributeChanged = False)
+	
+	If SetAllObjectSearchProperties <> True Then
+		Return;
+	EndIf;
+	
+	If Not ValueIsFilled(ObjectRef) Then
+		Return;
+	EndIf;
+	
+	If CreatedObject = Undefined Then
+		CreatedObject = ObjectRef.GetObject();
+	EndIf;
+	
+	ObjectAttributeChanged = SetObjectSearchAttributes(CreatedObject, SearchProperties, SearchPropertiesDontReplace);
+	
+	// Rewriting the object if changes were made.
+	If ObjectAttributeChanged
+		AND WriteNewObjectToInfobase Then
+		
+		WriteObjectToIB(CreatedObject, ObjectType);
+		
+	EndIf;
+	
+EndProcedure
+
+Function ProcessObjectSearchByStructure(ObjectNumber, ObjectType, CreatedObject,
+	MainObjectSearchMode, ObjectPropertiesModified, ObjectFound, IsGlobalNumber, ObjectParameters)
+
+	DataStructure = mNotWrittenObjectGlobalStack[ObjectNumber];
+	
+	If DataStructure <> Undefined Then
+		
+		ObjectPropertiesModified = True;
+		CreatedObject = DataStructure.Object;
+		
+		If DataStructure.KnownRef = Undefined Then
+			
+			SetObjectRef(DataStructure);
+			
+		EndIf;
+			
+		ObjectRef = DataStructure.KnownRef;
+		ObjectParameters = DataStructure.ObjectParameters;
+		
+		ObjectFound = False;
+
+	Else
+		
+		CreatedObject = Undefined;
+		
+		If IsGlobalNumber Then
+			ObjectRef = FindObjectByGlobalNumber(ObjectNumber, MainObjectSearchMode);
+		Else
+			ObjectRef = FindObjectByNumber(ObjectNumber, MainObjectSearchMode);
+		EndIf;
+		
+	EndIf;
+
+	If ObjectRef <> Undefined Then
+		
+		If MainObjectSearchMode Then
+			
+			SearchProperties = "";
+			SearchPropertiesDontReplace = "";
+			ReadSearchPropertyInfo(ObjectType, SearchProperties, SearchPropertiesDontReplace, , ObjectParameters);
+			
+			// Verifying search fields.
+			If CreatedObject = Undefined Then
+				
+				CreatedObject = ObjectRef.GetObject();
+				
+			EndIf;
+			
+			ObjectPropertiesModified = SetObjectSearchAttributes(CreatedObject, SearchProperties, SearchPropertiesDontReplace);
+			
+		Else
+			
+			deSkip(ExchangeFile);
+			
+		EndIf;
+		
+		Return ObjectRef;
+		
+	EndIf;
+	
+	Return Undefined;
+	
+EndFunction
+
+Procedure ReadSearchPropertyInfo(ObjectType, SearchProperties, SearchPropertiesDontReplace, 
+	SearchByEqualDate = False, ObjectParameters = Undefined)
+	
+	If SearchProperties = "" Then
+		SearchProperties = New Map;		
+	EndIf;
+	
+	If SearchPropertiesDontReplace = "" Then
+		SearchPropertiesDontReplace = New Map;		
+	EndIf;	
+	
+	TypesInformation = mDataTypeMapForImport[ObjectType];
+	ReadSearchPropertiesFromFile(SearchProperties, SearchPropertiesDontReplace, TypesInformation, SearchByEqualDate, ObjectParameters);	
+	
+EndProcedure
+
+// Searches an object in the infobase and creates a new object, if it is not found.
 //
-// Возвращаемое значение:
-//  Новый или найденный объект информационной базы.
+// Parameters:
+//  ObjectType - String - a string presentation of type of the object to be found.
+//  OCRName - String - an object conversion rule name.
+//  SearchProperties - Map - a properties to be used for object searching.
+//  SearchPropertiesDontReplace - Map - a properties to be used for object searching that will not be replaced in the found object.
+//  ObjectFound - Boolean - if False, object is not found and a new object is created.
+//  CreatedObject - CatalogObject, DocumentObject, etc. - an object that created if existing object was not found.
+//  DontCreateObjectIfNotFound - Boolean - if True, no object will be created.
+//  MainObjectSearchMode - Boolean - if True, object transferred by ref will not be searched in destination base, 
+//  	only his UUID will be set in the destination object.
+//  ObjectPropertiesModified - Boolean - True, if an object properties was modified.
+//  GlobalRefSN - Number - a sequence global number of the object ref.
+//  RefSN - Number - a sequence number of the object ref.
+//  KnownUUIDRef - CatalogRef, DocumentRef, etc - a previously found reference of the passed UUID.
+//  ObjectParameters - Structure - an object parameters. 
+//
+// Returns:
+//  New or found infobase object.
 //  
 Функция НайтиОбъектПоСсылке(ТипОбъекта, ИмяПКО = "", СвойстваПоиска = "", СвойстваПоискаНеЗамещать = "",
 	ОбъектНайден = Истина, СозданныйОбъект = Неопределено, НеСоздаватьОбъектЕслиНеНайден = Неопределено,
