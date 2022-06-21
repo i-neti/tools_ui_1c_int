@@ -7389,932 +7389,929 @@ EndProcedure
 // Returns:
 //  New or found infobase object.
 //  
-Функция НайтиОбъектПоСсылке(ТипОбъекта, ИмяПКО = "", СвойстваПоиска = "", СвойстваПоискаНеЗамещать = "",
-	ОбъектНайден = Истина, СозданныйОбъект = Неопределено, НеСоздаватьОбъектЕслиНеНайден = Неопределено,
-	РежимПоискаОсновногоОбъекта = Ложь, СвойстваОбъектаМодифицированы = Ложь, НППГлобальнойСсылки = 0, НППСсылки = 0,
-	ИзвестнаяСсылкаУникальногоИдентификатора = Неопределено, ПараметрыОбъекта = Неопределено)
+Function FindObjectByRef(ObjectType,
+							OCRName = "",
+							SearchProperties = "", 
+							SearchPropertiesDontReplace = "", 
+							ObjectFound = True, 
+							CreatedObject = Undefined, 
+							DontCreateObjectIfNotFound = Undefined,
+							MainObjectSearchMode = False, 
+							ObjectPropertiesModified = False,
+							GlobalRefSN = 0,
+							RefSN = 0,
+							KnownUUIDRef = Undefined,
+							ObjectParameters = Undefined)
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-	ПоискПоДатеНаРавенство = Ложь;
-	СсылкаНаОбъект = Неопределено;
-	СтруктураСвойств = Неопределено;
-	ИмяТипаОбъекта = Неопределено;
-	СсылкаНаОбъектФиктивная = Ложь;
-	ПКО = Неопределено;
-	АлгоритмПоиска = "";
+	SearchByEqualDate = False;
+	ObjectRef = Undefined;
+	PropertyStructure = Undefined;
+	ObjectTypeName = Undefined;
+	DummyObjectRef = False;
+	OCR = Undefined;
+	SearchAlgorithm = "";
 
-	Если ЗапоминатьЗагруженныеОбъекты Тогда
+	If RememberImportedObjects Then
 		
-		// Есть номер по порядку из файла - по нему и ищем.
-		НППГлобальнойСсылки = одАтрибут(ФайлОбмена, одТипЧисло, "ГНпп");
-
-		Если НППГлобальнойСсылки <> 0 Тогда
-
-			СсылкаНаОбъект = ОбработатьПоискОбъектаПоСтруктуре(НППГлобальнойСсылки, ТипОбъекта, СозданныйОбъект,
-				РежимПоискаОсновногоОбъекта, СвойстваОбъектаМодифицированы, ОбъектНайден, Истина, ПараметрыОбъекта);
-
-			Если СсылкаНаОбъект <> Неопределено Тогда
-				Возврат СсылкаНаОбъект;
-			КонецЕсли;
-
-		КонецЕсли;
+		// Searching by the global sequence number if it is available in the file.
+		GlobalRefSn = deAttribute(ExchangeFile, deNumberType, "Gsn");
 		
-		// Есть номер по порядку из файла - по нему и ищем.
-		НППСсылки = одАтрибут(ФайлОбмена, одТипЧисло, "Нпп");
-
-		Если НППСсылки <> 0 Тогда
-
-			СсылкаНаОбъект = ОбработатьПоискОбъектаПоСтруктуре(НППСсылки, ТипОбъекта, СозданныйОбъект,
-				РежимПоискаОсновногоОбъекта, СвойстваОбъектаМодифицированы, ОбъектНайден, Ложь, ПараметрыОбъекта);
-
-			Если СсылкаНаОбъект <> Неопределено Тогда
-				Возврат СсылкаНаОбъект;
-			КонецЕсли;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	НеСоздаватьОбъектЕслиНеНайден = одАтрибут(ФайлОбмена, одТипБулево, "НеСоздаватьЕслиНеНайден");
-	ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD = Не РежимПоискаОсновногоОбъекта И одАтрибут(ФайлОбмена,
-		одТипБулево, "ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD");
-	
-	// Создаем свойства поиска объектов.
-	ПрочитатьИнформациюОСвойствахПоиска(ТипОбъекта, СвойстваПоиска, СвойстваПоискаНеЗамещать, ПоискПоДатеНаРавенство,
-		ПараметрыОбъекта);
-
-	СозданныйОбъект = Неопределено;
-
-	Если Не ОбъектНайден Тогда
-
-		СсылкаНаОбъект = СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, СозданныйОбъект, , , , НППСсылки,
-			НППГлобальнойСсылки);
-		ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, СсылкаНаОбъект);
-		Возврат СсылкаНаОбъект;
-
-	КонецЕсли;
-
-	СтруктураСвойств   = Менеджеры[ТипОбъекта];
-	ИмяТипаОбъекта     = СтруктураСвойств.ИмяТипа;
-
-	СвойствоУникальныйИдентификатор = СвойстваПоиска["{УникальныйИдентификатор}"];
-	СвойствоИмяПредопределенного = СвойстваПоиска["{ИмяПредопределенногоЭлемента}"];
-
-	ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD = ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD
-		И СвойствоУникальныйИдентификатор <> Неопределено;
-		
-	// Если это предопределенный элемент ищем по имени.
-	Если СвойствоИмяПредопределенного <> Неопределено Тогда
-
-		АвтоматическиСоздаватьНовыйОбъект = Не НеСоздаватьОбъектЕслиНеНайден
-			И Не ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD;
-
-		СсылкаНаОбъект = НайтиИлиСоздатьОбъектПоСвойству(СтруктураСвойств, ТипОбъекта, СвойстваПоиска,
-			СвойстваПоискаНеЗамещать, ИмяТипаОбъекта, "{ИмяПредопределенногоЭлемента}", СвойствоИмяПредопределенного,
-			ОбъектНайден, АвтоматическиСоздаватьНовыйОбъект, СозданныйОбъект, РежимПоискаОсновногоОбъекта,
-			СвойстваОбъектаМодифицированы, НППСсылки, НППГлобальнойСсылки, ПараметрыОбъекта);
-
-	ИначеЕсли (СвойствоУникальныйИдентификатор <> Неопределено) Тогда
+		If GlobalRefSn <> 0 Then
 			
-		// Не всегда нужно по уникальному идентификатору новый элемент создавать, возможно нужно продолжить поиск.
-		НужноПродолжитьПоискЕслиЭлементПоGUIDНеНайден = ОпределитьПоТипуОбъектаИспользоватьДополнительныйПоискПоПолямПоиска(
-			СтруктураСвойств.ТипСсылкиСтрокой);
-
-		АвтоматическиСоздаватьНовыйОбъект = (Не НеСоздаватьОбъектЕслиНеНайден
-			И Не НужноПродолжитьПоискЕслиЭлементПоGUIDНеНайден) И Не ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD;
-
-		СсылкаНаОбъект = НайтиИлиСоздатьОбъектПоСвойству(СтруктураСвойств, ТипОбъекта, СвойстваПоиска,
-			СвойстваПоискаНеЗамещать, ИмяТипаОбъекта, "{УникальныйИдентификатор}", СвойствоУникальныйИдентификатор,
-			ОбъектНайден, АвтоматическиСоздаватьНовыйОбъект, СозданныйОбъект, РежимПоискаОсновногоОбъекта,
-			СвойстваОбъектаМодифицированы, НППСсылки, НППГлобальнойСсылки, ПараметрыОбъекта,
-			ИзвестнаяСсылкаУникальногоИдентификатора);
-
-		Если Не НужноПродолжитьПоискЕслиЭлементПоGUIDНеНайден Тогда
-
-			Если Не ЗначениеЗаполнено(СсылкаНаОбъект) И ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD Тогда
-
-				СсылкаНаОбъект = СтруктураСвойств.Менеджер.ПолучитьСсылку(
-					Новый УникальныйИдентификатор(СвойствоУникальныйИдентификатор));
-				ОбъектНайден = Ложь;
-				СсылкаНаОбъектФиктивная = Истина;
-
-			КонецЕсли;
-
-			Если СсылкаНаОбъект <> Неопределено И СсылкаНаОбъект.Пустая() Тогда
-
-				СсылкаНаОбъект = Неопределено;
-
-			КонецЕсли;
-
-			Если СсылкаНаОбъект <> Неопределено Или СозданныйОбъект <> Неопределено Тогда
-
-				ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, СсылкаНаОбъект,
-					СсылкаНаОбъектФиктивная);
-
-			КонецЕсли;
-
-			Возврат СсылкаНаОбъект;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если СсылкаНаОбъект <> Неопределено И СсылкаНаОбъект.Пустая() Тогда
-
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-		
-	// СсылкаНаОбъект пока не найден.
-	Если СсылкаНаОбъект <> Неопределено Или СозданныйОбъект <> Неопределено Тогда
-
-		ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, СсылкаНаОбъект);
-		Возврат СсылкаНаОбъект;
-
-	КонецЕсли;
-
-	НомерВариантаПоиска = 1;
-	СтрокаИменСвойствПоиска = "";
-	ПредыдущаяСтрокаПоиска = Неопределено;
-	ПрекратитьПоиск = Ложь;
-	УстанавливатьУОбъектаВсеСвойстваПоиска = Истина;
-
-	Если Не ПустаяСтрока(ИмяПКО) Тогда
-
-		ПКО = Правила[ИмяПКО];
-
-	КонецЕсли;
-
-	Если ПКО = Неопределено Тогда
-
-		ПКО = ОпределитьПоТипуОбъектаПриемникаПравилоКонвертацииКотороеСодержитАлгоритмПоиска(
-			СтруктураСвойств.ТипСсылкиСтрокой);
-
-	КонецЕсли;
-
-	Если ПКО <> Неопределено Тогда
-
-		АлгоритмПоиска = ПКО.ПоследовательностьПолейПоиска;
-
-	КонецЕсли;
-
-	ЕстьАлгоритмПоиска = Не ПустаяСтрока(АлгоритмПоиска);
-
-	Пока НомерВариантаПоиска <= 10 И ЕстьАлгоритмПоиска Цикл
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКО, "ПоследовательностьПолейПоиска"));
-
-			Иначе
-
-				Выполнить (АлгоритмПоиска);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(73, ОписаниеОшибки(), "", "", ТипОбъекта, Неопределено,
-				НСтр("ru = 'Последовательность полей поиска'"));
-
-		КонецПопытки;
-
-		НеНужноВыполнятьПоиск = ПрекратитьПоиск = Истина Или СтрокаИменСвойствПоиска = ПредыдущаяСтрокаПоиска
-			Или ЗначениеЗаполнено(СсылкаНаОбъект);
-
-		Если Не НеНужноВыполнятьПоиск Тогда
-		
-			// сам поиск непосредственно
-			СсылкаНаОбъект = НайтиЭлементПоСвойствамПоиска(ТипОбъекта, ИмяТипаОбъекта, СвойстваПоиска, СтруктураСвойств,
-				СтрокаИменСвойствПоиска, ПоискПоДатеНаРавенство);
-
-			НеНужноВыполнятьПоиск = ЗначениеЗаполнено(СсылкаНаОбъект);
-
-			Если СсылкаНаОбъект <> Неопределено И СсылкаНаОбъект.Пустая() Тогда
-				СсылкаНаОбъект = Неопределено;
-			КонецЕсли;
-
-		КонецЕсли;
-
-		Если НеНужноВыполнятьПоиск Тогда
-
-			Если РежимПоискаОсновногоОбъекта И УстанавливатьУОбъектаВсеСвойстваПоиска = Истина Тогда
-
-				ОбработатьУстановкуСвойствПоискаУОбъекта(УстанавливатьУОбъектаВсеСвойстваПоиска, ТипОбъекта,
-					СвойстваПоиска, СвойстваПоискаНеЗамещать, СсылкаНаОбъект, СозданныйОбъект,
-					Не РежимПоискаОсновногоОбъекта, СвойстваОбъектаМодифицированы);
-
-			КонецЕсли;
-
-			Прервать;
-
-		КонецЕсли;
-
-		НомерВариантаПоиска = НомерВариантаПоиска + 1;
-		ПредыдущаяСтрокаПоиска = СтрокаИменСвойствПоиска;
-
-	КонецЦикла;
-
-	Если Не ЕстьАлгоритмПоиска Тогда
-		
-		// Сам поиск непосредственно и без алгоритма поиска.
-		СсылкаНаОбъект = НайтиЭлементПоСвойствамПоиска(ТипОбъекта, ИмяТипаОбъекта, СвойстваПоиска, СтруктураСвойств,
-			СтрокаИменСвойствПоиска, ПоискПоДатеНаРавенство);
-
-	КонецЕсли;
-
-	ОбъектНайден = ЗначениеЗаполнено(СсылкаНаОбъект);
-
-	Если РежимПоискаОсновногоОбъекта И ЗначениеЗаполнено(СсылкаНаОбъект) И (ИмяТипаОбъекта = "Документ"
-		Или ИмяТипаОбъекта = "Задача" Или ИмяТипаОбъекта = "БизнесПроцесс") Тогда
-		
-		// Если у документа дата есть в свойствах поиска - то устанавливаем ее.
-		ДатаПустая = Не ЗначениеЗаполнено(СвойстваПоиска["Дата"]);
-		МожноЗамещать = (Не ДатаПустая) И (СвойстваПоискаНеЗамещать["Дата"] = Неопределено);
-
-		Если МожноЗамещать Тогда
-
-			Если СозданныйОбъект = Неопределено Тогда
-				СозданныйОбъект = СсылкаНаОбъект.ПолучитьОбъект();
-			КонецЕсли;
-
-			СозданныйОбъект.Дата = СвойстваПоиска["Дата"];
-
-		КонецЕсли;
-
-	КонецЕсли;
-	
-	// Создавать новый объект нужно не всегда.
-	Если Не ЗначениеЗаполнено(СсылкаНаОбъект) И СозданныйОбъект = Неопределено Тогда
-
-		Если ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD Тогда
-
-			СсылкаНаОбъект = СтруктураСвойств.Менеджер.ПолучитьСсылку(
-				Новый УникальныйИдентификатор(СвойствоУникальныйИдентификатор));
-			СсылкаНаОбъектФиктивная = Истина;
-
-		ИначеЕсли Не НеСоздаватьОбъектЕслиНеНайден Тогда
-
-			СсылкаНаОбъект = СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, СозданныйОбъект,
-				Не РежимПоискаОсновногоОбъекта, , ИзвестнаяСсылкаУникальногоИдентификатора, НППСсылки,
-				НППГлобальнойСсылки, , УстанавливатьУОбъектаВсеСвойстваПоиска);
-
-			СвойстваОбъектаМодифицированы = Истина;
-
-		КонецЕсли;
-
-		ОбъектНайден = Ложь;
-
-	Иначе
-
-		ОбъектНайден = ЗначениеЗаполнено(СсылкаНаОбъект);
-
-	КонецЕсли;
-
-	Если СсылкаНаОбъект <> Неопределено И СсылкаНаОбъект.Пустая() Тогда
-
-		СсылкаНаОбъект = Неопределено;
-
-	КонецЕсли;
-
-	ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, СсылкаНаОбъект, СсылкаНаОбъектФиктивная);
-
-	Возврат СсылкаНаОбъект;
-
-КонецФункции
-
-// Устанавливает свойства объекта (записи).
-//
-// Параметры:
-//  Запись         - объект, свойства которого устанавливаем.
-//                   Например, строка табличной части или запись регистра.
-//
-Процедура УстановитьСвойстваЗаписи(Объект, Запись, ИнформацияОТипах, ПараметрыОбъекта, ИмяВетки, ДанныеПоискаПоТЧ,
-	КопияТЧДляПоиска, НомерЗаписи)
-
-	НужноОрганизоватьПоискПоТЧ = (ДанныеПоискаПоТЧ <> Неопределено) И (КопияТЧДляПоиска <> Неопределено)
-		И КопияТЧДляПоиска.Количество() <> 0;
-
-	Если НужноОрганизоватьПоискПоТЧ Тогда
-
-		СтруктураЧтенияСвойств = Новый Структура;
-		СтруктураЧтенияСубконто = Новый Структура;
-
-	КонецЕсли;
-
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Свойство" Или ИмяУзла = "ЗначениеПараметра" Тогда
-
-			ЭтоПараметр = (ИмяУзла = "ЗначениеПараметра");
-
-			Имя    = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-			ИмяПКО = одАтрибут(ФайлОбмена, одТипСтрока, "ИмяПКО");
-
-			Если Имя = "ВидДвижения" И СтрНайти(Метаданные.НайтиПоТипу(ТипЗнч(Запись)).ПолноеИмя(),
-				"РегистрНакопления") Тогда
-
-				ТипСвойства = одТипВидДвиженияНакопления;
-
-			Иначе
-
-				ТипСвойства = ПолучитьТипСвойстваПоДополнительнымДанным(ИнформацияОТипах, Имя);
-
-			КонецЕсли;
-
-			ЗначениеСвойства = ПрочитатьСвойство(ТипСвойства, ИмяПКО);
-
-			Если ЭтоПараметр Тогда
-				ДобавитьСложныйПараметрПриНеобходимости(ПараметрыОбъекта, ИмяВетки, НомерЗаписи, Имя, ЗначениеСвойства);
-			ИначеЕсли НужноОрганизоватьПоискПоТЧ Тогда
-				СтруктураЧтенияСвойств.Вставить(Имя, ЗначениеСвойства);
-			Иначе
-
-				Попытка
-
-					Запись[Имя] = ЗначениеСвойства;
-
-				Исключение
-
-					ЗП = ПолучитьСтруктуруЗаписиПротокола(26, ОписаниеОшибки());
-					ЗП.ИмяПКО           = ИмяПКО;
-					ЗП.Объект           = Объект;
-					ЗП.ТипОбъекта       = ТипЗнч(Объект);
-					ЗП.Свойство         = Строка(Запись) + "." + Имя;
-					ЗП.Значение         = ЗначениеСвойства;
-					ЗП.ТипЗначения      = ТипЗнч(ЗначениеСвойства);
-					СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(26, ЗП, Истина);
-
-					Если Не DebugModeFlag Тогда
-						ВызватьИсключение СтрокаСообщенияОбОшибке;
-					КонецЕсли;
-				КонецПопытки;
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "СубконтоДт" Или ИмяУзла = "СубконтоКт" Тогда
+			ObjectRef = ProcessObjectSearchByStructure(GlobalRefSn, ObjectType, CreatedObject,
+				MainObjectSearchMode, ObjectPropertiesModified, ObjectFound, True, ObjectParameters);
+
+			If ObjectRef <> Undefined Then
+				Return ObjectRef;
+			EndIf;
 			
-			// Поиск по субконто не реализован.
-
-			Ключ = Неопределено;
-			Значение = Неопределено;
-
-			Пока ФайлОбмена.Прочитать() Цикл
-
-				ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-				Если ИмяУзла = "Свойство" Тогда
-
-					Имя    = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-					ИмяПКО = одАтрибут(ФайлОбмена, одТипСтрока, "ИмяПКО");
-					ТипСвойства = ПолучитьТипСвойстваПоДополнительнымДанным(ИнформацияОТипах, Имя);
-
-					Если Имя = "Ключ" Тогда
-
-						Ключ = ПрочитатьСвойство(ТипСвойства);
-
-					ИначеЕсли Имя = "Значение" Тогда
-
-						Значение = ПрочитатьСвойство(ТипСвойства, ИмяПКО);
-
-					КонецЕсли;
-
-				ИначеЕсли (ИмяУзла = "СубконтоДт" Или ИмяУзла = "СубконтоКт") И (ФайлОбмена.ТипУзла
-					= одТипУзлаXML_КонецЭлемента) Тогда
-
-					Прервать;
-
-				Иначе
-
-					ЗаписатьВПротоколВыполнения(9);
-					Прервать;
-
-				КонецЕсли;
-
-			КонецЦикла;
-
-			Если Ключ <> Неопределено И Значение <> Неопределено Тогда
-
-				Если Не НужноОрганизоватьПоискПоТЧ Тогда
-
-					Запись[ИмяУзла][Ключ] = Значение;
-
-				Иначе
-
-					СоответствиеЗаписи = Неопределено;
-					Если Не СтруктураЧтенияСубконто.Свойство(ИмяУзла, СоответствиеЗаписи) Тогда
-						СоответствиеЗаписи = Новый Соответствие;
-						СтруктураЧтенияСубконто.Вставить(ИмяУзла, СоответствиеЗаписи);
-					КонецЕсли;
-
-					СоответствиеЗаписи.Вставить(Ключ, Значение);
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		ИначеЕсли (ИмяУзла = "Запись") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если НужноОрганизоватьПоискПоТЧ Тогда
-
-		СтруктураПоиска = Новый Структура;
-
-		Для Каждого ЭлементПоиска Из ДанныеПоискаПоТЧ.ПоляПоискаТЧ Цикл
-
-			ЗначениеЭлемента = Неопределено;
-			СтруктураЧтенияСвойств.Свойство(ЭлементПоиска, ЗначениеЭлемента);
-
-			СтруктураПоиска.Вставить(ЭлементПоиска, ЗначениеЭлемента);
-
-		КонецЦикла;
-
-		МассивРезультатовПоиска = КопияТЧДляПоиска.НайтиСтроки(СтруктураПоиска);
-
-		НайденаЗапись = МассивРезультатовПоиска.Количество() > 0;
-		Если НайденаЗапись Тогда
-			ЗаполнитьЗначенияСвойств(Запись, МассивРезультатовПоиска[0]);
-		КонецЕсли;
+		EndIf;
 		
-		// Поверх заполнение свойствами и значением субконто.
-		Для Каждого КлючИЗначение Из СтруктураЧтенияСвойств Цикл
+		// Searching by the sequence number if it is available in the file.
+		RefSN = deAttribute(ExchangeFile, deNumberType, "Sn");
+		
+		If RefSN <> 0 Then
+		
+			ObjectRef = ProcessObjectSearchByStructure(RefSN, ObjectType, CreatedObject,
+				MainObjectSearchMode, ObjectPropertiesModified, ObjectFound, False, ObjectParameters);
+				
+			If ObjectRef <> Undefined Then
+				Return ObjectRef;
+			EndIf;
+			
+		EndIf;
+		
+	EndIf;
 
-			Запись[КлючИЗначение.Ключ] = КлючИЗначение.Значение;
+	DontCreateObjectIfNotFound = deAttribute(ExchangeFile, deBooleanType, "DoNotCreateIfNotFound");
+	OnExchangeObjectByRefSetGIUDOnly = Not MainObjectSearchMode 
+		And deAttribute(ExchangeFile, deBooleanType, "OnMoveObjectByRefSetGIUDOnly");
+	
+	// Creating object search properties.
+	ReadSearchPropertyInfo(ObjectType, SearchProperties, SearchPropertiesDontReplace, SearchByEqualDate, ObjectParameters);
+		
+	CreatedObject = Undefined;
+	
+	If Not ObjectFound Then
+		
+		ObjectRef = CreateNewObject(ObjectType, SearchProperties, CreatedObject, , , , RefSN, GlobalRefSn);
+		AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef);
+		Return ObjectRef;
+		
+	EndIf;
 
-		КонецЦикла;
+	PropertyStructure   = Managers[ObjectType];
+	ObjectTypeName     = PropertyStructure.TypeName;
+		
+	UUIDProperty = SearchProperties["{UUID}"];
+	PredefinedNameProperty = SearchProperties["{PredefinedItemName}"];
+	
+	OnExchangeObjectByRefSetGIUDOnly = OnExchangeObjectByRefSetGIUDOnly
+		AND UUIDProperty <> Undefined;
+		
+	// Searching by name if the item is predefined.
+	If PredefinedNameProperty <> Undefined Then
+		
+		CreateNewObjectAutomatically = Not DontCreateObjectIfNotFound
+			And Not OnExchangeObjectByRefSetGIUDOnly;
+		
+		ObjectRef = FindCreateObjectByProperty(PropertyStructure, ObjectType, SearchProperties, SearchPropertiesDontReplace,
+			ObjectTypeName, "{PredefinedItemName}", PredefinedNameProperty, ObjectFound, 
+			CreateNewObjectAutomatically, CreatedObject, MainObjectSearchMode, ObjectPropertiesModified,
+			RefSN, GlobalRefSn, ObjectParameters);
 
-		Для Каждого ЭлементИмя Из СтруктураЧтенияСубконто Цикл
+	ElsIf (UUIDProperty <> Undefined) Then
+			
+		// Creating the new item by the UUID is not always necessary. Perhaps, the search must be continued.
+		ContinueSearchIfItemNotFoundByGUID = GetAdditionalSearchBySearchFieldsUsageByObjectType(PropertyStructure.RefTypeString);
 
-			Для Каждого ЭлементКлюч Из ЭлементИмя.Значение Цикл
+		CreateNewObjectAutomatically = (Not DontCreateObjectIfNotFound
+			And Not ContinueSearchIfItemNotFoundByGUID)
+			And Not OnExchangeObjectByRefSetGIUDOnly;
 
-				Запись[ЭлементИмя.Ключ][ЭлементКлюч.Ключ] = ЭлементКлюч.Значение;
+		ObjectRef = FindCreateObjectByProperty(PropertyStructure, ObjectType, SearchProperties, SearchPropertiesDontReplace,
+			ObjectTypeName, "{UUID}", UUIDProperty, ObjectFound, 
+			CreateNewObjectAutomatically, CreatedObject, 
+			MainObjectSearchMode, ObjectPropertiesModified,
+			RefSN, GlobalRefSn, ObjectParameters, KnownUUIDRef);
 
-			КонецЦикла;
+		If Not ContinueSearchIfItemNotFoundByGUID Then
 
-		КонецЦикла;
+			If Not ValueIsFilled(ObjectRef)
+				And OnExchangeObjectByRefSetGIUDOnly Then
+				
+				ObjectRef = PropertyStructure.Manager.GetRef(New UUID(UUIDProperty));
+				ObjectFound = False;
+				DummyObjectRef = True;
+			
+			EndIf;
+			
+			If ObjectRef <> Undefined 
+				And ObjectRef.IsEmpty() Then
+						
+				ObjectRef = Undefined;
+						
+			EndIf;
+			
+			If ObjectRef <> Undefined
+				Or CreatedObject <> Undefined Then
 
-	КонецЕсли;
+				AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
+				
+			EndIf;
+			
+			Return ObjectRef;	
+			
+		EndIf;
+		
+	EndIf;
 
-КонецПроцедуры
+	If ObjectRef <> Undefined And ObjectRef.IsEmpty() Then
+		
+		ObjectRef = Undefined;
+		
+	EndIf;
+		
+	// ObjectRef is not found yet.
+	If ObjectRef <> Undefined Or CreatedObject <> Undefined Then
+		
+		AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef);
+		Return ObjectRef;
+		
+	EndIf;
 
-// Загружает табличную часть объекта.
+	SearchVariantNumber = 1;
+	SearchPropertyNameString = "";
+	PreviousSearchString = Undefined;
+	StopSearch = False;
+	SetAllObjectSearchProperties = True;
+	
+	If Not IsBlankString(OCRName) Then
+		
+		OCR = Rules[OCRName];
+		
+	EndIf;
+	
+	If OCR = Undefined Then
+		
+		OCR = GetConversionRuleWithSearchAlgorithmByDestinationObjectType(PropertyStructure.RefTypeString);
+		
+	EndIf;
+	
+	If OCR <> Undefined Then
+		
+		SearchAlgorithm = OCR.SearchFieldSequence;
+		
+	EndIf;
+
+	HasSearchAlgorithm = Not IsBlankString(SearchAlgorithm);
+	
+	While SearchVariantNumber <= 10 And HasSearchAlgorithm Do
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(OCR, "SearchFieldSequence"));
+					
+			Else
+				
+				Execute(SearchAlgorithm);
+			
+			EndIf;
+			
+		Except
+			
+			WriteInfoOnOCRHandlerImportError(73, ErrorDescription(), "", "",
+				ObjectType, Undefined, NStr("ru = 'Последовательность полей поиска'; en = 'Search field sequence'"));
+			
+		EndTry;
+
+		DontSearch = StopSearch = True Or SearchPropertyNameString = PreviousSearchString
+			OR ValueIsFilled(ObjectRef);
+		
+		If Not DontSearch Then
+		
+			ObjectRef = FindItemBySearchProperties(ObjectType, ObjectTypeName, SearchProperties, PropertyStructure, 
+				SearchPropertyNameString, SearchByEqualDate);
+				
+			DontSearch = ValueIsFilled(ObjectRef);
+			
+			If ObjectRef <> Undefined And ObjectRef.IsEmpty() Then
+				ObjectRef = Undefined;
+			EndIf;
+			
+		EndIf;
+
+		If DontSearch Then
+			
+			If MainObjectSearchMode AND SetAllObjectSearchProperties = True Then
+				
+				ProcessObjectSearchPropertySetting(SetAllObjectSearchProperties, ObjectType, SearchProperties, SearchPropertiesDontReplace,
+					ObjectRef, CreatedObject, NOT MainObjectSearchMode, ObjectPropertiesModified);
+				
+			EndIf;
+			
+			Break;
+			
+		EndIf;
+		
+		SearchVariantNumber = SearchVariantNumber + 1;
+		PreviousSearchString = SearchPropertyNameString;
+		
+	EndDo;
+
+	If Not HasSearchAlgorithm Then
+		
+		// The search with no search algorithm.
+		ObjectRef = FindItemBySearchProperties(ObjectType, ObjectTypeName, SearchProperties, PropertyStructure, 
+					SearchPropertyNameString, SearchByEqualDate);
+		
+	EndIf;
+
+	ObjectFound = ValueIsFilled(ObjectRef);
+	
+	If MainObjectSearchMode And ValueIsFilled(ObjectRef) And (ObjectTypeName = "Document" 
+		Or ObjectTypeName = "Task" Or ObjectTypeName = "BusinessProcess") Then
+		
+		// Setting the date if it is in the document search fields.
+		EmptyDate = Not ValueIsFilled(SearchProperties["Date"]);
+		CanReplace = (Not EmptyDate) And (SearchPropertiesDontReplace["Date"] = Undefined);
+			
+		If CanReplace Then
+			
+			If CreatedObject = Undefined Then
+				CreatedObject = ObjectRef.GetObject();
+			EndIf;
+			
+			CreatedObject.Date = SearchProperties["Date"];
+			
+		EndIf;
+		
+	EndIf;
+	
+	// Creating a new object is not always necessary.
+	If Not ValueIsFilled(ObjectRef) And CreatedObject = Undefined Then 
+		
+		If OnExchangeObjectByRefSetGIUDOnly Then
+			
+			ObjectRef = PropertyStructure.Manager.GetRef(New UUID(UUIDProperty));	
+			DummyObjectRef = True;
+			
+		ElsIf Not DontCreateObjectIfNotFound Then
+		
+			ObjectRef = CreateNewObject(ObjectType, SearchProperties, CreatedObject, Not MainObjectSearchMode, , KnownUUIDRef, RefSN, 
+				GlobalRefSn, ,SetAllObjectSearchProperties);
+				
+			ObjectPropertiesModified = True;
+				
+		EndIf;
+			
+		ObjectFound = False;
+		
+	Else
+		
+		ObjectFound = ValueIsFilled(ObjectRef);
+		
+	EndIf;
+	
+	If ObjectRef <> Undefined And ObjectRef.IsEmpty() Then
+		
+		ObjectRef = Undefined;
+		
+	EndIf;
+	
+	AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
+		
+	Return ObjectRef;
+	
+EndFunction
+
+Procedure SetRecordProperties(Object, Record, TypesInformation,
+	ObjectParameters, BranchName, TSSearchData, TSCopyForSearch, RecordNumber)
+	
+	SearchInTS = (TSSearchData <> Undefined) And (TSCopyForSearch <> Undefined)
+		And TSCopyForSearch.Count() <> 0;
+
+	If SearchInTS Then
+		
+		PropertyReadingStructure = New Structure();
+		ExtDimensionReadingStructure = New Structure();
+		
+	EndIf;
+
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+		
+		If NodeName = "Property" Or NodeName = "ParameterValue" Then
+			
+			IsParameter = (NodeName = "ParameterValue");
+			
+			Name    = deAttribute(ExchangeFile, deStringType, "Name");
+			OCRName = deAttribute(ExchangeFile, deStringType, "OCRName");
+			
+			If Name = "RecordType" And StrFind(Metadata.FindByType(TypeOf(Record)).FullName(), "AccumulationRegister") Then
+				
+				PropertyType = deAccumulationRecordTypeType;
+				
+			Else
+				
+				PropertyType = GetPropertyTypeByAdditionalData(TypesInformation, Name);
+				
+			EndIf;
+			
+			PropertyValue = ReadProperty(PropertyType, OCRName);
+
+			If IsParameter Then
+				AddComplexParameterIfNecessary(ObjectParameters, BranchName, RecordNumber, Name, PropertyValue);			
+			ElsIf SearchInTS Then 
+				PropertyReadingStructure.Insert(Name, PropertyValue);	
+			Else
+				
+				Try
+					
+					Record[Name] = PropertyValue;
+					
+				Except
+					
+					LR = GetLogRecordStructure(26, ErrorDescription());
+					LR.OCRName           = OCRName;
+					LR.Object           = Object;
+					LR.ObjectType       = TypeOf(Object);
+					LR.Property         = String(Record) + "." + Name;
+					LR.Value         = PropertyValue;
+					LR.ValueType      = TypeOf(PropertyValue);
+					ErrorMessageString = WriteToExecutionLog(26, LR, True);
+					
+					If Not DebugModeFlag Then
+						Raise ErrorMessageString;
+					EndIf;
+				EndTry;
+				
+			EndIf;
+
+		ElsIf NodeName = "ExtDimensionsDr" Or NodeName = "ExtDimensionsCr" Then
+			
+			varKey = Undefined;
+			Value = Undefined;
+			
+			While ExchangeFile.Read() Do
+				
+				NodeName = ExchangeFile.LocalName;
+								
+				If NodeName = "Property" Then
+					
+					Name    = deAttribute(ExchangeFile, deStringType, "Name");
+					OCRName = deAttribute(ExchangeFile, deStringType, "OCRName");
+					PropertyType = GetPropertyTypeByAdditionalData(TypesInformation, Name);
+										
+					If Name = "Key" Then
+						
+						varKey = ReadProperty(PropertyType);
+						
+					ElsIf Name = "Value" Then
+						
+						Value = ReadProperty(PropertyType, OCRName);
+						
+					EndIf;
+					
+				ElsIf (NodeName = "ExtDimensionsDr" Or NodeName = "ExtDimensionsCr") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+					
+					Break;
+					
+				Else
+					
+					WriteToExecutionLog(9);
+					Break;
+					
+				EndIf;
+				
+			EndDo;
+
+			If varKey <> Undefined And Value <> Undefined Then
+				
+				If Not SearchInTS Then
+				
+					Record[NodeName][varKey] = Value;
+					
+				Else
+					
+					RecordMap = Undefined;
+					If Not ExtDimensionReadingStructure.Property(NodeName, RecordMap) Then
+						RecordMap = New Map;
+						ExtDimensionReadingStructure.Insert(NodeName, RecordMap);
+					EndIf;
+					
+					RecordMap.Insert(varKey, Value);
+					
+				EndIf;
+				
+			EndIf;
+				
+		ElsIf (NodeName = "Record") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+
+	If SearchInTS Then
+		
+		SearchStructure = New Structure();
+		
+		For Each SearchItem In  TSSearchData.TSSearchFields Do
+
+			ItemValue = Undefined;
+			PropertyReadingStructure.Property(SearchItem, ItemValue);
+			
+			SearchStructure.Insert(SearchItem, ItemValue);		
+			
+		EndDo;		
+		
+		SearchResultArray = TSCopyForSearch.FindRows(SearchStructure);
+		
+		RecordFound = SearchResultArray.Count() > 0;
+		If RecordFound Then
+			FillPropertyValues(Record, SearchResultArray[0]);
+		EndIf;
+		
+		// Filling with properties and extra dimension value.
+		For Each KeyAndValue In PropertyReadingStructure Do
+			
+			Record[KeyAndValue.Key] = KeyAndValue.Value;
+			
+		EndDo;
+		
+		For Each ItemName In ExtDimensionReadingStructure Do
+			
+			For Each ItemKey In ItemName.Value Do
+			
+				Record[ItemName.Key][ItemKey.Key] = ItemKey.Value;
+				
+			EndDo;
+			
+		EndDo;
+		
+	EndIf;
+	
+EndProcedure
+
+// Imports an object tabular section.
 //
-// Параметры:
-//  Объект         - объект, табличную часть которого загружаем.
-//  Имя            - имя табличной части.
-//  Очистить       - если Истина, то табличная часть предварительно очищается.
+// Parameters:
+//  Object - CatalogObject, DocumentObject, etc. - an object whose tabular section is imported.
+//  Name - String - a tabular section name.
+//  Clear - Boolean - if True, a tabular section is cleared before import.
+//  GeneralDocumentTypeInformation - Structure - an info about column data types.
+//  WriteObject - Boolean - if True, a tabular section was changed and must be written to the infobase.
+//  ObjectParameters - Structure - an object writing parameters.
+//  Rule - ValueTableRow - a tabular section import rule.  
 // 
-Процедура ЗагрузитьТабличнуюЧасть(Объект, Имя, Очистить, ОбщаяИнформацияОТипеДокумента, НужноЗаписатьОбъект,
-	ПараметрыОбъекта, Правило)
+Procedure ImportTabularSection(Object, Name, Clear, GeneralDocumentTypeInformation, WriteObject, 
+	ObjectParameters, Rule)
 
-	ИмяТабличнойЧасти = Имя + "ТабличнаяЧасть";
-	Если ОбщаяИнформацияОТипеДокумента <> Неопределено Тогда
-		ИнформацияОТипах = ОбщаяИнформацияОТипеДокумента[ИмяТабличнойЧасти];
-	Иначе
-		ИнформацияОТипах = Неопределено;
-	КонецЕсли;
+	TabularSectionName = Name + "TabularSection";
+	If GeneralDocumentTypeInformation <> Undefined Then
+		TypesInformation = GeneralDocumentTypeInformation[TabularSectionName];
+	Else
+	    TypesInformation = Undefined;
+	EndIf;
 
-	ДанныеПоискаПоТЧ = Неопределено;
-	Если Правило <> Неопределено Тогда
-		ДанныеПоискаПоТЧ = Правило.ПоискПоТабличнымЧастям.Найти("ТабличнаяЧасть." + Имя, "ИмяЭлемента");
-	КонецЕсли;
+	TSSearchData = Undefined;
+	If Rule <> Undefined Then
+		TSSearchData = Rule.SearchInTabularSections.Find("TabularSection." + Name, "ItemName");
+	EndIf;
+	
+	TSCopyForSearch = Undefined;
+	
+	TS = Object[Name];
 
-	КопияТЧДляПоиска = Неопределено;
+	If Clear And TS.Count() <> 0 Then
+		
+		WriteObject = True;
+		
+		If TSSearchData <> Undefined Then
+			TSCopyForSearch = TS.Unload();
+		EndIf;
+		TS.Clear();
+		
+	ElsIf TSSearchData <> Undefined Then
+		
+		TSCopyForSearch = TS.Unload();
+		
+	EndIf;
 
-	ТЧ = Объект[Имя];
+	RecordNumber = 0;
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+		
+		If NodeName = "Record" Then
+			Try
+				
+				WriteObject = True;
+				Record = TS.Add();
+				
+			Except
+				Record = Undefined;
+			EndTry;
+			
+			If Record = Undefined Then
+				deSkip(ExchangeFile);
+			Else
+				SetRecordProperties(Object, Record, TypesInformation, ObjectParameters, TabularSectionName, TSSearchData, TSCopyForSearch, RecordNumber);
+			EndIf;
+			
+			RecordNumber = RecordNumber + 1;
+			
+		ElsIf (NodeName = "TabularSection") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure 
 
-	Если Очистить И ТЧ.Количество() <> 0 Тогда
-
-		НужноЗаписатьОбъект = Истина;
-
-		Если ДанныеПоискаПоТЧ <> Неопределено Тогда
-			КопияТЧДляПоиска = ТЧ.Выгрузить();
-		КонецЕсли;
-		ТЧ.Очистить();
-
-	ИначеЕсли ДанныеПоискаПоТЧ <> Неопределено Тогда
-
-		КопияТЧДляПоиска = ТЧ.Выгрузить();
-
-	КонецЕсли;
-
-	НомерЗаписи = 0;
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Запись" Тогда
-			Попытка
-
-				НужноЗаписатьОбъект = Истина;
-				Запись = ТЧ.Добавить();
-
-			Исключение
-				Запись = Неопределено;
-			КонецПопытки;
-
-			Если Запись = Неопределено Тогда
-				одПропустить(ФайлОбмена);
-			Иначе
-				УстановитьСвойстваЗаписи(Объект, Запись, ИнформацияОТипах, ПараметрыОбъекта, ИмяТабличнойЧасти,
-					ДанныеПоискаПоТЧ, КопияТЧДляПоиска, НомерЗаписи);
-			КонецЕсли;
-
-			НомерЗаписи = НомерЗаписи + 1;
-
-		ИначеЕсли (ИмяУзла = "ТабличнаяЧасть") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры 
-
-// Загружает движения объекта
+// Imports object register records.
 //
-// Параметры:
-//  Объект         - объект, движения которого загружаем.
-//  Имя            - имя регистра.
-//  Очистить       - если Истина, то движения предварительно очищается.
+// Parameters:
+//  Object - DocumentObject - an object whose register records is imported.
+//  Name - String - a register name.
+//  Clear - Boolean - if True, a record set is cleared before import.
+//  GeneralDocumentTypeInformation - Structure - an info about column data types.
+//  WriteObject - Boolean - if True, a record set was changed and must be written to the infobase.
+//  ObjectParameters - Structure - an object writing parameters.
+//  Rule - ValueTableRow - a record set import rule.
 // 
-Процедура ЗагрузитьДвижения(Объект, Имя, Очистить, ОбщаяИнформацияОТипеДокумента, НужноЗаписатьОбъект,
-	ПараметрыОбъекта, Правило)
+Procedure ImportRegisterRecords(Object, Name, Clear, GeneralDocumentTypeInformation, WriteObject, 
+	ObjectParameters, Rule)
+	
+	RegisterRecordName = Name + "RecordSet";
+	If GeneralDocumentTypeInformation <> Undefined Then
+		TypesInformation = GeneralDocumentTypeInformation[RegisterRecordName];
+	Else
+	    TypesInformation = Undefined;
+	EndIf;
+	
+	TSSearchData = Undefined;
+	If Rule <> Undefined Then
+		SearchDataInTS = Rule.SearchInTabularSections.Find("RecordSet." + Name, "ItemName");
+	EndIf;
+	
+	TSCopyForSearch = Undefined;
+	
+	RegisterRecords = Object.RegisterRecords[Name];
+	RegisterRecords.Write = True;
+	
+	If RegisterRecords.Count()=0 Then
+		RegisterRecords.Read();
+	EndIf;
+	
+	If Clear And RegisterRecords.Count() <> 0 Then
+		
+		WriteObject = True;
+		
+		If TSSearchData <> Undefined Then 
+			TSCopyForSearch = RegisterRecords.Unload();
+		EndIf;
+		
+        RegisterRecords.Clear();
+		
+	ElsIf TSSearchData <> Undefined Then
+		
+		TSCopyForSearch = RegisterRecords.Unload();	
+		
+	EndIf;
+	
+	RecordNumber = 0;
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+			
+		If NodeName = "Record" Then
+			
+			Record = RegisterRecords.Add();
+			WriteObject = True;
+			SetRecordProperties(Object, Record, TypesInformation, ObjectParameters, RegisterRecordName, TSSearchData, TSCopyForSearch, RecordNumber);
+			RecordNumber = RecordNumber + 1;
+			
+		ElsIf (NodeName = "RecordSet") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
 
-	ИмяДвижений = Имя + "НаборЗаписей";
-	Если ОбщаяИнформацияОТипеДокумента <> Неопределено Тогда
-		ИнформацияОТипах = ОбщаяИнформацияОТипеДокумента[ИмяДвижений];
-	Иначе
-		ИнформацияОТипах = Неопределено;
-	КонецЕсли;
-
-	ДанныеПоискаПоТЧ = Неопределено;
-	Если Правило <> Неопределено Тогда
-		ДанныеПоискаПоТЧ = Правило.ПоискПоТабличнымЧастям.Найти("НаборЗаписей." + Имя, "ИмяЭлемента");
-	КонецЕсли;
-
-	КопияТЧДляПоиска = Неопределено;
-
-	Движения = Объект.Движения[Имя];
-	Движения.Записывать = Истина;
-
-	Если Движения.Количество() = 0 Тогда
-		Движения.Прочитать();
-	КонецЕсли;
-
-	Если Очистить И Движения.Количество() <> 0 Тогда
-
-		НужноЗаписатьОбъект = Истина;
-
-		Если ДанныеПоискаПоТЧ <> Неопределено Тогда
-			КопияТЧДляПоиска = Движения.Выгрузить();
-		КонецЕсли;
-
-		Движения.Очистить();
-
-	ИначеЕсли ДанныеПоискаПоТЧ <> Неопределено Тогда
-
-		КопияТЧДляПоиска = Движения.Выгрузить();
-
-	КонецЕсли;
-
-	НомерЗаписи = 0;
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Запись" Тогда
-
-			Запись = Движения.Добавить();
-			НужноЗаписатьОбъект = Истина;
-			УстановитьСвойстваЗаписи(Объект, Запись, ИнформацияОТипах, ПараметрыОбъекта, ИмяДвижений, ДанныеПоискаПоТЧ,
-				КопияТЧДляПоиска, НомерЗаписи);
-			НомерЗаписи = НомерЗаписи + 1;
-
-		ИначеЕсли (ИмяУзла = "НаборЗаписей") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Загружает объект типа ОписаниеТипов из указанного xml-источника.
+// Imports an object of the TypeDescription type from the specified XML source.
 //
-// Параметры:
-//  Источник         - xml-источник.
+// Parameters:
+//  Source - an XML source.
 // 
-Функция ЗагрузитьТипыОбъекта(Источник)
+Function ImportObjectTypes(Source)
 	
-	// КвалификаторыДаты
-
-	СоставДаты =  одАтрибут(Источник, одТипСтрока, "СоставДаты");
+	// DateQualifiers
 	
-	// КвалификаторыСтроки
-
-	Длина           =  одАтрибут(Источник, одТипЧисло, "Длина");
-	ДлинаДопустимая =  одАтрибут(Источник, одТипСтрока, "ДопустимаяДлина");
+	DateContents =  deAttribute(Source, deStringType,  "DateContents");
 	
-	// КвалификаторыЧисла
-
-	Разрядность             = одАтрибут(Источник, одТипЧисло, "Разрядность");
-	РазрядностьДробнойЧасти = одАтрибут(Источник, одТипЧисло, "РазрядностьДробнойЧасти");
-	ЗнакДопустимый          = одАтрибут(Источник, одТипСтрока, "ДопустимыйЗнак");
+	// StringQualifiers
 	
-	// Читаем массив типов
+	Length           =  deAttribute(Source, deNumberType,  "Length");
+	LengthAllowed =  deAttribute(Source, deStringType, "AllowedLength");
 
-	МассивТипов = Новый Массив;
-
-	Пока Источник.Прочитать() Цикл
-		ИмяУзла = Источник.ЛокальноеИмя;
-
-		Если ИмяУзла = "Тип" Тогда
-			МассивТипов.Добавить(Тип(одЗначениеЭлемента(Источник, одТипСтрока)));
-		ИначеЕсли (ИмяУзла = "Типы") И (Источник.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-			Прервать;
-		Иначе
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если МассивТипов.Количество() > 0 Тогда
+	// NumberQualifiers
+	
+	Digits             = deAttribute(Source, deNumberType,  "Digits");
+	FractionDigits = deAttribute(Source, deNumberType,  "FractionDigits");
+	SignAllowed          = deAttribute(Source, deStringType, "AllowedSign");
+	
+	// Reading the array of types
+	
+	TypesArray = New Array;
+	
+	While Source.Read() Do
+		NodeName = Source.LocalName;
 		
-		// КвалификаторыДаты
-
-		Если СоставДаты = "Дата" Тогда
-			КвалификаторыДаты   = Новый КвалификаторыДаты(ЧастиДаты.Дата);
-		ИначеЕсли СоставДаты = "ДатаВремя" Тогда
-			КвалификаторыДаты   = Новый КвалификаторыДаты(ЧастиДаты.ДатаВремя);
-		ИначеЕсли СоставДаты = "Время" Тогда
-			КвалификаторыДаты   = Новый КвалификаторыДаты(ЧастиДаты.Время);
-		Иначе
-			КвалификаторыДаты   = Новый КвалификаторыДаты(ЧастиДаты.ДатаВремя);
-		КонецЕсли;
+		If NodeName = "Type" Then
+			TypesArray.Add(Type(deElementValue(Source, deStringType)));
+		ElsIf (NodeName = "Types") And ( Source.NodeType = deXMLNodeType_EndElement) Then
+			Break;
+		Else
+			WriteToExecutionLog(9);
+			Break;
+		EndIf;
 		
-		// КвалификаторыЧисла
+	EndDo;
 
-		Если Разрядность > 0 Тогда
-			Если ЗнакДопустимый = "Неотрицательный" Тогда
-				Знак = ДопустимыйЗнак.Неотрицательный;
-			Иначе
-				Знак = ДопустимыйЗнак.Любой;
-			КонецЕсли;
-			КвалификаторыЧисла  = Новый КвалификаторыЧисла(Разрядность, РазрядностьДробнойЧасти, Знак);
-		Иначе
-			КвалификаторыЧисла  = Новый КвалификаторыЧисла;
-		КонецЕсли;
+	If TypesArray.Count() > 0 Then
 		
-		// КвалификаторыСтроки
-
-		Если Длина > 0 Тогда
-			Если ДлинаДопустимая = "Фиксированная" Тогда
-				ДлинаДопустимая = ДопустимаяДлина.Фиксированная;
-			Иначе
-				ДлинаДопустимая = ДопустимаяДлина.Переменная;
-			КонецЕсли;
-			КвалификаторыСтроки = Новый КвалификаторыСтроки(Длина, ДлинаДопустимая);
-		Иначе
-			КвалификаторыСтроки = Новый КвалификаторыСтроки;
-		КонецЕсли;
-
-		Возврат Новый ОписаниеТипов(МассивТипов, КвалификаторыЧисла, КвалификаторыСтроки, КвалификаторыДаты);
-	КонецЕсли;
-
-	Возврат Неопределено;
-
-КонецФункции
-
-Процедура УстановитьПометкуУдаленияУОбъекта(Объект, ПометкаУдаления, ИмяТипаОбъекта)
-
-	Если (ПометкаУдаления = Неопределено) И (Объект.ПометкаУдаления <> Истина) Тогда
-
-		Возврат;
-
-	КонецЕсли;
-
-	ПометкаДляУстановки = ?(ПометкаУдаления <> Неопределено, ПометкаУдаления, Ложь);
-
-	УстановитьОбменДаннымиЗагрузка(Объект);
+		// DateQualifiers
 		
-	// Дли иерархических объектов пометку удаления только у конкретного объекта ставим.
-	Если ИмяТипаОбъекта = "Справочник" Или ИмяТипаОбъекта = "ПланВидовХарактеристик" Или ИмяТипаОбъекта = "ПланСчетов" Тогда
-
-		Объект.УстановитьПометкуУдаления(ПометкаДляУстановки, Ложь);
-
-	Иначе
-
-		Объект.УстановитьПометкуУдаления(ПометкаДляУстановки);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ЗаписатьДокументВБезопасномРежиме(Документ, ТипОбъекта)
-
-	Если Документ.Проведен Тогда
-
-		Документ.Проведен = Ложь;
-
-	КонецЕсли;
-
-	ЗаписатьОбъектВИБ(Документ, ТипОбъекта);
-
-КонецПроцедуры
-
-Функция ПолучитьОбъектПоСсылкеИДопИнформации(СозданныйОбъект, Ссылка)
+		If DateContents = "Date" Then
+			DateQualifiers   = New DateQualifiers(DateFractions.Date);
+		ElsIf DateContents = "DateTime" Then
+			DateQualifiers   = New DateQualifiers(DateFractions.DateTime);
+		ElsIf DateContents = "Time" Then
+			DateQualifiers   = New DateQualifiers(DateFractions.Time);
+		Else
+			DateQualifiers   = New DateQualifiers(DateFractions.DateTime);
+		EndIf;
+		
+		// NumberQualifiers
+		
+		If Digits > 0 Then
+			If SignAllowed = "Nonnegative" Then
+				Sign = AllowedSign.Nonnegative;
+			Else
+				Sign = AllowedSign.Any;
+			EndIf; 
+			NumberQualifiers  = New NumberQualifiers(Digits, FractionDigits, Sign);
+		Else
+			NumberQualifiers  = New NumberQualifiers();
+		EndIf;
+		
+		// StringQualifiers
+		
+		If Length > 0 Then
+			If LengthAllowed = "Fixed" Then
+				LengthAllowed = AllowedLength.Fixed;
+			Else
+				LengthAllowed = AllowedLength.Variable;
+			EndIf;
+			StringQualifiers = New StringQualifiers(Length, LengthAllowed);
+		Else
+			StringQualifiers = New StringQualifiers();
+		EndIf;
+		
+		Return New TypeDescription(TypesArray, NumberQualifiers, StringQualifiers, DateQualifiers);
+	EndIf;
 	
-	// Если объект создали, то работаем с ним, если нашли - получаем объект.
-	Если СозданныйОбъект <> Неопределено Тогда
-		Объект = СозданныйОбъект;
-	Иначе
-		Если Ссылка.Пустая() Тогда
-			Объект = Неопределено;
-		Иначе
-			Объект = Ссылка.ПолучитьОбъект();
-		КонецЕсли;
-	КонецЕсли;
-
-	Возврат Объект;
-
-КонецФункции
-
-Процедура КомментарииКЗагрузкеОбъекта(НПП, ИмяПравила, Источник, ТипОбъекта, ГНПП = 0)
-
-	Если ФлагКомментироватьОбработкуОбъектов Тогда
-
-		Если НПП <> 0 Тогда
-			СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Загрузка объекта № %1'"), НПП);
-		Иначе
-			СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Загрузка объекта № %1'"), ГНПП);
-		КонецЕсли;
-
-		ЗП = ПолучитьСтруктуруЗаписиПротокола();
-
-		Если Не ПустаяСтрока(ИмяПравила) Тогда
-
-			ЗП.ИмяПКО = ИмяПравила;
-
-		КонецЕсли;
-
-		Если Не ПустаяСтрока(Источник) Тогда
-
-			ЗП.Источник = Источник;
-
-		КонецЕсли;
-
-		ЗП.ТипОбъекта = ТипОбъекта;
-		ЗаписатьВПротоколВыполнения(СтрокаСообщения, ЗП, Ложь);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ДобавитьПараметрПриНеобходимости(ПараметрыДанных, ИмяПараметра, ЗначениеПараметра)
-
-	Если ПараметрыДанных = Неопределено Тогда
-		ПараметрыДанных = Новый Соответствие;
-	КонецЕсли;
-
-	ПараметрыДанных.Вставить(ИмяПараметра, ЗначениеПараметра);
-
-КонецПроцедуры
-
-Процедура ДобавитьСложныйПараметрПриНеобходимости(ПараметрыДанных, ИмяВеткиПараметров, НомерСтроки, ИмяПараметра,
-	ЗначениеПараметра)
-
-	Если ПараметрыДанных = Неопределено Тогда
-		ПараметрыДанных = Новый Соответствие;
-	КонецЕсли;
-
-	ТекущиеДанныеПараметра = ПараметрыДанных[ИмяВеткиПараметров];
-
-	Если ТекущиеДанныеПараметра = Неопределено Тогда
-
-		ТекущиеДанныеПараметра = Новый ТаблицаЗначений;
-		ТекущиеДанныеПараметра.Колонки.Добавить("НомерСтроки");
-		ТекущиеДанныеПараметра.Колонки.Добавить("ИмяПараметра");
-		ТекущиеДанныеПараметра.Индексы.Добавить("НомерСтроки");
-
-		ПараметрыДанных.Вставить(ИмяВеткиПараметров, ТекущиеДанныеПараметра);
-
-	КонецЕсли;
-
-	Если ТекущиеДанныеПараметра.Колонки.Найти(ИмяПараметра) = Неопределено Тогда
-		ТекущиеДанныеПараметра.Колонки.Добавить(ИмяПараметра);
-	КонецЕсли;
-
-	ДанныеСтроки = ТекущиеДанныеПараметра.Найти(НомерСтроки, "НомерСтроки");
-	Если ДанныеСтроки = Неопределено Тогда
-		ДанныеСтроки = ТекущиеДанныеПараметра.Добавить();
-		ДанныеСтроки.НомерСтроки = НомерСтроки;
-	КонецЕсли;
-
-	ДанныеСтроки[ИмяПараметра] = ЗначениеПараметра;
-
-КонецПроцедуры
-
-Процедура УстановитьСсылкуДляОбъекта(СтрокаСтекаНезаписанныхОбъектов)
+	Return Undefined;
 	
-	// Объект еще не записан, а на него ссылаются.
-	ОбъектДляЗаписи = СтрокаСтекаНезаписанныхОбъектов.Объект;
+EndFunction
 
-	СвойстваМД      = Менеджеры[СтрокаСтекаНезаписанныхОбъектов.ТипОбъекта];
-	Менеджер        = СвойстваМД.Менеджер;
-
-	НовыйУникальныйИдентификатор = Новый УникальныйИдентификатор;
-	НоваяСсылка = Менеджер.ПолучитьСсылку(НовыйУникальныйИдентификатор);
-
-	ОбъектДляЗаписи.УстановитьСсылкуНового(НоваяСсылка);
-	СтрокаСтекаНезаписанныхОбъектов.ИзвестнаяСсылка = НоваяСсылка;
-
-КонецПроцедуры
-
-Процедура SupplementNotWrittenObjectsStack(НПП, ГНПП, Объект, ИзвестнаяСсылка, ТипОбъекта, ПараметрыОбъекта)
-
-	НомерДляСтека = ?(НПП = 0, ГНПП, НПП);
-
-	СтрокаСтека = мГлобальныйСтекНеЗаписанныхОбъектов[НомерДляСтека];
-	Если СтрокаСтека <> Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-	СтруктураПараметров = Новый Структура;
-	СтруктураПараметров.Вставить("Объект", Объект);
-	СтруктураПараметров.Вставить("ИзвестнаяСсылка", ИзвестнаяСсылка);
-	СтруктураПараметров.Вставить("ТипОбъекта", ТипОбъекта);
-	СтруктураПараметров.Вставить("ПараметрыОбъекта", ПараметрыОбъекта);
-
-	мГлобальныйСтекНеЗаписанныхОбъектов.Вставить(НомерДляСтека, СтруктураПараметров);
-
-КонецПроцедуры
-
-Процедура УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП)
-
-	НомерДляСтека = ?(НПП = 0, ГНПП, НПП);
-	СтрокаСтека = мГлобальныйСтекНеЗаписанныхОбъектов[НомерДляСтека];
-	Если СтрокаСтека = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	мГлобальныйСтекНеЗаписанныхОбъектов.Удалить(НомерДляСтека);
-
-КонецПроцедуры
-
-Процедура ПровестиЗаписьНеЗаписанныхОбъектов()
-
-	Если мГлобальныйСтекНеЗаписанныхОбъектов = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	Для Каждого СтрокаДанных Из мГлобальныйСтекНеЗаписанныхОбъектов Цикл
+Procedure SetObjectDeletionMark(Object, DeletionMark, ObjectTypeName)
+	
+	If (DeletionMark = Undefined) And (Object.DeletionMark <> True) Then
 		
-		// отложенная запись объектов
-		Объект = СтрокаДанных.Значение.Объект; // СправочникОбъект, ДокументОбъект, и т.п.
-		НППСсылки = СтрокаДанных.Ключ;
+		Return;
+		
+	EndIf;
+	
+	MarkToSet = ?(DeletionMark <> Undefined, DeletionMark, False);
+	
+	SetDataExchangeLoad(Object);
+		
+	// For hierarchical object the deletion mark is set only for the current object.
+	If ObjectTypeName = "Catalog" Or ObjectTypeName = "ChartOfCharacteristicTypes" Or ObjectTypeName = "ChartOfAccounts" Then
+			
+		Object.SetDeletionMark(MarkToSet, False);
+			
+	Else	
+		
+		Object.SetDeletionMark(MarkToSet);
+		
+	EndIf;
+	
+EndProcedure
 
-		ЗаписатьОбъектВИБ(Объект, СтрокаДанных.Значение.ТипОбъекта);
+Procedure WriteDocumentInSafeMode(Document, ObjectType)
+	
+	If Document.Posted Then
+						
+		Document.Posted = False;
+			
+	EndIf;		
+								
+	WriteObjectToIB(Document, ObjectType);
+	
+EndProcedure
 
-		ДобавитьСсылкуВСписокЗагруженныхОбъектов(0, НППСсылки, Объект.Ссылка);
+Function GetObjectByRefAndAdditionalInformation(CreatedObject, Ref)
+	
+	If CreatedObject <> Undefined Then
+		Object = CreatedObject;
+	Else
+		If Ref.IsEmpty() Then
+			Object = Undefined;
+		Else
+			Object = Ref.GetObject();
+		EndIf;		
+	EndIf;
+	
+	Return Object;
+	
+EndFunction
 
-	КонецЦикла;
+Procedure ObjectImportComments(SN, RuleName, Source, ObjectType, GSN = 0)
+	
+	If CommentObjectProcessingFlag Then
+		
+		If SN <> 0 Then
+			MessageString = SubstituteParametersToString(NStr("ru = 'Загрузка объекта № %1'; en = 'Importing object #%1'"), SN);
+		Else
+			MessageString = SubstituteParametersToString(NStr("ru = 'Загрузка объекта № %1'; en = 'Importing object #%1'"), GSN);
+		EndIf;
+		
+		LR = GetLogRecordStructure();
+		
+		If Not IsBlankString(RuleName) Then
+			
+			LR.OCRName = RuleName;
+			
+		EndIf;
+		
+		If Not IsBlankString(Source) Then
+			
+			LR.Source = Source;
+			
+		EndIf;
+		
+		LR.ObjectType = ObjectType;
+		WriteToExecutionLog(MessageString, LR, False);
+		
+	EndIf;	
+	
+EndProcedure
 
-	мГлобальныйСтекНеЗаписанныхОбъектов.Очистить();
+Procedure AddParameterIfNecessary(DataParameters, ParameterName, ParameterValue)
+	
+	If DataParameters = Undefined Then
+		DataParameters = New Map;
+	EndIf;
+	
+	DataParameters.Insert(ParameterName, ParameterValue);
+	
+EndProcedure
 
-КонецПроцедуры
+Procedure AddComplexParameterIfNecessary(DataParameters, ParameterBranchName, LineNumber, ParameterName, ParameterValue)
+	
+	If DataParameters = Undefined Then
+		DataParameters = New Map;
+	EndIf;
+	
+	CurrentParameterData = DataParameters[ParameterBranchName];
+	
+	If CurrentParameterData = Undefined Then
+		
+		CurrentParameterData = New ValueTable;
+		CurrentParameterData.Columns.Add("LineNumber");
+		CurrentParameterData.Columns.Add("ParameterName");
+		CurrentParameterData.Indexes.Add("LineNumber");
+		
+		DataParameters.Insert(ParameterBranchName, CurrentParameterData);	
+		
+	EndIf;
+	
+	If CurrentParameterData.Columns.Find(ParameterName) = Undefined Then
+		CurrentParameterData.Columns.Add(ParameterName);
+	EndIf;		
+	
+	LineData = CurrentParameterData.Find(LineNumber, "LineNumber");
+	If LineData = Undefined Then
+		LineData = CurrentParameterData.Add();
+		LineData.LineNumber = LineNumber;
+	EndIf;		
+	
+	LineData[ParameterName] = ParameterValue;
+	
+EndProcedure
+
+Procedure SetObjectRef(NotWrittenObjectStackRow)
+	
+	// The is not written yet but need a reference.
+	ObjectToWrite = NotWrittenObjectStackRow.Object;
+	
+	MDProperties      = Managers[NotWrittenObjectStackRow.ObjectType];
+	Manager        = MDProperties.Manager;
+		
+	NewUUID = New UUID;
+	NewRef = Manager.GetRef(NewUUID);
+		
+	ObjectToWrite.SetNewObjectRef(NewRef);
+	NotWrittenObjectStackRow.KnownRef = NewRef;
+	
+EndProcedure
+
+Procedure SupplementNotWrittenObjectsStack(SN, GSN, Object, KnownRef, ObjectType, ObjectParameters)
+
+	NumberForStack = ?(SN = 0, GSN, SN);
+	
+	StackString = mNotWrittenObjectGlobalStack[NumberForStack];
+	If StackString <> Undefined Then
+		Return;
+	EndIf;
+	ParametersStructure = New Structure();
+	ParametersStructure.Insert("Object", Object);
+	ParametersStructure.Insert("KnownRef", KnownRef);
+	ParametersStructure.Insert("ObjectType", ObjectType);
+	ParametersStructure.Insert("ObjectParameters", ObjectParameters);
+
+	mNotWrittenObjectGlobalStack.Insert(NumberForStack, ParametersStructure);
+	
+EndProcedure
+
+Procedure DeleteFromNotWrittenObjectStack(SN, GSN)
+	
+	NumberForStack = ?(SN = 0, GSN, SN);
+	StackString = mNotWrittenObjectGlobalStack[NumberForStack];
+	If StackString = Undefined Then
+		Return;
+	EndIf;
+	
+	mNotWrittenObjectGlobalStack.Delete(NumberForStack);	
+	
+EndProcedure
+
+Procedure ExecuteWriteNotWrittenObjects()
+	
+	If mNotWrittenObjectGlobalStack = Undefined Then
+		Return;
+	EndIf;
+	
+	For Each DataRow In mNotWrittenObjectGlobalStack Do
+		
+		// Deferred objects writing
+		Object = DataRow.Value.Object; // CatalogObject, DocumentObject, etc.
+		RefSN = DataRow.Key;
+		
+		WriteObjectToIB(Object, DataRow.Value.ObjectType);
+		
+		AddRefToImportedObjectList(0, RefSN, Object.Ref);
+		
+	EndDo;
+	
+	mNotWrittenObjectGlobalStack.Clear();
+	
+EndProcedure
 
 Процедура ПровестиГенерациюКодаНомераПриНеобходимости(ГенерироватьНовыйНомерИлиКодЕслиНеУказан, Объект, ИмяТипаОбъекта,
 	НужноЗаписатьОбъект, РежимОбменДанными)
