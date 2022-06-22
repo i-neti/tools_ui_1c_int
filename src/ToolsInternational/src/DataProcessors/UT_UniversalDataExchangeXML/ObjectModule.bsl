@@ -1,4 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////////
 // Copyright (c) 2019, 1C-Soft LLC
 // All Rights reserved. This application and supporting materials are provided under the terms of 
 // Attribution 4.0 International license (CC BY 4.0)
@@ -8279,7 +8278,7 @@ Procedure SupplementNotWrittenObjectsStack(SN, GSN, Object, KnownRef, ObjectType
 	
 EndProcedure
 
-Procedure DeleteFromNotWrittenObjectStack(SN, GSN)
+Procedure DeleteFromNotWrittenObjectsStack(SN, GSN)
 	
 	NumberForStack = ?(SN = 0, GSN, SN);
 	StackString = mNotWrittenObjectGlobalStack[NumberForStack];
@@ -8313,785 +8312,766 @@ Procedure ExecuteWriteNotWrittenObjects()
 	
 EndProcedure
 
-Процедура ПровестиГенерациюКодаНомераПриНеобходимости(ГенерироватьНовыйНомерИлиКодЕслиНеУказан, Объект, ИмяТипаОбъекта,
-	НужноЗаписатьОбъект, РежимОбменДанными)
-
-	Если Не ГенерироватьНовыйНомерИлиКодЕслиНеУказан Или Не РежимОбменДанными Тогда
+Procedure ExecuteNumberCodeGenerationIfNecessary(GenerateNewNumberOrCodeIfNotSet, Object, ObjectTypeName, WriteObject, 
+	DataExchangeMode)
+	
+	If Not GenerateNewNumberOrCodeIfNotSet Or Not DataExchangeMode Then
 		
-		// Если номер не нужно генерировать, или не в режиме обмена данными то ничего не нужно делать... платформа сама все
-		// сгенерирует.
-		Возврат;
-	КонецЕсли;
+		// Platform code/number generation
+		Return;
+	EndIf;
 	
-	// По типу документа смотрим заполнен кол или номер.
-	Если ИмяТипаОбъекта = "Документ" Или ИмяТипаОбъекта = "БизнесПроцесс" Или ИмяТипаОбъекта = "Задача" Тогда
+	// Checking whether the code or number are filled (depends on the object type).
+	If ObjectTypeName = "Document" Or ObjectTypeName =  "BusinessProcess" Or ObjectTypeName = "Task" Then
+		
+		If Not ValueIsFilled(Object.Number) Then
+			
+			Object.SetNewNumber();
+			WriteObject = True;
+			
+		EndIf;
+		
+	ElsIf ObjectTypeName = "Catalog" Or ObjectTypeName = "ChartOfCharacteristicTypes" Or ObjectTypeName = "ExchangePlan" Then
+		
+		If Not ValueIsFilled(Object.Code) Then
+			
+			Object.SetNewCode();
+			WriteObject = True;
+			
+		EndIf;	
+		
+	EndIf;
+	
+EndProcedure
 
-		Если Не ЗначениеЗаполнено(Объект.Номер) Тогда
-
-			Объект.УстановитьНовыйНомер();
-			НужноЗаписатьОбъект = Истина;
-
-		КонецЕсли;
-
-	ИначеЕсли ИмяТипаОбъекта = "Справочник" Или ИмяТипаОбъекта = "ПланВидовХарактеристик" Или ИмяТипаОбъекта
-		= "ПланОбмена" Тогда
-
-		Если Не ЗначениеЗаполнено(Объект.Код) Тогда
-
-			Объект.УстановитьНовыйКод();
-			НужноЗаписатьОбъект = Истина;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Читает очередной объект из файла обмена, производит загрузку.
+// Reads the object from the exchange file and imports it.
 //
-// Параметры:
-//  Нет.
+// Parameters:
+//  No.
 // 
-Функция ПрочитатьОбъект()
+Function ReadObject()
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-	НПП						= одАтрибут(ФайлОбмена, одТипЧисло, "Нпп");
-	ГНПП					= одАтрибут(ФайлОбмена, одТипЧисло, "ГНпп");
-	Источник				= одАтрибут(ФайлОбмена, одТипСтрока, "Источник");
-	ИмяПравила				= одАтрибут(ФайлОбмена, одТипСтрока, "ИмяПравила");
-	НеЗамещатьОбъект 		= одАтрибут(ФайлОбмена, одТипБулево, "НеЗамещать");
-	ПрефиксАвтонумерации	= одАтрибут(ФайлОбмена, одТипСтрока, "ПрефиксАвтонумерации");
-	ТипОбъектаСтрокой       = одАтрибут(ФайлОбмена, одТипСтрока, "Тип");
-	ТипОбъекта 				= Тип(ТипОбъектаСтрокой);
-	ИнформацияОТипах = мСоответствиеТиповДанныхДляЗагрузки[ТипОбъекта];
+	SN						= deAttribute(ExchangeFile, deNumberType,  "Sn");
+	GSN					= deAttribute(ExchangeFile, deNumberType,  "Gsn");
+	Source				= deAttribute(ExchangeFile, deStringType, "Source");
+	RuleName				= deAttribute(ExchangeFile, deStringType, "RuleName");
+	DontReplaceObject 		= deAttribute(ExchangeFile, deBooleanType, "DoNotReplace");
+	AutonumberingPrefix	= deAttribute(ExchangeFile, deStringType, "AutonumberingPrefix");
+	ObjectTypeString       = deAttribute(ExchangeFile, deStringType, "Type");
+	ObjectType 				= Type(ObjectTypeString);
+	TypesInformation = mDataTypeMapForImport[ObjectType];
 
-	КомментарииКЗагрузкеОбъекта(НПП, ИмяПравила, Источник, ТипОбъекта, ГНПП);
+	ObjectImportComments(SN, RuleName, Source, ObjectType, GSN);    
+	
+	PropertyStructure = Managers[ObjectType];
+	ObjectTypeName   = PropertyStructure.TypeName;
 
-	СтруктураСвойств = Менеджеры[ТипОбъекта];
-	ИмяТипаОбъекта   = СтруктураСвойств.ИмяТипа;
+	If ObjectTypeName = "Document" Then
+		
+		WriteMode     = deAttribute(ExchangeFile, deStringType, "WriteMode");
+		PostingMode = deAttribute(ExchangeFile, deStringType, "PostingMode");
+		
+	EndIf;
 
-	Если ИмяТипаОбъекта = "Документ" Тогда
-
-		РежимЗаписи     = одАтрибут(ФайлОбмена, одТипСтрока, "РежимЗаписи");
-		РежимПроведения = одАтрибут(ФайлОбмена, одТипСтрока, "РежимПроведения");
-
-	КонецЕсли;
-
-	Ссылка          = Неопределено;
-	Объект          = Неопределено; // СправочникОбъект, ДокументОбъект, РегистрСведенийНаборЗаписей, и т.п.
-	ОбъектНайден    = Истина;
-	ПометкаУдаления = Неопределено;
-
-	СвойстваПоиска  = Новый Соответствие;
-	СвойстваПоискаНеЗамещать  = Новый Соответствие;
-
-	НужноЗаписатьОбъект = Не WriteToInfobaseOnlyChangedObjects;
-	Если Не ПустаяСтрока(ИмяПравила) Тогда
-
-		Правило = Правила[ИмяПравила];
-		ЕстьОбработчикПередЗагрузкой = Правило.ЕстьОбработчикПередЗагрузкой;
-		ЕстьОбработчикПриЗагрузке    = Правило.ЕстьОбработчикПриЗагрузке;
-		ЕстьОбработчикПослеЗагрузки  = Правило.ЕстьОбработчикПослеЗагрузки;
-		ГенерироватьНовыйНомерИлиКодЕслиНеУказан = Правило.ГенерироватьНовыйНомерИлиКодЕслиНеУказан;
-
-	Иначе
-
-		ЕстьОбработчикПередЗагрузкой = Ложь;
-		ЕстьОбработчикПриЗагрузке    = Ложь;
-		ЕстьОбработчикПослеЗагрузки  = Ложь;
-		ГенерироватьНовыйНомерИлиКодЕслиНеУказан = Ложь;
-
-	КонецЕсли;
+	Ref          = Undefined;
+	Object          = Undefined; // CatalogObject, DocumentObject, InformationRegisterRecordSet, etc.
+	ObjectFound    = True;
+	DeletionMark = Undefined;
+	
+	SearchProperties  = New Map;
+	SearchPropertiesDontReplace  = New Map;
+	
+	WriteObject = NOT WriteToInfobaseOnlyChangedObjects;
+	If Not IsBlankString(RuleName) Then
+		
+		Rule = Rules[RuleName];
+		HasBeforeImportHandler = Rule.HasBeforeImportHandler;
+		HasOnImportHandler    = Rule.HasOnImportHandler;
+		HasAfterImportHandler  = Rule.HasAfterImportHandler;
+		GenerateNewNumberOrCodeIfNotSet = Rule.GenerateNewNumberOrCodeIfNotSet;
+		
+	Else
+		
+		HasBeforeImportHandler = False;
+		HasOnImportHandler    = False;
+		HasAfterImportHandler  = False;
+		GenerateNewNumberOrCodeIfNotSet = False;
+		
+	EndIf;
 
 
-    // Глобальный обработчик события ПередЗагрузкойОбъекта.
-	Если ЕстьГлобальныйОбработчикПередЗагрузкойОбъекта Тогда
-
-		Отказ = Ложь;
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПередЗагрузкойОбъекта"));
-
-			Иначе
-
-				Выполнить (Конвертация.ПередЗагрузкойОбъекта);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(53, ОписаниеОшибки(), ИмяПравила, Источник, ТипОбъекта,
-				Неопределено, НСтр("ru = 'ПередЗагрузкойОбъекта (глобальный)'"));
-
-		КонецПопытки;
-
-		Если Отказ Тогда	//	Отказ от загрузки объекта
-
-			одПропустить(ФайлОбмена, "Объект");
-			Возврат Неопределено;
-
-		КонецЕсли;
-
-	КонецЕсли;
+    // BeforeImportObject global event handler.
+	If HasBeforeImportObjectGlobalHandler Then
+		
+		Cancel = False;
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Conversion, "BeforeImportObject"));
+				
+			Else
+				
+				Execute(Conversion.BeforeImportObject);
+				
+			EndIf;
+			
+		Except
+			
+			WriteInfoOnOCRHandlerImportError(53, ErrorDescription(), RuleName, Source,
+				ObjectType, Undefined, NStr("ru = 'ПередЗагрузкойОбъекта (глобальный)'; en = 'BeforeImportObject (global)'"));
+							
+		EndTry;
+						
+		If Cancel Then	//	Canceling the object import
+			
+			deSkip(ExchangeFile, "Object");
+			Return Undefined;
+			
+		EndIf;
+		
+	EndIf;
 	
 	
-    // Обработчик события ПередЗагрузкойОбъекта.
-	Если ЕстьОбработчикПередЗагрузкой Тогда
-
-		Отказ = Ложь;
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПередЗагрузкой"));
-
-			Иначе
-
-				Выполнить (Правило.ПередЗагрузкой);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(19, ОписаниеОшибки(), ИмяПравила, Источник, ТипОбъекта,
-				Неопределено, "ПередЗагрузкойОбъекта");
-
-		КонецПопытки;
-
-		Если Отказ Тогда // Отказ от загрузки объекта
-
-			одПропустить(ФайлОбмена, "Объект");
-			Возврат Неопределено;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	СвойстваОбъектаМодифицированы = Ложь;
-	НаборЗаписей = Неопределено;
-	НППГлобальнойСсылки = 0;
-	НППСсылки = 0;
-	ПараметрыОбъекта = Неопределено;
-
-	Пока ФайлОбмена.Прочитать() Цикл
-
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-		Если ИмяУзла = "Свойство" Или ИмяУзла = "ЗначениеПараметра" Тогда
-
-			ЭтоПараметрДляОбъекта = (ИмяУзла = "ЗначениеПараметра");
-
-			Если Не ЭтоПараметрДляОбъекта И Объект = Неопределено Тогда
+    // BeforeImportObject event handler.
+	If HasBeforeImportHandler Then
+		
+		Cancel = False;
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
 				
-				// Объект не нашли и не создали - попробуем сейчас это сделать.
-				ОбъектНайден = Ложь;
+				Execute(GetHandlerCallString(Rule, "BeforeImport"));
+				
+			Else
+				
+				Execute(Rule.BeforeImport);
+				
+			EndIf;
+			
+		Except
+			
+			WriteInfoOnOCRHandlerImportError(19, ErrorDescription(), RuleName, Source,
+				ObjectType, Undefined, "BeforeImportObject");
+			
+		EndTry;
+		
+		If Cancel Then // Canceling the object import
+			
+			deSkip(ExchangeFile, "Object");
+			Return Undefined;
+			
+		EndIf;
+		
+	EndIf;
 
-			    // Обработчик события ПриЗагрузкеОбъекта.
-				Если ЕстьОбработчикПриЗагрузке Тогда
+	ObjectPropertiesModified = False;
+	RecordSet = Undefined;
+	GlobalRefSn = 0;
+	RefSN = 0;
+	ObjectParameters = Undefined;
+
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+				
+		If NodeName = "Property" Or NodeName = "ParameterValue" Then
+			
+			IsParameterForObject = (NodeName = "ParameterValue");
+			
+			If Not IsParameterForObject And Object = Undefined Then
+				
+				// The object was not found and was not created.
+				ObjectFound = False;
+
+			    // OnImportObject event handler.
+				If HasOnImportHandler Then
 					
-					// Если есть обработчик при загрузке, то объект нужно перезаписывать, так как могут быть изменения.
-					НужноБылоЗаписатьОбъект = НужноЗаписатьОбъект;
-					ОбъектМодифицирован = Истина;
-
-					Попытка
-
-						Если HandlersDebugModeFlag Тогда
-
-							Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПриЗагрузке"));
-
-						Иначе
-
-							Выполнить (Правило.ПриЗагрузке);
-
-						КонецЕсли;
-						НужноЗаписатьОбъект = ОбъектМодифицирован Или НужноБылоЗаписатьОбъект;
-
-					Исключение
-
-						ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(20, ОписаниеОшибки(), ИмяПравила, Источник,
-							ТипОбъекта, Объект, "ПриЗагрузкеОбъекта");
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-				// Так м не смогли создать объект в событии - создаем его отдельно.
-				Если Объект = Неопределено Тогда
-
-					НужноЗаписатьОбъект = Истина;
-
-					Если ИмяТипаОбъекта = "Константы" Тогда
-
-						Объект = Константы.СоздатьНабор();
-						Объект.Прочитать();
-
-					Иначе
-
-						СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, Объект, Ложь, НаборЗаписей, , НППСсылки,
-							НППГлобальнойСсылки, ПараметрыОбъекта);
-
-					КонецЕсли;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-			Имя                = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-			НеЗамещатьСвойство = одАтрибут(ФайлОбмена, одТипБулево, "НеЗамещать");
-			ИмяПКО             = одАтрибут(ФайлОбмена, одТипСтрока, "ИмяПКО");
-
-			Если Не ЭтоПараметрДляОбъекта И ((ОбъектНайден И НеЗамещатьСвойство) Или (Имя = "ЭтоГруппа")
-				Или (Объект[Имя] = Null)) Тогда
-				
-				// неизвестное свойство
-				одПропустить(ФайлОбмена, ИмяУзла);
-				Продолжить;
-
-			КонецЕсли; 
-
-			
-			// Читаем и устанавливаем значение свойства.
-			ТипСвойства = ПолучитьТипСвойстваПоДополнительнымДанным(ИнформацияОТипах, Имя);
-			Значение    = ПрочитатьСвойство(ТипСвойства, ИмяПКО);
-
-			Если ЭтоПараметрДляОбъекта Тогда
-				
-				// Дополняем коллекцию параметров объекта.
-				ДобавитьПараметрПриНеобходимости(ПараметрыОбъекта, Имя, Значение);
-
-			Иначе
-
-				Если Имя = "ПометкаУдаления" Тогда
-
-					ПометкаУдаления = Значение;
-
-					Если Объект.ПометкаУдаления <> ПометкаУдаления Тогда
-						Объект.ПометкаУдаления = ПометкаУдаления;
-						НужноЗаписатьОбъект = Истина;
-					КонецЕсли;
-
-				Иначе
-
-					Попытка
-
-						Если Не НужноЗаписатьОбъект Тогда
-
-							НужноЗаписатьОбъект = (Объект[Имя] <> Значение);
-
-						КонецЕсли;
-
-						Объект[Имя] = Значение;
-
-					Исключение
-
-						ЗП = ПолучитьСтруктуруЗаписиПротокола(26, ОписаниеОшибки());
-						ЗП.ИмяПКО           = ИмяПравила;
-						ЗП.НПП              = НПП;
-						ЗП.ГНПП             = ГНПП;
-						ЗП.Источник         = Источник;
-						ЗП.Объект           = Объект;
-						ЗП.ТипОбъекта       = ТипОбъекта;
-						ЗП.Свойство         = Имя;
-						ЗП.Значение         = Значение;
-						ЗП.ТипЗначения      = ТипЗнч(Значение);
-						СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(26, ЗП, Истина);
-
-						Если Не DebugModeFlag Тогда
-							ВызватьИсключение СтрокаСообщенияОбОшибке;
-						КонецЕсли;
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "Ссылка" Тогда
-			
-			// Ссылка на элемент - сначала получаем по ссылке объект, а потом устанавливаем свойства.
-			СозданныйОбъект = Неопределено;
-			НеСоздаватьОбъектЕслиНеНайден = Неопределено;
-			ИзвестнаяСсылкаУникальногоИдентификатора = Неопределено;
-
-			Ссылка = НайтиОбъектПоСсылке(ТипОбъекта, ИмяПравила, СвойстваПоиска, СвойстваПоискаНеЗамещать, ОбъектНайден,
-				СозданныйОбъект, НеСоздаватьОбъектЕслиНеНайден, Истина, СвойстваОбъектаМодифицированы,
-				НППГлобальнойСсылки, НППСсылки, ИзвестнаяСсылкаУникальногоИдентификатора, ПараметрыОбъекта);
-
-			НужноЗаписатьОбъект = НужноЗаписатьОбъект Или СвойстваОбъектаМодифицированы;
-
-			Если Ссылка = Неопределено И НеСоздаватьОбъектЕслиНеНайден = Истина Тогда
-
-				одПропустить(ФайлОбмена, "Объект");
-				Прервать;
-
-			ИначеЕсли ИмяТипаОбъекта = "Перечисление" Тогда
-
-				Объект = Ссылка;
-
-			Иначе
-
-				Объект = ПолучитьОбъектПоСсылкеИДопИнформации(СозданныйОбъект, Ссылка);
-
-				Если ОбъектНайден И НеЗамещатьОбъект И (Не ЕстьОбработчикПриЗагрузке) Тогда
-
-					одПропустить(ФайлОбмена, "Объект");
-					Прервать;
-
-				КонецЕсли;
-
-				Если Ссылка = Неопределено Тогда
-
-					SupplementNotWrittenObjectsStack(НПП, ГНПП, СозданныйОбъект,
-						ИзвестнаяСсылкаУникальногоИдентификатора, ТипОбъекта, ПараметрыОбъекта);
-
-				КонецЕсли;
-
-			КонецЕсли; 
-			
-		    // Обработчик события ПриЗагрузкеОбъекта.
-			Если ЕстьОбработчикПриЗагрузке Тогда
-
-				НужноБылоЗаписатьОбъект = НужноЗаписатьОбъект;
-				ОбъектМодифицирован = Истина;
-
-				Попытка
-
-					Если HandlersDebugModeFlag Тогда
-
-						Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПриЗагрузке"));
-
-					Иначе
-
-						Выполнить (Правило.ПриЗагрузке);
-
-					КонецЕсли;
-
-					НужноЗаписатьОбъект = ОбъектМодифицирован Или НужноБылоЗаписатьОбъект;
-
-				Исключение
-					УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-					ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(20, ОписаниеОшибки(), ИмяПравила, Источник,
-						ТипОбъекта, Объект, "ПриЗагрузкеОбъекта");
-
-				КонецПопытки;
-
-				Если ОбъектНайден И НеЗамещатьОбъект Тогда
-
-					одПропустить(ФайлОбмена, "Объект");
-					Прервать;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ТабличнаяЧасть" Или ИмяУзла = "НаборЗаписей" Тогда
-
-			Если Объект = Неопределено Тогда
-
-				ОбъектНайден = Ложь;
-
-			    // Обработчик события ПриЗагрузкеОбъекта.
-
-				Если ЕстьОбработчикПриЗагрузке Тогда
-
-					НужноБылоЗаписатьОбъект = НужноЗаписатьОбъект;
-					ОбъектМодифицирован = Истина;
-
-					Попытка
-
-						Если HandlersDebugModeFlag Тогда
-
-							Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПриЗагрузке"));
-
-						Иначе
-
-							Выполнить (Правило.ПриЗагрузке);
-
-						КонецЕсли;
-
-						НужноЗаписатьОбъект = ОбъектМодифицирован Или НужноБылоЗаписатьОбъект;
-
-					Исключение
-						УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-						ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(20, ОписаниеОшибки(), ИмяПравила, Источник,
-							ТипОбъекта, Объект, "ПриЗагрузкеОбъекта");
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-			КонецЕсли;
-
-			Имя                = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-			НеЗамещатьСвойство = одАтрибут(ФайлОбмена, одТипБулево, "НеЗамещать");
-			НеОчищать          = одАтрибут(ФайлОбмена, одТипБулево, "НеОчищать");
-
-			Если ОбъектНайден И НеЗамещатьСвойство Тогда
-
-				одПропустить(ФайлОбмена, ИмяУзла);
-				Продолжить;
-
-			КонецЕсли;
-
-			Если Объект = Неопределено Тогда
-
-				СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, Объект, Ложь, НаборЗаписей, , НППСсылки,
-					НППГлобальнойСсылки, ПараметрыОбъекта);
-				НужноЗаписатьОбъект = Истина;
-
-			КонецЕсли;
-
-			Если ИмяУзла = "ТабличнаяЧасть" Тогда
-				
-				// Загрузка элементов из табличной части.
-				ЗагрузитьТабличнуюЧасть(Объект, Имя, Не НеОчищать, ИнформацияОТипах, НужноЗаписатьОбъект,
-					ПараметрыОбъекта, Правило);
-
-			ИначеЕсли ИмяУзла = "НаборЗаписей" Тогда
-				
-				// загрузка движений
-				ЗагрузитьДвижения(Объект, Имя, Не НеОчищать, ИнформацияОТипах, НужноЗаписатьОбъект, ПараметрыОбъекта,
-					Правило);
-
-			КонецЕсли;
-
-		ИначеЕсли (ИмяУзла = "Объект") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Отказ = Ложь;
-			
-		    // Глобальный обработчик события ПослеЗагрузкиОбъекта.
-			Если ЕстьГлобальныйОбработчикПослеЗагрузкиОбъекта Тогда
-
-				НужноБылоЗаписатьОбъект = НужноЗаписатьОбъект;
-				ОбъектМодифицирован = Истина;
-
-				Попытка
-
-					Если HandlersDebugModeFlag Тогда
-
-						Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПослеЗагрузкиОбъекта"));
-
-					Иначе
-
-						Выполнить (Конвертация.ПослеЗагрузкиОбъекта);
-
-					КонецЕсли;
-
-					НужноЗаписатьОбъект = ОбъектМодифицирован Или НужноБылоЗаписатьОбъект;
-
-				Исключение
-					УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-					ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(54, ОписаниеОшибки(), ИмяПравила, Источник,
-						ТипОбъекта, Объект, НСтр("ru = 'ПослеЗагрузкиОбъекта (глобальный)'"));
-
-				КонецПопытки;
-
-			КонецЕсли;
-			
-			// Обработчик события ПослеЗагрузкиОбъекта.
-			Если ЕстьОбработчикПослеЗагрузки Тогда
-
-				НужноБылоЗаписатьОбъект = НужноЗаписатьОбъект;
-				ОбъектМодифицирован = Истина;
-
-				Попытка
-
-					Если HandlersDebugModeFlag Тогда
-
-						Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПослеЗагрузки"));
-
-					Иначе
-
-						Выполнить (Правило.ПослеЗагрузки);
-
-					КонецЕсли;
-
-					НужноЗаписатьОбъект = ОбъектМодифицирован Или НужноБылоЗаписатьОбъект;
-
-				Исключение
-					УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-					ЗаписатьИнформациюОбОшибкеЗагрузкиОбработчикаПКО(21, ОписаниеОшибки(), ИмяПравила, Источник,
-						ТипОбъекта, Объект, "ПослеЗагрузкиОбъекта");
-
-				КонецПопытки;
-
-			КонецЕсли;
-
-			Если ИмяТипаОбъекта <> "РегистрСведений" И ИмяТипаОбъекта <> "Константы" И ИмяТипаОбъекта <> "Перечисление" Тогда
-				// Проверка даты запрета для всех объектов кроме регистров сведений и констант.
-				Отказ = Отказ Или ЗапретИзмененияДанныхПоДате(Объект);
-			КонецЕсли;
-
-			Если Отказ Тогда
-
-				ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, Неопределено);
-				УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-				Возврат Неопределено;
-
-			КонецЕсли;
-
-			Если ИмяТипаОбъекта = "Документ" Тогда
-
-				Если РежимЗаписи = "Проведение" Тогда
-
-					РежимЗаписи = РежимЗаписиДокумента.Проведение;
-
-				Иначе
-
-					РежимЗаписи = ?(РежимЗаписи = "ОтменаПроведения", РежимЗаписиДокумента.ОтменаПроведения,
-						РежимЗаписиДокумента.Запись);
-
-				КонецЕсли;
-				РежимПроведения = ?(РежимПроведения = "Оперативный", РежимПроведенияДокумента.Оперативный,
-					РежимПроведенияДокумента.Неоперативный);
-				
-
-				// Если хотим провести документ помеченный на удаление, то пометку удаления снимаем ...
-				Если Объект.ПометкаУдаления И (РежимЗаписи = РежимЗаписиДокумента.Проведение) Тогда
-
-					Объект.ПометкаУдаления = Ложь;
-					НужноЗаписатьОбъект = Истина;
+					// Rewriting the object if OnImporthandler exists.
+					WriteObjectWasRequired = WriteObject;
+      				ObjectModified = True;
+
+					Try
+						
+						If HandlersDebugModeFlag Then
+							
+							Execute(GetHandlerCallString(Rule, "OnImport"));
+							
+						Else
+							
+							Execute(Rule.OnImport);
+						
+						EndIf;
+						WriteObject = ObjectModified Or WriteObjectWasRequired;
+						
+					Except
+						
+						WriteInfoOnOCRHandlerImportError(20, ErrorDescription(), RuleName, Source,
+							ObjectType, Object, "OnImportObject");
+						
+					EndTry;
+
+				EndIf;
+
+				// Failed to create the object in the event.
+				If Object = Undefined Then
 					
-					// Пометку удаления в любом случае нужно удалять.
-					ПометкаУдаления = Ложь;
-
-				КонецЕсли;
-
-				Попытка
-
-					НужноЗаписатьОбъект = НужноЗаписатьОбъект Или (РежимЗаписи <> РежимЗаписиДокумента.Запись);
-
-					РежимОбменДанными = РежимЗаписи = РежимЗаписиДокумента.Запись;
-
-					ПровестиГенерациюКодаНомераПриНеобходимости(ГенерироватьНовыйНомерИлиКодЕслиНеУказан, Объект,
-						ИмяТипаОбъекта, НужноЗаписатьОбъект, РежимОбменДанными);
-
-					Если НужноЗаписатьОбъект Тогда
-
-						УстановитьОбменДаннымиЗагрузка(Объект, РежимОбменДанными);
-						Если Объект.Проведен Тогда
-							Объект.ПометкаУдаления = Ложь;
-						КонецЕсли;
-
-						Объект.Записать(РежимЗаписи, РежимПроведения);
-
-					КонецЕсли;
-
-				Исключение
+					WriteObject = True;
+					
+					If ObjectTypeName = "Constants" Then
 						
-					// Не смогли выполнить необходимые действия для документа.
-					ЗаписатьДокументВБезопасномРежиме(Объект, ТипОбъекта);
-					ЗП                        = ПолучитьСтруктуруЗаписиПротокола(25, ОписаниеОшибки());
-					ЗП.ИмяПКО                 = ИмяПравила;
-
-					Если Не ПустаяСтрока(Источник) Тогда
-
-						ЗП.Источник           = Источник;
-
-					КонецЕсли;
-
-					ЗП.ТипОбъекта             = ТипОбъекта;
-					ЗП.Объект                 = Строка(Объект);
-					ЗаписатьВПротоколВыполнения(25, ЗП);
-
-				КонецПопытки;
-
-				ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, Объект.Ссылка);
-
-				УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-
-			ИначеЕсли ИмяТипаОбъекта <> "Перечисление" Тогда
-
-				Если ИмяТипаОбъекта = "РегистрСведений" Тогда
-
-					НужноЗаписатьОбъект = Не WriteToInfobaseOnlyChangedObjects;
-
-					Если СтруктураСвойств.Периодический И Не ЗначениеЗаполнено(Объект.Период) Тогда
-
-						Объект.Период = ТекущаяДатаСеанса();
-						НужноЗаписатьОбъект = Истина;
-
-					КонецЕсли;
-
-					Если WriteRegistersAsRecordSets Тогда
-
-						НужноПроверитьДанныеДляВременногоНабора = (WriteToInfobaseOnlyChangedObjects
-							И Не НужноЗаписатьОбъект) Или НеЗамещатьОбъект;
-
-						Если НужноПроверитьДанныеДляВременногоНабора Тогда
-
-							ВременныйНаборЗаписей = РегистрыСведений[СтруктураСвойств.Имя].СоздатьНаборЗаписей();
-
-						КонецЕсли;
+						Object = Constants.CreateSet();
+						Object.Read();
 						
-						// Нужно отбор установить у регистра.
-						Для Каждого ЭлементОтбора Из НаборЗаписей.Отбор Цикл
+					Else
+						
+						CreateNewObject(ObjectType, SearchProperties, Object, False, RecordSet, , RefSN, GlobalRefSn, ObjectParameters);
+												
+					EndIf;
+					
+				EndIf;
+				
+			EndIf;
 
-							ЭлементОтбора.Установить(Объект[ЭлементОтбора.Имя]);
-							Если НужноПроверитьДанныеДляВременногоНабора Тогда
-								УстановитьЗначениеЭлементаОтбора(ВременныйНаборЗаписей.Отбор, ЭлементОтбора.Имя,
-									Объект[ЭлементОтбора.Имя]);
-							КонецЕсли;
+			Name                = deAttribute(ExchangeFile, deStringType, "Name");
+			DontReplaceProperty = deAttribute(ExchangeFile, deBooleanType, "DoNotReplace");
+			OCRName             = deAttribute(ExchangeFile, deStringType, "OCRName");
+			
+			If Not IsParameterForObject And ((ObjectFound And DontReplaceProperty) 
+				Or (Name = "IsFolder") Or (Object[Name] = Null)) Then
+				
+				// Unknown property
+				deSkip(ExchangeFile, NodeName);
+				Continue;
+				
+			EndIf; 
 
-						КонецЦикла;
+			
+			// Reading and setting the property value.
+			PropertyType = GetPropertyTypeByAdditionalData(TypesInformation, Name);
+			Value    = ReadProperty(PropertyType, OCRName);
+			
+			If IsParameterForObject Then
+				
+				// Supplementing the object parameter collection.
+				AddParameterIfNecessary(ObjectParameters, Name, Value);
+				
+			Else
+			
+				If Name = "DeletionMark" Then
+					
+					DeletionMark = Value;
+					
+					If Object.DeletionMark <> DeletionMark Then
+						Object.DeletionMark = DeletionMark;
+						WriteObject = True;
+					EndIf;
+										
+				Else
 
-						Если НужноПроверитьДанныеДляВременногоНабора Тогда
+					Try
+						
+						If Not WriteObject Then
+							
+							WriteObject = (Object[Name] <> Value);
+							
+						EndIf;
+						
+						Object[Name] = Value;
+						
+					Except
+						
+						LR = GetLogRecordStructure(26, ErrorDescription());
+						LR.OCRName           = RuleName;
+						LR.Sn              = SN;
+						LR.Gsn             = GSN;
+						LR.Source         = Source;
+						LR.Object           = Object;
+						LR.ObjectType       = ObjectType;
+						LR.Property         = Name;
+						LR.Value         = Value;
+						LR.ValueType      = TypeOf(Value);
+						ErrorMessageString = WriteToExecutionLog(26, LR, True);
+						
+						If Not DebugModeFlag Then
+							Raise ErrorMessageString;
+						EndIf;
+						
+					EndTry;					
+									
+				EndIf;
+				
+			EndIf;
 
-							ВременныйНаборЗаписей.Прочитать();
+		ElsIf NodeName = "Ref" Then
+			
+			// Getting an object by reference and setting properties.
+			CreatedObject = Undefined;
+			DontCreateObjectIfNotFound = Undefined;
+			KnownUUIDRef = Undefined;
+			
+			Ref = FindObjectByRef(ObjectType, RuleName, SearchProperties, SearchPropertiesDontReplace, ObjectFound,
+								CreatedObject, DontCreateObjectIfNotFound, True, ObjectPropertiesModified,
+								GlobalRefSn, RefSN, KnownUUIDRef, ObjectParameters);
 
-							Если ВременныйНаборЗаписей.Количество() = 0 Тогда
-								НужноЗаписатьОбъект = Истина;
-							Иначе
+			WriteObject = WriteObject Or ObjectPropertiesModified;
+			
+			If Ref = Undefined And DontCreateObjectIfNotFound = True Then
+				
+				deSkip(ExchangeFile, "Object");
+				Break;
+			
+			ElsIf ObjectTypeName = "Enum" Then
+				
+				Object = Ref;
+			
+			Else
+				
+				Object = GetObjectByRefAndAdditionalInformation(CreatedObject, Ref);
+				
+				If ObjectFound And DontReplaceObject And (Not HasOnImportHandler) Then
+					
+					deSkip(ExchangeFile, "Object");
+					Break;
+					
+				EndIf;
+				
+				If Ref = Undefined Then
+					
+					SupplementNotWrittenObjectsStack(SN, GSN, CreatedObject, KnownUUIDRef, ObjectType, ObjectParameters);
+					
+				EndIf;
+							
+			EndIf; 
+			
+		    // OnImportObject event handler.
+			If HasOnImportHandler Then
+				
+				WriteObjectWasRequired = WriteObject;
+      			ObjectModified = True;
+				
+				Try
+					
+					If HandlersDebugModeFlag Then
+						
+						Execute(GetHandlerCallString(Rule, "OnImport"));
+						
+					Else
+						
+						Execute(Rule.OnImport);
+						
+					EndIf;
+					
+					WriteObject = ObjectModified Or WriteObjectWasRequired;
+					
+				Except
+					DeleteFromNotWrittenObjectsStack(SN, GSN);
+					WriteInfoOnOCRHandlerImportError(20, ErrorDescription(), RuleName, Source, 
+							ObjectType, Object, "OnImportObject");
+					
+				EndTry;
+				
+				If ObjectFound And DontReplaceObject Then
+					
+					deSkip(ExchangeFile, "Object");
+					Break;
+					
+				EndIf;
+				
+			EndIf;
+
+		ElsIf NodeName = "TabularSection" Or NodeName = "RecordSet" Then
+
+			If Object = Undefined Then
+				
+				ObjectFound = False;
+
+			    // OnImportObject event handler.
+				
+				If HasOnImportHandler Then
+					
+					WriteObjectWasRequired = WriteObject;
+      				ObjectModified = True;
+					
+					Try
+						
+						If HandlersDebugModeFlag Then
+							
+							Execute(GetHandlerCallString(Rule, "OnImport"));
+							
+						Else
+							
+							Execute(Rule.OnImport);
+							
+						EndIf;
+						
+						WriteObject = ObjectModified Or WriteObjectWasRequired;
+						
+					Except
+						DeleteFromNotWrittenObjectsStack(SN, GSN);
+						WriteInfoOnOCRHandlerImportError(20, ErrorDescription(), RuleName, Source, 
+							ObjectType, Object, "OnImportObject");
+						
+					EndTry;
+					
+				EndIf;
+				
+			EndIf;
+
+			Name                = deAttribute(ExchangeFile, deStringType, "Name");
+			DontReplaceProperty = deAttribute(ExchangeFile, deBooleanType, "DoNotReplace");
+			DontClear          = deAttribute(ExchangeFile, deBooleanType, "DoNotClear");
+
+			If ObjectFound And DontReplaceProperty Then
+				
+				deSkip(ExchangeFile, NodeName);
+				Continue;
+				
+			EndIf;
+			
+			If Object = Undefined Then
+					
+				CreateNewObject(ObjectType, SearchProperties, Object, False, RecordSet, , RefSN, GlobalRefSn, ObjectParameters);
+				WriteObject = True;
+									
+			EndIf;
+			
+			If NodeName = "TabularSection" Then
+				
+				// Importing items from the tabular section
+				ImportTabularSection(Object, Name, Not DontClear, TypesInformation, WriteObject, ObjectParameters, Rule);
+				
+			ElsIf NodeName = "RecordSet" Then
+				
+				// Importing register
+				ImportRegisterRecords(Object, Name, Not DontClear, TypesInformation, WriteObject, ObjectParameters, Rule);
+				
+			EndIf;
+
+		ElsIf (NodeName = "Object") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Cancel = False;
+			
+		    // AfterObjectImport global event handler.
+			If HasAfterImportObjectGlobalHandler Then
+				
+				WriteObjectWasRequired = WriteObject;
+      			ObjectModified = True;
+				
+				Try
+					
+					If HandlersDebugModeFlag Then
+						
+						Execute(GetHandlerCallString(Conversion, "AfterImportObject"));
+						
+					Else
+						
+						Execute(Conversion.AfterImportObject);
+						
+					EndIf;
+					
+					WriteObject = ObjectModified Or WriteObjectWasRequired;
+					
+				Except
+					DeleteFromNotWrittenObjectsStack(SN, GSN);
+					WriteInfoOnOCRHandlerImportError(54, ErrorDescription(), RuleName, Source,
+							ObjectType, Object, NStr("ru = 'ПослеЗагрузкиОбъекта (глобальный)'; en = 'AfterImportObject (global)'"));
+					
+				EndTry;
+				
+			EndIf;
+			
+			// AfterObjectImport event handler.
+			If HasAfterImportHandler Then
+				
+				WriteObjectWasRequired = WriteObject;
+				ObjectModified = True;
+				
+				Try
+					
+					If HandlersDebugModeFlag Then
+						
+						Execute(GetHandlerCallString(Rule, "AfterImport"));
+						
+					Else
+						
+						Execute(Rule.AfterImport);
+				
+					EndIf;
+					
+					WriteObject = ObjectModified Or WriteObjectWasRequired;
+					
+				Except
+					DeleteFromNotWrittenObjectsStack(SN, GSN);
+					WriteInfoOnOCRHandlerImportError(21, ErrorDescription(), RuleName, Source,
+												ObjectType, Object, "AfterImportObject");
+						
+				EndTry;
+				
+			EndIf;
+
+			If ObjectTypeName <> "InformationRegister" And ObjectTypeName <> "Constants" And ObjectTypeName <> "Enum" Then
+				// Checking the restriction date for all objects except for information registers and constants.
+				Cancel = Cancel Or DisableDataChangeByDate(Object);
+			EndIf;
+			
+			If Cancel Then
+				
+				AddRefToImportedObjectList(GlobalRefSn, RefSN, Undefined);
+				DeleteFromNotWrittenObjectsStack(SN, GSN);
+				Return Undefined;
+				
+			EndIf;
+
+			If ObjectTypeName = "Document" Then
+				
+				If WriteMode = "Posting" Then
+					
+					WriteMode = DocumentWriteMode.Posting;
+					
+				Else
+					
+					WriteMode = ?(WriteMode = "UndoPosting", DocumentWriteMode.UndoPosting, DocumentWriteMode.Write);
+					
+				EndIf;
+				PostingMode = ?(PostingMode = "RealTime", DocumentPostingMode.RealTime, DocumentPostingMode.Regular);
+				
+
+				// Clearing the deletion mark to post the object.
+				If Object.DeletionMark And (WriteMode = DocumentWriteMode.Posting) Then
+					
+					Object.DeletionMark = False;
+					WriteObject = True;
+					
+					// The deletion mark is deleted anyway.
+					DeletionMark = False;
+									
+				EndIf;
+
+				Try
+					
+					WriteObject = WriteObject Or (WriteMode <> DocumentWriteMode.Write);
+					
+					DataExchangeMode = WriteMode = DocumentWriteMode.Write;
+					
+					ExecuteNumberCodeGenerationIfNecessary(GenerateNewNumberOrCodeIfNotSet, Object, 
+						ObjectTypeName, WriteObject, DataExchangeMode);
+					
+					If WriteObject Then
+					
+						SetDataExchangeLoad(Object, DataExchangeMode);
+						If Object.Posted Then
+							Object.DeletionMark = False;
+						EndIf;
+						
+						Object.Write(WriteMode, PostingMode);
+						
+					EndIf;
+
+				Except
+						
+					// Failed to execute actions required for the document.
+					WriteDocumentInSafeMode(Object, ObjectType);
+					LR                        = GetLogRecordStructure(25, ErrorDescription());
+					LR.OCRName                 = RuleName;
+						
+					If Not IsBlankString(Source) Then
+							
+						LR.Source           = Source;
+							
+					EndIf;
+						
+					LR.ObjectType             = ObjectType;
+					LR.Object                 = String(Object);
+					WriteToExecutionLog(25, LR);
+						
+				EndTry;
+
+				AddRefToImportedObjectList(GlobalRefSn, RefSN, Object.Ref);
+									
+				DeleteFromNotWrittenObjectsStack(SN, GSN);
+
+			ElsIf ObjectTypeName <> "Enum" Then
+				
+				If ObjectTypeName = "InformationRegister" Then
+					
+					WriteObject = Not WriteToInfobaseOnlyChangedObjects;
+					
+					If PropertyStructure.Periodic And Not ValueIsFilled(Object.Period) Then
+						
+						Object.Period = CurrentSessionDate();
+						WriteObject = True;							
+												
+					EndIf;
+
+					If WriteRegistersAsRecordSets Then
+						
+						CheckDataForTempSet = (WriteToInfobaseOnlyChangedObjects And Not WriteObject) 
+							Or DontReplaceObject;
+						
+						If CheckDataForTempSet Then
+							
+							TemporaryRecordSet = InformationRegisters[PropertyStructure.Name].CreateRecordSet();
+							
+						EndIf;
+						
+						// The register requires the filter to be set.
+						For Each FilterItem In RecordSet.Filter Do
+							
+							FilterItem.Set(Object[FilterItem.Name]);
+							If CheckDataForTempSet Then
+								SetFilterItemValue(TemporaryRecordSet.Filter, FilterItem.Name,
+									Object[FilterItem.Name]);
+							EndIf;
+							
+						EndDo;
+
+						If CheckDataForTempSet Then
+							
+							TemporaryRecordSet.Read();
+							
+							If TemporaryRecordSet.Count() = 0 Then
+								WriteObject = True;
+							Else
 								
-								// Не хотим замещать существующий набор.
-								Если НеЗамещатьОбъект Тогда
-									Возврат Неопределено;
-								КонецЕсли;
+								If DontReplaceObject Then
+									Return Undefined;
+								EndIf;
+								
+								WriteObject = False;
+								NewTable = RecordSet.Unload();
+								OldTable = TemporaryRecordSet.Unload(); 
+								
+								NewRow = NewTable[0]; 
+								OldRow = OldTable[0]; 
+								
+								For Each TableColumn In NewTable.Columns Do
+									
+									WriteObject = NewRow[TableColumn.Name] <>  OldRow[TableColumn.Name];
+									If WriteObject Then
+										Break;
+									EndIf;
+									
+								EndDo;
+								
+							EndIf;
+							
+						EndIf;
 
-								НужноЗаписатьОбъект = Ложь;
-								ТаблицаНовая = НаборЗаписей.Выгрузить(); // ТаблицаЗначений
-								ТаблицаСтарая = ВременныйНаборЗаписей.Выгрузить();
-
-								СтрокаНовая = ТаблицаНовая[0];
-								СтрокаСтарая = ТаблицаСтарая[0];
-
-								Для Каждого КолонкаТаблицы Из ТаблицаНовая.Колонки Цикл
-
-									НужноЗаписатьОбъект = СтрокаНовая[КолонкаТаблицы.Имя]
-										<> СтрокаСтарая[КолонкаТаблицы.Имя];
-									Если НужноЗаписатьОбъект Тогда
-										Прервать;
-									КонецЕсли;
-
-								КонецЦикла;
-
-							КонецЕсли;
-
-						КонецЕсли;
-
-						Объект = НаборЗаписей;
-
-						Если СтруктураСвойств.Периодический Тогда
-							// Проверка даты запрета изменения для набора записей.
-							// Если не проходит - не записывать набор.
-							Если ЗапретИзмененияДанныхПоДате(Объект) Тогда
-								Возврат Неопределено;
-							КонецЕсли;
-						КонецЕсли;
-
-					Иначе
+						Object = RecordSet;
 						
-						// Регистр записываем не набором записей.
-						Если НеЗамещатьОбъект Или СтруктураСвойств.Периодический Тогда
+						If PropertyStructure.Periodic Then
+							// Checking the change restriction date for a record set.
+							If DisableDataChangeByDate(Object) Then
+								Return Undefined;
+							EndIf;
+						EndIf;
+						
+					Else
+						
+						If DontReplaceObject Or PropertyStructure.Periodic Then
 							
-							// Возможно мы не хотим замещать существующую запись, либо нужна проверка на дату запрета.
-							ВременныйНаборЗаписей = РегистрыСведений[СтруктураСвойств.Имя].СоздатьНаборЗаписей();
+							TemporaryRecordSet = InformationRegisters[PropertyStructure.Name].CreateRecordSet();
 							
-							// Нужно отбор установить у регистра.
-							Для Каждого ЭлементОтбора Из ВременныйНаборЗаписей.Отбор Цикл
+							For Each FilterItem In TemporaryRecordSet.Filter Do
+							
+								FilterItem.Set(Object[FilterItem.Name]);
+																
+							EndDo;
 
-								ЭлементОтбора.Установить(Объект[ЭлементОтбора.Имя]);
+							TemporaryRecordSet.Read();
+							
+							If TemporaryRecordSet.Count() > 0
+								Or DisableDataChangeByDate(TemporaryRecordSet) Then
+								Return Undefined;
+							EndIf;
+							
+						Else
+							WriteObject = True;
+						EndIf;
+						
+					EndIf;
+					
+				EndIf;
 
-							КонецЦикла;
+				IsReferenceObjectType = Not( ObjectTypeName = "InformationRegister" Or ObjectTypeName = "Constants"
+					Or ObjectTypeName = "Enum");
 
-							ВременныйНаборЗаписей.Прочитать();
-
-							Если ВременныйНаборЗаписей.Количество() > 0 Или ЗапретИзмененияДанныхПоДате(
-								ВременныйНаборЗаписей) Тогда
-								Возврат Неопределено;
-							КонецЕсли;
-
-						Иначе
-							// Считаем что объект следует записать.
-							НужноЗаписатьОбъект = Истина;
-						КонецЕсли;
-
-					КонецЕсли;
-
-				КонецЕсли;
-
-				ЭтоСсылочныйТипОбъекта = Не (ИмяТипаОбъекта = "РегистрСведений" Или ИмяТипаОбъекта = "Константы"
-					Или ИмяТипаОбъекта = "Перечисление");
-
-				Если ЭтоСсылочныйТипОбъекта Тогда
-
-					ПровестиГенерациюКодаНомераПриНеобходимости(ГенерироватьНовыйНомерИлиКодЕслиНеУказан, Объект,
-						ИмяТипаОбъекта, НужноЗаписатьОбъект, ImportDataInExchangeMode);
-
-					Если ПометкаУдаления = Неопределено Тогда
-						ПометкаУдаления = Ложь;
-					КонецЕсли;
-
-					Если Объект.ПометкаУдаления <> ПометкаУдаления Тогда
-						Объект.ПометкаУдаления = ПометкаУдаления;
-						НужноЗаписатьОбъект = Истина;
-					КонецЕсли;
-
-				КонецЕсли;
+				If IsReferenceObjectType Then 	
+					
+					ExecuteNumberCodeGenerationIfNecessary(GenerateNewNumberOrCodeIfNotSet, Object, ObjectTypeName, WriteObject, ImportDataInExchangeMode);
+					
+					If DeletionMark = Undefined Then
+						DeletionMark = False;
+					EndIf;
+					
+					If Object.DeletionMark <> DeletionMark Then
+						Object.DeletionMark = DeletionMark;
+						WriteObject = True;
+					EndIf;
+					
+				EndIf;
 				
-				// Непосредственная запись самого объекта.
-				Если НужноЗаписатьОбъект Тогда
+				If WriteObject Then
+				
+					WriteObjectToIB(Object, ObjectType);
+					
+				EndIf;
+				
+				If IsReferenceObjectType Then
+					
+					AddRefToImportedObjectList(GlobalRefSn, RefSN, Object.Ref);
+					
+				EndIf;
+				
+				DeleteFromNotWrittenObjectsStack(SN, GSN);
+								
+			EndIf;
+			
+			Break;
 
-					ЗаписатьОбъектВИБ(Объект, ТипОбъекта);
+		ElsIf NodeName = "SequenceRecordSet" Then
+			
+			deSkip(ExchangeFile);
+			
+		ElsIf NodeName = "Types" Then
 
-				КонецЕсли;
+			If Object = Undefined Then
+				
+				ObjectFound = False;
+				Ref = CreateNewObject(ObjectType, SearchProperties, Object, , , , RefSN, GlobalRefSn, ObjectParameters);
+								
+			EndIf; 
 
-				Если ЭтоСсылочныйТипОбъекта Тогда
+			ObjectTypesDetails = ImportObjectTypes(ExchangeFile);
 
-					ДобавитьСсылкуВСписокЗагруженныхОбъектов(НППГлобальнойСсылки, НППСсылки, Объект.Ссылка);
+			If ObjectTypesDetails <> Undefined Then
+				
+				Object.ValueType = ObjectTypesDetails;
+				
+			EndIf; 
+			
+		Else
+			
+			WriteToExecutionLog(9);
+			Break;
+			
+		EndIf;
+		
+	EndDo;
+	
+	Return Object;
 
-				КонецЕсли;
-
-				УдалитьИзСтекаНеЗаписанныхОбъектов(НПП, ГНПП);
-
-			КонецЕсли;
-
-			Прервать;
-
-		ИначеЕсли ИмяУзла = "НаборЗаписейПоследовательности" Тогда
-
-			одПропустить(ФайлОбмена);
-
-		ИначеЕсли ИмяУзла = "Типы" Тогда
-
-			Если Объект = Неопределено Тогда
-
-				ОбъектНайден = Ложь;
-				Ссылка       = СоздатьНовыйОбъект(ТипОбъекта, СвойстваПоиска, Объект, , , , НППСсылки,
-					НППГлобальнойСсылки, ПараметрыОбъекта);
-
-			КонецЕсли;
-
-			ОписаниеТиповОбъекта = ЗагрузитьТипыОбъекта(ФайлОбмена);
-
-			Если ОписаниеТиповОбъекта <> Неопределено Тогда
-
-				Объект.ТипЗначения = ОписаниеТиповОбъекта;
-
-			КонецЕсли;
-
-		Иначе
-
-			ЗаписатьВПротоколВыполнения(9);
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Возврат Объект;
-
-КонецФункции
+EndFunction
 
 // Выполняет проверку на наличие запрета загрузки по дате.
 //
