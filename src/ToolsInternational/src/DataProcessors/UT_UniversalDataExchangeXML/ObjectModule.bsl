@@ -149,7 +149,7 @@ Var CurrentNestingLevelExportByRule;
 ////////////////////////////////////////////////////////////////////////////////
 // VARIABLES TO STORE STANDARD SUBSYSTEM MODULES
 
-Var ModulePeriodClosingDates;
+Var PeriodClosingDateModule;
 
 #EndRegion
 
@@ -9073,359 +9073,349 @@ Function ReadObject()
 
 EndFunction
 
-// Выполняет проверку на наличие запрета загрузки по дате.
+// Checks whether the import restriction by date is enabled.
 //
-// Параметры:
-//   ЭлементДанных	  - СправочникОбъект, ДокументОбъект, РегистрСведенийНаборЗаписей и др. данные.
-//                      Данные, которые были зачитаны из сообщения обмена, но еще не были записаны в ИБ.
-//   ПолучениеЭлемента - ПолучениеЭлементаДанных.
+// Parameters:
+//   DataItem	  - CatalogObject, DocumentObject, InformationRegisterRecordSet, etc.
+//                      Data that is read from the exchange message but is not yet written to the infobase.
 //
-// Возвращаемое значение:
-//   Булево - Истина - установлена дата запрета изменения и загружаемый объект имеет дату меньше установленной, иначе Ложь.
+// Returns:
+//   Boolean - True, if change restriction date is set and the imported object date is less than the set date.
 //
-Функция ЗапретИзмененияДанныхПоДате(ЭлементДанных)
-
-	ИзменениеЗапрещено = Ложь;
-
-	Если МодульДатыЗапретаИзменения <> Неопределено И Не Метаданные.Константы.Содержит(ЭлементДанных.Метаданные()) Тогда
-		Попытка
-			Если МодульДатыЗапретаИзменения.ИзменениеЗапрещено(ЭлементДанных) Тогда
-				ИзменениеЗапрещено = Истина;
-			КонецЕсли;
-		Исключение
-			ИзменениеЗапрещено = Ложь;
-		КонецПопытки;
-	КонецЕсли;
-
-	ЭлементДанных.ДополнительныеСвойства.Вставить("ПропуститьПроверкуЗапретаИзменения");
-
-	Возврат ИзменениеЗапрещено;
-
-КонецФункции
-
-Функция ПроверитьСуществованиеСсылки(Ссылка, Менеджер, НайденныйОбъектПоУникальномуИдентификатору,
-	СтрокаЗапросаПоискаПоУникальномуИдентификатору)
-
-	Попытка
-
-		Если ПустаяСтрока(СтрокаЗапросаПоискаПоУникальномуИдентификатору) Тогда
-
-			НайденныйОбъектПоУникальномуИдентификатору = Ссылка.ПолучитьОбъект();
-
-			Если НайденныйОбъектПоУникальномуИдентификатору = Неопределено Тогда
-
-				Возврат Менеджер.ПустаяСсылка();
-
-			КонецЕсли;
-
-		Иначе
-			// Это режим поиска по ссылке - достаточно сделать запрос к информационной базе
-			// шаблон для запроса СтруктураСвойств.СтрокаПоиска.
-
-			Запрос = Новый Запрос;
-			Запрос.Текст = СтрокаЗапросаПоискаПоУникальномуИдентификатору + "  Ссылка = &Ссылка ";
-			Запрос.УстановитьПараметр("Ссылка", Ссылка);
-
-			РезультатЗапроса = Запрос.Выполнить();
-
-			Если РезультатЗапроса.Пустой() Тогда
-
-				Возврат Менеджер.ПустаяСсылка();
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		Возврат Ссылка;
-
-	Исключение
-
-		Возврат Менеджер.ПустаяСсылка();
-
-	КонецПопытки;
-
-КонецФункции
-
-Функция ВычислитьВыражение(Знач Выражение)
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+Function DisableDataChangeByDate(DataItem)
 	
-	// Вызов ВычислитьВБезопасномРежиме не требуется, т.к. безопасный режим устанавливается без использования средств БСП.
-	Возврат Вычислить(Выражение);
+	DataChangesDenied = False;
+	
+	If PeriodClosingDateModule <> Undefined And Not Metadata.Constants.Contains(DataItem.Metadata()) Then
+		Try
+			If PeriodClosingDateModule.DataChangesDenied(DataItem) Then
+				DataChangesDenied = True;
+			EndIf;
+		Except
+			DataChangesDenied = False;
+		EndTry;
+	EndIf;
+	
+	DataItem.AdditionalProperties.Insert("SkipPeriodClosingCheck");
+	
+	Return DataChangesDenied;
+	
+EndFunction
 
-КонецФункции
+Function CheckRefExists(Ref, Manager, FoundByUUIDObject, SearchByUUIDQueryString)
+	
+	Try
+			
+		If IsBlankString(SearchByUUIDQueryString) Then
+			
+			FoundByUUIDObject = Ref.GetObject();
+			
+			If FoundByUUIDObject = Undefined Then
+			
+				Return Manager.EmptyRef();
+				
+			EndIf;
+			
+		Else
+			
+			Query = New Query();
+			Query.Text = SearchByUUIDQueryString + "  Ref = &Ref ";
+			Query.SetParameter("Ref", Ref);
+			
+			QueryResult = Query.Execute();
+			
+			If QueryResult.IsEmpty() Then
+			
+				Return Manager.EmptyRef();
+				
+			EndIf;
+			
+		EndIf;
+		
+		Return Ref;	
+		
+	Except
+			
+		Return Manager.EmptyRef();
+		
+	EndTry;
+	
+EndFunction
 
-Функция HasObjectAttributeOrProperty(Объект, ИмяРеквизита)
+Function EvalExpression(Val Expression)
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+	
+	Return Eval(Expression);
+	
+EndFunction
 
-	КлючУникальности   = Новый УникальныйИдентификатор;
-	СтруктураРеквизита = Новый Структура(ИмяРеквизита, КлючУникальности);
-	ЗаполнитьЗначенияСвойств(СтруктураРеквизита, Объект);
+Function HasObjectAttributeOrProperty(Object, AttributeName)
 
-	Возврат СтруктураРеквизита[ИмяРеквизита] <> КлючУникальности;
+	UniqueKey   = New UUID;
+	AtributeStructure = New Structure(AttributeName, UniqueKey);
+	FillPropertyValues(AtributeStructure, Object);
 
-КонецФункции
+	Return AtributeStructure[AttributeName] <> UniqueKey;
 
-// Параметры:
-//   Отбор - Отбор - произвольный отбор.
-//   КлючЭлемента - Строка - имя элемента отбора.
-//   ЗначениеЭлемента - Произвольный - значение элемента отбора.
+EndFunction
+
+// Parameters:
+//   Filter - Filter - an arbitrary filter.
+//   ItemKey - String - filter item name.
+//   ItemValue - Arbitrary - filter item value.
 //
-Процедура УстановитьЗначениеЭлементаОтбора(Отбор, КлючЭлемента, ЗначениеЭлемента)
+Procedure SetFilterItemValue(Filter, ItemKey, ItemValue)
 
-	ЭлементОтбора = Отбор.Найти(КлючЭлемента);
-	Если ЭлементОтбора <> Неопределено Тогда
-		ЭлементОтбора.Установить(ЗначениеЭлемента);
-	КонецЕсли;
+	FilterItem = Filter.Find(ItemKey);
+	If FilterItem <> Undefined Then
+		FilterItem.Set(ItemValue);
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ПроцедурыВыгрузкиДанных
+#Region DataExportProcedures
 
-Функция ПолучитьНаборДвиженийДокумента(СсылкаНаДокумент, ВидИсточника, ИмяРегистра)
+Function GetDocumentRegisterRecordSet(DocumentRef, SourceKind, RegisterName)
+	
+	If SourceKind = "AccumulationRegisterRecordSet" Then
+		
+		DocumentRegisterRecordSet = AccumulationRegisters[RegisterName].CreateRecordSet();
+		
+	ElsIf SourceKind = "InformationRegisterRecordSet" Then
+		
+		DocumentRegisterRecordSet = InformationRegisters[RegisterName].CreateRecordSet();
+		
+	ElsIf SourceKind = "AccountingRegisterRecordSet" Then
+		
+		DocumentRegisterRecordSet = AccountingRegisters[RegisterName].CreateRecordSet();
+		
+	ElsIf SourceKind = "CalculationRegisterRecordSet" Then	
+		
+		DocumentRegisterRecordSet = CalculationRegisters[RegisterName].CreateRecordSet();
+		
+	Else
+		
+		Return Undefined;
+		
+	EndIf;
 
-	Если ВидИсточника = "НаборДвиженийРегистраНакопления" Тогда
+	SetFilterItemValue(DocumentRegisterRecordSet.Filter, "Recorder", DocumentRef);
+	DocumentRegisterRecordSet.Read();
+	
+	Return DocumentRegisterRecordSet;
+	
+EndFunction
 
-		НаборДвиженийДокумента = РегистрыНакопления[ИмяРегистра].СоздатьНаборЗаписей();
+Procedure WriteStructureToXML(DataStructure, PropertyCollectionNode)
+	
+	PropertyCollectionNode.WriteStartElement("Property");
+	
+	For Each CollectionItem In DataStructure Do
+		
+		If CollectionItem.Key = "Expression" Or CollectionItem.Key = "Value" Or CollectionItem.Key = "Sn" Or CollectionItem.Key = "Gsn" Then
+			
+			deWriteElement(PropertyCollectionNode, CollectionItem.Key, CollectionItem.Value);
+			
+		ElsIf CollectionItem.Key = "Ref" Then
+			
+			PropertyCollectionNode.WriteRaw(CollectionItem.Value);
+			
+		Else
+			
+			SetAttribute(PropertyCollectionNode, CollectionItem.Key, CollectionItem.Value);
+			
+		EndIf;
+		
+	EndDo;
+	
+	PropertyCollectionNode.WriteEndElement();		
+	
+EndProcedure
 
-	ИначеЕсли ВидИсточника = "НаборДвиженийРегистраСведений" Тогда
+Procedure CreateObjectsForXMLWriter(DataStructure, PropertyNode, XMLNodeRequired, NodeName, XMLNodeDescription = "Property")
+	
+	If XMLNodeRequired Then
+		
+		PropertyNode = CreateNode(XMLNodeDescription);
+		SetAttribute(PropertyNode, "Name", NodeName);
+		
+	Else
+		
+		DataStructure = New Structure("Name", NodeName);	
+		
+	EndIf;		
+	
+EndProcedure
 
-		НаборДвиженийДокумента = РегистрыСведений[ИмяРегистра].СоздатьНаборЗаписей();
+Procedure AddAttributeForXMLWriter(PropertyNodeStructure, PropertyNode, AttributeName, AttributeValue)
+	
+	If PropertyNodeStructure <> Undefined Then
+		PropertyNodeStructure.Insert(AttributeName, AttributeValue);
+	Else
+		SetAttribute(PropertyNode, AttributeName, AttributeValue);
+	EndIf;
+	
+EndProcedure
 
-	ИначеЕсли ВидИсточника = "НаборДвиженийРегистраБухгалтерии" Тогда
+Procedure WriteDataToMasterNode(PropertyCollectionNode, PropertyNodeStructure, PropertyNode)
+	
+	If PropertyNodeStructure <> Undefined Then
+		WriteStructureToXML(PropertyNodeStructure, PropertyCollectionNode);
+	Else
+		AddSubordinateNode(PropertyCollectionNode, PropertyNode);
+	EndIf;
+	
+EndProcedure
 
-		НаборДвиженийДокумента = РегистрыБухгалтерии[ИмяРегистра].СоздатьНаборЗаписей();
-
-	ИначеЕсли ВидИсточника = "НаборДвиженийРегистраРасчета" Тогда
-
-		НаборДвиженийДокумента = РегистрыРасчета[ИмяРегистра].СоздатьНаборЗаписей();
-
-	Иначе
-
-		Возврат Неопределено;
-
-	КонецЕсли;
-
-	УстановитьЗначениеЭлементаОтбора(НаборДвиженийДокумента.Отбор, "Регистратор", СсылкаНаДокумент);
-	НаборДвиженийДокумента.Прочитать();
-
-	Возврат НаборДвиженийДокумента;
-
-КонецФункции
-
-Процедура ВыполнитьЗаписьСтруктурыВXML(СтруктураДанных, УзелКоллекцииСвойств)
-
-	УзелКоллекцииСвойств.ЗаписатьНачалоЭлемента("Свойство");
-
-	Для Каждого ЭлементКоллекции Из СтруктураДанных Цикл
-
-		Если ЭлементКоллекции.Ключ = "Выражение" Или ЭлементКоллекции.Ключ = "Значение" Или ЭлементКоллекции.Ключ = "Нпп"
-			Или ЭлементКоллекции.Ключ = "ГНпп" Тогда
-
-			одЗаписатьЭлемент(УзелКоллекцииСвойств, ЭлементКоллекции.Ключ, ЭлементКоллекции.Значение);
-
-		ИначеЕсли ЭлементКоллекции.Ключ = "Ссылка" Тогда
-
-			УзелКоллекцииСвойств.ЗаписатьБезОбработки(ЭлементКоллекции.Значение);
-
-		Иначе
-
-			УстановитьАтрибут(УзелКоллекцииСвойств, ЭлементКоллекции.Ключ, ЭлементКоллекции.Значение);
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	УзелКоллекцииСвойств.ЗаписатьКонецЭлемента();
-
-КонецПроцедуры
-
-Процедура СоздатьОбъектыДляЗаписиДанныхВXML(СтруктураДанных, УзелСвойства, НуженУзелXML, ИмяУзла,
-	НаименованиеУзлаXML = "Свойство")
-
-	Если НуженУзелXML Тогда
-
-		УзелСвойства = СоздатьУзел(НаименованиеУзлаXML);
-		УстановитьАтрибут(УзелСвойства, "Имя", ИмяУзла);
-
-	Иначе
-
-		СтруктураДанных = Новый Структура("Имя", ИмяУзла);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ДобавитьАтрибутДляЗаписиВXML(СтруктураУзлаСвойств, УзелСвойства, ИмяАтрибута, ЗначениеАтрибута)
-
-	Если СтруктураУзлаСвойств <> Неопределено Тогда
-		СтруктураУзлаСвойств.Вставить(ИмяАтрибута, ЗначениеАтрибута);
-	Иначе
-		УстановитьАтрибут(УзелСвойства, ИмяАтрибута, ЗначениеАтрибута);
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ПроизвестиЗаписьДанныхВГоловнойУзел(УзелКоллекцииСвойств, СтруктураУзлаСвойств, УзелСвойства)
-
-	Если СтруктураУзлаСвойств <> Неопределено Тогда
-		ВыполнитьЗаписьСтруктурыВXML(СтруктураУзлаСвойств, УзелКоллекцииСвойств);
-	Иначе
-		ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСвойства);
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Формирует узлы свойств объекта приемника в соответствии с указанной коллекцией правил конвертации свойств.
+// Generates destination object property nodes according to the specified property conversion rule collection.
 //
-// Параметры:
-//  Источник		     - произвольный источник данных.
-//  Приемник		     - xml-узел объекта приемника.
-//  ВходящиеДанные	     - произвольные вспомогательные данные, передаваемые правилу
-//                         для выполнения конвертации.
-//  ИсходящиеДанные      - произвольные вспомогательные данные, передаваемые правилам
-//                         конвертации объектов свойств.
-//  ПКО				     - ссылка на правило конвертации объектов (родитель коллекции правил конвертации свойств).
-//  ПКГС                 - ссылка на правило конвертации группы свойств.
-//  УзелКоллекцииСвойств - xml-узел коллекции свойств.
+// Parameters:
+//  Source		 - an arbitrary data source.
+//  Destination		 - a destination object XML node.
+//  IncomingData	 - an arbitrary auxiliary data that is passed to the conversion rule.                       
+//  OutgoingData - an arbitrary auxiliary data that is passed to the property object conversion rules.                       
+//  OCR				     - a reference to the object conversion rule (property conversion rule collection parent).
+//  PGCR                 - a reference to the property group conversion rule.
+//  PropertyCollectionNode - property collection XML node.
+//  ExportRefOnly - if True, object by reference will not be exported.
+//  TempFileList - a list of temporary files to save an exported data.
 // 
-Процедура ВыгрузитьГруппуСвойств(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКГС, УзелКоллекцииСвойств,
-	ВыгрузитьТолькоСсылку, СписокВременныхФайлов = Неопределено)
+Procedure ExportPropertyGroup(Source, Destination, IncomingData, OutgoingData, OCR, PGCR, PropertyCollectionNode, 
+	ExportRefOnly, TempFileList = Undefined)
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-	КоллекцияОбъектов = Неопределено;
-	НеЗамещать        = ПКГС.НеЗамещать;
-	НеОчищать         = Ложь;
-	ВыгружатьГруппуЧерезФайл = ПКГС.ВыгружатьГруппуЧерезФайл;
+	ObjectCollection = Undefined;
+	DontReplace        = PGCR.DoNotReplace;
+	DontClear         = False;
+	ExportGroupToFile = PGCR.ExportGroupToFile;
 	
-	// Обработчик ПередОбработкойВыгрузки
-	Если ПКГС.ЕстьОбработчикПередОбработкойВыгрузки Тогда
-
-		Отказ = Ложь;
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПередОбработкойВыгрузки"));
-
-			Иначе
-
-				Выполнить (ПКГС.ПередОбработкойВыгрузки);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПКС(48, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-				"ПередОбработкойВыгрузкиГруппыСвойств", , Ложь);
-
-		КонецПопытки;
-
-		Если Отказ Тогда // Отказ от обработки группы свойств.
-
-			Возврат;
-
-		КонецЕсли;
-
-	КонецЕсли;
-	ВидПриемника = ПКГС.ВидПриемника;
-	ВидИсточника = ПКГС.ВидИсточника;
+	// BeforeProcessExport handler
+	If PGCR.HasBeforeProcessExportHandler Then
+		
+		Cancel = False;
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(PGCR, "BeforeProcessExport"));
+				
+			Else
+				
+				Execute(PGCR.BeforeProcessExport);
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoPCRHandlers(48, ErrorDescription(), OCR, PGCR,
+				Source, "BeforeProcessPropertyGroupExport",, False);
+		
+		EndTry;
+		
+		If Cancel Then // Canceling property group processing.
+			
+			Return;
+			
+		EndIf;
+		
+	EndIf;
+    DestinationKind = PGCR.DestinationKind;
+	SourceKind = PGCR.SourceKind;
 	
 	
-    // Создание узла коллекции подчиненных объектов.
-	СтруктураУзлаСвойств = Неопределено;
-	УзелКоллекцииОбъектов = Неопределено;
-	ИмяГоловногоУзла = "";
+    // Creating a node of subordinate object collection.
+	PropertyNodeStructure = Undefined;
+	ObjectCollectionNode = Undefined;
+	MasterNodeName = "";
+	
+	If DestinationKind = "TabularSection" Then
+		
+		MasterNodeName = "TabularSection";
+		
+		CreateObjectsForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, True, PGCR.Destination, MasterNodeName);
+		
+		If DontReplace Then
+			
+			AddAttributeForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, "DoNotReplace", "true");
+						
+		EndIf;
+		
+		If DontClear Then
+			
+			AddAttributeForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, "DoNotClear", "true");
+						
+		EndIf;
+		
+	ElsIf DestinationKind = "SubordinateCatalog" Then
+	ElsIf DestinationKind = "SequenceRecordSet" Then
+		
+		MasterNodeName = "RecordSet";
+		
+		CreateObjectsForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, True, PGCR.Destination, MasterNodeName);
 
-	Если ВидПриемника = "ТабличнаяЧасть" Тогда
+	ElsIf StrFind(DestinationKind, "RecordSet") > 0 Then
+		
+		MasterNodeName = "RecordSet";
+		
+		CreateObjectsForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, True, PGCR.Destination, MasterNodeName);
+		
+		If DontReplace Then
+			
+			AddAttributeForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, "DoNotReplace", "true");
+						
+		EndIf;
+		
+		If DontClear Then
+			
+			AddAttributeForXMLWriter(PropertyNodeStructure, ObjectCollectionNode, "DoNotClear", "true");
+						
+		EndIf;
 
-		ИмяГоловногоУзла = "ТабличнаяЧасть";
-
-		СоздатьОбъектыДляЗаписиДанныхВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, Истина, ПКГС.Приемник,
-			ИмяГоловногоУзла);
-
-		Если НеЗамещать Тогда
-
-			ДобавитьАтрибутДляЗаписиВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, "НеЗамещать", "true");
-
-		КонецЕсли;
-
-		Если НеОчищать Тогда
-
-			ДобавитьАтрибутДляЗаписиВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, "НеОчищать", "true");
-
-		КонецЕсли;
-
-	ИначеЕсли ВидПриемника = "ПодчиненныйСправочник" Тогда
-	ИначеЕсли ВидПриемника = "НаборЗаписейПоследовательности" Тогда
-
-		ИмяГоловногоУзла = "НаборЗаписей";
-
-		СоздатьОбъектыДляЗаписиДанныхВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, Истина, ПКГС.Приемник,
-			ИмяГоловногоУзла);
-
-	ИначеЕсли СтрНайти(ВидПриемника, "НаборДвижений") > 0 Тогда
-
-		ИмяГоловногоУзла = "НаборЗаписей";
-
-		СоздатьОбъектыДляЗаписиДанныхВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, Истина, ПКГС.Приемник,
-			ИмяГоловногоУзла);
-
-		Если НеЗамещать Тогда
-
-			ДобавитьАтрибутДляЗаписиВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, "НеЗамещать", "true");
-
-		КонецЕсли;
-
-		Если НеОчищать Тогда
-
-			ДобавитьАтрибутДляЗаписиВXML(СтруктураУзлаСвойств, УзелКоллекцииОбъектов, "НеОчищать", "true");
-
-		КонецЕсли;
-
-	Иначе  // это простая группировка
-
-		ВыгрузитьСвойства(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКГС.ПравилаГруппы,
-			УзелКоллекцииСвойств, , , ПКО.НеВыгружатьОбъектыСвойствПоСсылкам Или ВыгрузитьТолькоСсылку);
-
-		Если ПКГС.ЕстьОбработчикПослеОбработкиВыгрузки Тогда
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПослеОбработкиВыгрузки"));
-
-				Иначе
-
-					Выполнить (ПКГС.ПослеОбработкиВыгрузки);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(49, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-					"ПослеОбработкиВыгрузкиГруппыСвойств", , Ложь);
-
-			КонецПопытки;
-
-		КонецЕсли;
-
-		Возврат;
-
-	КонецЕсли;
+	Else  // Simple group
+		
+		ExportProperties(Source, Destination, IncomingData, OutgoingData, OCR, PGCR.GroupRules, 
+		     PropertyCollectionNode, , , OCR.DoNotExportPropertyObjectsByRefs OR ExportRefOnly);
+			
+		If PGCR.HasAfterProcessExportHandler Then
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PGCR, "AfterProcessExport"));
+					
+				Else
+					
+					Execute(PGCR.AfterProcessExport);
+			
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(49, ErrorDescription(), OCR, PGCR,
+					Source, "AfterProcessPropertyGroupExport",, False);
+				
+			EndTry;
+			
+		EndIf;
+		
+		Return;
+		
+	EndIf;
 	
 	// Получение коллекции подчиненных объектов.
 
