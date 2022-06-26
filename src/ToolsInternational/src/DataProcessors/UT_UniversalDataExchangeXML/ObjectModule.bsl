@@ -9417,807 +9417,798 @@ Procedure ExportPropertyGroup(Source, Destination, IncomingData, OutgoingData, O
 		
 	EndIf;
 	
-	// Получение коллекции подчиненных объектов.
-
-	Если КоллекцияОбъектов <> Неопределено Тогда
-		
-		// Инициализировали коллекцию в обработчике ПередОбработкой.
-
-	ИначеЕсли ПКГС.ПолучитьИзВходящихДанных Тогда
-
-		Попытка
-
-			КоллекцияОбъектов = ВходящиеДанные[ПКГС.Приемник];
-
-			Если ТипЗнч(КоллекцияОбъектов) = Тип("РезультатЗапроса") Тогда
-
-				КоллекцияОбъектов = КоллекцияОбъектов.Выгрузить();
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПКС(66, ОписаниеОшибки(), ПКО, ПКГС, Источник, , , Ложь);
-
-			Возврат;
-		КонецПопытки;
-
-	ИначеЕсли ВидИсточника = "ТабличнаяЧасть" Тогда
-
-		КоллекцияОбъектов = Источник[ПКГС.Источник];
-
-		Если ТипЗнч(КоллекцияОбъектов) = Тип("РезультатЗапроса") Тогда
-
-			КоллекцияОбъектов = КоллекцияОбъектов.Выгрузить();
-
-		КонецЕсли;
-
-	ИначеЕсли ВидИсточника = "ПодчиненныйСправочник" Тогда
-
-	ИначеЕсли СтрНайти(ВидИсточника, "НаборДвижений") > 0 Тогда
-
-		КоллекцияОбъектов = ПолучитьНаборДвиженийДокумента(Источник, ВидИсточника, ПКГС.Источник);
-
-	ИначеЕсли ПустаяСтрока(ПКГС.Источник) Тогда
-
-		КоллекцияОбъектов = Источник[ПКГС.Приемник];
-
-		Если ТипЗнч(КоллекцияОбъектов) = Тип("РезультатЗапроса") Тогда
-
-			КоллекцияОбъектов = КоллекцияОбъектов.Выгрузить();
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	ВыгружатьГруппуЧерезФайл = ВыгружатьГруппуЧерезФайл Или (КоллекцияОбъектов.Количество() > 1000);
-	ВыгружатьГруппуЧерезФайл = ВыгружатьГруппуЧерезФайл И (DirectReadFromDestinationIB = Ложь);
-
-	Если ВыгружатьГруппуЧерезФайл Тогда
-
-		ПКГС.НуженУзелXMLПриВыгрузке = Ложь;
-
-		Если СписокВременныхФайлов = Неопределено Тогда
-			СписокВременныхФайлов = Новый Массив;
-		КонецЕсли;
-
-		ВременныйФайлЗаписей = ЗаписьТекстаВоВременныйФайл(СписокВременныхФайлов);
-
-		ИнформацияДляЗаписиВФайл = УзелКоллекцииОбъектов.Закрыть();
-		ВременныйФайлЗаписей.ЗаписатьСтроку(ИнформацияДляЗаписиВФайл);
-
-	КонецЕсли;
-
-	Для Каждого ОбъектКоллекции Из КоллекцияОбъектов Цикл
-		
-		// Обработчик ПередВыгрузкой
-		Если ПКГС.ЕстьОбработчикПередВыгрузкой Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПередВыгрузкой"));
-
-				Иначе
-
-					Выполнить (ПКГС.ПередВыгрузкой);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(50, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-					"ПередВыгрузкойГруппыСвойств", , Ложь);
-
-				Прервать;
-
-			КонецПопытки;
-
-			Если Отказ Тогда	//	Отказ от выгрузки подчиненного объекта.
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-		
-		// Обработчик ПриВыгрузке
-
-		Если ПКГС.НуженУзелXMLПриВыгрузке Или ВыгружатьГруппуЧерезФайл Тогда
-			УзелОбъектаКоллекции = СоздатьУзел("Запись");
-		Иначе
-			УзелКоллекцииОбъектов.ЗаписатьНачалоЭлемента("Запись");
-			УзелОбъектаКоллекции = УзелКоллекцииОбъектов;
-		КонецЕсли;
-
-		СтандартнаяОбработка	= Истина;
-
-		Если ПКГС.ЕстьОбработчикПриВыгрузке Тогда
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПриВыгрузке"));
-
-				Иначе
-
-					Выполнить (ПКГС.ПриВыгрузке);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(51, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-					"ПриВыгрузкеГруппыСвойств", , Ложь);
-
-				Прервать;
-
-			КонецПопытки;
-
-		КонецЕсли;
-
-		//	Выгрузка свойств объекта коллекции.
-
-		Если СтандартнаяОбработка Тогда
-
-			Если ПКГС.ПравилаГруппы.Количество() > 0 Тогда
-
-				ВыгрузитьСвойства(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКГС.ПравилаГруппы,
-					УзелОбъектаКоллекции, ОбъектКоллекции, , ПКО.НеВыгружатьОбъектыСвойствПоСсылкам
-					Или ВыгрузитьТолькоСсылку);
-
-			КонецЕсли;
-
-		КонецЕсли;
-		
-		// Обработчик ПослеВыгрузки
-
-		Если ПКГС.ЕстьОбработчикПослеВыгрузки Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПослеВыгрузки"));
-
-				Иначе
-
-					Выполнить (ПКГС.ПослеВыгрузки);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(52, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-					"ПослеВыгрузкиГруппыСвойств", , Ложь);
-
-				Прервать;
-			КонецПопытки;
-
-			Если Отказ Тогда	//	Отказ от выгрузки подчиненного объекта.
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		Если ПКГС.НуженУзелXMLПриВыгрузке Тогда
-			ДобавитьПодчиненный(УзелКоллекцииОбъектов, УзелОбъектаКоллекции);
-		КонецЕсли;
-		
-		// Заполняем файл объектами узла.
-		Если ВыгружатьГруппуЧерезФайл Тогда
-
-			УзелОбъектаКоллекции.ЗаписатьКонецЭлемента();
-			ИнформацияДляЗаписиВФайл = УзелОбъектаКоллекции.Закрыть();
-			ВременныйФайлЗаписей.ЗаписатьСтроку(ИнформацияДляЗаписиВФайл);
-
-		Иначе
-
-			Если Не ПКГС.НуженУзелXMLПриВыгрузке Тогда
-
-				УзелКоллекцииОбъектов.ЗаписатьКонецЭлемента();
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-	КонецЦикла;
+	// Getting the collection of subordinate objects.
 	
-	
-    // Обработчик ПослеОбработкиВыгрузки
-
-	Если ПКГС.ЕстьОбработчикПослеОбработкиВыгрузки Тогда
-
-		Отказ = Ложь;
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКГС, "ПослеОбработкиВыгрузки"));
-
-			Иначе
-
-				Выполнить (ПКГС.ПослеОбработкиВыгрузки);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПКС(49, ОписаниеОшибки(), ПКО, ПКГС, Источник,
-				"ПослеОбработкиВыгрузкиГруппыСвойств", , Ложь);
-
-		КонецПопытки;
-
-		Если Отказ Тогда	//	Отказ от записи коллекции подчиненных объектов.
-
-			Возврат;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если ВыгружатьГруппуЧерезФайл Тогда
-		ВременныйФайлЗаписей.ЗаписатьСтроку("</" + ИмяГоловногоУзла + ">"); // закрыть узел
-		ВременныйФайлЗаписей.Закрыть(); 	// закрыть файл явно
-	Иначе
-		ПроизвестиЗаписьДанныхВГоловнойУзел(УзелКоллекцииСвойств, СтруктураУзлаСвойств, УзелКоллекцииОбъектов);
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ПолучитьЗначениеСвойства(Значение, ОбъектКоллекции, ПКО, ПКС, ВходящиеДанные, Источник)
-
-	Если Значение <> Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если ПКС.ПолучитьИзВходящихДанных Тогда
-
-		ОбъектДляПолученияДанных = ВходящиеДанные;
-
-		Если Не ПустаяСтрока(ПКС.Приемник) Тогда
-
-			ИмяСвойства = ПКС.Приемник;
-
-		Иначе
-
-			ИмяСвойства = ПКС.ИмяПараметраДляПередачи;
-
-		КонецЕсли;
-
-		КодОшибки = ?(ОбъектКоллекции <> Неопределено, 67, 68);
-
-	ИначеЕсли ОбъектКоллекции <> Неопределено Тогда
-
-		ОбъектДляПолученияДанных = ОбъектКоллекции;
-
-		Если Не ПустаяСтрока(ПКС.Источник) Тогда
-
-			ИмяСвойства = ПКС.Источник;
-			КодОшибки = 16;
-
-		Иначе
-
-			ИмяСвойства = ПКС.Приемник;
-			КодОшибки = 17;
-
-		КонецЕсли;
-
-	Иначе
-
-		ОбъектДляПолученияДанных = Источник;
-
-		Если Не ПустаяСтрока(ПКС.Источник) Тогда
-
-			ИмяСвойства = ПКС.Источник;
-			КодОшибки = 13;
-
-		Иначе
-
-			ИмяСвойства = ПКС.Приемник;
-			КодОшибки = 14;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Попытка
-
-		Значение = ОбъектДляПолученияДанных[ИмяСвойства];
-
-	Исключение
-
-		Если КодОшибки <> 14 Тогда
-			ЗаписатьИнформациюОбОшибкеОбработчикиПКС(КодОшибки, ОписаниеОшибки(), ПКО, ПКС, Источник, "");
-		КонецЕсли;
-
-	КонецПопытки;
-
-КонецПроцедуры
-
-Процедура ВыгрузитьТипСвойстваЭлемента(УзелСвойства, ТипСвойства)
-
-	УстановитьАтрибут(УзелСвойства, "Тип", ТипСвойства);
-
-КонецПроцедуры
-
-Процедура ВыгрузитьСубконто(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКС, УзелКоллекцииСвойств,
-	ОбъектКоллекции, Знач ВыгрузитьТолькоСсылку)
-	
-	//
-	// Переменные-заглушки для поддержки механизма отладки кода обработчиков событий
-	// (поддержка интерфейса процедуры-обертки обработчика).
-	Перем ТипПриемника, Пусто, Выражение, НеЗамещать, УзелСвойства, ПКОСвойств;
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-	
-	// Инициализация значения
-	Значение = Неопределено;
-	ИмяПКО = "";
-	ИмяПКОВидСубконто = "";
-	
-	// Обработчик ПередВыгрузкой
-	Если ПКС.ЕстьОбработчикПередВыгрузкой Тогда
-
-		Отказ = Ложь;
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПередВыгрузкой"));
-
-			Иначе
-
-				Выполнить (ПКС.ПередВыгрузкой);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПКС(55, ОписаниеОшибки(), ПКО, ПКС, Источник,
-				"ПередВыгрузкойСвойства", Значение);
-
-		КонецПопытки;
-
-		Если Отказ Тогда // Отказ от выгрузки
-
-			Возврат;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	ПолучитьЗначениеСвойства(Значение, ОбъектКоллекции, ПКО, ПКС, ВходящиеДанные, Источник);
-
-	Если ПКС.ПриводитьКДлине <> 0 Тогда
-
-		ВыполнитьПриведениеЗначенияКДлине(Значение, ПКС);
-
-	КонецЕсли;
-
-	Для Каждого КлючИЗначение Из Значение Цикл
-
-		ВидСубконто = КлючИЗначение.Ключ;
-		Субконто = КлючИЗначение.Значение;
-		ИмяПКО = "";
+	If ObjectCollection <> Undefined Then
 		
-		// Обработчик ПриВыгрузке
-		Если ПКС.ЕстьОбработчикПриВыгрузке Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПриВыгрузке"));
-
-				Иначе
-
-					Выполнить (ПКС.ПриВыгрузке);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(56, ОписаниеОшибки(), ПКО, ПКС, Источник,
-					"ПриВыгрузкеСвойства", Значение);
-
-			КонецПопытки;
-
-			Если Отказ Тогда // Отказ от выгрузки субконто
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		Если Субконто = Неопределено Или НайтиПравило(Субконто, ИмяПКО) = Неопределено Тогда
-
-			Продолжить;
-
-		КонецЕсли;
-
-		УзелСубконто = СоздатьУзел(ПКС.Приемник);
+		// The collection was initialized in the BeforeProcess handler.
 		
-		// Ключ
-		УзелСвойства = СоздатьУзел("Свойство");
-
-		Если ПустаяСтрока(ИмяПКОВидСубконто) Тогда
-
-			ПКОКлюч = НайтиПравило(ВидСубконто, ИмяПКОВидСубконто);
-
-		Иначе
-
-			ПКОКлюч = НайтиПравило( , ИмяПКОВидСубконто);
-
-		КонецЕсли;
-
-		УстановитьАтрибут(УзелСвойства, "Имя", "Ключ");
-		ВыгрузитьТипСвойстваЭлемента(УзелСвойства, ПКОКлюч.Приемник);
-
-		УзелСсылки = ВыгрузитьПоПравилу(ВидСубконто, , ИсходящиеДанные, , ИмяПКОВидСубконто, , ВыгрузитьТолькоСсылку,
-			ПКОКлюч);
-
-		Если УзелСсылки <> Неопределено Тогда
-
-			ЭтоПравилоСГлобальнойВыгрузкой = Ложь;
-			ТипУзлаСсылки = ТипЗнч(УзелСсылки);
-			ДобавитьСвойстваДляВыгрузки(УзелСсылки, ТипУзлаСсылки, УзелСвойства, ЭтоПравилоСГлобальнойВыгрузкой);
-
-		КонецЕсли;
-
-		ДобавитьПодчиненный(УзелСубконто, УзелСвойства);
+	ElsIf PGCR.GetFromIncomingData Then
 		
-		// Значение
-		УзелСвойства = СоздатьУзел("Свойство");
-
-		ПКОЗначение = НайтиПравило(Субконто, ИмяПКО);
-
-		ТипПриемника = ПКОЗначение.Приемник;
-
-		ЭтоNULL = Ложь;
-		Пусто = одПустое(Субконто, ЭтоNULL);
-
-		Если Пусто Тогда
-
-			Если ЭтоNULL Или Субконто = Неопределено Тогда
-
-				Продолжить;
-
-			КонецЕсли;
-
-			Если ПустаяСтрока(ТипПриемника) Тогда
-
-				ТипПриемника = ОпределитьТипДанныхДляПриемника(Субконто);
-
-			КонецЕсли;
-
-			УстановитьАтрибут(УзелСвойства, "Имя", "Значение");
-
-			Если Не ПустаяСтрока(ТипПриемника) Тогда
-				УстановитьАтрибут(УзелСвойства, "Тип", ТипПриемника);
-			КонецЕсли;
+		Try
 			
-			// Если тип множественный, то возможно это пустая ссылка и выгрузить ее нужно именно с указанием типа.
-			одЗаписатьЭлемент(УзелСвойства, "Пусто");
+			ObjectCollection = IncomingData[PGCR.Destination];
+			
+			If TypeOf(ObjectCollection) = Type("QueryResult") Then
+				
+				ObjectCollection = ObjectCollection.Unload();
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoPCRHandlers(66, ErrorDescription(), OCR, PGCR, Source,,,False);
+			
+			Return;
+		EndTry;
 
-			ДобавитьПодчиненный(УзелСубконто, УзелСвойства);
-
-		Иначе
-
-			ЭтоПравилоСГлобальнойВыгрузкой = Ложь;
-			УзелСсылки = ВыгрузитьПоПравилу(Субконто, , ИсходящиеДанные, , ИмяПКО, , ВыгрузитьТолькоСсылку,
-				ПКОЗначение, ЭтоПравилоСГлобальнойВыгрузкой);
-
-			УстановитьАтрибут(УзелСвойства, "Имя", "Значение");
-			ВыгрузитьТипСвойстваЭлемента(УзелСвойства, ТипПриемника);
-
-			Если УзелСсылки = Неопределено Тогда
-
-				Продолжить;
-
-			КонецЕсли;
-
-			ТипУзлаСсылки = ТипЗнч(УзелСсылки);
-
-			ДобавитьСвойстваДляВыгрузки(УзелСсылки, ТипУзлаСсылки, УзелСвойства, ЭтоПравилоСГлобальнойВыгрузкой);
-
-			ДобавитьПодчиненный(УзелСубконто, УзелСвойства);
-
-		КонецЕсли;
+	ElsIf SourceKind = "TabularSection" Then
 		
-		// Обработчик ПослеВыгрузки
-		Если ПКС.ЕстьОбработчикПослеВыгрузки Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПослеВыгрузки"));
-
-				Иначе
-
-					Выполнить (ПКС.ПослеВыгрузки);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(57, ОписаниеОшибки(), ПКО, ПКС, Источник,
-					"ПослеВыгрузкиСвойства", Значение);
-
-			КонецПопытки;
-
-			Если Отказ Тогда // Отказ от выгрузки
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСубконто);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура ДобавитьСвойстваДляВыгрузки(УзелСсылки, ТипУзлаСсылки, УзелСвойства, ЭтоПравилоСГлобальнойВыгрузкой)
-
-	Если ТипУзлаСсылки = одТипСтрока Тогда
-
-		Если СтрНайти(УзелСсылки, "<Ссылка") > 0 Тогда
-
-			УзелСвойства.ЗаписатьБезОбработки(УзелСсылки);
-
-		Иначе
-
-			одЗаписатьЭлемент(УзелСвойства, "Значение", УзелСсылки);
-
-		КонецЕсли;
-
-	ИначеЕсли ТипУзлаСсылки = одТипЧисло Тогда
-
-		Если ЭтоПравилоСГлобальнойВыгрузкой Тогда
-
-			одЗаписатьЭлемент(УзелСвойства, "ГНпп", УзелСсылки);
-
-		Иначе
-
-			одЗаписатьЭлемент(УзелСвойства, "Нпп", УзелСсылки);
-
-		КонецЕсли;
-
-	Иначе
-
-		ДобавитьПодчиненный(УзелСвойства, УзелСсылки);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ДобавитьЗначениеСвойстваВУзел(Значение, ТипЗначения, ТипПриемника, УзелСвойства, СвойствоУстановлено)
-
-	СвойствоУстановлено = Истина;
-
-	Если ТипЗначения = одТипСтрока Тогда
-
-		Если ТипПриемника = "Строка" Тогда
-		ИначеЕсли ТипПриемника = "Число" Тогда
-
-			Значение = Число(Значение);
-
-		ИначеЕсли ТипПриемника = "Булево" Тогда
-
-			Значение = Булево(Значение);
-
-		ИначеЕсли ТипПриемника = "Дата" Тогда
-
-			Значение = Дата(Значение);
-
-		ИначеЕсли ТипПриемника = "ХранилищеЗначения" Тогда
-
-			Значение = Новый ХранилищеЗначения(Значение);
-
-		ИначеЕсли ТипПриемника = "УникальныйИдентификатор" Тогда
-
-			Значение = Новый УникальныйИдентификатор(Значение);
-
-		ИначеЕсли ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "Строка");
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипЧисло Тогда
-
-		Если ТипПриемника = "Число" Тогда
-		ИначеЕсли ТипПриемника = "Булево" Тогда
-
-			Значение = Булево(Значение);
-
-		ИначеЕсли ТипПриемника = "Строка" Тогда
-		ИначеЕсли ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "Число");
-
-		Иначе
-
-			Возврат;
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипДата Тогда
-
-		Если ТипПриемника = "Дата" Тогда
-		ИначеЕсли ТипПриемника = "Строка" Тогда
-
-			Значение = Лев(Строка(Значение), 10);
-
-		ИначеЕсли ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "Дата");
-
-		Иначе
-
-			Возврат;
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипБулево Тогда
-
-		Если ТипПриемника = "Булево" Тогда
-		ИначеЕсли ТипПриемника = "Число" Тогда
-
-			Значение = Число(Значение);
-
-		ИначеЕсли ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "Булево");
-
-		Иначе
-
-			Возврат;
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипХранилищеЗначения Тогда
-
-		Если ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "ХранилищеЗначения");
-
-		ИначеЕсли ТипПриемника <> "ХранилищеЗначения" Тогда
-
-			Возврат;
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипУникальныйИдентификатор Тогда
-
-		Если ТипПриемника = "УникальныйИдентификатор" Тогда
-		ИначеЕсли ТипПриемника = "Строка" Тогда
-
-			Значение = Строка(Значение);
-
-		ИначеЕсли ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", "УникальныйИдентификатор");
-
-		Иначе
-
-			Возврат;
-
-		КонецЕсли;
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Значение);
-
-	ИначеЕсли ТипЗначения = одТипВидДвиженияНакопления Тогда
-
-		одЗаписатьЭлемент(УзелСвойства, "Значение", Строка(Значение));
-
-	Иначе
-
-		СвойствоУстановлено = Ложь;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция ВыгрузитьДанныеСсылочногоОбъекта(Значение, ИсходящиеДанные, ИмяПКО, ПКОСвойств, ТипПриемника, УзелСвойства,
-	Знач ВыгрузитьТолькоСсылку)
-
-	ЭтоПравилоСГлобальнойВыгрузкой = Ложь;
-	УзелСсылки    = ВыгрузитьПоПравилу(Значение, , ИсходящиеДанные, , ИмяПКО, , ВыгрузитьТолькоСсылку, ПКОСвойств,
-		ЭтоПравилоСГлобальнойВыгрузкой);
-	ТипУзлаСсылки = ТипЗнч(УзелСсылки);
-
-	Если ПустаяСтрока(ТипПриемника) Тогда
-
-		ТипПриемника  = ПКОСвойств.Приемник;
-		УстановитьАтрибут(УзелСвойства, "Тип", ТипПриемника);
-
-	КонецЕсли;
-
-	Если УзелСсылки = Неопределено Тогда
-
-		Возврат Неопределено;
-
-	КонецЕсли;
-
-	ДобавитьСвойстваДляВыгрузки(УзелСсылки, ТипУзлаСсылки, УзелСвойства, ЭтоПравилоСГлобальнойВыгрузкой);
-
-	Возврат УзелСсылки;
-
-КонецФункции
-
-Функция ОпределитьТипДанныхДляПриемника(Значение)
-
-	ТипПриемника = одТипЗначенияСтрокой(Значение);
+		ObjectCollection = Source[PGCR.Source];
+		
+		If TypeOf(ObjectCollection) = Type("QueryResult") Then
+			
+			ObjectCollection = ObjectCollection.Unload();
+			
+		EndIf;
+		
+	ElsIf SourceKind = "SubordinateCatalog" Then
+		
+	ElsIf StrFind(SourceKind, "RecordSet") > 0 Then
+		
+		ObjectCollection = GetDocumentRegisterRecordSet(Source, SourceKind, PGCR.Source);
+				
+	ElsIf IsBlankString(PGCR.Source) Then
+		
+		ObjectCollection = Source[PGCR.Destination];
+		
+		If TypeOf(ObjectCollection) = Type("QueryResult") Then
+			
+			ObjectCollection = ObjectCollection.Unload();
+			
+		EndIf;
+		
+	EndIf;
+
+	ExportGroupToFile = ExportGroupToFile Or (ObjectCollection.Count() > 1000);
+	ExportGroupToFile = ExportGroupToFile AND (DirectReadFromDestinationIB = False);
+
+	If ExportGroupToFile Then
+		
+		PGCR.XMLNodeRequiredOnExport = False;
+		
+		If TempFileList = Undefined Then
+			TempFileList = New Array;
+		EndIf;
+		
+		RecordsTemporaryFile = WriteTextToTemporaryFile(TempFileList);
+		
+		InformationToWriteToFile = ObjectCollectionNode.Close();
+		RecordsTemporaryFile.WriteLine(InformationToWriteToFile);
+		
+	EndIf;
+
+	For Each CollectionObject In ObjectCollection Do
+		
+		// BeforeExport handler
+		If PGCR.HasBeforeExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PGCR, "BeforeExport"));
+					
+				Else
+					
+					Execute(PGCR.BeforeExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(50, ErrorDescription(), OCR, PGCR,
+					Source, "BeforeExportPropertyGroup",, False);
+				
+				Break;
+				
+			EndTry;
+			
+			If Cancel Then	//	Cancel subordinate object export.
+			
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
+		
+		// OnExport handler
+		
+		If PGCR.XMLNodeRequiredOnExport OR ExportGroupToFile Then
+			CollectionObjectNode = CreateNode("Record");
+		Else
+			ObjectCollectionNode.WriteStartElement("Record");
+			CollectionObjectNode = ObjectCollectionNode;
+		EndIf;
+		
+		StandardProcessing	= True;
+		
+		If PGCR.HasOnExportHandler Then
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PGCR, "OnExport"));
+					
+				Else
+					
+					Execute(PGCR.OnExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(51, ErrorDescription(), OCR, PGCR,
+					Source, "OnExportPropertyGroup",, False);
+				
+				Break;
+				
+			EndTry;
+			
+		EndIf;
+
+		//	Export the collection object properties.
+		
+		If StandardProcessing Then
+			
+			If PGCR.GroupRules.Count() > 0 Then
+				
+		 		ExportProperties(Source, Destination, IncomingData, OutgoingData, OCR, PGCR.GroupRules, 
+		 			CollectionObjectNode, CollectionObject, , OCR.DoNotExportPropertyObjectsByRefs OR ExportRefOnly);
+				
+			EndIf;
+			
+		EndIf;
+		
+		// AfterExport handler
+		
+		If PGCR.HasAfterExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PGCR, "AfterExport"));
+					
+				Else
+					
+					Execute(PGCR.AfterExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(52, ErrorDescription(), OCR, PGCR,
+					Source, "AfterExportPropertyGroup",, False);
+				
+				Break;
+			EndTry; 
+			
+			If Cancel Then	//	Cancel subordinate object export.
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
+
+		If PGCR.XMLNodeRequiredOnExport Then
+			AddSubordinateNode(ObjectCollectionNode, CollectionObjectNode);
+		EndIf;
+		
+		// Filling the file with node objects.
+		If ExportGroupToFile Then
+			
+			CollectionObjectNode.WriteEndElement();
+			InformationToWriteToFile = CollectionObjectNode.Close();
+			RecordsTemporaryFile.WriteLine(InformationToWriteToFile);
+			
+		Else
+			
+			If Not PGCR.XMLNodeRequiredOnExport Then
+				
+				ObjectCollectionNode.WriteEndElement();
+				
+			EndIf;
+			
+		EndIf;
+		
+	EndDo;
 	
-	// Есть ли хоть какое ПКО с типом приемника ТипПриемника
-	// если правила нет - то "", если есть , то то что нашли оставляем.
-	СтрокаТаблицы = ConversionRulesTable.Найти(ТипПриемника, "Приемник");
+	
+    // AfterProcessExport handler
 
-	Если СтрокаТаблицы = Неопределено Тогда
-		ТипПриемника = "";
-	КонецЕсли;
+	If PGCR.HasAfterProcessExportHandler Then
+		
+		Cancel = False;
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(PGCR, "AfterProcessExport"));
+				
+			Else
+				
+				Execute(PGCR.AfterProcessExport);
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoPCRHandlers(49, ErrorDescription(), OCR, PGCR,
+				Source, "AfterProcessPropertyGroupExport",, False);
+			
+		EndTry;
+		
+		If Cancel Then	//	Cancel subordinate object collection writing.
+			
+			Return;
+			
+		EndIf;
+		
+	EndIf;
+	
+	If ExportGroupToFile Then
+		RecordsTemporaryFile.WriteLine("</" + MasterNodeName + ">"); // Closing the node
+		RecordsTemporaryFile.Close(); 	// Closing the file
+	Else
+		WriteDataToMasterNode(PropertyCollectionNode, PropertyNodeStructure, ObjectCollectionNode);
+	EndIf;
 
-	Возврат ТипПриемника;
+EndProcedure
 
-КонецФункции
+Procedure GetPropertyValue(Value, CollectionObject, OCR, PCR, IncomingData, Source)
+	
+	If Value <> Undefined Then
+		Return;
+	EndIf;
+	
+	If PCR.GetFromIncomingData Then
+			
+			ObjectForReceivingData = IncomingData;
+			
+			If Not IsBlankString(PCR.Destination) Then
+			
+				PropertyName = PCR.Destination;
+				
+			Else
+				
+				PropertyName = PCR.ParameterForTransferName;
+				
+			EndIf;
+			
+			ErrorCode = ?(CollectionObject <> Undefined, 67, 68);
+	
+	ElsIf CollectionObject <> Undefined Then
+		
+		ObjectForReceivingData = CollectionObject;
+		
+		If Not IsBlankString(PCR.Source) Then
+			
+			PropertyName = PCR.Source;
+			ErrorCode = 16;
+						
+		Else
+			
+			PropertyName = PCR.Destination;
+			ErrorCode = 17;
+			
+		EndIf;
 
-Процедура ВыполнитьПриведениеЗначенияКДлине(Значение, ПКС)
+	Else
+		
+		ObjectForReceivingData = Source;
+		
+		If Not IsBlankString(PCR.Source) Then
+		
+			PropertyName = PCR.Source;
+			ErrorCode = 13;
+		
+		Else
+			
+			PropertyName = PCR.Destination;
+			ErrorCode = 14;
+			
+		EndIf;
+		
+	EndIf;
+	
+	Try
+		
+		Value = ObjectForReceivingData[PropertyName];
+		
+	Except
+		
+		If ErrorCode <> 14 Then
+			WriteErrorInfoPCRHandlers(ErrorCode, ErrorDescription(), OCR, PCR, Source, "");
+		EndIf;
+		
+	EndTry;
+	
+EndProcedure
 
-	Значение = ПривестиНомерКДлине(Строка(Значение), ПКС.ПриводитьКДлине);
+Procedure ExportItemPropertyType(PropertyNode, PropertyType)
+	
+	SetAttribute(PropertyNode, "Type", PropertyType);	
+	
+EndProcedure
 
-КонецПроцедуры
+Procedure ExportExtDimension(Source, Destination, IncomingData, OutgoingData, OCR, PCR, PropertyCollectionNode,
+							CollectionObject, Val ExportRefOnly)
+	
+	// Variables for supporting the event handler script debugging mechanism. (supporting the bind 
+	// procedure interface).
+	Var DestinationType, Empty, Expression, DontReplace, PropertyNode, PropertiesOCR;
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+	
+	// Initializing the value
+	Value = Undefined;
+	OCRName = "";
+	OCRNameExtDimensionType = "";
+	
+	// BeforeExport handler
+	If PCR.HasBeforeExportHandler Then
+		
+		Cancel = False;
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(PCR, "BeforeExport"));
+				
+			Else
+				
+				Execute(PCR.BeforeExport);
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoPCRHandlers(55, ErrorDescription(), OCR, PCR, Source, 
+				"BeforeExportProperty", Value);
+				
+		EndTry;
+			
+		If Cancel Then // Cancel the export
+			
+			Return;
+			
+		EndIf;
+		
+	EndIf;
 
-// Формирует узлы свойств объекта приемника в соответствии с указанной коллекцией правил конвертации свойств.
+	GetPropertyValue(Value, CollectionObject, OCR, PCR, IncomingData, Source);
+	
+	If PCR.CastToLength <> 0 Then
+		
+		CastValueToLength(Value, PCR);
+		
+	EndIf;
+
+	For Each KeyAndValue In Value Do
+
+		ExtDimensionType = KeyAndValue.Key;
+		ExtDimension = KeyAndValue.Value;
+		OCRName = "";
+		
+		// OnExport handler
+		If PCR.HasOnExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PCR, "OnExport"));
+					
+				Else
+					
+					Execute(PCR.OnExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(56, ErrorDescription(), OCR, PCR, Source, 
+					"OnExportProperty", Value);
+				
+			EndTry;
+				
+			If Cancel Then // Cancel the extra dimension export
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
+
+		If ExtDimension = Undefined Or FindRule(ExtDimension, OCRName) = Undefined Then
+			
+			Continue;
+			
+		EndIf;
+			
+		ExtDimensionNode = CreateNode(PCR.Destination);
+		
+		// Key
+		PropertyNode = CreateNode("Property");
+		
+		If IsBlankString(OCRNameExtDimensionType) Then
+			
+			OCRKey = FindRule(ExtDimensionType, OCRNameExtDimensionType);
+			
+		Else
+			
+			OCRKey = FindRule(, OCRNameExtDimensionType);
+			
+		EndIf;
+		
+		SetAttribute(PropertyNode, "Name", "Key");
+		ExportItemPropertyType(PropertyNode, OCRKey.Destination);
+			
+		RefNode = ExportByRule(ExtDimensionType,, OutgoingData,, OCRNameExtDimensionType,, ExportRefOnly, OCRKey);
+			
+		If RefNode <> Undefined Then
+			
+			IsRuleWithGlobalExport = False;
+			RefNodeType = TypeOf(RefNode);
+			AddPropertiesForExport(RefNode, RefNodeType, PropertyNode, IsRuleWithGlobalExport);
+			
+		EndIf;
+		
+		AddSubordinateNode(ExtDimensionNode, PropertyNode);
+		
+		// Value
+		PropertyNode = CreateNode("Property");
+		
+		OCRValue = FindRule(ExtDimension, OCRName);
+		
+		DestinationType = OCRValue.Destination;
+		
+		IsNULL = False;
+		Empty = deEmpty(ExtDimension, IsNULL);
+
+		If Empty Then
+			
+			If IsNULL Or ExtDimension = Undefined Then
+				
+				Continue;
+				
+			EndIf;
+			
+			If IsBlankString(DestinationType) Then
+				
+				DestinationType = GetDataTypeForDestination(ExtDimension);
+				
+			EndIf;
+			
+			SetAttribute(PropertyNode, "Name", "Value");
+			
+			If Not IsBlankString(DestinationType) Then
+				SetAttribute(PropertyNode, "Type", DestinationType);
+			EndIf;
+			
+			// If it is a variable of multiple type, it must be exported with the specified type, perhaps this is an empty reference.
+			deWriteElement(PropertyNode, "Empty");
+			
+			AddSubordinateNode(ExtDimensionNode, PropertyNode);
+
+		Else
+			
+			IsRuleWithGlobalExport = False;
+			RefNode = ExportByRule(ExtDimension,, OutgoingData, , OCRName, , ExportRefOnly, OCRValue, IsRuleWithGlobalExport);
+			
+			SetAttribute(PropertyNode, "Name", "Value");
+			ExportItemPropertyType(PropertyNode, DestinationType);
+			
+			If RefNode = Undefined Then
+				
+				Continue;
+				
+			EndIf;
+			
+			RefNodeType = TypeOf(RefNode);
+			
+			AddPropertiesForExport(RefNode, RefNodeType, PropertyNode, IsRuleWithGlobalExport);
+			
+			AddSubordinateNode(ExtDimensionNode, PropertyNode);
+			
+		EndIf;
+		
+		// AfterExport handler
+		If PCR.HasAfterExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PCR, "AfterExport"));
+					
+				Else
+					
+					Execute(PCR.AfterExport);
+					
+				EndIf;
+					
+			Except
+					
+				WriteErrorInfoPCRHandlers(57, ErrorDescription(), OCR, PCR, Source,
+					"AfterExportProperty", Value);
+					
+			EndTry;
+			
+			If Cancel Then // Cancel the export
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
+		
+		AddSubordinateNode(PropertyCollectionNode, ExtDimensionNode);
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure AddPropertiesForExport(RefNode, RefNodeType, PropertyNode, IsRuleWithGlobalExport)
+	
+	If RefNodeType = deStringType Then
+				
+		If StrFind(RefNode, "<Ref") > 0 Then
+					
+			PropertyNode.WriteRaw(RefNode);
+					
+		Else
+			
+			deWriteElement(PropertyNode, "Value", RefNode);
+					
+		EndIf;
+				
+	ElsIf RefNodeType = deNumberType Then
+		
+		If IsRuleWithGlobalExport Then
+		
+			deWriteElement(PropertyNode, "Gsn", RefNode);
+			
+		Else     		
+			
+			deWriteElement(PropertyNode, "Sn", RefNode);
+			
+		EndIf;
+				
+	Else
+				
+		AddSubordinateNode(PropertyNode, RefNode);
+				
+	EndIf;	
+	
+EndProcedure
+
+Procedure AddPropertyValueToNode(Value, ValueType, DestinationType, PropertyNode, PropertyIsSet)
+	
+	PropertyIsSet = True;
+		
+	If ValueType = deStringType Then
+				
+		If DestinationType = "String"  Then
+		ElsIf DestinationType = "Number"  Then
+					
+			Value = Number(Value);
+					
+		ElsIf DestinationType = "Boolean"  Then
+					
+			Value = Boolean(Value);
+					
+		ElsIf DestinationType = "Date"  Then
+					
+			Value = Date(Value);
+					
+		ElsIf DestinationType = "ValueStorage"  Then
+					
+			Value = New ValueStorage(Value);
+					
+		ElsIf DestinationType = "UUID" Then
+					
+			Value = New UUID(Value);
+					
+		ElsIf IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "String");
+					
+		EndIf;
+				
+		deWriteElement(PropertyNode, "Value", Value);
+
+	ElsIf ValueType = deNumberType Then
+				
+		If DestinationType = "Number"  Then
+		ElsIf DestinationType = "Boolean"  Then
+					
+			Value = Boolean(Value);
+					
+		ElsIf DestinationType = "String"  Then
+		ElsIf IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "Number");
+					
+		Else
+					
+			Return;
+					
+		EndIf;
+				
+		deWriteElement(PropertyNode, "Value", Value);
+
+	ElsIf ValueType = deDateType Then
+				
+		If DestinationType = "Date"  Then
+		ElsIf DestinationType = "String"  Then
+					
+			Value = Left(String(Value), 10);
+					
+		ElsIf IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "Date");
+					
+		Else
+					
+			Return;
+					
+		EndIf;
+				
+		deWriteElement(PropertyNode, "Value", Value);
+				
+	ElsIf ValueType = deBooleanType Then
+				
+		If DestinationType = "Boolean"  Then
+		ElsIf DestinationType = "Number"  Then
+					
+			Value = Number(Value);
+					
+		ElsIf IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "Boolean");
+					
+		Else
+					
+			Return;
+					
+		EndIf;
+				
+		deWriteElement(PropertyNode, "Value", Value);
+
+	ElsIf ValueType = deValueStorageType Then
+				
+		If IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "ValueStorage");
+					
+		ElsIf DestinationType <> "ValueStorage"  Then
+					
+			Return;
+					
+		EndIf;
+				
+		deWriteElement(PropertyNode, "Value", Value);
+				
+	ElsIf ValueType = deUUIDType Then
+		
+		If DestinationType = "UUID" Then
+		ElsIf DestinationType = "String"  Then
+					
+			Value = String(Value);
+					
+		ElsIf IsBlankString(DestinationType) Then
+					
+			SetAttribute(PropertyNode, "Type", "UUID");
+					
+		Else
+					
+			Return;
+					
+		EndIf;
+		
+		deWriteElement(PropertyNode, "Value", Value);
+		
+	ElsIf ValueType = deAccumulationRecordTypeType Then
+				
+		deWriteElement(PropertyNode, "Value", String(Value));		
+		
+	Else	
+		
+		PropertyIsSet = False;
+		
+	EndIf;	
+	
+EndProcedure
+
+Function ExportRefObjectData(Value, OutgoingData, OCRName, PropertiesOCR, DestinationType, PropertyNode, Val ExportRefOnly)
+	
+	IsRuleWithGlobalExport = False;
+	RefNode    = ExportByRule(Value, , OutgoingData, , OCRName, , ExportRefOnly, PropertiesOCR, IsRuleWithGlobalExport);
+	RefNodeType = TypeOf(RefNode);
+
+	If IsBlankString(DestinationType) Then
+				
+		DestinationType  = PropertiesOCR.Destination;
+		SetAttribute(PropertyNode, "Type", DestinationType);
+				
+	EndIf;
+			
+	If RefNode = Undefined Then
+				
+		Return Undefined;
+				
+	EndIf;
+				
+	AddPropertiesForExport(RefNode, RefNodeType, PropertyNode, IsRuleWithGlobalExport);	
+	
+	Return RefNode;
+	
+EndFunction
+
+Function GetDataTypeForDestination(Value)
+	
+	DestinationType = deValueTypeAsString(Value);
+	
+	// Checking for any OCR with the DestinationType destination type.
+	TableRow = ConversionRulesTable.Find(DestinationType, "Destination");
+	
+	If TableRow = Undefined Then
+		DestinationType = "";
+	EndIf;
+	
+	Return DestinationType;
+	
+EndFunction
+
+Procedure CastValueToLength(Value, PCR)
+	
+	Value = CastNumberToLength(String(Value), PCR.CastToLength);
+		
+EndProcedure
+
+// Generates destination object property nodes according to the specified property conversion rule collection.
 //
-// Параметры:
-//  Источник		     - Произвольный - произвольный источник данных.
-//  Приемник		     - ЗаписьXML - xml-узел объекта приемника.
-//  ВходящиеДанные	     - Произвольный - произвольные вспомогательные данные, передаваемые правилу
-//                         для выполнения конвертации.
-//  ИсходящиеДанные      - Произвольный - произвольные вспомогательные данные, передаваемые правилам
-//                         конвертации объектов свойств.
-//  ПКО				     - СтрокаТаблицыЗначений - ссылка на правило конвертации объектов.
-//  КоллекцияПКС         - см. КоллекцияПравилаКонвертацииСвойств
-//  УзелКоллекцииСвойств - ЗаписьXML - xml-узел коллекции свойств.
-//  ОбъектКоллекции      - Произвольный - если указан, то выполняется выгрузка свойств объекта коллекции, иначе Источника.
-//  ИмяПредопределенногоЭлемента - Строка - если указан, то в свойствах пишется имя предопределенного элемента.
-//  ПКГС                 - ссылка на правило конвертации группы свойств (папка-родитель коллекции ПКС). 
-//                         Например, табличная часть документа.
+// Parameters:
+//  Source		     - Arbitrary - an arbitrary data source.
+//  Destination		     - XMLWriter - a destination object XML node.
+//  IncomingData	     - Arbitrary - an arbitrary auxiliary data that is passed to the conversion rule.
+//  OutgoingData      - Arbitrary - an arbitrary auxiliary data that is passed to the property object conversion rules.
+//  OCR				     - ValueTableRow - a reference to the object conversion rule.
+//  PCRCollection         - see PropertyConversionRulesCollection.
+//  PropertyCollectionNode - XMLWriter - a property collection XML node.
+//  CollectionObject      - Arbitrary - if not Undefined, collection object properties are exported, otherwise source object properties are exported.
+//  PredefinedItemName - String - if not Undefined, the predefined item name is written to the properties.
+//  ExportRefOnly      - Boolean  - if True, object by reference is not exported.
+//  TempFileList		- Array - a list of temporary files to save an exported data.
 // 
 Процедура ВыгрузитьСвойства(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, КоллекцияПКС,
 	УзелКоллекцииСвойств = Неопределено, ОбъектКоллекции = Неопределено, ИмяПредопределенногоЭлемента = Неопределено,
