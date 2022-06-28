@@ -10210,1139 +10210,1118 @@ EndProcedure
 //  ExportRefOnly      - Boolean  - if True, object by reference is not exported.
 //  TempFileList		- Array - a list of temporary files to save an exported data.
 // 
-Процедура ВыгрузитьСвойства(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, КоллекцияПКС,
-	УзелКоллекцииСвойств = Неопределено, ОбъектКоллекции = Неопределено, ИмяПредопределенногоЭлемента = Неопределено,
-	Знач ВыгрузитьТолькоСсылку = Ложь, СписокВременныхФайлов = Неопределено)
-
-	Перем КлючИЗначение, ВидСубконто, Субконто, ИмяПКОВидСубконто, УзелСубконто; // Пустышки, для корректного запуска
-	                                                                             // обработчиков.
-
-	Если УзелКоллекцииСвойств = Неопределено Тогда
-
-		УзелКоллекцииСвойств = Приемник;
-
-	КонецЕсли;
+Procedure ExportProperties(Source, Destination, IncomingData, OutgoingData, OCR, PCRCollection, PropertyCollectionNode = Undefined, 
+	CollectionObject = Undefined, PredefinedItemName = Undefined, Val ExportRefOnly = False, 
+	TempFileList = Undefined)
 	
-	// Выгружаем имя предопределенного если оно указано.
-	Если ИмяПредопределенногоЭлемента <> Неопределено Тогда
+	Var KeyAndValue, ExtDimensionType, ExtDimension, OCRNameExtDimensionType, ExtDimensionNode; // for correct handler execution.
 
-		УзелКоллекцииСвойств.ЗаписатьНачалоЭлемента("Свойство");
-		УстановитьАтрибут(УзелКоллекцииСвойств, "Имя", "{ИмяПредопределенногоЭлемента}");
-		Если Не ExecuteDataExchangeInOptimizedFormat Тогда
-			УстановитьАтрибут(УзелКоллекцииСвойств, "Тип", "Строка");
-		КонецЕсли;
-		одЗаписатьЭлемент(УзелКоллекцииСвойств, "Значение", ИмяПредопределенногоЭлемента);
-		УзелКоллекцииСвойств.ЗаписатьКонецЭлемента();
+	If PropertyCollectionNode = Undefined Then
+		
+		PropertyCollectionNode = Destination;
+		
+	EndIf;
+	
+	// Exporting the predefined item name if it is specified.
+	If PredefinedItemName <> Undefined Then
+		
+		PropertyCollectionNode.WriteStartElement("Property");
+		SetAttribute(PropertyCollectionNode, "Name", "{PredefinedItemName}");
+		If Not ExecuteDataExchangeInOptimizedFormat Then
+			SetAttribute(PropertyCollectionNode, "Type", "String");
+		EndIf;
+		deWriteElement(PropertyCollectionNode, "Value", PredefinedItemName);
+		PropertyCollectionNode.WriteEndElement();		
+		
+	EndIf;
 
-	КонецЕсли;
-
-	Для Каждого ПКС Из КоллекцияПКС Цикл
-
-		Если ПКС.УпрощеннаяВыгрузкаСвойства Тогда
+	For each PCR In PCRCollection Do
+		
+		If PCR.SimplifiedPropertyExport Then
 						
-			 //	Создаем узел свойства
-
-			УзелКоллекцииСвойств.ЗаписатьНачалоЭлемента("Свойство");
-			УстановитьАтрибут(УзелКоллекцииСвойств, "Имя", ПКС.Приемник);
-
-			Если Не ExecuteDataExchangeInOptimizedFormat И Не ПустаяСтрока(ПКС.ТипПриемника) Тогда
-
-				УстановитьАтрибут(УзелКоллекцииСвойств, "Тип", ПКС.ТипПриемника);
-
-			КонецЕсли;
-
-			Если ПКС.НеЗамещать Тогда
-
-				УстановитьАтрибут(УзелКоллекцииСвойств, "НеЗамещать", "true");
-
-			КонецЕсли;
-
-			Если ПКС.ПоискПоДатеНаРавенство Тогда
-
-				УстановитьАтрибут(УзелКоллекцииСвойств, "ПоискПоДатеНаРавенство", "true");
-
-			КонецЕсли;
-
-			Значение = Неопределено;
-			ПолучитьЗначениеСвойства(Значение, ОбъектКоллекции, ПКО, ПКС, ВходящиеДанные, Источник);
-
-			Если ПКС.ПриводитьКДлине <> 0 Тогда
-
-				ВыполнитьПриведениеЗначенияКДлине(Значение, ПКС);
-
-			КонецЕсли;
-
-			ЭтоNULL = Ложь;
-			Пусто = одПустое(Значение, ЭтоNULL);
-
-			Если Пусто Тогда
+			 //	Creating the property node
+			 
+			PropertyCollectionNode.WriteStartElement("Property");
+			SetAttribute(PropertyCollectionNode, "Name", PCR.Destination);
+			
+			If Not ExecuteDataExchangeInOptimizedFormat And Not IsBlankString(PCR.DestinationType) Then
+			
+				SetAttribute(PropertyCollectionNode, "Type", PCR.DestinationType);
 				
-				// Надо записать что это пустое значение.
-				Если Не ExecuteDataExchangeInOptimizedFormat Тогда
-					одЗаписатьЭлемент(УзелКоллекцииСвойств, "Пусто");
-				КонецЕсли;
+			EndIf;
+			
+			If PCR.DoNotReplace Then
+				
+				SetAttribute(PropertyCollectionNode, "DoNotReplace",	"true");
+				
+			EndIf;
+			
+			If PCR.SearchByEqualDate  Then
+				
+				SetAttribute(PropertyCollectionNode, "SearchByEqualDate", "true");
+				
+			EndIf;
+			
+			Value = Undefined;
+			GetPropertyValue(Value, CollectionObject, OCR, PCR, IncomingData, Source);
+			
+			If PCR.CastToLength <> 0 Then
+				
+				CastValueToLength(Value, PCR);
+								
+			EndIf;
+			
+			IsNULL = False;
+			Empty = deEmpty(Value, IsNULL);
 
-				УзелКоллекцииСвойств.ЗаписатьКонецЭлемента();
-				Продолжить;
+			If Empty Then
+				
+				If Not ExecuteDataExchangeInOptimizedFormat Then
+					deWriteElement(PropertyCollectionNode, "Empty");
+				EndIf;
+				
+				PropertyCollectionNode.WriteEndElement();
+				Continue;
+				
+			EndIf;
+			
+			deWriteElement(PropertyCollectionNode,	"Value", Value);
+			
+			PropertyCollectionNode.WriteEndElement();
+			Continue;
 
-			КонецЕсли;
+		ElsIf PCR.DestinationKind = "AccountExtDimensionTypes" Then
+			
+			ExportExtDimension(Source, Destination, IncomingData, OutgoingData, OCR,
+				PCR, PropertyCollectionNode, CollectionObject, ExportRefOnly);
+			
+			Continue;
 
-			одЗаписатьЭлемент(УзелКоллекцииСвойств, "Значение", Значение);
+		ElsIf PCR.Name = "{UUID}" And PCR.Source = "{UUID}" And PCR.Destination = "{UUID}" Then
+			
+			If Source = Undefined Then
+				Continue;
+			EndIf;
+			
+			If RefTypeValue(Source) Then
+				UUID = Source.UUID();
+			Else
+				
+				InitialValue = New UUID();
+				StructureToCheckPropertyExisting = New Structure("Ref", InitialValue);
+				FillPropertyValues(StructureToCheckPropertyExisting, Source);
+				
+				If InitialValue <> StructureToCheckPropertyExisting.Ref And RefTypeValue(StructureToCheckPropertyExisting.Ref) Then
+					UUID = Source.Ref.UUID();
+				EndIf;
+				
+			EndIf;
 
-			УзелКоллекцииСвойств.ЗаписатьКонецЭлемента();
-			Продолжить;
-
-		ИначеЕсли ПКС.ВидПриемника = "ВидыСубконтоСчета" Тогда
-
-			ВыгрузитьСубконто(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКС, УзелКоллекцииСвойств,
-				ОбъектКоллекции, ВыгрузитьТолькоСсылку);
-
-			Продолжить;
-
-		ИначеЕсли ПКС.Имя = "{УникальныйИдентификатор}" И ПКС.Источник = "{УникальныйИдентификатор}" И ПКС.Приемник
-			= "{УникальныйИдентификатор}" Тогда
-
-			Если Источник = Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
-
-			Если ЗначениеСсылочногоТипа(Источник) Тогда
-				УникальныйИдентификатор = Источник.УникальныйИдентификатор();
-			Иначе
-
-				НачальноеЗначение = Новый УникальныйИдентификатор;
-				СтруктураДляПроверкиНаличияСвойства = Новый Структура("Ссылка", НачальноеЗначение);
-				ЗаполнитьЗначенияСвойств(СтруктураДляПроверкиНаличияСвойства, Источник);
-
-				Если НачальноеЗначение <> СтруктураДляПроверкиНаличияСвойства.Ссылка И ЗначениеСсылочногоТипа(
-					СтруктураДляПроверкиНаличияСвойства.Ссылка) Тогда
-					УникальныйИдентификатор = Источник.Ссылка.УникальныйИдентификатор();
-				КонецЕсли;
-
-			КонецЕсли;
-
-			УзелКоллекцииСвойств.ЗаписатьНачалоЭлемента("Свойство");
-			УстановитьАтрибут(УзелКоллекцииСвойств, "Имя", "{УникальныйИдентификатор}");
-
-			Если Не ExecuteDataExchangeInOptimizedFormat Тогда
-				УстановитьАтрибут(УзелКоллекцииСвойств, "Тип", "Строка");
-			КонецЕсли;
-
-			одЗаписатьЭлемент(УзелКоллекцииСвойств, "Значение", УникальныйИдентификатор);
-			УзелКоллекцииСвойств.ЗаписатьКонецЭлемента();
-			Продолжить;
-
-		ИначеЕсли ПКС.ЭтоГруппа Тогда
-
-			ВыгрузитьГруппуСвойств(Источник, Приемник, ВходящиеДанные, ИсходящиеДанные, ПКО, ПКС, УзелКоллекцииСвойств,
-				ВыгрузитьТолькоСсылку, СписокВременныхФайлов);
-			Продолжить;
-
-		КонецЕсли;
+			PropertyCollectionNode.WriteStartElement("Property");
+			SetAttribute(PropertyCollectionNode, "Name", "{UUID}");
+			
+			If NOT ExecuteDataExchangeInOptimizedFormat Then 
+				SetAttribute(PropertyCollectionNode, "Type", "String");
+			EndIf;
+			
+			deWriteElement(PropertyCollectionNode, "Value", UUID);
+			PropertyCollectionNode.WriteEndElement();
+			Continue;
+			
+		ElsIf PCR.IsFolder Then
+			
+			ExportPropertyGroup(Source, Destination, IncomingData, OutgoingData, OCR, PCR, PropertyCollectionNode, ExportRefOnly, TempFileList);
+			Continue;
+			
+		EndIf;
 
 		
-		//	Инициализируем значение, которое будем конвертировать.
-		Значение 	 = Неопределено;
-		ИмяПКО		 = ПКС.ПравилоКонвертации;
-		НеЗамещать   = ПКС.НеЗамещать;
+		//	Initializing the value to be converted.
+		Value 	 = Undefined;
+		OCRName		 = PCR.ConversionRule;
+		DontReplace   = PCR.DoNotReplace;
+		
+		Empty		 = False;
+		Expression	 = Undefined;
+		DestinationType = PCR.DestinationType;
 
-		Пусто		 = Ложь;
-		Выражение	 = Неопределено;
-		ТипПриемника = ПКС.ТипПриемника;
-
-		ЭтоNULL      = Ложь;
+		IsNULL      = False;
 
 		
-		// Обработчик ПередВыгрузкой
-		Если ПКС.ЕстьОбработчикПередВыгрузкой Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПередВыгрузкой"));
-
-				Иначе
-
-					Выполнить (ПКС.ПередВыгрузкой);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(55, ОписаниеОшибки(), ПКО, ПКС, Источник,
-					"ПередВыгрузкойСвойства", Значение);
-
-			КонецПопытки;
-
-			Если Отказ Тогда	//	Отказ от выгрузки свойства
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
+		// BeforeExport handler
+		If PCR.HasBeforeExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PCR, "BeforeExport"));
+					
+				Else
+					
+					Execute(PCR.BeforeExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(55, ErrorDescription(), OCR, PCR, Source, 
+						"BeforeExportProperty", Value);
+														
+			EndTry;
+				                             
+			If Cancel Then	//	Cancel property export
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
 
         		
-        //	Создаем узел свойства
-		Если ПустаяСтрока(ПКС.ИмяПараметраДляПередачи) Тогда
-
-			УзелСвойства = СоздатьУзел("Свойство");
-			УстановитьАтрибут(УзелСвойства, "Имя", ПКС.Приемник);
-
-		Иначе
-
-			УзелСвойства = СоздатьУзел("ЗначениеПараметра");
-			УстановитьАтрибут(УзелСвойства, "Имя", ПКС.ИмяПараметраДляПередачи);
-
-		КонецЕсли;
-
-		Если НеЗамещать Тогда
-
-			УстановитьАтрибут(УзелСвойства, "НеЗамещать", "true");
-
-		КонецЕсли;
-
-		Если ПКС.ПоискПоДатеНаРавенство Тогда
-
-			УстановитьАтрибут(УзелКоллекцииСвойств, "ПоискПоДатеНаРавенство", "true");
-
-		КонецЕсли;
+        //	Creating the property node
+		If IsBlankString(PCR.ParameterForTransferName) Then
+			
+			PropertyNode = CreateNode("Property");
+			SetAttribute(PropertyNode, "Name", PCR.Destination);
+			
+		Else
+			
+			PropertyNode = CreateNode("ParameterValue");
+			SetAttribute(PropertyNode, "Name", PCR.ParameterForTransferName);
+			
+		EndIf;
+		
+		If DontReplace Then
+			
+			SetAttribute(PropertyNode, "DoNotReplace",	"true");
+			
+		EndIf;
+		
+		If PCR.SearchByEqualDate  Then
+			
+			SetAttribute(PropertyCollectionNode, "SearchByEqualDate", "true");
+			
+		EndIf;
 
         		
-		//	Возможно правило конвертации уже определено.
-		Если Не ПустаяСтрока(ИмяПКО) Тогда
+		If Not IsBlankString(OCRName) Then
+			
+			PropertiesOCR = Rules[OCRName];
+			
+		Else
+			
+			PropertiesOCR = Undefined;
+			
+		EndIf;
 
-			ПКОСвойств = Правила[ИмяПКО];
 
-		Иначе
-
-			ПКОСвойств = Неопределено;
-
-		КонецЕсли;
-
-
-		//	Попытка определить тип свойства приемника.
-		Если ПустаяСтрока(ТипПриемника) И ПКОСвойств <> Неопределено Тогда
-
-			ТипПриемника = ПКОСвойств.Приемник;
-			УстановитьАтрибут(УзелСвойства, "Тип", ТипПриемника);
-
-		ИначеЕсли Не ExecuteDataExchangeInOptimizedFormat И Не ПустаяСтрока(ТипПриемника) Тогда
-
-			УстановитьАтрибут(УзелСвойства, "Тип", ТипПриемника);
-
-		КонецЕсли;
-
-		Если Не ПустаяСтрока(ИмяПКО) И ПКОСвойств <> Неопределено
-			И ПКОСвойств.ЕстьОбработчикПоследовательностьПолейПоиска = Истина Тогда
-
-			УстановитьАтрибут(УзелСвойства, "ИмяПКО", ИмяПКО);
-
-		КонецЕсли;
+		//	Attempting to define a destination property type.
+		If IsBlankString(DestinationType) And PropertiesOCR <> Undefined Then
+			
+			DestinationType = PropertiesOCR.Destination;
+			SetAttribute(PropertyNode, "Type", DestinationType);
+			
+		ElsIf Not ExecuteDataExchangeInOptimizedFormat And Not IsBlankString(DestinationType) Then
+			
+			SetAttribute(PropertyNode, "Type", DestinationType);
+						
+		EndIf;
 		
-        //	Определяем конвертируемое значение.
-		Если Выражение <> Неопределено Тогда
-
-			одЗаписатьЭлемент(УзелСвойства, "Выражение", Выражение);
-			ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСвойства);
-			Продолжить;
-
-		ИначеЕсли Пусто Тогда
-
-			Если ПустаяСтрока(ТипПриемника) Тогда
-
-				Продолжить;
-
-			КонецЕсли;
-
-			Если Не ExecuteDataExchangeInOptimizedFormat Тогда
-				одЗаписатьЭлемент(УзелСвойства, "Пусто");
-			КонецЕсли;
-
-			ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСвойства);
-			Продолжить;
-
-		Иначе
-
-			ПолучитьЗначениеСвойства(Значение, ОбъектКоллекции, ПКО, ПКС, ВходящиеДанные, Источник);
-
-			Если ПКС.ПриводитьКДлине <> 0 Тогда
-
-				ВыполнитьПриведениеЗначенияКДлине(Значение, ПКС);
-
-			КонецЕсли;
-
-		КонецЕсли;
-		СтароеЗначениеДоОбработчикаПриВыгрузке = Значение;
-		Пусто = одПустое(Значение, ЭтоNULL);
-
+		If Not IsBlankString(OCRName) And PropertiesOCR <> Undefined And PropertiesOCR.HasSearchFieldSequenceHandler = True Then
+			
+			SetAttribute(PropertyNode, "OCRName", OCRName);
+			
+		EndIf;
 		
-		// Обработчик ПриВыгрузке
-		Если ПКС.ЕстьОбработчикПриВыгрузке Тогда
-
-			Отказ = Ложь;
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПриВыгрузке"));
-
-				Иначе
-
-					Выполнить (ПКС.ПриВыгрузке);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(56, ОписаниеОшибки(), ПКО, ПКС, Источник,
-					"ПриВыгрузкеСвойства", Значение);
-
-			КонецПопытки;
-
-			Если Отказ Тогда	//	Отказ от выгрузки свойства
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-
-		// Инициализируем еще раз переменную Пусто, может быть Значение было изменено 
-		// в обработчике "При выгрузке".
-		Если СтароеЗначениеДоОбработчикаПриВыгрузке <> Значение Тогда
-
-			Пусто = одПустое(Значение, ЭтоNULL);
-
-		КонецЕсли;
-
-		Если Пусто Тогда
-
-			Если ЭтоNULL Или Значение = Неопределено Тогда
-
-				Продолжить;
-
-			КонецЕсли;
-
-			Если ПустаяСтрока(ТипПриемника) Тогда
-
-				ТипПриемника = ОпределитьТипДанныхДляПриемника(Значение);
-
-				Если Не ПустаяСтрока(ТипПриемника) Тогда
-
-					УстановитьАтрибут(УзелСвойства, "Тип", ТипПриемника);
-
-				КонецЕсли;
-
-			КонецЕсли;			
+        //	Determining the value to be converted.
+		If Expression <> Undefined Then
+			
+			deWriteElement(PropertyNode, "Expression", Expression);
+			AddSubordinateNode(PropertyCollectionNode, PropertyNode);
+			Continue;
+			
+		ElsIf Empty Then
+			
+			If IsBlankString(DestinationType) Then
 				
-			// Если тип множественный, то возможно это пустая ссылка и выгрузить ее нужно именно с указанием типа.
-			Если Не ExecuteDataExchangeInOptimizedFormat Тогда
-				одЗаписатьЭлемент(УзелСвойства, "Пусто");
-			КонецЕсли;
+				Continue;
+				
+			EndIf;
+			
+			If NOT ExecuteDataExchangeInOptimizedFormat Then 
+				deWriteElement(PropertyNode, "Empty");
+			EndIf;
+			
+			AddSubordinateNode(PropertyCollectionNode, PropertyNode);
+			Continue;
+			
+		Else
+			
+			GetPropertyValue(Value, CollectionObject, OCR, PCR, IncomingData, Source);
+			
+			If PCR.CastToLength <> 0 Then
+				
+				CastValueToLength(Value, PCR);
+								
+			EndIf;
+						
+		EndIf;
+		OldValueBeforeOnExportHandler = Value;
+		Empty = deEmpty(Value, IsNULL);
 
-			ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСвойства);
-			Продолжить;
+		
+		// OnExport handler
+		If PCR.HasOnExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PCR, "OnExport"));
+					
+				Else
+					
+					Execute(PCR.OnExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(56, ErrorDescription(), OCR, PCR, Source, 
+						"OnExportProperty", Value);
+														
+			EndTry;
+				
+			If Cancel Then	//	Cancel property export
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;
 
-		КонецЕсли;
-		УзелСсылки = Неопределено;
 
-		Если (ПКОСвойств <> Неопределено) Или (Не ПустаяСтрока(ИмяПКО)) Тогда
+		// Initializing the Empty variable, perhaps its value has been changed in the OnExport handler.
+		If OldValueBeforeOnExportHandler <> Value Then
+			
+			Empty = deEmpty(Value, IsNULL);
+			
+		EndIf;
 
-			УзелСсылки = ВыгрузитьДанныеСсылочногоОбъекта(Значение, ИсходящиеДанные, ИмяПКО, ПКОСвойств, ТипПриемника,
-				УзелСвойства, ВыгрузитьТолькоСсылку);
+		If Empty Then
+			
+			If IsNULL Or Value = Undefined Then
+				
+				Continue;
+				
+			EndIf;
+			
+			If IsBlankString(DestinationType) Then
+				
+				DestinationType = GetDataTypeForDestination(Value);
+				
+				If Not IsBlankString(DestinationType) Then				
+				
+					SetAttribute(PropertyNode, "Type", DestinationType);
+				
+				EndIf;
+				
+			EndIf;			
+				
+			// If it is a variable of multiple type, it must be exported with the specified type.
+			If Not ExecuteDataExchangeInOptimizedFormat Then
+				deWriteElement(PropertyNode, "Empty");
+			EndIf;
+			
+			AddSubordinateNode(PropertyCollectionNode, PropertyNode);
+			Continue;
+			
+		EndIf;	
+		RefNode = Undefined;
 
-			Если УзелСсылки = Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
-
-		Иначе
-
-			СвойствоУстановлено = Ложь;
-			ТипЗначения = ТипЗнч(Значение);
-			ДобавитьЗначениеСвойстваВУзел(Значение, ТипЗначения, ТипПриемника, УзелСвойства, СвойствоУстановлено);
-
-			Если Не СвойствоУстановлено Тогда
-
-				МенеджерЗначения = Менеджеры(ТипЗначения);
-
-				Если МенеджерЗначения = Неопределено Тогда
-					Продолжить;
-				КонецЕсли;
-
-				ПКОСвойств = МенеджерЗначения.ПКО;
-
-				Если ПКОСвойств = Неопределено Тогда
-					Продолжить;
-				КонецЕсли;
-
-				ИмяПКО = ПКОСвойств.Имя;
-
-				УзелСсылки = ВыгрузитьДанныеСсылочногоОбъекта(Значение, ИсходящиеДанные, ИмяПКО, ПКОСвойств,
-					ТипПриемника, УзелСвойства, ВыгрузитьТолькоСсылку);
-
-				Если УзелСсылки = Неопределено Тогда
-					Продолжить;
-				КонецЕсли;
-
-			КонецЕсли;
-
-		КонецЕсли;
+		If (PropertiesOCR <> Undefined) Or (Not IsBlankString(OCRName)) Then
+			
+			RefNode = ExportRefObjectData(Value, OutgoingData, OCRName, PropertiesOCR, DestinationType, PropertyNode, ExportRefOnly);
+			
+			If RefNode = Undefined Then
+				Continue;				
+			EndIf;				
+										
+		Else
+			
+			PropertySet = False;
+			ValueType = TypeOf(Value);
+			AddPropertyValueToNode(Value, ValueType, DestinationType, PropertyNode, PropertySet);
+						
+			If Not PropertySet Then
+				
+				ValueManager = Managers[ValueType];
+				
+				If ValueManager = Undefined Then
+					Continue;
+				EndIf;
+				
+				PropertiesOCR = ValueManager.OCR;
+				
+				If PropertiesOCR = Undefined Then
+					Continue;
+				EndIf;
+				
+				OCRName = PropertiesOCR.Name;
+				
+				RefNode = ExportRefObjectData(Value, OutgoingData, OCRName, PropertiesOCR, DestinationType, PropertyNode, ExportRefOnly);
+			
+				If RefNode = Undefined Then
+					Continue;				
+				EndIf;				
+												
+			EndIf;
+			
+		EndIf;
 
 
 		
-		// Обработчик ПослеВыгрузки
+		// AfterExport handler
 
-		Если ПКС.ЕстьОбработчикПослеВыгрузки Тогда
+		If PCR.HasAfterExportHandler Then
+			
+			Cancel = False;
+			
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(PCR, "AfterExport"));
+					
+				Else
+					
+					Execute(PCR.AfterExport);
+					
+				EndIf;
+				
+			Except
+				
+				WriteErrorInfoPCRHandlers(57, ErrorDescription(), OCR, PCR, Source, 
+						"AfterExportProperty", Value);					
+				
+			EndTry;
+				
+			If Cancel Then	//	Cancel property export
+				
+				Continue;
+				
+			EndIf;
+			
+		EndIf;		
+		AddSubordinateNode(PropertyCollectionNode, PropertyNode);
+		
+	EndDo;
 
-			Отказ = Ложь;
+EndProcedure
 
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПКС, "ПослеВыгрузки"));
-
-				Иначе
-
-					Выполнить (ПКС.ПослеВыгрузки);
-
-				КонецЕсли;
-
-			Исключение
-
-				ЗаписатьИнформациюОбОшибкеОбработчикиПКС(57, ОписаниеОшибки(), ПКО, ПКС, Источник,
-					"ПослеВыгрузкиСвойства", Значение);
-
-			КонецПопытки;
-
-			Если Отказ Тогда	//	Отказ от выгрузки свойства
-
-				Продолжить;
-
-			КонецЕсли;
-
-		КонецЕсли;
-		ДобавитьПодчиненный(УзелКоллекцииСвойств, УзелСвойства);
-
-	КонецЦикла;		//	по ПКС
-
-КонецПроцедуры
-
-// Производит выгрузку объекта выборки в соответствии с указанным правилом.
+// Exports the selection object according to the specified rule.
 //
 // Parameters:
-//  Объект         - выгружаемый объект выборки.
-//  Правило        - ссылка на правило выгрузки данных.
-//  Свойства       - свойства объекта метаданного выгружаемого объекта.
-//  ВходящиеДанные - произвольные вспомогательные данные.
+//  Object - selection object to be exported.
+//  Rule - data export rule reference.
+//  Properties - metadata object properties of the object to be exported.
+//  IncomingData - arbitrary auxiliary data.
+//  SelectionForDataExport - a selection containing data for export.
 // 
-Процедура ВыгрузкаОбъектаВыборки(Объект, Правило, Свойства = Неопределено, ВходящиеДанные = Неопределено,
-	ВыборкаДляВыгрузкиДанных = Неопределено)
+Procedure ExportSelectionObject(Object, Rule, Properties=Undefined, IncomingData=Undefined, SelectionForDataExport = Undefined)
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-	Если ФлагКомментироватьОбработкуОбъектов Тогда
+	If CommentObjectProcessingFlag Then
+		
+		TypeDescription = New TypeDescription("String");
+		StringObject  = TypeDescription.AdjustValue(Object);
+		If Not IsBlankString(StringObject) Then
+			ObjectRule   = StringObject + "  (" + TypeOf(Object) + ")";
+		Else
+			ObjectRule   = TypeOf(Object);
+		EndIf;
+		
+		MessageString = SubstituteParametersToString(NStr("ru = 'Выгрузка объекта: %1'; en = 'Exporting object: %1'"), ObjectRule);
+		WriteToExecutionLog(MessageString, , False, 1, 7);
+		
+	EndIf;
 
-		ОписаниеТипов = Новый ОписаниеТипов("Строка");
-		ОбъектСтрока  = ОписаниеТипов.ПривестиЗначение(Объект);
-		Если Не ПустаяСтрока(ОбъектСтрока) Тогда
-			ПрОбъекта   = ОбъектСтрока + "  (" + ТипЗнч(Объект) + ")";
-		Иначе
-			ПрОбъекта   = ТипЗнч(Объект);
-		КонецЕсли;
-
-		СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Выгрузка объекта: %1'"), ПрОбъекта);
-		ЗаписатьВПротоколВыполнения(СтрокаСообщения, , Ложь, 1, 7);
-
-	КонецЕсли;
-
-	ИмяПКО			= Правило.ПравилоКонвертации;
-	Отказ			= Ложь;
-	ИсходящиеДанные	= Неопределено;
+	OCRName			= Rule.ConversionRule;
+	Cancel			= False;
+	OutgoingData	= Undefined;
 	
-	// Глобальный обработчик ПередВыгрузкойОбъекта.
-	Если ЕстьГлобальныйОбработчикПередВыгрузкойОбъекта Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПередВыгрузкойОбъекта"));
-
-			Иначе
-
-				Выполнить (Конвертация.ПередВыгрузкойОбъекта);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(65, ОписаниеОшибки(), Правило.Имя, НСтр(
-				"ru = 'ПередВыгрузкойОбъектаВыборки (глобальный)'"), Объект);
-		КонецПопытки;
-
-		Если Отказ Тогда
-			Возврат;
-		КонецЕсли;
-
-	КонецЕсли;
+	// BeforeExportObject global handler.
+	If HasBeforeExportObjectGlobalHandler Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Conversion, "BeforeExportObject"));
+				
+			Else
+				
+				Execute(Conversion.BeforeExportObject);
+				
+			EndIf;
+			
+		Except
+			WriteErrorInfoDERHandlers(65, ErrorDescription(), Rule.Name, "BeforeExportSelectionObject (global)"), Object);
+		EndTry;
+			
+		If Cancel Then
+			Return;
+		EndIf;
+		
+	EndIf;
 	
-	// Обработчик ПередВыгрузкой
-	Если Не ПустаяСтрока(Правило.ПередВыгрузкой) Тогда
+	// BeforeExport handler
+	If Not IsBlankString(Rule.BeforeExport) Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Rule, "BeforeExport"));
+				
+			Else
+				
+				Execute(Rule.BeforeExport);
+				
+			EndIf;
+			
+		Except
+			WriteErrorInfoDERHandlers(33, ErrorDescription(), Rule.Name, "BeforeExportSelectionObject", Object);
+		EndTry;
+		
+		If Cancel Then
+			Return;
+		EndIf;
+		
+	EndIf;
 
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПередВыгрузкой"));
-
-			Иначе
-
-				Выполнить (Правило.ПередВыгрузкой);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(33, ОписаниеОшибки(), Правило.Имя, "ПередВыгрузкойОбъектаВыборки",
-				Объект);
-		КонецПопытки;
-
-		Если Отказ Тогда
-			Возврат;
-		КонецЕсли;
-
-	КонецЕсли;
-
-	УзелСсылки = Неопределено;
-
-	ВыгрузитьПоПравилу(Объект, , ИсходящиеДанные, , ИмяПКО, УзелСсылки, , , , ВыборкаДляВыгрузкиДанных);
+	RefNode = Undefined;
 	
-	// Глобальный обработчик ПослеВыгрузкиОбъекта.
-	Если ЕстьГлобальныйОбработчикПослеВыгрузкиОбъекта Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПослеВыгрузкиОбъекта"));
-
-			Иначе
-
-				Выполнить (Конвертация.ПослеВыгрузкиОбъекта);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(69, ОписаниеОшибки(), Правило.Имя, НСтр(
-				"ru = 'ПослеВыгрузкиОбъектаВыборки (глобальный)'"), Объект);
-		КонецПопытки;
-
-	КонецЕсли;
+	ExportByRule(Object, , OutgoingData, , OCRName, RefNode, , , , SelectionForDataExport);
 	
-	// Обработчик ПослеВыгрузки
-	Если Не ПустаяСтрока(Правило.ПослеВыгрузки) Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПослеВыгрузки"));
-
-			Иначе
-
-				Выполнить (Правило.ПослеВыгрузки);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(34, ОписаниеОшибки(), Правило.Имя, "ПослеВыгрузкиОбъектаВыборки",
-				Объект);
-		КонецПопытки;
-
-	КонецЕсли;
-
-КонецПроцедуры
+	// AfterExportObject global handler.
+	If HasAfterExportObjectGlobalHandler Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Conversion, "AfterExportObject"));
+				
+			Else
+				
+				Execute(Conversion.AfterExportObject);
+			
+			EndIf;
+			
+		Except
+			WriteErrorInfoDERHandlers(69, ErrorDescription(), Rule.Name, "AfterExportSelectionObject (global)"), Object);
+		EndTry;
+		
+	EndIf;
+	
+	// AfterExport handler
+	If Not IsBlankString(Rule.AfterExport) Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Rule, "AfterExport"));
+				
+			Else
+				
+				Execute(Rule.AfterExport);
+				
+			EndIf;
+			
+		Except
+			WriteErrorInfoDERHandlers(34, ErrorDescription(), Rule.Name, "AfterExportSelectionObject", Object);
+		EndTry;
+		
+	EndIf;
+	
+EndProcedure
 
 // Parameters:
-//   МетаданныеОбъекта - ОбъектМетаданных -
+//   ObjectMetadata - MetadataObject -
 //
-Функция ПолучитьИмяПервогоРеквизитаМетаданных(МетаданныеОбъекта)
+Function GetFirstMetadataAttributeName(ObjectMetadata)
 
-	НаборРеквизитов = МетаданныеОбъекта.Реквизиты; // КоллекцияОбъектовМетаданных
+	AttributeSet = ObjectMetadata.Attributes; // MetadataObjectCollection
 
-	Если НаборРеквизитов.Количество() = 0 Тогда
-		Возврат "";
-	КонецЕсли;
+	If AttributeSet.Count() = 0 Then
+		Return "";
+	EndIf;
 
-	Возврат НаборРеквизитов.Получить(0).Имя;
+	Return AttributeSet.Get(0).Name;
 
-КонецФункции
+EndFunction
 
-Функция ПолучитьВыборкуДляВыгрузкиСОграничениями(Правило, ВыборкаДляПодстановкиВПКО = Неопределено,
-	Свойства = Неопределено)
+Function GetSelectionForExportWithRestrictions(Rule, SelectionForSubstitutionToOCR = Undefined, Properties = Undefined)
+	
+	MetadataName           = Rule.ObjectNameForQuery;
+	
+	PermissionString = ?(ExportAllowedObjectsOnly, " ALLOWED ", "");
 
-	ИмяМетаданных           = Правило.ИмяОбъектаДляЗапроса;
+	SelectionFields = "";
+	
+	IsRegisterExport = (Rule.ObjectNameForQuery = Undefined);
 
-	СтрокаРазрешения = ?(ExportAllowedObjectsOnly, " РАЗРЕШЕННЫЕ ", "");
-
-	ПоляВыборки = "";
-
-	ЭтоВыгрузкаРегистра = (Правило.ИмяОбъектаДляЗапроса = Неопределено);
-
-	Если ЭтоВыгрузкаРегистра Тогда
-
-		Непериодический = Не Свойства.Периодический;
-		ПодчиненныйРегистратору = Свойства.ПодчиненныйРегистратору;
-
-		СтрокаДополненияПолейВыборкиПодчиненРегистратору = ?(Не ПодчиненныйРегистратору, ", NULL КАК Активность,
-																						 |	NULL КАК Регистратор,
-																						 |	NULL КАК НомерСтроки", "");
-
-		СтрокаДополненияПолейВыборкиПериодичность = ?(Непериодический, ", NULL КАК Период", "");
-
-		ИтоговоеОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(Свойства, Свойства.ИмяТипа,
-			Правило.ИмяОбъектаДляЗапросаРегистра, Ложь);
-
-		ReportBuilder.Текст = "ВЫБРАТЬ " + СтрокаРазрешения + "|	*
-																  |
-																  | " + СтрокаДополненияПолейВыборкиПодчиненРегистратору
-			+ " | " + СтрокаДополненияПолейВыборкиПериодичность + " |
-																  | ИЗ " + Правило.ИмяОбъектаДляЗапросаРегистра + " |
-																												  |"
-			+ ИтоговоеОграничениеПоДате;
-
-		ReportBuilder.ЗаполнитьНастройки();
-
-	Иначе
-
-		Если Правило.ВыбиратьДанныеДляВыгрузкиОднимЗапросом Тогда
+	If IsRegisterExport Then
 		
-			// Выбираем все поля объекта при выгрузке.
-			ПоляВыборки = "*";
+		Nonperiodic = Not Properties.Periodic;
+		SubordinateToRecorder = Properties.SubordinateToRecorder;
+		
+		SelectionFieldSupplementionStringSubordinateToRecorder = ?(Not SubordinateToRecorder, ", NULL AS Active,
+		|	NULL AS Recorder,
+		|	NULL AS LineNumber", "");
 
-		Иначе
+		SelectionFieldSupplementionStringPeriodicity = ?(Nonperiodical, ", NULL AS Period", "");
+		
+		ResultingRestrictionByDate = GetRestrictionByDateStringForQuery(Properties, Properties.TypeName, 
+			Rule.ObjectNameForRegisterQuery, False);
 
-			ПоляВыборки = "Ссылка КАК Ссылка";
+		ReportBuilder.Text = "SELECT " + PermissionString 
+			+ "|	*
+				 |
+				 | " + SelectionFieldSupplementionStringSubordinateToRecorder 
+			 + " | " + SelectionFieldSupplementionStringPeriodicity 
+			 + " |
+				 | FROM " + Rule.ObjectNameForRegisterQuery
+			+ " |
+				 |" + ResultingRestrictionByDate;		
+				 
+		ReportBuilder.FillSettings();
 
-		КонецЕсли;
+	Else
+		
+		If Rule.SelectExportDataInSingleQuery Then
+		
+			SelectionFields = "*";
+			
+		Else
+			
+			SelectionFields = "Ref AS Ref";
+			
+		EndIf;
+		
+		ResultingRestrictionByDate = GetRestrictionByDateStringForQuery(Properties, Properties.TypeName,, False);
+		
+		ReportBuilder.Text = "SELECT " + PermissionString + " " + SelectionFields + " FROM " + MetadataName + "
+		|
+		|" + ResultingRestrictionByDate + "
+		|
+		|{WHERE Ref.* AS " + StrReplace(MetadataName, ".", "_") + "}";
+		
+	EndIf;
 
-		ИтоговоеОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(Свойства, Свойства.ИмяТипа, , Ложь);
-
-		ReportBuilder.Текст = "ВЫБРАТЬ " + СтрокаРазрешения + " " + ПоляВыборки + " ИЗ " + ИмяМетаданных + "
-																											   |
-																											   |"
-			+ ИтоговоеОграничениеПоДате + "
-										  |
-										  |{ГДЕ Ссылка.* КАК " + СтрЗаменить(ИмяМетаданных, ".", "_") + "}";
-
-	КонецЕсли;
-
-	ReportBuilder.Отбор.Сбросить();
-	//УИ++
+	ReportBuilder.Filter.Reset();
+	//UT++
 	//		
-//	Если Правило.НастройкиПостроителя <> Неопределено Тогда
-//		ПостроительОтчета.УстановитьНастройки(Правило.НастройкиПостроителя);
-//	КонецЕсли;
+//	If Rule.BuilderSettings <> Undefined Then
+//		ReportBuilder.SetSettings(Rule.BuilderSettings);
+//	EndIf;
 
-	Если Правило.Отбор <> Неопределено Тогда
-		ТекстЗапросаНовый = ПолучитьТекстЗапросаПоСтроке(Правило, Правило.Отбор <> Неопределено, "*");
+	If Rule.Filter <> Undefined Then
+		NewQueryText = GetRowQueryText(Rule, Rule.Filter <> Undefined, "*");
 
-		СхемаКомпоновкиДанных = СхемаКомпоновкиДанных(ТекстЗапросаНовый);
-		КомпоновщикНастроек = Новый КомпоновщикНастроекКомпоновкиДанных;
-		КомпоновщикНастроек.Инициализировать(Новый ИсточникДоступныхНастроекКомпоновкиДанных(СхемаКомпоновкиДанных));
-		КомпоновщикНастроек.ЗагрузитьНастройки(СхемаКомпоновкиДанных.НастройкиПоУмолчанию);
-		UT_CommonClientServer.CopyItems(КомпоновщикНастроек.Настройки.Отбор, Правило.Отбор);
-		УстановитьНастройкуСтруктурыВыводаРезультата(КомпоновщикНастроек.Настройки);
+		DataCompositionSchema = DataCompositionSchema(NewQueryText);
+		SettingsComposer = New DataCompositionSettingsComposer;
+		SettingsComposer.Initialize(New DataCompositionAvailableSettingsSource(DataCompositionSchema));
+		SettingsComposer.LoadSettings(DataCompositionSchema.DefaultSettings);
+		UT_CommonClientServer.CopyItems(SettingsComposer.Settings.Filter, Rule.Filter);
+		SetResultOutputStructureSettings(SettingsComposer.Settings);
 
-		UT_CommonClientServer.SetDCSParemeterValue(КомпоновщикНастроек, "ДатаНачала", StartDate);
-		UT_CommonClientServer.SetDCSParemeterValue(КомпоновщикНастроек, "ДатаОкончания",
+		UT_CommonClientServer.SetDCSParemeterValue(SettingsComposer, "StartDate", StartDate);
+		UT_CommonClientServer.SetDCSParemeterValue(SettingsComposer, "EndDate",
 			EndDate);
-		// Компоновка макета компоновки данных.
-		ДанныеРасшифровки = Новый ДанныеРасшифровкиКомпоновкиДанных;
-		КомпоновщикМакета = Новый КомпоновщикМакетаКомпоновкиДанных;
-//		UT_._От(СхемаКомпоновкиДанных, КомпоновщикНастроек
 
-		МакетКомпоновкиДанных = КомпоновщикМакета.Выполнить( СхемаКомпоновкиДанных, КомпоновщикНастроек.Настройки,
-			ДанныеРасшифровки, , Тип("ГенераторМакетаКомпоновкиДанных"));
-		ЗапросВременный = Новый Запрос(МакетКомпоновкиДанных.НаборыДанных.НаборДанных1.Запрос);
-		ReportBuilder.Текст = ЗапросВременный.Текст;
+		DetailsData = New DataCompositionDetailsData;
+		TemplateComposer = New DataCompositionTemplateComposer;
 
-		Для Каждого Параметр Из МакетКомпоновкиДанных.ЗначенияПараметров Цикл
-			ReportBuilder.Parameters.Вставить(Параметр.Имя, Параметр.Значение);
-		КонецЦикла;
-	КонецЕсли;
-	//УИ--
+		DataCompositionTemplate = TemplateComposer.Execute( DataCompositionSchema, SettingsComposer.Settings,
+			DetailsData, , Type("DataCompositionTemplateGenerator"));
+		TempQuery = New Query(DataCompositionTemplate.DataSets.DataSet1.Query);
+		ReportBuilder.Text = TempQuery.Text;
 
-	ReportBuilder.Parameters.Вставить("StartDate", StartDate);
-	ReportBuilder.Parameters.Вставить("EndDate", EndDate);
+		For Each Parameter In DataCompositionTemplate.ParameterValues Do
+			ReportBuilder.Parameters.Insert(Parameter.Name, Parameter.Value);
+		EndDo;
+	EndIf;
+	//UT--
 
-	ReportBuilder.Выполнить();
-	Выборка = ReportBuilder.Результат.Выбрать();
+	ReportBuilder.Parameters.Insert("StartDate", StartDate);
+	ReportBuilder.Parameters.Insert("EndDate", EndDate);
 
-	Если Правило.ВыбиратьДанныеДляВыгрузкиОднимЗапросом Тогда
-		ВыборкаДляПодстановкиВПКО = Выборка;
-	КонецЕсли;
-
-	Возврат Выборка;
-
-КонецФункции
-
-Функция ПолучитьВыборкуДляВыгрузкиПоПроизвольномуАлгоритму(ВыборкаДанных)
-
-	Выборка = Неопределено;
-
-	Если ТипЗнч(ВыборкаДанных) = Тип("ВыборкаИзРезультатаЗапроса") Тогда
-
-		Выборка = ВыборкаДанных;
-
-	ИначеЕсли ТипЗнч(ВыборкаДанных) = Тип("РезультатЗапроса") Тогда
-
-		Выборка = ВыборкаДанных.Выбрать();
-
-	ИначеЕсли ТипЗнч(ВыборкаДанных) = Тип("Запрос") Тогда
-
-		РезультатЗапроса = ВыборкаДанных.Выполнить();
-		Выборка          = РезультатЗапроса.Выбрать();
-
-	КонецЕсли;
-
-	Возврат Выборка;
-
-КонецФункции
-
-Функция ПолучитьСтрокуНабораКонстантДляВыгрузки(ТаблицаДанныхКонстантДляВыгрузки)
-
-	СтрокаНабораКонстант = "";
-
-	Для Каждого СтрокаТаблицы Из ТаблицаДанныхКонстантДляВыгрузки Цикл
-
-		Если Не ПустаяСтрока(СтрокаТаблицы.Источник) Тогда
-
-			СтрокаНабораКонстант = СтрокаНабораКонстант + ", " + СтрокаТаблицы.Источник;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Если Не ПустаяСтрока(СтрокаНабораКонстант) Тогда
-
-		СтрокаНабораКонстант = Сред(СтрокаНабораКонстант, 3);
-
-	КонецЕсли;
-
-	Возврат СтрокаНабораКонстант;
-
-КонецФункции
-
-Процедура ВыгрузитьНаборКонстант(Правило, Свойства, ИсходящиеДанные)
-
-	Если Свойства.ПКО <> Неопределено Тогда
-
-		СтрокаИменНабораКонстант = ПолучитьСтрокуНабораКонстантДляВыгрузки(Свойства.ПКО.Свойства);
-
-	Иначе
-
-		СтрокаИменНабораКонстант = "";
-
-	КонецЕсли;
-
-	НаборКонстант = Константы.СоздатьНабор(СтрокаИменНабораКонстант);
-	НаборКонстант.Прочитать();
-	ВыгрузкаОбъектаВыборки(НаборКонстант, Правило, Свойства, ИсходящиеДанные);
-
-КонецПроцедуры
-
-Функция ОпределитьНужноВыбиратьВсеПоля(Правило)
-
-	НужныВсеПоляДляВыборки = Не ПустаяСтрока(Конвертация.ПередВыгрузкойОбъекта) Или Не ПустаяСтрока(
-		Правило.ПередВыгрузкой) Или Не ПустаяСтрока(Конвертация.ПослеВыгрузкиОбъекта) Или Не ПустаяСтрока(
-		Правило.ПослеВыгрузки);
-
-	Возврат НужныВсеПоляДляВыборки;
-
-КонецФункции
-
-// Выгружает данные по указанному правилу.
-//
-// Parameters:
-//  Правило        - ссылка на правило выгрузки данных.
-// 
-Процедура ВыгрузитьДанныеПоПравилу(Правило)
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	ИмяПКО = Правило.ПравилоКонвертации;
-
-	Если Не ПустаяСтрока(ИмяПКО) Тогда
-
-		ПКО = Правила[ИмяПКО];
-
-	КонецЕсли;
-
-	Если ФлагКомментироватьОбработкуОбъектов Тогда
-
-		СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Правило выгрузки данных: %1 (%2)'"), СокрЛП(
-			Правило.Имя), СокрЛП(Правило.Наименование));
-		ЗаписатьВПротоколВыполнения(СтрокаСообщения, , Ложь, , 4);
-
-	КонецЕсли;
+	ReportBuilder.Execute();
+	Selection = ReportBuilder.Result.Select();
 	
-	// Обработчик ПередОбработкой
-	Отказ			= Ложь;
-	ИсходящиеДанные	= Неопределено;
-	ВыборкаДанных	= Неопределено;
-
-	Если Не ПустаяСтрока(Правило.ПередОбработкой) Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПередОбработкой"));
-
-			Иначе
-
-				Выполнить (Правило.ПередОбработкой);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(31, ОписаниеОшибки(), Правило.Имя, "ПередОбработкойВыгрузкиДанных");
-
-		КонецПопытки;
-
-		Если Отказ Тогда
-
-			Возврат;
-
-		КонецЕсли;
-
-	КонецЕсли;
-	
-	// Стандартная выборка с отбором.
-	Если Правило.СпособОтбораДанных = "СтандартнаяВыборка" И Правило.ИспользоватьОтбор Тогда
-
-		Свойства	= Менеджеры[Правило.ОбъектВыборки];
-		ИмяТипа		= Свойства.ИмяТипа;
-
-		ВыборкаДляПКО = Неопределено;
-		Выборка = ПолучитьВыборкуДляВыгрузкиСОграничениями(Правило, ВыборкаДляПКО, Свойства);
-
-		ЭтоНеСсылочныйТип = ИмяТипа = "РегистрСведений" Или ИмяТипа = "РегистрБухгалтерии";
-
-		Пока Выборка.Следующий() Цикл
-
-			Если ЭтоНеСсылочныйТип Тогда
-				ВыгрузкаОбъектаВыборки(Выборка, Правило, Свойства, ИсходящиеДанные);
-			Иначе
-				ВыгрузкаОбъектаВыборки(Выборка.Ссылка, Правило, Свойства, ИсходящиеДанные, ВыборкаДляПКО);
-			КонецЕсли;
-
-		КонецЦикла;
+	If Rule.SelectExportDataInSingleQuery Then
+		SelectionForSubstitutionToOCR = Selection;
+	EndIf;
 		
-	// Стандартная выборка без отбора.
-	ИначеЕсли (Правило.СпособОтбораДанных = "СтандартнаяВыборка") Тогда
+	Return Selection;
+		
+EndFunction
 
-		Свойства	= Менеджеры(Правило.ОбъектВыборки);
-		ИмяТипа		= Свойства.ИмяТипа;
+Function GetExportWithArbitraryAlgorithmSelection(DataSelection)
+	
+	Selection = Undefined;
 
-		Если ИмяТипа = "Константы" Тогда
-
-			ВыгрузитьНаборКонстант(Правило, Свойства, ИсходящиеДанные);
-
-		Иначе
-
-			ЭтоНеСсылочныйТип = ИмяТипа = "РегистрСведений" Или ИмяТипа = "РегистрБухгалтерии";
-
-			Если ЭтоНеСсылочныйТип Тогда
-
-				ВыбиратьВсеПоля = ОпределитьНужноВыбиратьВсеПоля(Правило);
-
-			Иначе
+	If TypeOf(DataSelection) = Type("QueryResultSelection") Then
 				
-				// получаем только ссылку
-				ВыбиратьВсеПоля = Правило.ВыбиратьДанныеДляВыгрузкиОднимЗапросом;
+		Selection = DataSelection;
+		
+	ElsIf TypeOf(DataSelection) = Type("QueryResult") Then
+				
+		Selection = DataSelection.Select();
+					
+	ElsIf TypeOf(DataSelection) = Type("Query") Then
+				
+		QueryResult = DataSelection.Execute();
+		Selection          = QueryResult.Select();
+									
+	EndIf;
+		
+	Return Selection;	
+	
+EndFunction
 
-			КонецЕсли;
+Function GetConstantSetStringForExport(ConstantDataTableForExport)
+	
+	ConstantSetString = "";
+	
+	For Each TableRow In ConstantDataTableForExport Do
+		
+		If Not IsBlankString(TableRow.Source) Then
+		
+			ConstantSetString = ConstantSetString + ", " + TableRow.Source;
+			
+		EndIf;
+		
+	EndDo;	
+	
+	If Not IsBlankString(ConstantSetString) Then
+		
+		ConstantSetString = Mid(ConstantSetString, 3);
+		
+	EndIf;
+	
+	Return ConstantSetString;
+	
+EndFunction
 
-			Выборка = ПолучитьВыборкуДляВыгрузкиОчисткиДанных(Свойства, ИмяТипа, , , ВыбиратьВсеПоля);
-			ВыборкаДляПКО = ?(Правило.ВыбиратьДанныеДляВыгрузкиОднимЗапросом, Выборка, Неопределено);
+Procedure ExportConstantsSet(Rule, Properties, OutgoingData)
+	
+	If Properties.OCR <> Undefined Then
+	
+		ConstantSetNameString = GetConstantSetStringForExport(Properties.OCR.Properties);
+		
+	Else
+		
+		ConstantSetNameString = "";
+		
+	EndIf;
+			
+	ConstantsSet = Constants.CreateSet(ConstantSetNameString);
+	ConstantsSet.Read();
+	ExportSelectionObject(ConstantsSet, Rule, Properties, OutgoingData);	
+	
+EndProcedure
 
-			Если Выборка = Неопределено Тогда
-				Возврат;
-			КонецЕсли;
+Function MustSelectAllFields(Rule)
+	
+	AllFieldsRequiredForSelection = Not IsBlankString(Conversion.BeforeExportObject)
+		Or Not IsBlankString(Rule.BeforeExport) Or Not IsBlankString(Conversion.AfterExportObject)
+		Or Not IsBlankString(Rule.AfterExport);		
+		
+	Return AllFieldsRequiredForSelection;	
+	
+EndFunction
 
-			Пока Выборка.Следующий() Цикл
+// Exports data according to the specified rule.
+//
+// Parameters:
+//  Rule - data export rule reference.
+// 
+Procedure ExportDataByRule(Rule)
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-				Если ЭтоНеСсылочныйТип Тогда
+	OCRName = Rule.ConversionRule;
+	
+	If Not IsBlankString(OCRName) Then
+		
+		OCR = Rules[OCRName];
+		
+	EndIf;
+	
+	If CommentObjectProcessingFlag Then
+		
+		MessageString = SubstituteParametersToString(NStr("ru = 'Правило выгрузки данных: %1 (%2)'; en = 'Data export rule: %1 (%2)'"), 
+			TrimAll(Rule.Name), TrimAll(Rule.Description));
+		WriteToExecutionLog(MessageString, , False, , 4);
+		
+	EndIf;
+	
+	// BeforeProcess handle
+	Cancel			= False;
+	OutgoingData	= Undefined;
+	DataSelection	= Undefined;
 
-					ВыгрузкаОбъектаВыборки(Выборка, Правило, Свойства, ИсходящиеДанные);
+	If Not IsBlankString(Rule.BeforeProcess) Then
+	
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Rule, "BeforeProcess"));
+				
+			Else
+				
+				Execute(Rule.BeforeProcess);
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoDERHandlers(31, ErrorDescription(), Rule.Name, "BeforeProcessDataExport");
+			
+		EndTry;
+		
+		If Cancel Then
+			
+			Return;
+			
+		EndIf;
+		
+	EndIf;
+	
+	// Standard selection with filter.
+	If Rule.DataFilterMethod = "StandardSelection" AND Rule.UseFilter Then
+		
+		Properties	= Managers[Rule.SelectionObject];
+		TypeName		= Properties.TypeName;
+		
+		SelectionForOCR = Undefined;
+		Selection = GetSelectionForExportWithRestrictions(Rule, SelectionForOCR, Properties);
+		
+		IsNotReferenceType = TypeName =  "InformationRegister" Or TypeName = "AccountingRegister";
+		
+		While Selection.Next() Do
+			
+			If IsNotReferenceType Then
+				ExportSelectionObject(Selection, Rule, Properties, OutgoingData);
+			Else					
+				ExportSelectionObject(Selection.Ref, Rule, Properties, OutgoingData, SelectionForOCR);
+			EndIf;
+			
+		EndDo;
+		
+	// Standard selection without filter.
+	ElsIf (Rule.DataFilterMethod = "StandardSelection") Then
+		
+		Properties	= Managers[Rule.SelectionObject];
+		TypeName		= Properties.TypeName;
+		
+		If TypeName = "Constants" Then
+			
+			ExportConstantsSet(Rule, Properties, OutgoingData);
+			
+		Else
+			
+			IsNotReferenceType = TypeName =  "InformationRegister" Or TypeName = "AccountingRegister";
+			
+			If IsNotReferenceType Then
+					
+				SelectAllFields = MustSelectAllFields(Rule);
+				
+			Else
+				
+				SelectAllFields = Rule.SelectExportDataInSingleQuery;	
+				
+			EndIf;
+			
+			Selection = GetSelectionForDataClearingExport(Properties, TypeName, , , SelectAllFields);
+			SelectionForOCR = ?(Rule.SelectExportDataInSingleQuery, Selection, Undefined);
+			
+			If Selection = Undefined Then
+				Return;
+			EndIf;
 
-				Иначе
+			While Selection.Next() Do
+				
+				If IsNotReferenceType Then
+					
+					ExportSelectionObject(Selection, Rule, Properties, OutgoingData);
+					
+				Else
+					
+					ExportSelectionObject(Selection.Ref, Rule, Properties, OutgoingData, SelectionForOCR);
+					
+				EndIf;
+				
+			EndDo;
+			
+		EndIf;
 
-					ВыгрузкаОбъектаВыборки(Выборка.Ссылка, Правило, Свойства, ИсходящиеДанные, ВыборкаДляПКО);
+	ElsIf Rule.DataFilterMethod = "ArbitraryAlgorithm" Then
 
-				КонецЕсли;
-
-			КонецЦикла;
-
-		КонецЕсли;
-
-	ИначеЕсли Правило.СпособОтбораДанных = "ПроизвольныйАлгоритм" Тогда
-
-		Если ВыборкаДанных <> Неопределено Тогда
-
-			Выборка = ПолучитьВыборкуДляВыгрузкиПоПроизвольномуАлгоритму(ВыборкаДанных);
-
-			Если Выборка <> Неопределено Тогда
-
-				Пока Выборка.Следующий() Цикл
-
-					ВыгрузкаОбъектаВыборки(Выборка, Правило, , ИсходящиеДанные);
-
-				КонецЦикла;
-
-			Иначе
-
-				Для Каждого Объект Из ВыборкаДанных Цикл
-
-					ВыгрузкаОбъектаВыборки(Объект, Правило, , ИсходящиеДанные);
-
-				КонецЦикла;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-	КонецЕсли;
+		If DataSelection <> Undefined Then
+			
+			Selection = GetExportWithArbitraryAlgorithmSelection(DataSelection);
+			
+			If Selection <> Undefined Then
+				
+				While Selection.Next() Do
+					
+					ExportSelectionObject(Selection, Rule, , OutgoingData);
+					
+				EndDo;
+				
+			Else
+				
+				For Each Object In DataSelection Do
+					
+					ExportSelectionObject(Object, Rule, , OutgoingData);
+					
+				EndDo;
+				
+			EndIf;
+			
+		EndIf;
+			
+	EndIf;
 
 	
-	// Обработчик ПослеОбработки
-
-	Если Не ПустаяСтрока(Правило.ПослеОбработки) Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Правило, "ПослеОбработки"));
-
-			Иначе
-
-				Выполнить (Правило.ПослеОбработки);
-
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьИнформациюОбОшибкеОбработчикиПВД(32, ОписаниеОшибки(), Правило.Имя, "ПослеОбработкиВыгрузкиДанных");
-
-		КонецПопытки;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Обходит дерево правил выгрузки данных и выполняет выгрузку.
-//
-// Parameters:
-//  Строки         - Коллекция строк дерева значений.
-// 
-Процедура ОбработатьПравилаВыгрузки(Строки, СоответствиеУзловПланаОбменаИСтрокВыгрузки)
-
-	Для Каждого ПравилоВыгрузки Из Строки Цикл
-
-		Если ПравилоВыгрузки.Включить = 0 Тогда
-
-			Продолжить;
-
-		КонецЕсли;
-
-		Если (ПравилоВыгрузки.СсылкаНаУзелОбмена <> Неопределено И Не ПравилоВыгрузки.СсылкаНаУзелОбмена.Пустая()) Тогда
-
-			МассивПравилВыгрузки = СоответствиеУзловПланаОбменаИСтрокВыгрузки.Получить(
-				ПравилоВыгрузки.СсылкаНаУзелОбмена);
-
-			Если МассивПравилВыгрузки = Неопределено Тогда
-
-				МассивПравилВыгрузки = Новый Массив;
-
-			КонецЕсли;
-
-			МассивПравилВыгрузки.Добавить(ПравилоВыгрузки);
-
-			СоответствиеУзловПланаОбменаИСтрокВыгрузки.Вставить(ПравилоВыгрузки.СсылкаНаУзелОбмена,
-				МассивПравилВыгрузки);
-
-			Продолжить;
-
-		КонецЕсли;
-
-		Если ПравилоВыгрузки.ЭтоГруппа Тогда
-
-			ОбработатьПравилаВыгрузки(ПравилоВыгрузки.Строки, СоответствиеУзловПланаОбменаИСтрокВыгрузки);
-			Продолжить;
-
-		КонецЕсли;
-
-		ВыгрузитьДанныеПоПравилу(ПравилоВыгрузки);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Функция СкопироватьМассивПравилВыгрузки(ИсходныйМассив)
-
-	РезультирующийМассив = Новый Массив;
-
-	Для Каждого Элемент Из ИсходныйМассив Цикл
-
-		РезультирующийМассив.Добавить(Элемент);
-
-	КонецЦикла;
-
-	Возврат РезультирующийМассив;
-
-КонецФункции
-
-// Возвращаемое значение:
-//   СтрокаДереваЗначений - строка дерева правил выгрузки данных:
-//     * Имя - Строка -
-//     * Наименование - Строка -
-//
-Функция НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки(МассивСтрок, ТипВыгрузки)
-
-	Для Каждого СтрокаМассива Из МассивСтрок Цикл
-
-		Если СтрокаМассива.ОбъектВыборки = ТипВыгрузки Тогда
-
-			Возврат СтрокаМассива;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Возврат Неопределено;
-
-КонецФункции
-
-Процедура УдалитьСтрокуДереваПравилВыгрузкиПоТипуВыгрузкиИзМассива(МассивСтрок, ЭлементУдаления)
-
-	Счетчик = МассивСтрок.Количество() - 1;
-	Пока Счетчик >= 0 Цикл
-
-		СтрокаМассива = МассивСтрок[Счетчик];
-
-		Если СтрокаМассива = ЭлементУдаления Тогда
-
-			МассивСтрок.Удалить(Счетчик);
-			Возврат;
-
-		КонецЕсли;
-
-		Счетчик = Счетчик - 1;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Parameters:
-//   Данные - ЛюбаяСсылка, РегистрСведенийНаборЗаписей, и т.п. -
-//
-Процедура ПолучитьСтрокуПравилВыгрузкиПоОбъектуОбмена(Данные, МетаданныеПоследнегоОбъекта, МетаданныеОбъектаВыгрузки,
-	ПоследняяСтрокаПравилВыгрузки, ТекущаяСтрокаПравилаВыгрузки, ВременныйМассивПравилКонвертации,
-	ОбъектДляПравилВыгрузки, ВыгружаетсяРегистр, ВыгружаютсяКонстанты, КонстантыБылиВыгружены)
-
-	ТекущаяСтрокаПравилаВыгрузки = Неопределено;
-	ОбъектДляПравилВыгрузки = Неопределено;
-	ВыгружаетсяРегистр = Ложь;
-	ВыгружаютсяКонстанты = Ложь;
-
-	Если МетаданныеПоследнегоОбъекта = МетаданныеОбъектаВыгрузки И ПоследняяСтрокаПравилВыгрузки = Неопределено Тогда
-
-		Возврат;
-
-	КонецЕсли;
-
-	СтруктураДанных = МенеджерыДляПлановОбмена[МетаданныеОбъектаВыгрузки];
-
-	Если СтруктураДанных = Неопределено Тогда
-
-		ВыгружаютсяКонстанты = Метаданные.Константы.Содержит(МетаданныеОбъектаВыгрузки);
-
-		Если КонстантыБылиВыгружены Или Не ВыгружаютсяКонстанты Тогда
-
-			Возврат;
-
-		КонецЕсли;
+	// AfterProcess handler
+
+	If Not IsBlankString(Rule.AfterProcess) Then
+	
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Rule, "AfterProcess"));
+				
+			Else
+				
+				Execute(Rule.AfterProcess);
+				
+			EndIf;
+			
+		Except
+			
+			WriteErrorInfoDERHandlers(32, ErrorDescription(), Rule.Name, "AfterProcessDataExport");
+			
+		EndTry;
 		
-		// Нужно найти правило для констант.
-		Если МетаданныеПоследнегоОбъекта <> МетаданныеОбъектаВыгрузки Тогда
+	 EndIf;	
+	
+EndProcedure
 
-			ТекущаяСтрокаПравилаВыгрузки = НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки(
-				ВременныйМассивПравилКонвертации, Тип("КонстантыНабор"));
+// Iterates the tree of data export rules and executes export.
+//
+// Parameters:
+//  Rows - value tree rows collection.
+//  ExchangePlanNodesAndExportRowsMap - a map of an exchange plan nodes and a rules tree rows.
+// 
+Procedure ProcessExportRules(Rows, ExchangePlanNodesAndExportRowsMap)
+	
+	For each ExportRule In Rows Do
+		
+		If ExportRule.Enable = 0 Then
+			
+			Continue;
+			
+		EndIf; 
+		
+		If (ExportRule.ExchangeNodeRef <> Undefined And Not ExportRule.ExchangeNodeRef.IsEmpty()) Then
+			
+			ExportRulesArray = ExchangePlanNodesAndExportRowsMap.Get(ExportRule.ExchangeNodeRef);
+			
+			If ExportRulesArray = Undefined Then
+				
+				ExportRulesArray = New Array();	
+				
+			EndIf;
+			
+			ExportRulesArray.Add(ExportRule);
+			
+			ExchangePlanNodesAndExportRowsMap.Insert(ExportRule.ExchangeNodeRef, ExportRulesArray);
+			
+			Continue;
+			
+		EndIf;
 
-		Иначе
+		If ExportRule.IsFolder Then
+			
+			ProcessExportRules(ExportRule.Rows, ExchangePlanNodesAndExportRowsMap);
+			Continue;
+			
+		EndIf;
+		
+		ExportDataByRule(ExportRule);
+		
+	EndDo; 
+	
+EndProcedure
 
-			ТекущаяСтрокаПравилаВыгрузки = ПоследняяСтрокаПравилВыгрузки;
+Function CopyExportRulesArray(SourceArray)
+	
+	ResultingArray = New Array();
+	
+	For Each Item In SourceArray Do
+		
+		ResultingArray.Add(Item);	
+		
+	EndDo;
+	
+	Return ResultingArray;
+	
+EndFunction
 
-		КонецЕсли;
+// Returns:
+//   ValueTreeRow - a data export rules tree row:
+//     * Name - String -
+//     * Description - String -
+//
+Function FindExportRulesTreeRowByExportType(RowsArray, ExportType)
+	
+	For Each ArrayRow In RowsArray Do
+		
+		If ArrayRow.SelectionObject = ExportType Then
+			
+			Return ArrayRow;
+			
+		EndIf;
+			
+	EndDo;
+	
+	Return Undefined;
+	
+EndFunction
 
-		Возврат;
+Procedure DeleteExportByExportTypeRulesTreeRowFromArray(RowsArray, ItemToDelete)
+	
+	Counter = RowsArray.Count() - 1;
+	While Counter >= 0 Do
+		
+		ArrayRow = RowsArray[Counter];
+		
+		If ArrayRow = ItemToDelete Then
+			
+			RowsArray.Delete(Counter);
+			Return;
+			
+		EndIf; 
+		
+		Counter = Counter - 1;	
+		
+	EndDo;
+	
+EndProcedure
 
-	КонецЕсли;
+// Parameters:
+//   Data - AnyRef, IformatinRegisterRecordSet, etc
+//
+Procedure GetExportRulesRowByExchangeObject(Data, LastObjectMetadata, ExportObjectMetadata, 
+	LastExportRulesRow, CurrentExportRuleRow, TempConversionRulesArray, ObjectForExportRules, 
+	ExportingRegister, ExportingConstants, ConstantsWereExported)
+	
+	CurrentExportRuleRow = Undefined;
+	ObjectForExportRules = Undefined;
+	ExportingRegister = False;
+	ExportingConstants = False;
+	
+	If LastObjectMetadata = ExportObjectMetadata And LastExportRulesRow = Undefined Then
+		
+		Return;
+		
+	EndIf;
 
-	Если СтруктураДанных.ЭтоСсылочныйТип = Истина Тогда
+	DataStructure = ManagersForExchangePlans[ExportObjectMetadata];
+	
+	If DataStructure = Undefined Then
+		
+		ExportingConstants = Metadata.Constants.Contains(ExportObjectMetadata);
+		
+		If ConstantsWereExported Or Not ExportingConstants Then
+			
+			Return;
+			
+		EndIf;
+		
+		// Searching for the rule for constants.
+		If LastObjectMetadata <> ExportObjectMetadata Then
+		
+			CurrentExportRuleRow = FindExportRulesTreeRowByExportType(TempConversionRulesArray, Type("ConstantsSet"));
+			
+		Else
+			
+			CurrentExportRuleRow = LastExportRulesRow;
+			
+		EndIf;
+		
+		Return;
 
-		Если МетаданныеПоследнегоОбъекта <> МетаданныеОбъектаВыгрузки Тогда
+	EndIf;
 
-			ТекущаяСтрокаПравилаВыгрузки = НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки(
-				ВременныйМассивПравилКонвертации, СтруктураДанных.ТипСсылки);
-
-		Иначе
-
-			ТекущаяСтрокаПравилаВыгрузки = ПоследняяСтрокаПравилВыгрузки;
-
-		КонецЕсли;
-
-		ОбъектДляПравилВыгрузки = Данные.Ссылка;
-
-	ИначеЕсли СтруктураДанных.ЭтоРегистр = Истина Тогда
-
-		Если МетаданныеПоследнегоОбъекта <> МетаданныеОбъектаВыгрузки Тогда
-
-			ТекущаяСтрокаПравилаВыгрузки = НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки(
-				ВременныйМассивПравилКонвертации, СтруктураДанных.ТипСсылки);
-
-		Иначе
-
-			ТекущаяСтрокаПравилаВыгрузки = ПоследняяСтрокаПравилВыгрузки;
-
-		КонецЕсли;
-
-		ОбъектДляПравилВыгрузки = Данные;
-
-		ВыгружаетсяРегистр = Истина;
-
-	КонецЕсли;
-
-КонецПроцедуры
+	If DataStructure.IsReferenceType = True Then
+		
+		If LastObjectMetadata <> ExportObjectMetadata Then
+		
+			CurrentExportRuleRow = FindExportRulesTreeRowByExportType(TempConversionRulesArray, DataStructure.RefType);
+			
+		Else
+			
+			CurrentExportRuleRow = LastExportRulesRow;
+			
+		EndIf;
+		
+		ObjectForExportRules = Data.Ref;
+		
+	ElsIf DataStructure.IsRegister = True Then
+		
+		If LastObjectMetadata <> ExportObjectMetadata Then
+		
+			CurrentExportRuleRow = FindExportRulesTreeRowByExportType(TempConversionRulesArray, DataStructure.RefType);
+			
+		Else
+			
+			CurrentExportRuleRow = LastExportRulesRow;	
+			
+		EndIf;
+		
+		ObjectForExportRules = Data;
+		
+		ExportingRegister = True;
+		
+	EndIf;
+	
+EndProcedure
 
 Функция ВыполнитьВыгрузкуИзмененныхДанныхДляУзлаОбмена(УзелОбмена, МассивПравилКонвертации,
 	СтруктураДляУдаленияРегистрацииИзменений)
@@ -11508,7 +11487,7 @@ EndProcedure
 						
 						// Удаляем правило из массива правил.
 						ТекущаяСтрокаПравилаВыгрузки = Неопределено;
-						УдалитьСтрокуДереваПравилВыгрузкиПоТипуВыгрузкиИзМассива(ВременныйМассивПравилКонвертации,
+						DeleteExportByExportTypeRulesTreeRowFromArray(ВременныйМассивПравилКонвертации,
 							ТекущаяСтрокаПравилаВыгрузки);
 						ОбъектДляПравилВыгрузки = Неопределено;
 
@@ -14557,7 +14536,7 @@ EndProcedure
 
 // Для внутреннего использования
 //
-Функция ПолучитьТекстЗапросаПоСтроке(СтрокаДереваМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки = "") Экспорт
+Функция GetRowQueryText(СтрокаДереваМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки = "") Экспорт
 
 	ОбъектМетаданных = Метаданные.НайтиПоПолномуИмени(СтрокаДереваМетаданных.ИмяМетаданных);
 
@@ -14700,7 +14679,7 @@ EndProcedure
 
 КонецФункции
 
-Процедура УстановитьНастройкуСтруктурыВыводаРезультата(Настройки, ВыводВТабличныйДокумент = Ложь) Экспорт
+Процедура SetResultOutputStructureSettings(Настройки, ВыводВТабличныйДокумент = Ложь) Экспорт
 
 	ГруппировкаКомпоновкиДанных = Настройки.Структура.Добавить(Тип("ГруппировкаКомпоновкиДанных"));
 
