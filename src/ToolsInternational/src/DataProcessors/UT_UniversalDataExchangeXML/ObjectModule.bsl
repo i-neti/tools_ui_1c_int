@@ -2289,7 +2289,7 @@ EndFunction
 
 #EndRegion
 
-#Region ExportProceduresAndFunctions
+#Region ExportMethods
 
 // Fills the passed values table with metadata object types which are allowed to deletion by access rights.
 //
@@ -11323,778 +11323,750 @@ Procedure GetExportRulesRowByExchangeObject(Data, LastObjectMetadata, ExportObje
 	
 EndProcedure
 
-Функция ВыполнитьВыгрузкуИзмененныхДанныхДляУзлаОбмена(УзелОбмена, МассивПравилКонвертации,
-	СтруктураДляУдаленияРегистрацииИзменений)
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	СтруктураДляУдаленияРегистрацииИзменений.Вставить("МассивПКО", Неопределено);
-	СтруктураДляУдаленияРегистрацииИзменений.Вставить("НомерСообщения", Неопределено);
-
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку();
+Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray, StructureForChangeRegistrationDeletion)
 	
-	// Создаем новое сообщение
-	ЗаписьСообщения = ПланыОбмена.СоздатьЗаписьСообщения();
-
-	ЗаписьСообщения.НачатьЗапись(ЗаписьXML, УзелОбмена);
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 	
-	// Считаем количество записанных объектов.
-	КоличествоНайденныхДляЗаписиОбъектов = 0;
-
-	ПоследнийОбъектМетаданных = Неопределено;
-	ПоследняяСтрокаПравилаВыгрузки = Неопределено; // см. НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки
-
-	ТекущийОбъектМетаданных = Неопределено;
-	ТекущаяСтрокаПравилаВыгрузки = Неопределено; // см. НайтиСтрокуДереваПравилВыгрузкиПоТипуВыгрузки
-
-	ИсходящиеДанные = Неопределено;
-
-	ВременныйМассивПравилКонвертации = СкопироватьМассивПравилВыгрузки(МассивПравилКонвертации);
-
-	Отказ           = Ложь;
-	ИсходящиеДанные = Неопределено;
-	ВыборкаДанных   = Неопределено;
-
-	ОбъектДляПравилВыгрузки = Неопределено;
-	КонстантыБылиВыгружены = Ложь;
-	// начинаем транзакцию
-	Если UseTransactionsOnExportForExchangePlans Тогда
-		НачатьТранзакцию();
-	КонецЕсли;
-
-	Попытка
+	StructureForChangeRegistrationDeletion.Insert("OCRArray", Undefined);
+	StructureForChangeRegistrationDeletion.Insert("MessageNo", Undefined);
 	
-		// Получаем выборку измененных данных.
-		МассивВыгружаемыхМетаданных = Новый Массив;
+	XMLWriter = New XMLWriter();
+	XMLWriter.SetString();
+	
+	// Creating a new message.
+	WriteMessage = ExchangePlans.CreateMessageWriter();
 		
-		// Дополняем массив только теми метаданными по которым есть правила выгрузки - остальные метаданные нас не интересуют.
-		Для Каждого СтрокаПравилаВыгрузки Из ВременныйМассивПравилКонвертации Цикл
+	WriteMessage.BeginWrite(XMLWriter, ExchangeNode);
+	
+	// Counting the number of written objects.
+	FoundObjectsToWriteCount = 0;
 
-			МетаданныеПВД = Метаданные.НайтиПоТипу(СтрокаПравилаВыгрузки.ОбъектВыборки);
-			МассивВыгружаемыхМетаданных.Добавить(МетаданныеПВД);
+	LastMetadataObject = Undefined;
+	LastExportRuleRow = Undefined; // see FindExportRulesTreeRowByExportType
 
-		КонецЦикла;
+	CurrentMetadataObject = Undefined;
+	CurrentExportRuleRow = Undefined; // see FindExportRulesTreeRowByExportType
 
-		ВыборкаИзменений = ПланыОбмена.ВыбратьИзменения(ЗаписьСообщения.Получатель, ЗаписьСообщения.НомерСообщения,
-			МассивВыгружаемыхМетаданных);
+	OutgoingData = Undefined;
+	
+	TempConversionRulesArray = CopyExportRulesArray(ConversionRulesArray);
+	
+	Cancel			= False;
+	OutgoingData	= Undefined;
+	DataSelection	= Undefined;
+	
+	ObjectForExportRules = Undefined;
+	ConstantsWereExported = False;
+	// Beginning a transaction
+	If UseTransactionsOnExportForExchangePlans Then
+		BeginTransaction();
+	EndIf;
 
-		СтруктураДляУдаленияРегистрацииИзменений.НомерСообщения = ЗаписьСообщения.НомерСообщения;
-
-		Пока ВыборкаИзменений.Следующий() Цикл
-
-			Данные = ВыборкаИзменений.Получить();
-			КоличествоНайденныхДляЗаписиОбъектов = КоличествоНайденныхДляЗаписиОбъектов + 1;
-
-			ТипДанныхДляВыгрузки = ТипЗнч(Данные);
-
-			Удаление = (ТипДанныхДляВыгрузки = одТипУдалениеОбъекта);
+	Try
+	
+		MetadataToExportArray = New Array();
+		
+		// Filling in array with the metadata types that does have an export rules.
+		For Each ExportRuleRow In TempConversionRulesArray Do
 			
-			// удаление не отрабатываем
-			Если Удаление Тогда
-				Продолжить;
-			КонецЕсли;
+			DERMetadata = Metadata.FindByType(ExportRuleRow.SelectionObject);
+			MetadataToExportArray.Add(DERMetadata);
+			
+		EndDo;
+
+		ChangesSelection = ExchangePlans.SelectChanges(WriteMessage.Recipient, WriteMessage.MessageNo, MetadataToExportArray);
+		
+		StructureForChangeRegistrationDeletion.MessageNo = WriteMessage.MessageNo;
+
+		While ChangesSelection.Next() Do
+					
+			Data = ChangesSelection.Get();
+			FoundObjectToWriteCount = FoundObjectToWriteCount + 1;
+			
+			ExportDataType = TypeOf(Data); 
+			
+			Delete = (ExportDataType = deObjectDeletionType);
+			
+			If Delete Then
+				Continue;
+			EndIf;
 
 			ТекущийОбъектМетаданных = Данные.Метаданные();
 			
-			// Работа с данными полученными из узла обмена
-			// по данным определяем правило конвертации и производим выгрузку данных.
+			// Processing data received from the exchange node. Determining the conversion rule and the exporting data.
 
-			ВыгружаетсяРегистр = Ложь;
-			ВыгружаютсяКонстанты = Ложь;
-
-			ПолучитьСтрокуПравилВыгрузкиПоОбъектуОбмена(Данные, ПоследнийОбъектМетаданных, ТекущийОбъектМетаданных,
-				ПоследняяСтрокаПравилаВыгрузки, ТекущаяСтрокаПравилаВыгрузки, ВременныйМассивПравилКонвертации,
-				ОбъектДляПравилВыгрузки, ВыгружаетсяРегистр, ВыгружаютсяКонстанты, КонстантыБылиВыгружены);
-
-			Если ПоследнийОбъектМетаданных <> ТекущийОбъектМетаданных Тогда
-				
-				// после обработки
-				Если ПоследняяСтрокаПравилаВыгрузки <> Неопределено Тогда
-
-					Если Не ПустаяСтрока(ПоследняяСтрокаПравилаВыгрузки.ПослеОбработки) Тогда
-
-						Попытка
-
-							Если HandlersDebugModeFlag Тогда
-
-								Выполнить (ПолучитьСтрокуВызоваОбработчика(ПоследняяСтрокаПравилаВыгрузки,
-									"ПослеОбработки"));
-
-							Иначе
-
-								Выполнить (ПоследняяСтрокаПравилаВыгрузки.ПослеОбработки);
-
-							КонецЕсли;
-
-						Исключение
-
-							ЗаписатьИнформациюОбОшибкеОбработчикиПВД(32, ОписаниеОшибки(),
-								ПоследняяСтрокаПравилаВыгрузки.Имя, "ПослеОбработкиВыгрузкиДанных");
-
-						КонецПопытки;
-
-					КонецЕсли;
-
-				КонецЕсли;
-				
-				// перед обработкой
-				Если ТекущаяСтрокаПравилаВыгрузки <> Неопределено Тогда
-
-					Если ФлагКомментироватьОбработкуОбъектов Тогда
-
-						СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Правило выгрузки данных: %1 (%2)'"),
-							СокрЛП(ТекущаяСтрокаПравилаВыгрузки.Имя), СокрЛП(ТекущаяСтрокаПравилаВыгрузки.Наименование));
-						ЗаписатьВПротоколВыполнения(СтрокаСообщения, , Ложь, , 4);
-
-					КонецЕсли;
-					
-					// Обработчик ПередОбработкой
-					Отказ			= Ложь;
-					ИсходящиеДанные	= Неопределено;
-					ВыборкаДанных	= Неопределено;
-
-					Если Не ПустаяСтрока(ТекущаяСтрокаПравилаВыгрузки.ПередОбработкой) Тогда
-
-						Попытка
-
-							Если HandlersDebugModeFlag Тогда
-
-								Выполнить (ПолучитьСтрокуВызоваОбработчика(ТекущаяСтрокаПравилаВыгрузки,
-									"ПередОбработкой"));
-
-							Иначе
-
-								Выполнить (ТекущаяСтрокаПравилаВыгрузки.ПередОбработкой);
-
-							КонецЕсли;
-
-						Исключение
-
-							ЗаписатьИнформациюОбОшибкеОбработчикиПВД(31, ОписаниеОшибки(),
-								ТекущаяСтрокаПравилаВыгрузки.Имя, "ПередОбработкойВыгрузкиДанных");
-
-						КонецПопытки;
-
-					КонецЕсли;
-
-					Если Отказ Тогда
-						
-						// Удаляем правило из массива правил.
-						ТекущаяСтрокаПравилаВыгрузки = Неопределено;
-						DeleteExportByExportTypeRulesTreeRowFromArray(ВременныйМассивПравилКонвертации,
-							ТекущаяСтрокаПравилаВыгрузки);
-						ОбъектДляПравилВыгрузки = Неопределено;
-
-					КонецЕсли;
-
-				КонецЕсли;
-
-			КонецЕсли;
+			ExportingRegister = False;
+			ExportingConstants = False;
 			
-			// Есть правило по которому нужно делать выгрузку данных.
-			Если ТекущаяСтрокаПравилаВыгрузки <> Неопределено Тогда
+			GetExportRulesRowByExchangeObject(Data, LastMetadataObject, CurrentMetadataObject,
+				LastExportRuleRow, CurrentExportRuleRow, TempConversionRulesArray, ObjectForExportRules,
+				ExportingRegister, ExportingConstants, ConstantsWereExported);
 
-				Если ВыгружаетсяРегистр Тогда
+			If LastMetadataObject <> CurrentMetadataObject Then
+				
+				// after processing
+				If LastExportRuleRow <> Undefined Then
+			
+					If Not IsBlankString(LastExportRuleRow.AfterProcess) Then
+					
+						Try
+							
+							If HandlersDebugModeFlag Then
+								
+								Execute(GetHandlerCallString(LastExportRuleRow, "AfterProcess"));
+								
+							Else
+								
+								Execute(LastExportRuleRow.AfterProcess);
+								
+							EndIf;
+							
+						Except
+							
+							WriteErrorInfoDERHandlers(32, ErrorDescription(), LastExportRuleRow.Name, "AfterProcessDataExport");
+							
+						EndTry;
+						
+					EndIf;
+					
+				EndIf;
+				
+				// before processing
+				If CurrentExportRuleRow <> Undefined Then
+					
+					If CommentObjectProcessingFlag Then
+						
+						MessageString = SubstituteParametersToString(NStr("ru = 'Правило выгрузки данных: %1 (%2)'; en = 'Data export rule: %1 (%2)'"),
+							TrimAll(CurrentExportRuleRow.Name), TrimAll(CurrentExportRuleRow.Description));
+						WriteToExecutionLog(MessageString, , False, , 4);
+						
+					EndIf;
+					
+					// BeforeProcess handle
+					Cancel			= False;
+					OutgoingData	= Undefined;
+					DataSelection	= Undefined;
+					
+					If Not IsBlankString(CurrentExportRuleRow.BeforeProcess) Then
+					
+						Try
+							
+							If HandlersDebugModeFlag Then
+								
+								Execute(GetHandlerCallString(CurrentExportRuleRow, "BeforeProcess"));
+								
+							Else
+								
+								Execute(CurrentExportRuleRow.BeforeProcess);
+								
+							EndIf;
+							
+						Except
+							
+							WriteErrorInfoDERHandlers(31, ErrorDescription(), CurrentExportRuleRow.Name, "BeforeProcessDataExport");
+							
+						EndTry;
+						
+					EndIf;
 
-					Для Каждого СтрокаРегистра Из ОбъектДляПравилВыгрузки Цикл
-						ВыгрузкаОбъектаВыборки(СтрокаРегистра, ТекущаяСтрокаПравилаВыгрузки, , ИсходящиеДанные);
-					КонецЦикла;
-
-				ИначеЕсли ВыгружаютсяКонстанты Тогда
-
-					Свойства	= Менеджеры[ТекущаяСтрокаПравилаВыгрузки.ОбъектВыборки];
-					ВыгрузитьНаборКонстант(ТекущаяСтрокаПравилаВыгрузки, Свойства, ИсходящиеДанные);
-
-				Иначе
-
-					ВыгрузкаОбъектаВыборки(ОбъектДляПравилВыгрузки, ТекущаяСтрокаПравилаВыгрузки, , ИсходящиеДанные);
-
-				КонецЕсли;
-
-			КонецЕсли;
+					If Cancel Then
+						
+						// Deleting the rule from rules array.
+						CurrentExportRuleRow = Undefined;
+						DeleteExportByExportTypeRulesTreeRowFromArray(TempConversionRulesArray, CurrentExportRuleRow);
+						ObjectForExportRules = Undefined;
+						
+					EndIf;
+					
+				EndIf;
+				
+			EndIf;
+			
+			If CurrentExportRuleRow <> Undefined Then
+				
+				If ExportingRegister Then
+					
+					For Each RegisterLine In ObjectForExportRules Do
+						ExportSelectionObject(RegisterLine, CurrentExportRuleRow, , OutgoingData);
+					EndDo;
+					
+				ElsIf ExportingConstants Then
+					
+					Properties	= Managers[CurrentExportRuleRow.SelectionObject];
+					ExportConstantsSet(CurrentExportRuleRow, Properties, OutgoingData);
+					
+				Else
+				
+					ExportSelectionObject(ObjectForExportRules, CurrentExportRuleRow, , OutgoingData);
+				
+				EndIf;
+				
+			EndIf;
 
 			ПоследнийОбъектМетаданных = ТекущийОбъектМетаданных;
 			ПоследняяСтрокаПравилаВыгрузки = ТекущаяСтрокаПравилаВыгрузки;
 
-			Если ProcessedObjectsCountToUpdateStatus > 0 И КоличествоНайденныхДляЗаписиОбъектов
-				% ProcessedObjectsCountToUpdateStatus = 0 Тогда
+			If ProcessedObjectsCountToUpdateStatus > 0 
+				And FoundObjectsToWriteCount % ProcessedObjectsCountToUpdateStatus = 0 Then
 
-				Попытка
-					ИмяМетаданных = ТекущийОбъектМетаданных.ПолноеИмя();
-				Исключение
-					ИмяМетаданных = "";
-				КонецПопытки;
-
-			КонецЕсли;
-
-			Если UseTransactionsOnExportForExchangePlans
-				И (TransactionItemsCountOnExportForExchangePlans > 0)
-				И (КоличествоНайденныхДляЗаписиОбъектов = TransactionItemsCountOnExportForExchangePlans) Тогда
+				Try
+					MetadataName = CurrentMetadataObject.FullName();
+				Except
+					MetadataName = "";
+				EndTry;
 				
-				// Промежуточную транзакцию закрываем и открываем новую.
-				ЗафиксироватьТранзакцию();
-				НачатьТранзакцию();
+			EndIf;
 
-				КоличествоНайденныхДляЗаписиОбъектов = 0;
-			КонецЕсли;
-
-		КонецЦикла;
-		
-		// Завершаем запись сообщения
-		ЗаписьСообщения.ЗакончитьЗапись();
-
-		ЗаписьXML.Закрыть();
-
-		Если UseTransactionsOnExportForExchangePlans Тогда
-			ЗафиксироватьТранзакцию();
-		КонецЕсли;
-
-	Исключение
-
-		Если UseTransactionsOnExportForExchangePlans Тогда
-			ОтменитьТранзакцию();
-		КонецЕсли;
-
-		ЗП = ПолучитьСтруктуруЗаписиПротокола(72, ОписаниеОшибки());
-		ЗП.УзелПланаОбмена  = УзелОбмена;
-		ЗП.Объект = Данные;
-		ЗП.ТипОбъекта = ТипДанныхДляВыгрузки;
-
-		ЗаписатьВПротоколВыполнения(72, ЗП, Истина);
-
-		ЗаписьXML.Закрыть();
-
-		Возврат Ложь;
-
-	КонецПопытки;
-	
-	// событие после обработки
-	Если ПоследняяСтрокаПравилаВыгрузки <> Неопределено Тогда
-
-		Если Не ПустаяСтрока(ПоследняяСтрокаПравилаВыгрузки.ПослеОбработки) Тогда
-
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Выполнить (ПолучитьСтрокуВызоваОбработчика(ПоследняяСтрокаПравилаВыгрузки, "ПослеОбработки"));
-
-				Иначе
-
-					Выполнить (ПоследняяСтрокаПравилаВыгрузки.ПослеОбработки);
-
-				КонецЕсли;
-
-			Исключение
-				ЗаписатьИнформациюОбОшибкеОбработчикиПВД(32, ОписаниеОшибки(), ПоследняяСтрокаПравилаВыгрузки.Имя,
-					"ПослеОбработкиВыгрузкиДанных");
-
-			КонецПопытки;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	СтруктураДляУдаленияРегистрацииИзменений.МассивПКО = ВременныйМассивПравилКонвертации;
-
-	Возврат Не Отказ;
-
-КонецФункции
-
-Функция ОбработатьВыгрузкуДляПлановОбмена(СоответствиеУзловИПравилВыгрузки, СтруктураДляУдаленияРегистрацииИзменений)
-
-	УдачнаяВыгрузка = Истина;
-
-	Для Каждого СтрокаСоответствия Из СоответствиеУзловИПравилВыгрузки Цикл
-
-		УзелОбмена = СтрокаСоответствия.Ключ;
-		МассивПравилКонвертации = СтрокаСоответствия.Значение;
-
-		ЛокальнаяСтруктураДляУдаленияРегистрацииИзменений = Новый Структура;
-
-		ТекущаяУдачнаяВыгрузка = ВыполнитьВыгрузкуИзмененныхДанныхДляУзлаОбмена(УзелОбмена, МассивПравилКонвертации,
-			ЛокальнаяСтруктураДляУдаленияРегистрацииИзменений);
-
-		УдачнаяВыгрузка = УдачнаяВыгрузка И ТекущаяУдачнаяВыгрузка;
-
-		Если ЛокальнаяСтруктураДляУдаленияРегистрацииИзменений.МассивПКО <> Неопределено
-			И ЛокальнаяСтруктураДляУдаленияРегистрацииИзменений.МассивПКО.Количество() > 0 Тогда
-
-			СтруктураДляУдаленияРегистрацииИзменений.Вставить(УзелОбмена,
-				ЛокальнаяСтруктураДляУдаленияРегистрацииИзменений);
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	Возврат УдачнаяВыгрузка;
-
-КонецФункции
-
-Процедура ОбработатьИзменениеРегистрацииДляУзловОбмена(СоответствиеУзловИПравилВыгрузки)
-
-	Для Каждого Элемент Из СоответствиеУзловИПравилВыгрузки Цикл
-
-		Если ChangesRegistrationDeletionTypeForExportedExchangeNodes = 0 Тогда
-
-			Возврат;
-
-		ИначеЕсли ChangesRegistrationDeletionTypeForExportedExchangeNodes = 1 Тогда
+			If UseTransactionsOnExportForExchangePlans
+				And (TransactionItemsCountOnExportForExchangePlans > 0)
+				And (FoundObjectsToWriteCount = TransactionItemsCountOnExportForExchangePlans) Then
+				
+				CommitTransaction();
+				BeginTransaction();
+				
+				FoundObjectToWriteCount = 0;
+			EndIf;
 			
-			// Для всех изменений которые были в плане обмена отменяем регистрацию.
+		EndDo;
+		
+		WriteMessage.EndWrite();
+		
+		XMLWriter.Close();
+		
+		If UseTransactionsOnExportForExchangePlans Then
+			CommitTransaction();
+		EndIf;
+		
+	Except
+		
+		If UseTransactionsOnExportForExchangePlans Then
+			RollbackTransaction();
+		EndIf;
+		
+		LR = GetLogRecordStructure(72, ErrorDescription());
+		LR.ExchangePlanNode  = ExchangeNode;
+		LR.Object = Data;
+		LR.ObjectType = ExportDataType;
+		
+		WriteToExecutionLog(72, LR, True);
+						
+		XMLWriter.Close();
+		
+		Return False;
+		
+	EndTry;
+	
+	// After processing
+	If LastExportRuleRow <> Undefined Then
+	
+		If Not IsBlankString(LastExportRuleRow.AfterProcess) Then
+		
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					Execute(GetHandlerCallString(LastExportRuleRow, "AfterProcess"));
+					
+				Else
+					
+					Execute(LastExportRuleRow.AfterProcess);
+					
+				EndIf;
+				
+			Except
+				WriteErrorInfoDERHandlers(32, ErrorDescription(), LastExportRuleRow.Name, "AfterProcessDataExport");
+				
+			EndTry;
+			
+		EndIf;
+		
+	EndIf;
+	
+	StructureForChangeRegistrationDeletion.OCRArray = TempConversionRulesArray;
+	
+	Return Not Cancel;
+	
+EndFunction
+
+Function ProcessExportForExchangePlans(NodeAndExportRuleMap, StructureForChangeRegistrationDeletion)
+	
+	ExportSuccessful = True;
+	
+	For Each MapRow In NodeAndExportRuleMap Do
+		
+		ExchangeNode = MapRow.Key;
+		ConversionRulesArray = MapRow.Value;
+		
+		LocalStructureForChangeRegistrationDeletion = New Structure();
+		
+		CurrentExportSuccessful = ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray, LocalStructureForChangeRegistrationDeletion);
+		
+		ExportSuccessful = ExportSuccessful AND CurrentExportSuccessful;
+		
+		If LocalStructureForChangeRegistrationDeletion.OCRArray <> Undefined And LocalStructureForChangeRegistrationDeletion.OCRArray.Count() > 0 Then
+			
+			StructureForChangeRegistrationDeletion.Insert(ExchangeNode, LocalStructureForChangeRegistrationDeletion);	
+			
+		EndIf;
+		
+	EndDo;
+	
+	Return ExportSuccessful;
+	
+EndFunction
+
+Procedure ProcessExchangeNodeRecordChangeEditing(NodeAndExportRuleMap)
+	
+	For Each Item In NodeAndExportRuleMap Do
+	
+		If ChangesRegistrationDeletionTypeForExportedExchangeNodes = 0 Then
+			
+			Return;
+			
+		ElsIf ChangesRegistrationDeletionTypeForExportedExchangeNodes = 1 Then
+			
+			// Deleting the registration of all changes in the exchange plan.
 			ПланыОбмена.УдалитьРегистрациюИзменений(Элемент.Ключ, Элемент.Значение.НомерСообщения);
 
 		ИначеЕсли ChangesRegistrationDeletionTypeForExportedExchangeNodes = 2 Тогда	
 			
-			// Удаление изменений только для метаданных выгруженных объектов первого уровня.
+			// Deleting changes of the first level exported objects metadata.
 
-			Для Каждого ВыгруженноеПКО Из Элемент.Значение.МассивПКО Цикл
+			For Each ExportedOCR In Item.Value.OCRArray Do
+				
+				Rule = Rules[ExportedOCR.ConversionRule]; // see FindRule
 
-				Правило = Правила[ВыгруженноеПКО.ПравилоКонвертации]; // см. НайтиПравило
+				If ValueIsFilled(Rule.Source) Then
+					
+					Manager = Managers[Rule.Source];
+					
+					ExchangePlans.DeleteChangeRecords(Item.Key, Manager.MetadateObject);
+					
+				EndIf;
+				
+			EndDo;
+			
+		EndIf;
+	
+	EndDo;
+	
+EndProcedure
 
-				Если ЗначениеЗаполнено(Правило.Источник) Тогда
+Function DeleteProhibitedXMLChars(Val Text)
+	
+	Return ReplaceProhibitedXMLChars(Text, "");
+	
+EndFunction
 
-					Менеджер = Менеджеры[Правило.Источник];
+#EndRegion
 
-					ПланыОбмена.УдалитьРегистрациюИзменений(Элемент.Ключ, Менеджер.ОбъектМД);
+#Region ExportProceduresAndFunctions
 
-				КонецЕсли;
-
-			КонецЦикла;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Функция УдалитьНедопустимыеСимволыXML(Знач Текст)
-
-	Возврат ЗаменитьНедопустимыеСимволыXML(Текст, "");
-
-КонецФункции
-
-#КонецОбласти
-
-#Область ЭкспортируемыеПроцедурыИФункции
-
-// Открывает файл обмена, читает атрибуты корневого узла файла в соответствии с форматом обмена.
+// Opens an exchange file and reads attributes of file master node according to the exchange format.
 //
 // Parameters:
-//  ТолькоПрочитатьШапку - Булево. если Истина, то после прочтения шапки файла обмена
-//  (корневой узел), файл закрывается.
+//  ReadHeaderOnly - Boolean - If True, file closes after reading the exchange file header (master node).
+//  ExchangeFileData - String - an exchane file data.
 //
-Процедура ОткрытьФайлЗагрузки(ТолькоПрочитатьШапку = Ложь, ДанныеФайлаОбмена = "") Экспорт
+Procedure OpenImportFile(ReadHeaderOnly=False, ExchangeFileData = "") Export
 
-	Если ПустаяСтрока(ExchangeFileName) И ТолькоПрочитатьШапку Тогда
+	If IsBlankString(ExchangeFileName) AND ReadHeaderOnly Then
 		StartDate         = "";
 		EndDate      = "";
 		DataExportDate = "";
 		ExchangeRulesVersion = "";
 		Comment        = "";
-		Возврат;
-	КонецЕсли;
-	ИмяФайлаЗагрузкиДанных = ExchangeFileName;
+		Return;
+	EndIf;
+	DataImportFileName = ExchangeFileName;
 	
 	
-	// Архивные файлы будем идентифицировать по расширению ".zip".
-	Если СтрНайти(ExchangeFileName, ".zip") > 0 Тогда
-
-		ИмяФайлаЗагрузкиДанных = РаспаковатьZipФайл(ExchangeFileName);
-
-	КонецЕсли;
-	ErrorFlag = Ложь;
-	ФайлОбмена = Новый ЧтениеXML;
-
-	Попытка
-		Если Не ПустаяСтрока(ДанныеФайлаОбмена) Тогда
-			ФайлОбмена.УстановитьСтроку(ДанныеФайлаОбмена);
-		Иначе
-			ФайлОбмена.ОткрытьФайл(ИмяФайлаЗагрузкиДанных);
-		КонецЕсли;
-	Исключение
-		ЗаписатьВПротоколВыполнения(5);
-		Возврат;
-	КонецПопытки;
-
-	ФайлОбмена.Прочитать();
-	мАтрибутыФайлаОбмена = Новый Структура;
-	Если ФайлОбмена.ЛокальноеИмя = "ФайлОбмена" Тогда
-
-		мАтрибутыФайлаОбмена.Вставить("ВерсияФормата", одАтрибут(ФайлОбмена, одТипСтрока, "ВерсияФормата"));
-		мАтрибутыФайлаОбмена.Вставить("ДатаВыгрузки", одАтрибут(ФайлОбмена, одТипДата, "ДатаВыгрузки"));
-		мАтрибутыФайлаОбмена.Вставить("НачалоПериодаВыгрузки", одАтрибут(ФайлОбмена, одТипДата,
-			"НачалоПериодаВыгрузки"));
-		мАтрибутыФайлаОбмена.Вставить("ОкончаниеПериодаВыгрузки", одАтрибут(ФайлОбмена, одТипДата,
-			"ОкончаниеПериодаВыгрузки"));
-		мАтрибутыФайлаОбмена.Вставить("ИмяКонфигурацииИсточника", одАтрибут(ФайлОбмена, одТипСтрока,
-			"ИмяКонфигурацииИсточника"));
-		мАтрибутыФайлаОбмена.Вставить("ИмяКонфигурацииПриемника", одАтрибут(ФайлОбмена, одТипСтрока,
-			"ИмяКонфигурацииПриемника"));
-		мАтрибутыФайлаОбмена.Вставить("ИдПравилКонвертации", одАтрибут(ФайлОбмена, одТипСтрока, "ИдПравилКонвертации"));
-
-		StartDate         = мАтрибутыФайлаОбмена.НачалоПериодаВыгрузки;
-		EndDate      = мАтрибутыФайлаОбмена.ОкончаниеПериодаВыгрузки;
-		DataExportDate = мАтрибутыФайлаОбмена.ДатаВыгрузки;
-		Comment        = одАтрибут(ФайлОбмена, одТипСтрока, "Comment");
-
-	Иначе
-
-		ЗаписатьВПротоколВыполнения(9);
-		Возврат;
-
-	КонецЕсли;
-	ФайлОбмена.Прочитать();
-
-	ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-	Если ИмяУзла = "ПравилаОбмена" Тогда
-		Если SafeImport И ЗначениеЗаполнено(ExchangeRulesFileName) Тогда
-			ЗагрузитьПравилаОбмена(ExchangeRulesFileName, "XMLФайл");
-			ФайлОбмена.Пропустить();
-		Иначе
-			ЗагрузитьПравилаОбмена(ФайлОбмена, "ЧтениеXML");
-		КонецЕсли;
-	Иначе
-		ФайлОбмена.Закрыть();
-		ФайлОбмена = Новый ЧтениеXML;
-		Попытка
-
-			Если Не ПустаяСтрока(ДанныеФайлаОбмена) Тогда
-				ФайлОбмена.УстановитьСтроку(ДанныеФайлаОбмена);
-			Иначе
-				ФайлОбмена.ОткрытьФайл(ИмяФайлаЗагрузкиДанных);
-			КонецЕсли;
-
-		Исключение
-
-			ЗаписатьВПротоколВыполнения(5);
-			Возврат;
-
-		КонецПопытки;
-
-		ФайлОбмена.Прочитать();
-
-	КонецЕсли;
-
-	мБылиПрочитаныПравилаОбменаПриЗагрузке = Истина;
-
-	Если ТолькоПрочитатьШапку Тогда
-
-		ФайлОбмена.Закрыть();
-		Возврат;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ОбновитьПометкиВсехРодителейУПравилВыгрузки(СтрокиДереваПравилВыгрузки, НужноУстанавливатьПометки = Истина)
-
-	Если СтрокиДереваПравилВыгрузки.Строки.Количество() = 0 Тогда
-
-		Если НужноУстанавливатьПометки Тогда
-			УстановитьПометкиРодителей(СтрокиДереваПравилВыгрузки, "Включить");
-		КонецЕсли;
-
-	Иначе
-
-		НужныПометки = Истина;
-
-		Для Каждого СтрокаДереваПравил Из СтрокиДереваПравилВыгрузки.Строки Цикл
-
-			ОбновитьПометкиВсехРодителейУПравилВыгрузки(СтрокаДереваПравил, НужныПометки);
-			Если НужныПометки = Истина Тогда
-				НужныПометки = Ложь;
-			КонецЕсли;
-
-		КонецЦикла;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ЗаполнитьСвойстваДляПоиска(СтруктураДанных, ПКС)
-
-	Для Каждого СтрокаПолей Из ПКС Цикл
-
-		Если СтрокаПолей.ЭтоГруппа Тогда
-
-			Если СтрокаПолей.ВидПриемника = "ТабличнаяЧасть" Или СтрНайти(СтрокаПолей.ВидПриемника, "НаборДвижений")
-				> 0 Тогда
-
-				ИмяСтруктурыПриемника = СтрокаПолей.Приемник + ?(СтрокаПолей.ВидПриемника = "ТабличнаяЧасть",
-					"ТабличнаяЧасть", "НаборЗаписей");
-
-				ВнутренняяСтруктура = СтруктураДанных[ИмяСтруктурыПриемника];
-
-				Если ВнутренняяСтруктура = Неопределено Тогда
-					ВнутренняяСтруктура = Новый Соответствие;
-				КонецЕсли;
-
-				СтруктураДанных[ИмяСтруктурыПриемника] = ВнутренняяСтруктура;
-
-			Иначе
-
-				ВнутренняяСтруктура = СтруктураДанных;
-
-			КонецЕсли;
-
-			ЗаполнитьСвойстваДляПоиска(ВнутренняяСтруктура, СтрокаПолей.ПравилаГруппы);
-
-		Иначе
-
-			Если ПустаяСтрока(СтрокаПолей.ТипПриемника) Тогда
-
-				Продолжить;
-
-			КонецЕсли;
-
-			СтруктураДанных[СтрокаПолей.Приемник] = СтрокаПолей.ТипПриемника;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура УдалитьЛишниеЭлементыИзСоответствия(СтруктураДанных)
-
-	Для Каждого Элемент Из СтруктураДанных Цикл
-
-		Если ТипЗнч(Элемент.Значение) = одТипСоответствие Тогда
-
-			УдалитьЛишниеЭлементыИзСоответствия(Элемент.Значение);
-
-			Если Элемент.Значение.Количество() = 0 Тогда
-				СтруктураДанных.Удалить(Элемент.Ключ);
-			КонецЕсли;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура ЗаполнитьИнформациюПоТипамДанныхПриемника(СтруктураДанных, Правила)
-
-	Для Каждого Строка Из Правила Цикл
-
-		Если ПустаяСтрока(Строка.Приемник) Тогда
-			Продолжить;
-		КонецЕсли;
-
-		ДанныеСтруктуры = СтруктураДанных[Строка.Приемник];
-		Если ДанныеСтруктуры = Неопределено Тогда
-
-			ДанныеСтруктуры = Новый Соответствие;
-			СтруктураДанных[Строка.Приемник] = ДанныеСтруктуры;
-
-		КонецЕсли;
+	// Archive files are recognized by the ZIP extension.
+	If StrFind(ExchangeFileName, ".zip") > 0 Then
 		
-		// Обходим поля поиска и ПКС и запоминаем типы данных.
-		ЗаполнитьСвойстваДляПоиска(ДанныеСтруктуры, Строка.СвойстваПоиска);
+		DataImportFileName = UnpackZipFile(ExchangeFileName);		 
+		
+	EndIf;
+	ErrorFlag = False;
+	ExchangeFile = New XMLReader();
+
+	Try
+		If Not IsBlankString(ExchangeFileData) Then
+			ExchangeFile.SetString(ExchangeFileData);
+		Else
+			ExchangeFile.OpenFile(DataImportFileName);
+		EndIf;
+	Except
+		WriteToExecutionLog(5);
+		Return;
+	EndTry;
+
+	ExchangeFile.Read();
+	mExchangeFileAttributes = New Structure;
+	If ExchangeFile.LocalName = "ExchangeFile" Then
+		
+		mExchangeFileAttributes.Insert("FormatVersion",            deAttribute(ExchangeFile, deStringType, "FormatVersion"));
+		mExchangeFileAttributes.Insert("ExportDate",             deAttribute(ExchangeFile, deDateType,   "ExportDate"));
+		mExchangeFileAttributes.Insert("ExportPeriodStart",    deAttribute(ExchangeFile, deDateType,   "ExportPeriodStart"));
+		mExchangeFileAttributes.Insert("ExportPeriodEnd", deAttribute(ExchangeFile, deDateType,   "ExportPeriodEnd"));
+		mExchangeFileAttributes.Insert("SourceConfigurationName", deAttribute(ExchangeFile, deStringType, "SourceConfigurationName"));
+		mExchangeFileAttributes.Insert("DestinationConfigurationName", deAttribute(ExchangeFile, deStringType, "DestinationConfigurationName"));
+		mExchangeFileAttributes.Insert("ConversionRuleIDs",      deAttribute(ExchangeFile, deStringType, "ConversionRuleIDs"));
+		
+		StartDate         = mExchangeFileAttributes.ExportPeriodStart;
+		EndDate      = mExchangeFileAttributes.ExportPeriodEnd;
+		DataExportDate = mExchangeFileAttributes.ExportDate;
+		Comment        = deAttribute(ExchangeFile, deStringType, "Comment");
+		
+	Else
+		
+		WriteToExecutionLog(9);
+		Return;
+		
+	EndIf;
+	ExchangeFile.Read();
+
+	NodeName = ExchangeFile.LocalName;
+
+	If NodeName = "ExchangeRules" Then
+		If SafeImport And ValueIsFilled(ExchangeRulesFileName) Then
+			ImportExchangeRules(ExchangeRulesFileName, "XMLFile");
+			ExchangeFile.Skip();
+		Else
+			ImportExchangeRules(ExchangeFile, "XMLReader");
+		EndIf;
+	Else
+		ExchangeFile.Close();
+		ExchangeFile = New XMLReader();
+		Try
+			
+			If Not IsBlankString(ExchangeFileData) Then
+				ExchangeFile.SetString(ExchangeFileData);
+			Else
+				ExchangeFile.OpenFile(DataImportFileName);
+			EndIf;
+			
+		Except
+			
+			WriteToExecutionLog(5);
+			Return;
+			
+		EndTry;
+		
+		ExchangeFile.Read();
+		
+	EndIf; 
+	
+	mExchangeRulesReadOnImport = True;
+
+	If ReadHeaderOnly Then
+		
+		ExchangeFile.Close();
+		Return;
+		
+	EndIf;
+   
+EndProcedure
+
+Procedure RefreshAllExportRuleParentMarks(ExportRuleTreeRows, SetMarks = True)
+	
+	If ExportRuleTreeRows.Rows.Count() = 0 Then
+		
+		If SetMarks Then
+			SetParentMarks(ExportRuleTreeRows, "Enable");	
+		EndIf;
+		
+	Else
+		
+		MarksRequired = True;
+		
+		For Each RuleTreeRow In ExportRuleTreeRows.Rows Do
+			
+			RefreshAllExportRuleParentMarks(RuleTreeRow, MarksRequired);
+			If MarksRequired = True Then
+				MarksRequired = False;
+			EndIf;
+			
+		EndDo;
+		
+	EndIf;
+	
+EndProcedure
+
+Procedure FillPropertiesForSearch(DataStructure, PCR)
+	
+	For Each FieldsRow In PCR Do
+		
+		If FieldsRow.IsFolder Then
+						
+			If FieldsRow.DestinationKind = "TabularSection" Or StrFind(FieldsRow.DestinationKind, "RecordSet") > 0 Then
+
+				DestinationStructureName = FieldsRow.Destination + ?(FieldsRow.DestinationKind = "TabularSection", "TabularSection", "RecordSet");
 				
-		// Свойства
-		ЗаполнитьСвойстваДляПоиска(ДанныеСтруктуры, Строка.Свойства);
-
-	КонецЦикла;
-
-	УдалитьЛишниеЭлементыИзСоответствия(СтруктураДанных);
-
-КонецПроцедуры
-
-Процедура СоздатьСтрокуСТипамиСвойств(ЗаписьXML, ТипыСвойств)
-
-	Если ТипЗнч(ТипыСвойств.Значение) = одТипСоответствие Тогда
-
-		Если ТипыСвойств.Значение.Количество() = 0 Тогда
-			Возврат;
-		КонецЕсли;
-
-		ЗаписьXML.ЗаписатьНачалоЭлемента(ТипыСвойств.Ключ);
-
-		Для Каждого Элемент Из ТипыСвойств.Значение Цикл
-			СоздатьСтрокуСТипамиСвойств(ЗаписьXML, Элемент);
-		КонецЦикла;
-
-		ЗаписьXML.ЗаписатьКонецЭлемента();
-
-	Иначе
-
-		одЗаписатьЭлемент(ЗаписьXML, ТипыСвойств.Ключ, ТипыСвойств.Значение);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция СоздатьСтрокуСТипамиДляПриемника(СтруктураДанных)
-
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку();
-	ЗаписьXML.ЗаписатьНачалоЭлемента("ИнформацияОТипахДанных");
-
-	Для Каждого Строка Из СтруктураДанных Цикл
-
-		ЗаписьXML.ЗаписатьНачалоЭлемента("ТипДанных");
-		УстановитьАтрибут(ЗаписьXML, "Имя", Строка.Ключ);
-
-		Для Каждого СтрокаПодчинения Из Строка.Значение Цикл
-
-			СоздатьСтрокуСТипамиСвойств(ЗаписьXML, СтрокаПодчинения);
-
-		КонецЦикла;
-
-		ЗаписьXML.ЗаписатьКонецЭлемента();
-
-	КонецЦикла;
-
-	ЗаписьXML.ЗаписатьКонецЭлемента();
-
-	СтрокаРезультата = ЗаписьXML.Закрыть();
-	Возврат СтрокаРезультата;
-
-КонецФункции
-
-Процедура ЗагрузитьОдинТипДанных(ПравилаОбмена, СоответствиеТипа, ИмяЛокальногоЭлемента)
-
-	ИмяУзла = ИмяЛокальногоЭлемента;
-
-	ПравилаОбмена.Прочитать();
-
-	Если (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-		ПравилаОбмена.Прочитать();
-		Возврат;
-
-	ИначеЕсли ПравилаОбмена.ТипУзла = одТипУзлаXML_НачалоЭлемента Тогда
+				InternalStructure = DataStructure[DestinationStructureName];
+				
+				If InternalStructure = Undefined Then
+					InternalStructure = New Map();
+				EndIf;
+				
+				DataStructure[DestinationStructureName] = InternalStructure;
+				
+			Else
+				
+				InternalStructure = DataStructure;	
+				
+			EndIf;
 			
-		// это новый элемент
-		НовоеСоответствие = Новый Соответствие;
-		СоответствиеТипа.Вставить(ИмяУзла, НовоеСоответствие);
-
-		ЗагрузитьОдинТипДанных(ПравилаОбмена, НовоеСоответствие, ПравилаОбмена.ЛокальноеИмя);
-		ПравилаОбмена.Прочитать();
-
-	Иначе
-		СоответствиеТипа.Вставить(ИмяУзла, Тип(ПравилаОбмена.Значение));
-		ПравилаОбмена.Прочитать();
-	КонецЕсли;
-
-	ЗагрузитьСоответствиеТиповДляОдногоТипа(ПравилаОбмена, СоответствиеТипа);
-
-КонецПроцедуры
-
-Процедура ЗагрузитьСоответствиеТиповДляОдногоТипа(ПравилаОбмена, СоответствиеТипа)
-
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
-
-		Если (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		КонецЕсли;
+			FillPropertiesForSearch(InternalStructure, FieldsRow.GroupRules);
+									
+		Else
+			
+			If IsBlankString(FieldsRow.DestinationType)	Then
+				
+				Continue;
+				
+			EndIf;
+			
+			DataStructure[FieldsRow.Destination] = FieldsRow.DestinationType;
+			
+		EndIf;
 		
-		// прочитали начало элемента
-		ПравилаОбмена.Прочитать();
+	EndDo;
+	
+EndProcedure
 
-		Если ПравилаОбмена.ТипУзла = одТипУзлаXML_НачалоЭлемента Тогда
+Procedure DeleteExcessiveItemsFromMap(DataStructure)
+	
+	For Each Item In DataStructure Do
+		
+		If TypeOf(Item.Value) = deMapType Then
 			
-			// это новый элемент
-			НовоеСоответствие = Новый Соответствие;
-			СоответствиеТипа.Вставить(ИмяУзла, НовоеСоответствие);
+			DeleteExcessiveItemsFromMap(Item.Value);
+			
+			If Item.Value.Count() = 0 Then
+				DataStructure.Delete(Item.Key);
+			EndIf;
+			
+		EndIf;		
+		
+	EndDo;		
+	
+EndProcedure
 
-			ЗагрузитьОдинТипДанных(ПравилаОбмена, НовоеСоответствие, ПравилаОбмена.ЛокальноеИмя);
+Procedure FillInformationByDestinationDataTypes(DataStructure, Rules)
+	
+	For Each Row In Rules Do
+		
+		If IsBlankString(Row.Destination) Then
+			Continue;
+		EndIf;
+		
+		StructureData = DataStructure[Row.Destination];
+		If StructureData = Undefined Then
+			
+			StructureData = New Map();
+			DataStructure[Row.Destination] = StructureData;
+			
+		EndIf;
+		
+		FillPropertiesForSearch(StructureData, Row.SearchProperties);
+				
+		FillPropertiesForSearch(StructureData, Row.Properties);
+		
+	EndDo;
+	
+	DeleteExcessiveItemsFromMap(DataStructure);	
+	
+EndProcedure
 
-		Иначе
-			СоответствиеТипа.Вставить(ИмяУзла, Тип(ПравилаОбмена.Значение));
-			ПравилаОбмена.Прочитать();
-		КонецЕсли;
+Procedure CreateStringWithPropertyTypes(XMLWriter, PropertyTypes)
+	
+	If TypeOf(PropertyTypes.Value) = deMapType Then
+		
+		If PropertyTypes.Value.Count() = 0 Then
+			Return;
+		EndIf;
+		
+		XMLWriter.WriteStartElement(PropertyTypes.Key);
+		
+		For Each Item In PropertyTypes.Value Do
+			CreateStringWithPropertyTypes(XMLWriter, Item);
+		EndDo;
+		
+		XMLWriter.WriteEndElement();
+		
+	Else		
+		
+		deWriteElement(XMLWriter, PropertyTypes.Key, PropertyTypes.Value);
+		
+	EndIf;
+	
+EndProcedure
 
-	КонецЦикла;
+Function CreateTypesStringForDestination(DataStructure)
+	
+	XMLWriter = New XMLWriter;
+	XMLWriter.SetString();
+	XMLWriter.WriteStartElement("DataTypeInformation");	
+	
+	For Each Row In DataStructure Do
+		
+		XMLWriter.WriteStartElement("DataType");
+		SetAttribute(XMLWriter, "Name", Row.Key);
+		
+		For Each SubordinateRow In Row.Value Do
+			
+			CreateStringWithPropertyTypes(XMLWriter, SubordinateRow);	
+			
+		EndDo;
+		
+		XMLWriter.WriteEndElement();
+		
+	EndDo;	
+	
+	XMLWriter.WriteEndElement();
+	
+	ResultString = XMLWriter.Close();
+	Return ResultString;
+	
+EndFunction
 
-КонецПроцедуры
+Procedure ImportSingleTypeData(ExchangeRules, TypeMap, LocalItemName)
+	
+	NodeName = LocalItemName;
+	
+	ExchangeRules.Read();
+	
+	If (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+		
+		ExchangeRules.Read();
+		Return;
+		
+	ElsIf ExchangeRules.NodeType = deXMLNodeType_StartElement Then
+			
+		NewMap = New Map;
+		TypeMap.Insert(NodeName, NewMap);
+		
+		ImportSingleTypeData(ExchangeRules, NewMap, ExchangeRules.LocalName);			
+		ExchangeRules.Read();
+		
+	Else
+		TypeMap.Insert(NodeName, Type(ExchangeRules.Value));
+		ExchangeRules.Read();
+	EndIf;	
+	
+	ImportTypeMapForSingleType(ExchangeRules, TypeMap);
+	
+EndProcedure
 
-Процедура ЗагрузитьИнформациюОТипахДанных()
+Procedure ImportTypeMapForSingleType(ExchangeRules, TypeMap)
+	
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		If (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+			
+		    Break;
+			
+		EndIf;
+		
+		ExchangeRules.Read();
+		
+		If ExchangeRules.NodeType = deXMLNodeType_StartElement Then
+			
+			NewMap = New Map;
+			TypeMap.Insert(NodeName, NewMap);
+			
+			ImportSingleTypeData(ExchangeRules, NewMap, ExchangeRules.LocalName);			
+			
+		Else
+			TypeMap.Insert(NodeName, Type(ExchangeRules.Value));
+			ExchangeRules.Read();
+		EndIf;	
+		
+	EndDo;	
+	
+EndProcedure
 
-	Пока ФайлОбмена.Прочитать() Цикл
+Procedure ImportDataTypeInformation()
+	
+	While ExchangeFile.Read() Do
+		
+		NodeName = ExchangeFile.LocalName;
+		
+		If NodeName = "DataType" Then
+			
+			TypeName = deAttribute(ExchangeFile, deStringType, "Name");
+			
+			TypeMap = New Map;
+			mDataTypeMapForImport.Insert(Type(TypeName), TypeMap);
 
-		ИмяУзла = ФайлОбмена.ЛокальноеИмя;
+			ImportTypeMapForSingleType(ExchangeFile, TypeMap);	
+			
+		ElsIf (NodeName = "DataTypeInformation") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+			
+			Break;
+			
+		EndIf;
+		
+	EndDo;	
+	
+EndProcedure
 
-		Если ИмяУзла = "ТипДанных" Тогда
+Procedure ImportDataExchangeParameterValues()
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+	
+	Name = deAttribute(ExchangeFile, deStringType, "Name");
+		
+	PropertyType = GetPropertyTypeByAdditionalData(Undefined, Name);
+	
+	Value = ReadProperty(PropertyType);
+	
+	Parameters.Insert(Name, Value);	
+	
+	AfterParameterImportAlgorithm = "";
+	If EventsAfterParametersImport.Property(Name, AfterParameterImportAlgorithm)
+		And Not IsBlankString(AfterParameterImportAlgorithm) Then
+		
+		If HandlersDebugModeFlag Then
+			
+			Raise NStr("ru = 'Отладка обработчика ""После загрузки параметра"" не поддерживается.'; en = 'Debugging of handler ""After parameter import"" is not supported.'");
+			
+		Else
+			
+			Execute(AfterParameterImportAlgorithm);
+			
+		EndIf;
+		
+	EndIf;
+		
+EndProcedure
 
-			ИмяТипа = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-
-			СоответствиеТипа = Новый Соответствие;
-			мСоответствиеТиповДанныхДляЗагрузки.Вставить(Тип(ИмяТипа), СоответствиеТипа);
-
-			ЗагрузитьСоответствиеТиповДляОдногоТипа(ФайлОбмена, СоответствиеТипа);
-
-		ИначеЕсли (ИмяУзла = "ИнформацияОТипахДанных") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Прервать;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура ЗагрузитьЗначенияПараметровОбменаДанными()
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	Имя = одАтрибут(ФайлОбмена, одТипСтрока, "Имя");
-
-	ТипСвойства = ПолучитьТипСвойстваПоДополнительнымДанным(Неопределено, Имя);
-
-	Значение = ПрочитатьСвойство(ТипСвойства);
-
-	Parameters.Вставить(Имя, Значение);
-
-	АлгоритмПослеЗагрузкиПараметра = "";
-	Если СобытияПослеЗагрузкиПараметров.Свойство(Имя, АлгоритмПослеЗагрузкиПараметра) И Не ПустаяСтрока(
-		АлгоритмПослеЗагрузкиПараметра) Тогда
-
-		Если HandlersDebugModeFlag Тогда
-
-			ВызватьИсключение НСтр("ru = 'Отладка обработчика ""После загрузки параметра"" не поддерживается.'");
-
-		Иначе
-
-			Выполнить (АлгоритмПослеЗагрузкиПараметра);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Функция ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена)
-
-	ТекстОбработчика = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-
-	Если СтрНайти(ТекстОбработчика, Символы.ПС) = 0 Тогда
-		Возврат ТекстОбработчика;
-	КонецЕсли;
-
-	ТекстОбработчика = СтрЗаменить(ТекстОбработчика, Символ(10), Символы.ПС);
-
-	Возврат ТекстОбработчика;
-
-КонецФункции
+Function GetHandlerValueFromText(ExchangeRules)
+	
+	HandlerText = deElementValue(ExchangeRules, deStringType);
+	
+	If StrFind(HandlerText, Chars.LF) = 0 Then
+		Return HandlerText;
+	EndIf;
+	
+	HandlerText = StrReplace(HandlerText, Char(10), Chars.LF);
+	
+	Return HandlerText;
+	
+EndFunction
 
 // Осуществляет загрузку правил обмена в соответствии с форматом.
 //
@@ -13319,7 +13291,7 @@ EndProcedure
 
 КонецПроцедуры
 
-#КонецОбласти
+#EndRegion
 
 #Область УстановкаЗначенийРеквизитовИМодальныхПеременныхОбработки
 
