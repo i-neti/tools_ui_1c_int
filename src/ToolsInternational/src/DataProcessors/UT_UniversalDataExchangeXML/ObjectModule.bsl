@@ -2591,7 +2591,7 @@ EndFunction
 // Parameters:
 //  Tab            - ValueTable - a table of property conversion rules to initialize.
 // 
-Procedure InitPropertyConversionRuleTable(Tab) Export
+Procedure InitPropertyConversionRulesTable(Tab) Export
 
 	Columns = Tab.Columns;
 
@@ -12068,570 +12068,560 @@ Function GetHandlerValueFromText(ExchangeRules)
 	
 EndFunction
 
-// Осуществляет загрузку правил обмена в соответствии с форматом.
+// Imports exchange rules according to the format.
 //
 // Parameters:
-//  Источник        - Объект, из которого осуществляется загрузка правил обмена;
-//  ТипИсточника    - Строка, указывающая тип источника: "XMLФайл", "ЧтениеXML", "Строка".
+//  Source - object where the exchange rules are imported from.
+//  SourceType    - a string indicating the source type: "XMLFile", "XMLReader", "String".
 // 
-Процедура ЗагрузитьПравилаОбмена(Источник = "", ТипИсточника = "XMLФайл") Экспорт
-
-	ИнициализироватьМенеджерыИСообщения();
-
-	ЕстьГлобальныйОбработчикПередВыгрузкойОбъекта    = Ложь;
-	ЕстьГлобальныйОбработчикПослеВыгрузкиОбъекта     = Ложь;
-
-	ЕстьГлобальныйОбработчикПередКонвертациейОбъекта = Ложь;
-
-	ЕстьГлобальныйОбработчикПередЗагрузкойОбъекта    = Ложь;
-	ЕстьГлобальныйОбработчикПослеЗагрузкиОбъекта     = Ложь;
-
-	СоздатьСтруктуруКонвертации();
-
-	mPropertyConversionRulesTable = Новый ТаблицаЗначений;
-	ИнициализацияТаблицыПравилКонвертацииСвойств(mPropertyConversionRulesTable);
-	ДополнитьСлужебныеТаблицыКолонками();
+Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 	
-	// Возможно выбраны встроенные правила обмена (один из макетов).
+	InitManagersAndMessages();
+	
+	HasBeforeExportObjectGlobalHandler    = False;
+	HasAfterExportObjectGlobalHandler     = False;
+	
+	HasBeforeConvertObjectGlobalHandler = False;
 
-	ИмяВременногоФайлаПравилОбмена = "";
-	Если ПустаяСтрока(Источник) Тогда
+	HasBeforeImportObjectGlobalHandler    = False;
+	HasAfterImportObjectGlobalHandler     = False;
+	
+	CreateConversionStructure();
 
-		Источник = ExchangeRulesFileName;
-		Если мСписокМакетовПравилОбмена.НайтиПоЗначению(Источник) <> Неопределено Тогда
-			Для Каждого Макет Из Метаданные().Макеты Цикл
-				Если Макет.Синоним = Источник Тогда
-					Источник = Макет.Имя;
-					Прервать;
-				КонецЕсли;
-			КонецЦикла;
-			МакетПравилОбмена              = ПолучитьМакет(Источник);
-			ИмяВременногоФайлаПравилОбмена = ПолучитьИмяВременногоФайла("xml");
-			МакетПравилОбмена.Записать(ИмяВременногоФайлаПравилОбмена);
-			Источник = ИмяВременногоФайлаПравилОбмена;
-		КонецЕсли;
-
-	КонецЕсли;
-	Если ТипИсточника = "XMLФайл" Тогда
-
-		Если ПустаяСтрока(Источник) Тогда
-			ЗаписатьВПротоколВыполнения(12);
-			Возврат;
-		КонецЕсли;
-
-		Файл = Новый Файл(Источник);
-		Если Не Файл.Существует() Тогда
-			ЗаписатьВПротоколВыполнения(3);
-			Возврат;
-		КонецЕсли;
-
-		ФайлПравилЗапакован = (Файл.Расширение = ".zip");
-
-		Если ФайлПравилЗапакован Тогда
-			
-			// распаковка файла правил
-			Источник = РаспаковатьZipФайл(Источник);
-
-		КонецЕсли;
-
-		ПравилаОбмена = Новый ЧтениеXML;
-		ПравилаОбмена.ОткрытьФайл(Источник);
-		ПравилаОбмена.Прочитать();
-
-	ИначеЕсли ТипИсточника = "Строка" Тогда
-
-		ПравилаОбмена = Новый ЧтениеXML;
-		ПравилаОбмена.УстановитьСтроку(Источник);
-		ПравилаОбмена.Прочитать();
-
-	ИначеЕсли ТипИсточника = "ЧтениеXML" Тогда
-
-		ПравилаОбмена = Источник;
-
-	КонецЕсли;
-	Если Не ((ПравилаОбмена.ЛокальноеИмя = "ПравилаОбмена") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_НачалоЭлемента)) Тогда
-		ЗаписатьВПротоколВыполнения(6);
-		Возврат;
-	КонецЕсли;
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку();
-	ЗаписьXML.Отступ = Истина;
-	ЗаписьXML.ЗаписатьНачалоЭлемента("ПравилаОбмена");
-	Пока ПравилаОбмена.Прочитать() Цикл
-
-		ИмяУзла = ПравилаОбмена.ЛокальноеИмя;
+	mPropertyConversionRulesTable = New ValueTable;
+	InitPropertyConversionRulesTable(mPropertyConversionRulesTable);
+	SupplementInternalTablesWithColumns();
+	
+	ExchangeRulesTempFileName = "";
+	If IsBlankString(Source) Then
 		
-		// Реквизиты конвертации
-		Если ИмяУзла = "ВерсияФормата" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Конвертация.Вставить("ВерсияФормата", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-		ИначеЕсли ИмяУзла = "Ид" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Конвертация.Вставить("Ид", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-		ИначеЕсли ИмяУзла = "Наименование" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Конвертация.Вставить("Наименование", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-		ИначеЕсли ИмяУзла = "ДатаВремяСоздания" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипДата);
-			Конвертация.Вставить("ДатаВремяСоздания", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-			ExchangeRulesVersion = Конвертация.ДатаВремяСоздания;
-		ИначеЕсли ИмяУзла = "Источник" Тогда
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Конвертация.Вставить("Источник", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-		ИначеЕсли ИмяУзла = "Приемник" Тогда
-
-			ВерсияПлатформыПриемника = ПравилаОбмена.ПолучитьАтрибут ("ВерсияПлатформы");
-			ПлатформаПриемника = ОпределитьПоВерсииПлатформыПриемникаПлатформу(ВерсияПлатформыПриемника);
-
-			Значение = одЗначениеЭлемента(ПравилаОбмена, одТипСтрока);
-			Конвертация.Вставить("Приемник", Значение);
-			одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-		ИначеЕсли ИмяУзла = "УдалятьСопоставленныеОбъектыВПриемникеПриИхУдаленииВИсточнике" Тогда
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "Comment" Тогда
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "ОсновнойПланОбмена" Тогда
-			одПропустить(ПравилаОбмена);
-
-		ИначеЕсли ИмяУзла = "Parameters" Тогда
-			ЗагрузитьПараметры(ПравилаОбмена, ЗаписьXML);
-
-		// События конвертации
-		ИначеЕсли
-		ИмяУзла = "" Тогда
-
-		ИначеЕсли ИмяУзла = "ПослеЗагрузкиПравилОбмена" Тогда
-			Если ExchangeMode = "Загрузка" Тогда
-				ПравилаОбмена.Пропустить();
-			Иначе
-				Конвертация.Вставить("ПослеЗагрузкиПравилОбмена", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-			КонецЕсли;
-		ИначеЕсли ИмяУзла = "ПередВыгрузкойДанных" Тогда
-			Конвертация.Вставить("ПередВыгрузкойДанных", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузкиДанных" Тогда
-			Конвертация.Вставить("ПослеВыгрузкиДанных", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-
-		ИначеЕсли ИмяУзла = "ПередВыгрузкойОбъекта" Тогда
-			Конвертация.Вставить("ПередВыгрузкойОбъекта", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-			ЕстьГлобальныйОбработчикПередВыгрузкойОбъекта = Не ПустаяСтрока(Конвертация.ПередВыгрузкойОбъекта);
-
-		ИначеЕсли ИмяУзла = "ПослеВыгрузкиОбъекта" Тогда
-			Конвертация.Вставить("ПослеВыгрузкиОбъекта", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-			ЕстьГлобальныйОбработчикПослеВыгрузкиОбъекта = Не ПустаяСтрока(Конвертация.ПослеВыгрузкиОбъекта);
-
-		ИначеЕсли ИмяУзла = "ПередЗагрузкойОбъекта" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.Вставить("ПередЗагрузкойОбъекта", Значение);
-				ЕстьГлобальныйОбработчикПередЗагрузкойОбъекта = Не ПустаяСтрока(Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПослеЗагрузкиОбъекта" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.Вставить("ПослеЗагрузкиОбъекта", Значение);
-				ЕстьГлобальныйОбработчикПослеЗагрузкиОбъекта = Не ПустаяСтрока(Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПередКонвертациейОбъекта" Тогда
-			Конвертация.Вставить("ПередКонвертациейОбъекта", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-			ЕстьГлобальныйОбработчикПередКонвертациейОбъекта = Не ПустаяСтрока(Конвертация.ПередКонвертациейОбъекта);
-
-		ИначеЕсли ИмяУзла = "ПередЗагрузкойДанных" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.ПередЗагрузкойДанных = Значение;
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПослеЗагрузкиДанных" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.ПослеЗагрузкиДанных = Значение;
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПослеЗагрузкиПараметров" Тогда
-			Конвертация.Вставить("ПослеЗагрузкиПараметров", ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена));
-
-		ИначеЕсли ИмяУзла = "ПередОтправкойИнформацииОбУдалении" Тогда
-			Конвертация.Вставить("ПередОтправкойИнформацииОбУдалении", одЗначениеЭлемента(ПравилаОбмена, одТипСтрока));
-
-		ИначеЕсли ИмяУзла = "ПередПолучениемИзмененныхОбъектов" Тогда
-			Конвертация.Вставить("ПередПолучениемИзмененныхОбъектов", одЗначениеЭлемента(ПравилаОбмена, одТипСтрока));
-
-		ИначеЕсли ИмяУзла = "ПриПолученииИнформацииОбУдалении" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.Вставить("ПриПолученииИнформацииОбУдалении", Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПослеПолученияИнформацииОбУзлахОбмена" Тогда
-
-			Значение = ПолучитьИзТекстаЗначениеОбработчика(ПравилаОбмена);
-
-			Если ExchangeMode = "Загрузка" Тогда
-
-				Конвертация.Вставить("ПослеПолученияИнформацииОбУзлахОбмена", Значение);
-
-			Иначе
-
-				одЗаписатьЭлемент(ЗаписьXML, ИмяУзла, Значение);
-
-			КонецЕсли;
-
-		// Правила
-
-		ИначеЕсли ИмяУзла = "ПравилаВыгрузкиДанных" Тогда
-
-			Если ExchangeMode = "Загрузка" Тогда
-				одПропустить(ПравилаОбмена);
-			Иначе
-				ЗагрузитьПравилаВыгрузки(ПравилаОбмена);
-			КонецЕсли;
-
-		ИначеЕсли ИмяУзла = "ПравилаКонвертацииОбъектов" Тогда
-			ЗагрузитьПравилаКонвертации(ПравилаОбмена, ЗаписьXML);
-
-		ИначеЕсли ИмяУзла = "ПравилаОчисткиДанных" Тогда
-			ЗагрузитьПравилаОчистки(ПравилаОбмена, ЗаписьXML);
+		Source = ExchangeRulesFileName;
+		If mExchangeRuleTemplateList.FindByValue(Source) <> Undefined Then
+			For each Template In Metadata().Templates Do
+				If Template.Synonym = Source Then
+					Source = Template.Name;
+					Break;
+				EndIf; 
+			EndDo; 
+			ExchangeRuleTemplate              = GetTemplate(Source);
+			ExchangeRulesTempFileName = GetTempFileName("xml");
+			ExchangeRuleTemplate.Write(ExchangeRulesTempFileName);
+			Source = ExchangeRulesTempFileName;
+		EndIf;
+		
+	EndIf;
+	If SourceType="XMLFile" Then
+		
+		If IsBlankString(Source) Then
+			WriteToExecutionLog(12);
+			Return; 
+		EndIf;
+		
+		File = New File(Source);
+		If Not File.Exist() Then
+			WriteToExecutionLog(3);
+			Return; 
+		EndIf;
+		
+		RuleFilePacked = (File.Extension = ".zip");
+		
+		If RuleFilePacked Then
 			
-		ИначеЕсли
-		ИмяУзла = "ПравилаРегистрацииОбъектов" Тогда
-			одПропустить(ПравилаОбмена); // Правила регистрации объектов загружаем другой обработкой.
+			Source = UnpackZipFile(Source);
 			
-		// Алгоритмы, Запросы, Обработки.
-
-		ИначеЕсли ИмяУзла = "Алгоритмы" Тогда
-			ЗагрузитьАлгоритмы(ПравилаОбмена, ЗаписьXML);
-
-		ИначеЕсли ИмяУзла = "Запросы" Тогда
-			ЗагрузитьЗапросы(ПравилаОбмена, ЗаписьXML);
-
-		ИначеЕсли ИмяУзла = "Обработки" Тогда
-			ЗагрузитьОбработки(ПравилаОбмена, ЗаписьXML);
+		EndIf;
+		
+		ExchangeRules = New XMLReader();
+		ExchangeRules.OpenFile(Source);
+		ExchangeRules.Read();
+		
+	ElsIf SourceType="String" Then
+		
+		ExchangeRules = New XMLReader();
+		ExchangeRules.SetString(Source);
+		ExchangeRules.Read();
+		
+	ElsIf SourceType="XMLReader" Then
+		
+		ExchangeRules = Source;
+		
+	EndIf;
+	If Not ((ExchangeRules.LocalName = "ExchangeRules") And (ExchangeRules.NodeType = deXMLNodeType_StartElement)) Then
+		WriteToExecutionLog(6);
+		Return;
+	EndIf;
+	XMLWriter = New XMLWriter;
+	XMLWriter.SetString();
+	XMLWriter.Indent = True;
+	XMLWriter.WriteStartElement("ExchangeRules");
+	While ExchangeRules.Read() Do
+		
+		NodeName = ExchangeRules.LocalName;
+		
+		// Conversion attributes
+		If NodeName = "FormatVersion" Then
+			Value = deElementValue(ExchangeRules, deStringType);
+			Conversion.Insert("FormatVersion", Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+		ElsIf NodeName = "ID" Then
+			Value = deElementValue(ExchangeRules, deStringType);
+			Conversion.Insert("ID",                   Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+		ElsIf NodeName = "Description" Then
+			Value = deElementValue(ExchangeRules, deStringType);
+			Conversion.Insert("Description",         Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+		ElsIf NodeName = "CreationDateTime" Then
+			Value = deElementValue(ExchangeRules, deDateType);
+			Conversion.Insert("CreationDateTime",    Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+			ExchangeRulesVersion = Conversion.CreationDateTime;
+		ElsIf NodeName = "Source" Then
+			Value = deElementValue(ExchangeRules, deStringType);
+			Conversion.Insert("Source",             Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+		ElsIf NodeName = "Destination" Then
 			
-		// Выход
-		ИначеЕсли (ИмяУзла = "ПравилаОбмена") И (ПравилаОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
+			DestinationPlatformVersion = ExchangeRules.GetAttribute ("PlatformVersion");
+			DestinationPlatform = GetPlatformByDestinationPlatformVersion(DestinationPlatformVersion);
+			
+			Value = deElementValue(ExchangeRules, deStringType);
+			Conversion.Insert("Destination",             Value);
+			deWriteElement(XMLWriter, NodeName, Value);
+			
+		ElsIf NodeName = "DeleteMappedObjectsFromDestinationOnDeleteFromSource" Then
+			deSkip(ExchangeRules);
+		
+		ElsIf NodeName = "Comment" Then
+			deSkip(ExchangeRules);
+			
+		ElsIf NodeName = "MainExchangePlan" Then
+			deSkip(ExchangeRules);
 
-			Если ExchangeMode <> "Загрузка" Тогда
-				ПравилаОбмена.Закрыть();
-			КонецЕсли;
-			Прервать;
+		ElsIf NodeName = "Parameters" Then
+			ImportParameters(ExchangeRules, XMLWriter);
+
+		// Conversion events
+		ElsIf NodeName = "" Then
+			
+		ElsIf NodeName = "AfterImportExchangeRules" Then
+			If ExchangeMode = "Load" Then
+				ExchangeRules.Skip();
+			Else
+				Conversion.Insert("AfterImportExchangeRules", GetHandlerValueFromText(ExchangeRules));
+			EndIf;
+		ElsIf NodeName = "BeforeExportData" Then
+			Conversion.Insert("BeforeExportData", GetHandlerValueFromText(ExchangeRules));
+			
+		ElsIf NodeName = "AfterExportData" Then
+			Conversion.Insert("AfterExportData",  GetHandlerValueFromText(ExchangeRules));
+
+		ElsIf NodeName = "BeforeExportObject" Then
+			Conversion.Insert("BeforeExportObject", GetHandlerValueFromText(ExchangeRules));
+			HasBeforeExportObjectGlobalHandler = Not IsBlankString(Conversion.BeforeExportObject);
+
+		ElsIf NodeName = "AfterExportObject" Then
+			Conversion.Insert("AfterExportObject", GetHandlerValueFromText(ExchangeRules));
+			HasAfterExportObjectGlobalHandler = Not IsBlankString(Conversion.AfterExportObject);
+
+		ElsIf NodeName = "BeforeImportObject" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.Insert("BeforeImportObject", Value);
+				HasBeforeImportObjectGlobalHandler = Not IsBlankString(Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "AfterImportObject" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.Insert("AfterImportObject", Value);
+				HasAfterObjectImportGlobalHandler = Not IsBlankString(Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "BeforeConvertObject" Then
+			Conversion.Insert("BeforeConvertObject", GetHandlerValueFromText(ExchangeRules));
+			HasBeforeConvertObjectGlobalHandler = Not IsBlankString(Conversion.BeforeConvertObject);
+			
+		ElsIf NodeName = "BeforeImportData" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.BeforeImportData = Value;
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "AfterImportData" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.AfterImportData = Value;
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "AfterImportParameters" Then
+			Conversion.Insert("AfterImportParameters", GetHandlerValueFromText(ExchangeRules));
+			
+		ElsIf NodeName = "BeforeSendDeletionInfo" Then
+			Conversion.Insert("BeforeSendDeletionInfo",  deElementValue(ExchangeRules, deStringType));
+			
+		ElsIf NodeName = "BeforeGetChangedObjects" Then
+			Conversion.Insert("BeforeGetChangedObjects", deElementValue(ExchangeRules, deStringType));
+			
+		ElsIf NodeName = "OnGetDeletionInfo" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.Insert("OnGetDeletionInfo", Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		ElsIf NodeName = "AfterGetExchangeNodesInformation" Then
+			
+			Value = GetHandlerValueFromText(ExchangeRules);
+			
+			If ExchangeMode = "Load" Then
+				
+				Conversion.Insert("AfterGetExchangeNodesInformation", Value);
+				
+			Else
+				
+				deWriteElement(XMLWriter, NodeName, Value);
+				
+			EndIf;
+
+		// Rules
+		
+		ElsIf NodeName = "DataExportRules" Then
+		
+ 			If ExchangeMode = "Load" Then
+				deSkip(ExchangeRules);
+			Else
+				ImportExportRules(ExchangeRules);
+ 			EndIf; 
+			
+		ElsIf NodeName = "ObjectConversionRules" Then
+			ImportConversionRules(ExchangeRules, XMLWriter);
+			
+		ElsIf NodeName = "DataClearingRules" Then
+			ImportClearingRules(ExchangeRules, XMLWriter)
+			
+		ElsIf NodeName = "ObjectsRegistrationRules" Then
+			deSkip(ExchangeRules); // Object registration rules are imported with another data processor.
+			
+		// Algorithms, Queries, DataProcessors.
+		
+		ElsIf NodeName = "Algorithms" Then
+			ImportAlgorithms(ExchangeRules, XMLWriter);
+			
+		ElsIf NodeName = "Queries" Then
+			ImportQueries(ExchangeRules, XMLWriter);
+
+		ElsIf NodeName = "DataProcessors" Then
+			ImportDataProcessors(ExchangeRules, XMLWriter);
+			
+		// Exit
+		ElsIf (NodeName = "ExchangeRules") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
+		
+			If ExchangeMode <> "Load" Then
+				ExchangeRules.Close();
+			EndIf;
+			Break;
 
 			
-		// Ошибка формата
-		Иначе
-			СтруктураЗаписи = Новый Структура("ИмяУзла", ИмяУзла);
-			ЗаписатьВПротоколВыполнения(7, СтруктураЗаписи);
-			Возврат;
-		КонецЕсли;
-	КонецЦикла;
-	ЗаписьXML.ЗаписатьКонецЭлемента();
-	mXMLRules = ЗаписьXML.Закрыть();
+		// Format error
+		Else
+		    RecordStructure = New Structure("NodeName", NodeName);
+			WriteToExecutionLog(7, RecordStructure);
+			Return;
+		EndIf;
+	EndDo;
+	XMLWriter.WriteEndElement();
+	mXMLRules = XMLWriter.Close();
 
-	Для Каждого СтрокаПравилВыгрузки Из ExportRulesTable.Строки Цикл
-		ОбновитьПометкиВсехРодителейУПравилВыгрузки(СтрокаПравилВыгрузки, Истина);
-	КонецЦикла;
+	For Each ExportRulesString In ExportRulesTable.Rows Do
+		RefreshAllExportRuleParentMarks(ExportRulesString, True);
+	EndDo;
 	
-	// Удаляем временный файл правил.
-	Если Не ПустаяСтрока(ИмяВременногоФайлаПравилОбмена) Тогда
-		Попытка
-			УдалитьФайлы(ИмяВременногоФайлаПравилОбмена);
-		Исключение
-			ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-				УровеньЖурналаРегистрации.Ошибка, , , ПодробноеПредставлениеОшибки(ИнформацияОбОшибке()));
-		КонецПопытки;
-	КонецЕсли;
+	// Deleting the temporary rule file.
+	If Not IsBlankString(ExchangeRulesTempFileName) Then
+		Try
+ 			DeleteFiles(ExchangeRulesTempFileName);
+		Except 
+			WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+				EventLogLevel.Error,,, DetailErrorDescription(ErrorInfo()));
+		EndTry;
+	EndIf;
 
-	Если ТипИсточника = "XMLФайл" И ФайлПравилЗапакован Тогда
-
-		Попытка
-			УдалитьФайлы(Источник);
-		Исключение
-			ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-				УровеньЖурналаРегистрации.Ошибка, , , ПодробноеПредставлениеОшибки(ИнформацияОбОшибке()));
-		КонецПопытки;
-
-	КонецЕсли;
+	If SourceType="XMLFile" And RuleFilePacked Then
+		
+		Try
+			DeleteFiles(Source);
+		Except 
+			WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+				EventLogLevel.Error,,, DetailErrorDescription(ErrorInfo()));
+		EndTry;
+		
+	EndIf;
 	
-	// Дополнительно нужна информация по типам данных приемника для быстрой загрузки данных.
-	СтруктураДанных = Новый Соответствие;
-	ЗаполнитьИнформациюПоТипамДанныхПриемника(СтруктураДанных, ConversionRulesTable);
+	// Information on destination data types for quick data import.
+	DataStructure = New Map();
+	FillInformationByDestinationDataTypes(DataStructure, ConversionRulesTable);
 
-	mTypeStringForDestination = СоздатьСтрокуСТипамиДляПриемника(СтруктураДанных);
+	mTypeStringForDestination = CreateTypeStringForDestination(DataStructure);
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 	
-	// Нужно вызвать событие после загрузки правил обмена.
-	ТекстСобытияПослеЗагрузкиПравилОбмена = "";
-	Если Конвертация.Свойство("ПослеЗагрузкиПравилОбмена", ТекстСобытияПослеЗагрузкиПравилОбмена) И Не ПустаяСтрока(
-		ТекстСобытияПослеЗагрузкиПравилОбмена) Тогда
+	AfterExchangeRulesImportEventText = "";
+	If Conversion.Property("AfterImportExchangeRules", AfterExchangeRulesImportEventText)
+		And Not IsBlankString(AfterExchangeRulesImportEventText) Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Raise NStr("ru = 'Отладка обработчика ""После загрузки правил обмена"" не поддерживается.'; en = '""After exchange rule import"" handler debugging is not supported.'");
+				
+			Else
+				
+				Execute(AfterExchangeRulesImportEventText);
+				
+			EndIf;
+			
+		Except
+			
+			Text = NStr("ru = 'Обработчик: ""ПослеЗагрузкиПравилОбмена"": %1'; en = 'AfterExchangeRuleImport handler: %1'");
+			Text = SubstituteParametersToString(Text, BriefErrorDescription(ErrorInfo()));
+			
+			WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+				EventLogLevel.Error,,, Text);
+				
+			MessageToUser(Text);
+			
+		EndTry;
+		
+	EndIf;
+	
+EndProcedure
 
-		Попытка
+Procedure ProcessNewItemReadEnd(LastImportObject)
+	
+	mImportedObjectCounter = 1 + mImportedObjectCounter;
+				
+	If RememberImportedObjects And mImportedObjectCounter % 100 = 0 Then
+				
+		If ImportedObjects.Count() > ImportedObjectToStoreCount Then
+			ImportedObjects.Clear();
+		EndIf;
+				
+	EndIf;
+	
+	If mImportedObjectCounter % 100 = 0 And mNotWrittenObjectGlobalStack.Count() > 100 Then
+		
+		ExecuteWriteNotWrittenObjects();
+		
+	EndIf;
+	
+	If UseTransactions And ObjectsPerTransaction > 0 And mImportedObjectCounter % ObjectsPerTransaction = 0 Then
+		
+		CommitTransaction();
+		BeginTransaction();
+		
+	EndIf;	
 
-			Если HandlersDebugModeFlag Тогда
+EndProcedure
 
-				ВызватьИсключение НСтр("ru = 'Отладка обработчика ""После загрузки правил обмена"" не поддерживается.'");
-
-			Иначе
-
-				Выполнить (ТекстСобытияПослеЗагрузкиПравилОбмена);
-
-			КонецЕсли;
-
-		Исключение
-
-			Текст = НСтр("ru = 'Обработчик: ""ПослеЗагрузкиПравилОбмена"": %1'");
-			Текст = ПодставитьПараметрыВСтроку(Текст, КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-
-			ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-				УровеньЖурналаРегистрации.Ошибка, , , Текст);
-
-			СообщитьПользователю(Текст);
-
-		КонецПопытки;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-Процедура ОбработатьОкончаниеЧтенияНовогоЭлемента(ПоследнийОбъектЗагрузки)
-
-	мСчетчикЗагруженныхОбъектов = 1 + мСчетчикЗагруженныхОбъектов;
-
-	Если ЗапоминатьЗагруженныеОбъекты И мСчетчикЗагруженныхОбъектов % 100 = 0 Тогда
-
-		Если ЗагруженныеОбъекты.Количество() > ЧислоХранимыхЗагруженныхОбъектов Тогда
-			ЗагруженныеОбъекты.Очистить();
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если мСчетчикЗагруженныхОбъектов % 100 = 0 И мГлобальныйСтекНеЗаписанныхОбъектов.Количество() > 100 Тогда
-
-		ПровестиЗаписьНеЗаписанныхОбъектов();
-
-	КонецЕсли;
-
-	Если UseTransactions И ObjectsPerTransaction > 0 И мСчетчикЗагруженныхОбъектов
-		% ObjectsPerTransaction = 0 Тогда
-
-		ЗафиксироватьТранзакцию();
-		НачатьТранзакцию();
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Выполняет последовательное чтение файла сообщения обмена и записывает данные в информационную базу.
+// Reads files of exchange message and writes data to the infobase.
 //
 // Parameters:
-//  РезультирующаяСтрокаСИнформациейОбОшибке - Строка - результирующая строка с информацией об ошибке.
+//  ErrorInfoResultString - String - an error info result string.
 // 
-Процедура ПроизвестиЧтениеДанных(РезультирующаяСтрокаСИнформациейОбОшибке = "") Экспорт
+Procedure ReadData(ErrorInfoResultString = "") Export
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
 
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	Попытка
-
-		Пока ФайлОбмена.Прочитать() Цикл
-
-			ИмяУзла = ФайлОбмена.ЛокальноеИмя;
-
-			Если ИмяУзла = "Объект" Тогда
-
-				ПоследнийОбъектЗагрузки = ПрочитатьОбъект();
-
-				ОбработатьОкончаниеЧтенияНовогоЭлемента(ПоследнийОбъектЗагрузки);
-
-			ИначеЕсли ИмяУзла = "ЗначениеПараметра" Тогда
-
-				ЗагрузитьЗначенияПараметровОбменаДанными();
-
-			ИначеЕсли ИмяУзла = "АлгоритмПослеЗагрузкиПараметров" Тогда
-
-				Отказ = Ложь;
-				ПричинаОтказа = "";
-
-				ТекстАлгоритма = "";
-				Конвертация.Свойство("ПослеЗагрузкиПараметров", ТекстАлгоритма);
+	Try
+	
+		While ExchangeFile.Read() Do
+			
+			NodeName = ExchangeFile.LocalName;
+			
+			If NodeName = "Object" Then
 				
-				// При загрузке в безопасном режиме текст алгоритма получен при чтении правил.
-				// В противном случае его следует получать из файла обмена.
-				Если ПустаяСтрока(ТекстАлгоритма) Тогда
-					ТекстАлгоритма = одЗначениеЭлемента(ФайлОбмена, одТипСтрока);
-				Иначе
-					ФайлОбмена.Пропустить();
-				КонецЕсли;
+				LastImportObject = ReadObject();
+				
+				ProcessNewItemReadEnd(LastImportObject);
+				
+			ElsIf NodeName = "ParameterValue" Then	
+				
+				ImportDataExchangeParameterValues();
 
-				Если Не ПустаяСтрока(ТекстАлгоритма) Тогда
+			ElsIf NodeName = "AfterParameterExportAlgorithm" Then	
+				
+				Cancel = False;
+				CancelReason = "";
+				
+				AlgorithmText = "";
+				Conversion.Property("AfterImportParameters", AlgorithmText);
+				
+				// On import in the safe mode the algorithm text is received when reading rules.
+				// Otherwise it is received from the exchange file.
+				If IsBlankString(AlgorithmText) Then
+					AlgorithmText = deElementValue(ExchangeFile, deStringType);
+				Else
+					ExchangeFile.Skip();
+				EndIf;
 
-					Попытка
+				If Not IsBlankString(AlgorithmText) Then
+				
+					Try
+						
+						If HandlersDebugModeFlag Then
+							
+							Raise NStr("ru = 'Отладка обработчика ""После загрузки параметров"" не поддерживается.'; en = 'Debugging of handler ""After parameters import"" is not supported.'");
+							
+						Else
+							
+							Execute(AlgorithmText);
+							
+						EndIf;
+						
+						If Cancel = True Then
+							
+							If Not IsBlankString(CancelReason) Then
+								ExceptionString = SubstituteParametersToString(NStr("ru = 'Загрузка данных отменена по причине: %1'; en = 'The data import is canceled. Reason: %1'"), CancelReason);
+								Raise ExceptionString;
+							Else
+								Raise NStr("ru = 'Загрузка данных отменена'; en = 'The data import is canceled.'");
+							EndIf;
+							
+						EndIf;
 
-						Если HandlersDebugModeFlag Тогда
+					Except
+												
+						LR = GetLogRecordStructure(75, ErrorDescription());
+						LR.Handler     = "AfterImportParameters";
+						ErrorMessageString = WriteToExecutionLog(75, LR, True);
+						
+						If Not DebugModeFlag Then
+							Raise ErrorMessageString;
+						EndIf;
+						
+					EndTry;
+					
+				EndIf;
 
-							ВызватьИсключение НСтр(
-								"ru = 'Отладка обработчика ""После загрузки параметров"" не поддерживается.'");
+			ElsIf NodeName = "Algorithm" Then
+				
+				AlgorithmText = deElementValue(ExchangeFile, deStringType);
+				
+				If Not IsBlankString(AlgorithmText) Then
+				
+					Try
+						
+						If HandlersDebugModeFlag Then
+							
+							Raise NStr("ru = 'Отладка глобального алгоритма не поддерживается.'; en = 'Global algorithm debugging is not supported.'");
+							
+						Else
+							
+							Execute(AlgorithmText);
+							
+						EndIf;
+						
+					Except
+						
+						LR= GetLogRecordStructure(39, ErrorDescription());
+						LR.Handler     = "ExchangeFileAlgorithm";
+						ErrorMessageString = WriteToExecutionLog(39, LR, True);
+						
+						If Not DebugModeFlag Then
+							Raise ErrorMessageString;
+						EndIf;
+						
+					EndTry;
+					
+				EndIf;
 
-						Иначе
+			ElsIf NodeName = "ExchangeRules" Then
+				
+				mExchangeRulesReadOnImport = True;
+				
+				If ConversionRulesTable.Count() = 0 Then
+					ImportExchangeRules(ExchangeFile, "XMLReader");
+				Else
+					deSkip(ExchangeFile);
+				EndIf;
+				
+			ElsIf NodeName = "DataTypeInformation" Then
+				
+				ImportDataTypeInformation();
+				
+			ElsIf (NodeName = "ExchangeFile") And (ExchangeFile.NodeType = deXMLNodeType_EndElement) Then
+				
+			Else
+				RecordStructure = New Structure("NodeName", NodeName);
+				WriteToExecutionLog(9, RecordStructure);
+			EndIf;
+			
+		EndDo;
 
-							Выполнить (ТекстАлгоритма);
-
-						КонецЕсли;
-
-						Если Отказ = Истина Тогда
-
-							Если Не ПустаяСтрока(ПричинаОтказа) Тогда
-								СтрокаИсключения = ПодставитьПараметрыВСтроку(НСтр(
-									"ru = 'Загрузка данных отменена по причине: %1'"), ПричинаОтказа);
-								ВызватьИсключение СтрокаИсключения;
-							Иначе
-								ВызватьИсключение НСтр("ru = 'Загрузка данных отменена'");
-							КонецЕсли;
-
-						КонецЕсли;
-
-					Исключение
-
-						ЗП = ПолучитьСтруктуруЗаписиПротокола(75, ОписаниеОшибки());
-						ЗП.Обработчик     = "ПослеЗагрузкиПараметров";
-						СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(75, ЗП, Истина);
-
-						Если Не DebugModeFlag Тогда
-							ВызватьИсключение СтрокаСообщенияОбОшибке;
-						КонецЕсли;
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-			ИначеЕсли ИмяУзла = "Алгоритм" Тогда
-
-				ТекстАлгоритма = одЗначениеЭлемента(ФайлОбмена, одТипСтрока);
-
-				Если Не ПустаяСтрока(ТекстАлгоритма) Тогда
-
-					Попытка
-
-						Если HandlersDebugModeFlag Тогда
-
-							ВызватьИсключение НСтр("ru = 'Отладка глобального алгоритма не поддерживается.'");
-
-						Иначе
-
-							Выполнить (ТекстАлгоритма);
-
-						КонецЕсли;
-
-					Исключение
-
-						ЗП = ПолучитьСтруктуруЗаписиПротокола(39, ОписаниеОшибки());
-						ЗП.Обработчик     = "АлгоритмФайлаОбмена";
-						СтрокаСообщенияОбОшибке = ЗаписатьВПротоколВыполнения(39, ЗП, Истина);
-
-						Если Не DebugModeFlag Тогда
-							ВызватьИсключение СтрокаСообщенияОбОшибке;
-						КонецЕсли;
-
-					КонецПопытки;
-
-				КонецЕсли;
-
-			ИначеЕсли ИмяУзла = "ПравилаОбмена" Тогда
-
-				мБылиПрочитаныПравилаОбменаПриЗагрузке = Истина;
-
-				Если ConversionRulesTable.Количество() = 0 Тогда
-					ЗагрузитьПравилаОбмена(ФайлОбмена, "ЧтениеXML");
-				Иначе
-					одПропустить(ФайлОбмена);
-				КонецЕсли;
-
-			ИначеЕсли ИмяУзла = "ИнформацияОТипахДанных" Тогда
-
-				ЗагрузитьИнформациюОТипахДанных();
-
-			ИначеЕсли (ИмяУзла = "ФайлОбмена") И (ФайлОбмена.ТипУзла = одТипУзлаXML_КонецЭлемента) Тогда
-
-			Иначе
-				СтруктураЗаписи = Новый Структура("ИмяУзла", ИмяУзла);
-				ЗаписатьВПротоколВыполнения(9, СтруктураЗаписи);
-			КонецЕсли;
-
-		КонецЦикла;
-
-	Исключение
-
-		СтрокаОшибки = ПодставитьПараметрыВСтроку(НСтр("ru = 'Ошибка при загрузке данных: %1'"), ОписаниеОшибки());
-
-		РезультирующаяСтрокаСИнформациейОбОшибке = ЗаписатьВПротоколВыполнения(СтрокаОшибки, Неопределено, Истина, , ,
-			Истина);
-
-		ЗавершитьВедениеПротоколаОбмена();
-		ФайлОбмена.Закрыть();
-		Возврат;
-
-	КонецПопытки;
-
-КонецПроцедуры
+	Except
+		
+		ErrorRow = SubstituteParametersToString(NStr("ru = 'Ошибка при загрузке данных: %1'; en = 'Cannot import data: %1'"), ErrorDescription());
+		
+		ErrorInfoResultString = WriteToExecutionLog(ErrorRow, Undefined, True, , , True);
+		
+		FinishKeepExchangeLog();
+		ExchangeFile.Close();
+		Return;
+		
+	EndTry;
+	
+EndProcedure
 
 // Перед началом чтения данных из файла выполняем инициализацию переменных,
 // загрузку правил обмена из файла данных,
