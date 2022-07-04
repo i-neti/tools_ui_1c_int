@@ -5225,7 +5225,7 @@ EndFunction
 
 #EndRegion
 
-#Область FullAlgorithmScriptsMethodsConsideringNesting
+#Region FullAlgorithmScriptsMethodsConsideringNesting
 
 // Generates the full script of algorithms considering their nesting.
 //
@@ -12623,663 +12623,655 @@ Procedure ReadData(ErrorInfoResultString = "") Export
 	
 EndProcedure
 
-// Перед началом чтения данных из файла выполняем инициализацию переменных,
-// загрузку правил обмена из файла данных,
-// открываем транзакцию на запись данных в ИБ,
-// выполняем необходимые обработчики событий.
-//
-// Parameters:
-//  СтрокаДанных - имя файла для загрузки данных или строка-XML, содержащая данные для загрузки.
-//
-//  Возвращаемое значение:
-//     Булево - Истина - загрузка данных из файла возможна; Ложь - нет.
-//
-Функция ВыполнитьДействияПередЧтениемДанных(СтрокаДанных = "") Экспорт
-
-	РежимОбработкиДанных = мРежимыОбработкиДанных.Загрузка;
-
-	мСоответствиеДопПараметровПоиска       = Новый Соответствие;
-	мСоответствиеПравилКонвертации         = Новый Соответствие;
-
-	Правила.Очистить();
-
-	ИнициализироватьКомментарииПриВыгрузкеИЗагрузкеДанных();
-
-	ИнициализироватьВедениеПротоколаОбмена();
-
-	ЗагрузкаВозможна = Истина;
-
-	Если ПустаяСтрока(СтрокаДанных) Тогда
-
-		Если ПустаяСтрока(ExchangeFileName) Тогда
-			ЗаписатьВПротоколВыполнения(15);
-			ЗагрузкаВозможна = Ложь;
-		КонецЕсли;
-
-	КонецЕсли;
-	
-	// Инициализируем внешнюю обработку с экспортными обработчиками.
-	ИнициализацияВнешнейОбработкиОбработчиковСобытий(ЗагрузкаВозможна, ЭтотОбъект);
-
-	Если Не ЗагрузкаВозможна Тогда
-		Возврат Ложь;
-	КонецЕсли;
-
-	СтрокаСообщения = ПодставитьПараметрыВСтроку(НСтр("ru = 'Начало загрузки: %1'"), ТекущаяДатаСеанса());
-	ЗаписатьВПротоколВыполнения(СтрокаСообщения, , Ложь, , , Истина);
-
-	Если DebugModeFlag Тогда
-		UseTransactions = Ложь;
-	КонецЕсли;
-
-	Если ProcessedObjectsCountToUpdateStatus = 0 Тогда
-
-		ProcessedObjectsCountToUpdateStatus = 100;
-
-	КонецЕсли;
-
-	мСоответствиеТиповДанныхДляЗагрузки = Новый Соответствие;
-	мГлобальныйСтекНеЗаписанныхОбъектов = Новый Соответствие;
-
-	мСчетчикЗагруженныхОбъектов = 0;
-	ErrorFlag                  = Ложь;
-	ЗагруженныеОбъекты          = Новый Соответствие;
-	ЗагруженныеГлобальныеОбъекты = Новый Соответствие;
-
-	ИнициализироватьМенеджерыИСообщения();
-
-	ОткрытьФайлЗагрузки( , СтрокаДанных);
-
-	Если ErrorFlag Тогда
-		ЗавершитьВедениеПротоколаОбмена();
-		Возврат Ложь;
-	КонецЕсли;
-
-	// Определяем интерфейсы обработчиков.
-	Если HandlersDebugModeFlag Тогда
-
-		ДополнитьПравилаИнтерфейсамиОбработчиков(Конвертация, ConversionRulesTable, ExportRulesTable,
-			CleanupRulesTable);
-
-	КонецЕсли;
-	
-	// Обработчик ПередЗагрузкойДанных
-	Отказ = Ложь;
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	Если Не ПустаяСтрока(Конвертация.ПередЗагрузкойДанных) Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПередЗагрузкойДанных"));
-
-			Иначе
-
-				Выполнить (Конвертация.ПередЗагрузкойДанных);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(22, ОписаниеОшибки(), НСтр(
-				"ru = 'ПередЗагрузкойДанных (конвертация)'"));
-			Отказ = Истина;
-		КонецПопытки;
-
-		Если Отказ Тогда // Отказ от загрузки данных
-			ЗавершитьВедениеПротоколаОбмена();
-			ФайлОбмена.Закрыть();
-			ДеструкторВнешнейОбработкиОбработчиковСобытий();
-			Возврат Ложь;
-		КонецЕсли;
-
-	КонецЕсли;
-
-	// Очистка информационной базы по правилам.
-	ОбработатьПравилаОчистки(CleanupRulesTable.Строки);
-
-	Возврат Истина;
-
-КонецФункции
-
-// Процедура выполняет действия после итерации загрузки данных:
-// - фиксация транзакции (при необходимости)
-// - закрытие файла сообщения обмена
-// - выполнение обработчика конвертации ПослеЗагрузкиДанных
-// - завершение ведения протокола обмена (при необходимости).
-//
-// Parameters:
-//  Нет.
+// Performs the following actions before reading data from the file:   
+// 	- initializes variables;   
+// 	- imports exchange rules from the data file;   
+// 	- begins a transaction for writing data to the infobase;   
+// 	- executes required event handlers.
 // 
-Процедура ВыполнитьДействияПослеЗавершенияЧтенияДанных() Экспорт
-
-	Если SafeMode Тогда
-		УстановитьБезопасныйРежим(Истина);
-		Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-			УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-		КонецЦикла;
-	КонецЕсли;
-
-	ФайлОбмена.Закрыть();
-	
-	// Обработчик ПослеЗагрузкиДанных
-	Если Не ПустаяСтрока(Конвертация.ПослеЗагрузкиДанных) Тогда
-
-		Попытка
-
-			Если HandlersDebugModeFlag Тогда
-
-				Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПослеЗагрузкиДанных"));
-
-			Иначе
-
-				Выполнить (Конвертация.ПослеЗагрузкиДанных);
-
-			КонецЕсли;
-
-		Исключение
-			ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(23, ОписаниеОшибки(), НСтр(
-				"ru = 'ПослеЗагрузкиДанных (конвертация)'"));
-		КонецПопытки;
-
-	КонецЕсли;
-
-	ДеструкторВнешнейОбработкиОбработчиковСобытий();
-
-	ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Окончание загрузки: %1'"), ТекущаяДатаСеанса()), , Ложь, , , Истина);
-	ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Загружено объектов: %1'"), мСчетчикЗагруженныхОбъектов), , Ложь, , , Истина);
-
-	ЗавершитьВедениеПротоколаОбмена();
-
-	Если IsInteractiveMode Тогда
-		СообщитьПользователю(НСтр("ru = 'Загрузка данных завершена.'"));
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Выполняет загрузку данных в соответствии с установленными режимами (правилами обмена).
 //
 // Parameters:
-//  Нет.
+//  DataString - an import file name or XML string containing data to import.
+// 
+//  Returns:
+//    Boolean - True, if the data can be imported from file.
 //
-Процедура ExecuteUploading() Экспорт
-
-	РаботаВозможна = ВыполнитьДействияПередЧтениемДанных();
-
-	Если Не РаботаВозможна Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если UseTransactions Тогда
-		НачатьТранзакцию();
-	КонецЕсли;
-
-	Попытка
-		ПроизвестиЧтениеДанных();
-		// Отложенная запись того, что не записали с самого начала.
-		ПровестиЗаписьНеЗаписанныхОбъектов();
-		Если UseTransactions Тогда
-			ЗафиксироватьТранзакцию();
-		КонецЕсли;
-	Исключение
-		Если UseTransactions Тогда
-			ОтменитьТранзакцию();
-		КонецЕсли;
-	КонецПопытки;
-
-	ВыполнитьДействияПослеЗавершенияЧтенияДанных();
-
-КонецПроцедуры
-
-Процедура СжатьРезультирующийФайлОбмена()
-
-	Попытка
-
-		ИмяИсходногоФайлаОбмена = ExchangeFileName;
-		Если ArchiveFile Тогда
-			ExchangeFileName = СтрЗаменить(ExchangeFileName, ".xml", ".zip");
-		КонецЕсли;
-
-		Архиватор = Новый ЗаписьZipФайла(ExchangeFileName, ExchangeFileCompressionPassword, НСтр("ru = 'Файл обмена данными'"));
-		Архиватор.Добавить(ИмяИсходногоФайлаОбмена);
-		Архиватор.Записать();
-
-		УдалитьФайлы(ИмяИсходногоФайлаОбмена);
-
-	Исключение
-		ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'", КодОсновногоЯзыка()),
-			УровеньЖурналаРегистрации.Ошибка, , , ПодробноеПредставлениеОшибки(ИнформацияОбОшибке()));
-	КонецПопытки;
-
-КонецПроцедуры
-
-Функция РаспаковатьZipФайл(ИмяФайлаДляРаспаковки)
-
-	КаталогДляРаспаковки = FilesTempDirectory;
-	СоздатьКаталог(КаталогДляРаспаковки);
-
-	ИмяРаспакованногоФайла = "";
-
-	Попытка
-
-		Архиватор = Новый ЧтениеZipФайла(ИмяФайлаДляРаспаковки, ExchangeFileUnpackPassword);
-
-		Если Архиватор.Элементы.Количество() > 0 Тогда
-
-			ЭлементАрхива = Архиватор.Элементы.Получить(0);
-
-			Архиватор.Извлечь(ЭлементАрхива, КаталогДляРаспаковки, РежимВосстановленияПутейФайловZIP.НеВосстанавливать);
-			ИмяРаспакованногоФайла = ПолучитьИмяФайлаОбмена(КаталогДляРаспаковки, ЭлементАрхива.Имя);
-
-		Иначе
-
-			ИмяРаспакованногоФайла = "";
-
-		КонецЕсли;
-
-		Архиватор.Закрыть();
-
-	Исключение
-
-		ЗП = ПолучитьСтруктуруЗаписиПротокола(2, ОписаниеОшибки());
-		ЗаписатьВПротоколВыполнения(2, ЗП, Истина);
-
-		Возврат "";
-
-	КонецПопытки;
-
-	Возврат ИмяРаспакованногоФайла;
-
-КонецФункции
-
-Функция ВыполнитьПередачуИнформацииОНачалеОбменаВПриемник(ТекущаяСтрокаДляЗаписи)
-
-	Если Не DirectReadFromDestinationIB Тогда
-		Возврат Истина;
-	КонецЕсли;
-
-	ТекущаяСтрокаДляЗаписи = ТекущаяСтрокаДляЗаписи + Символы.ПС + mXMLRules + Символы.ПС + "</ФайлОбмена>"
-		+ Символы.ПС;
-
-	РаботаВозможна = мОбработкаДляЗагрузкиДанных.ВыполнитьДействияПередЧтениемДанных(ТекущаяСтрокаДляЗаписи);
-
-	Возврат РаботаВозможна;
-
-КонецФункции
-
-Функция ВыполнитьПередачуИнформацииПриЗавершенииПередачиДанных()
+Function ExecuteActionsBeforeReadData(DataString = "") Export
 	
-	//УИ++
-//	Если НЕ DirectReadFromDestinationIB Тогда
-//		Возврат Истина;
-//	КонецЕсли;
-//	
-//	мОбработкаДляЗагрузкиДанных.ВыполнитьДействияПослеЗавершенияЧтенияДанных();
+	DataProcessingMode = mDataProcessingModes.Load;
 
-	Если DirectReadFromDestinationIB Тогда
-		мОбработкаДляЗагрузкиДанных.ВыполнитьДействияПослеЗавершенияЧтенияДанных();
-	ИначеЕсли UT_ExportViaWebService Тогда
-		Сообщить("Начало загрузки через вебсервис " + ТекущаяДата());
-		КэшАрхивации=ArchiveFile;
-		ArchiveFile=Истина;
-		СжатьРезультирующийФайлОбмена();
-		ArchiveFile=КэшАрхивации;
+	mSearchAdditionalParametersMap       = New Map;
+	mConversionRulesMap         = New Map;
 
-		ДвоичныеДанные=Новый ДвоичныеДанные(ExchangeFileName);
-
-		ПараметрыЗапросаHTTP=Новый Структура;
-		ПараметрыЗапросаHTTP.Вставить("Таймайт", 0);
-
-		Аутентификация=Новый Структура;
-		Аутентификация.Вставить("Пользователь", InfobaseConnectionUsername);
-		Аутентификация.Вставить("Пароль", InfobaseConnectionPassword);
-		ПараметрыЗапросаHTTP.Вставить("Аутентификация", Аутентификация);
-
-		Попытка
-			РезультатВыгрузки=УИ_КоннекторHTTP.Post(UT_DestinationPublicationAddress + "/hs/tools-ui-1c/exchange",
-				ДвоичныеДанные, ПараметрыЗапросаHTTP);
-			СтруктураРезультата=УИ_КоннекторHTTP.КакJson(РезультатВыгрузки);
-
-			ЛогЗагрузки=СтруктураРезультата["ЛогЗагрузки"];
-			Текст=Новый ТекстовыйДокумент;
-			Текст.УстановитьТекст(ЛогЗагрузки);
-			Для НомерСтрокиЛога = 1 По Текст.КоличествоСтрок() Цикл
-				Сообщить(Текст.ПолучитьСтроку(НомерСтрокиЛога));
-
-			КонецЦикла;
-
-			Если ЗначениеЗаполнено(СтруктураРезультата["ОшибкаСервиса"]) Тогда
-				Сообщить(СтруктураРезультата["ОшибкаСервиса"]);
-			КонецЕсли;
-		Исключение
-			Сообщить("Ошибка отправки сообщения в приемник " + ОписаниеОшибки());
-		КонецПопытки;
-
-		Сообщить("Окончани загрузки через вебсервис " + ТекущаяДата());
-
-	КонецЕсли;
-	//УИ--
-
-КонецФункции
-
-Процедура ПередатьДополнительныеПараметрыВПриемник()
-
-	Для Каждого Параметр Из ParametersSettingsTable Цикл
-
-		Если Параметр.ПередаватьПараметрПриВыгрузке = Истина Тогда
-
-			ПередатьОдинПараметрВПриемник(Параметр.Имя, Параметр.Значение, Параметр.ПравилоКонвертации);
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура ПередатьИнформациюОТипахВПриемник()
-
-	Если Не ПустаяСтрока(mTypeStringForDestination) Тогда
-		ЗаписатьВФайл(mTypeStringForDestination);
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Выполняет выгрузку данных в соответствии с установленными режимами (правилами обмена).
-//
-// Parameters:
-//  Нет.
-//
-Процедура ВыполнитьВыгрузку() Экспорт
-
-	РежимОбработкиДанных = мРежимыОбработкиДанных.Выгрузка;
-
-	ИнициализироватьВедениеПротоколаОбмена();
-
-	ИнициализироватьКомментарииПриВыгрузкеИЗагрузкеДанных();
-
-	ВыгрузкаВозможна = Истина;
-	ТекущийУровеньВложенностиВыгрузитьПоПравилу = 0;
-
-	мСтекВызововВыгрузкиДанных = Новый ТаблицаЗначений;
-	мСтекВызововВыгрузкиДанных.Колонки.Добавить("Ссылка");
-	мСтекВызововВыгрузкиДанных.Индексы.Добавить("Ссылка");
-
-	Если мБылиПрочитаныПравилаОбменаПриЗагрузке = Истина Тогда
-
-		ЗаписатьВПротоколВыполнения(74);
-		ВыгрузкаВозможна = Ложь;
-
-	КонецЕсли;
-
-	Если ПустаяСтрока(ExchangeRulesFileName) Тогда
-		ЗаписатьВПротоколВыполнения(12);
-		ВыгрузкаВозможна = Ложь;
-	КонецЕсли;
-
-	Если Не DirectReadFromDestinationIB Тогда
-
-		Если ПустаяСтрока(ExchangeFileName) Тогда
-			ЗаписатьВПротоколВыполнения(10);
-			ВыгрузкаВозможна = Ложь;
-		КонецЕсли;
-
-	Иначе
-
-		мОбработкаДляЗагрузкиДанных = ВыполнитьПодключениеКИБПриемнику();
-
-		ВыгрузкаВозможна = мОбработкаДляЗагрузкиДанных <> Неопределено;
-
-	КонецЕсли;
+	Rules.Clear();
 	
-	// Инициализируем внешнюю обработку с экспортными обработчиками.
-	ИнициализацияВнешнейОбработкиОбработчиковСобытий(ВыгрузкаВозможна, ЭтотОбъект);
-
-	Если Не ВыгрузкаВозможна Тогда
-		мОбработкаДляЗагрузкиДанных = Неопределено;
-		Возврат;
-	КонецЕсли;
-
-	ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Начало выгрузки: %1'"), ТекущаяДатаСеанса()), , Ложь, , , Истина);
-
-	ИнициализироватьМенеджерыИСообщения();
-
-	мСчетчикВыгруженныхОбъектов = 0;
-	mSNCounter 				= 0;
-	ErrorFlag                  = Ложь;
-
-	// Загрузка правил обмена
-	Если Конвертация.Количество() = 9 Тогда
-
-		ЗагрузитьПравилаОбмена();
-		Если ErrorFlag Тогда
-			ЗавершитьВедениеПротоколаОбмена();
-			мОбработкаДляЗагрузкиДанных = Неопределено;
-			Возврат;
-		КонецЕсли;
-
-	Иначе
-
-		Для Каждого Правило Из ConversionRulesTable Цикл
-			Правило.Выгруженные.Очистить();
-			Правило.ВыгруженныеТолькоСсылки.Очистить();
-		КонецЦикла;
-
-	КонецЕсли;
-
-	// Присваиваем параметры установленные в диалоге.
-	УстановитьПараметрыИзДиалога();
-
-	// Открываем файл обмена
-	ТекущаяСтрокаДляЗаписи = ОткрытьФайлВыгрузки() + Символы.ПС;
-
-	Если ErrorFlag Тогда
-		ФайлОбмена = Неопределено;
-		ЗавершитьВедениеПротоколаОбмена();
-		мОбработкаДляЗагрузкиДанных = Неопределено;
-		Возврат;
-	КонецЕсли;
+	InitializeCommentsOnDataExportImport();
 	
-	// Определяем интерфейсы обработчиков.
-	Если HandlersDebugModeFlag Тогда
+	InitializeKeepExchangeLog();
 
-		ДополнитьПравилаИнтерфейсамиОбработчиков(Конвертация, ConversionRulesTable, ExportRulesTable,
-			CleanupRulesTable);
-
-	КонецЕсли;
-
-	Если UseTransactions Тогда
-		НачатьТранзакцию();
-	КонецЕсли;
-
-	Отказ = Ложь;
+	ImportIsPossible = True;
 	
-	//УИ++
-	Если UT_ExportViaWebService Тогда
-		SafeMode=Ложь;
-	КонецЕсли;
-	//УИ--
-
-	Попытка
+	If IsBlankString(DataString) Then
 	
-		// Включаем правила обмена в файл.
-		ФайлОбмена.ЗаписатьСтроку(mXMLRules);
+		If IsBlankString(ExchangeFileName) Then
+			WriteToExecutionLog(15);
+			ImportIsPossible = False;
+		EndIf;
+	
+	EndIf;
+	
+	// Initializing the external data processor with export handlers.
+	InitEventHandlerExternalDataProcessor(ImportIsPossible, ThisObject);
 
-		Отказ = Не ВыполнитьПередачуИнформацииОНачалеОбменаВПриемник(ТекущаяСтрокаДляЗаписи);
+	If Not ImportPossible Then
+		Return False;
+	EndIf;
 
-		Если Не Отказ Тогда
+	MessageString = SubstituteParametersToString(NStr("ru = 'Начало загрузки: %1'; en = 'Import started at: %1'"), CurrentSessionDate());
+	WriteToExecutionLog(MessageString, , False, , , True);
 
-			Если SafeMode Тогда
-				УстановитьБезопасныйРежим(Истина);
-				Для Каждого ИмяРазделителя Из РазделителиКонфигурации Цикл
-					УстановитьБезопасныйРежимРазделенияДанных(ИмяРазделителя, Истина);
-				КонецЦикла;
-			КонецЕсли;
+	If DebugModeFlag Then
+		UseTransactions = False;
+	EndIf;
+	
+	If ProcessedObjectsCountToUpdateStatus = 0 Then
+		
+		ProcessedObjectsCountToUpdateStatus = 100;
+		
+	EndIf;
+	
+	mDataTypeMapForImport = New Map;
+	mNotWrittenObjectGlobalStack = New Map;
+
+	mImportedObjectCounter = 0;
+	ErrorFlag                  = False;
+	ImportedObjects          = New Map;
+	ImportedGlobalObjects = New Map;
+
+	InitManagersAndMessages();
+	
+	OpenImportFile(,DataString);
+	
+	If ErrorFlag Then 
+		FinishKeepExchangeLog();
+		Return False; 
+	EndIf;
+
+	// Defining handler interfaces.
+	If HandlersDebugModeFlag Then
+		
+		SupplementRulesWithHandlerInterfaces(Conversion, ConversionRulesTable, ExportRulesTable, CleanupRulesTable);
+		
+	EndIf;
+	
+	// BeforeDataImport handler
+	Cancel = False;
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+
+	If Not IsBlankString(Conversion.BeforeImportData) Then
+		
+		Try
 			
-			// Обработчик ПередВыгрузкойДанных
-			Попытка
-
-				Если HandlersDebugModeFlag Тогда
-
-					Если Не ПустаяСтрока(Конвертация.ПередВыгрузкойДанных) Тогда
-
-						Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПередВыгрузкойДанных"));
-
-					КонецЕсли;
-
-				Иначе
-
-					Выполнить (Конвертация.ПередВыгрузкойДанных);
-
-				КонецЕсли;
-
-			Исключение
-				ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(62, ОписаниеОшибки(), НСтр(
-					"ru = 'ПередВыгрузкойДанных (конвертация)'"));
-				Отказ = Истина;
-			КонецПопытки;
-
-			Если Не Отказ Тогда
-
-				Если ExecuteDataExchangeInOptimizedFormat Тогда
-					ПередатьИнформациюОТипахВПриемник();
-				КонецЕсли;
+			If HandlersDebugModeFlag Then
 				
-				// Нужно параметры передать в приемник.
-				ПередатьДополнительныеПараметрыВПриемник();
-
-				ТекстСобытияПослеЗагрузкиПараметров = "";
-				Если Конвертация.Свойство("ПослеЗагрузкиПараметров", ТекстСобытияПослеЗагрузкиПараметров)
-					И Не ПустаяСтрока(ТекстСобытияПослеЗагрузкиПараметров) Тогда
-
-					ЗаписьСобытия = Новый ЗаписьXML;
-					ЗаписьСобытия.УстановитьСтроку();
-					одЗаписатьЭлемент(ЗаписьСобытия, "АлгоритмПослеЗагрузкиПараметров",
-						ТекстСобытияПослеЗагрузкиПараметров);
-					ЗаписатьВФайл(ЗаписьСобытия);
-
-				КонецЕсли;
-
-				СоответствиеУзловИПравилВыгрузки = Новый Соответствие;
-				СтруктураДляУдаленияРегистрацииИзменений = Новый Соответствие;
-
-				ОбработатьПравилаВыгрузки(ExportRulesCollection().Строки, СоответствиеУзловИПравилВыгрузки);
-
-				УдачноВыгруженоПоПланамОбмена = ОбработатьВыгрузкуДляПлановОбмена(СоответствиеУзловИПравилВыгрузки,
-					СтруктураДляУдаленияРегистрацииИзменений);
-
-				Если УдачноВыгруженоПоПланамОбмена Тогда
-
-					ОбработатьИзменениеРегистрацииДляУзловОбмена(СтруктураДляУдаленияРегистрацииИзменений);
-
-				КонецЕсли;
+				Execute(GetHandlerCallString(Conversion, "BeforeImportData"));
 				
-				// Обработчик ПослеВыгрузкиДанных
-				Попытка
+			Else
+				
+				Execute(Conversion.BeforeImportData);
+				
+			EndIf;
+			
+		Except
+			WriteErrorInfoConversionHandlers(22, ErrorDescription(), NStr("ru = 'ПередЗагрузкойДанных (конвертация)'; en = 'BeforeDataImport (conversion)'"));
+			Cancel = True;
+		EndTry;
+		
+		If Cancel Then // Canceling data import
+			FinishKeepExchangeLog();
+			ExchangeFile.Close();
+			EventHandlerExternalDataProcessorDestructor();
+			Return False;
+		EndIf;
+		
+	EndIf;
 
-					Если HandlersDebugModeFlag Тогда
-
-						Если Не ПустаяСтрока(Конвертация.ПослеВыгрузкиДанных) Тогда
-
-							Выполнить (ПолучитьСтрокуВызоваОбработчика(Конвертация, "ПослеВыгрузкиДанных"));
-
-						КонецЕсли;
-
-					Иначе
-
-						Выполнить (Конвертация.ПослеВыгрузкиДанных);
-
-					КонецЕсли;
-
-				Исключение
-					ЗаписатьИнформациюОбОшибкеОбработчикиКонвертации(63, ОписаниеОшибки(), НСтр(
-						"ru = 'ПослеВыгрузкиДанных (конвертация)'"));
-				КонецПопытки;
-
-				ПровестиЗаписьНеЗаписанныхОбъектов();
-
-				Если ТранзакцияАктивна() Тогда
-					ЗафиксироватьТранзакцию();
-				КонецЕсли;
-
-			КонецЕсли;
-
-		КонецЕсли;
-
-		Если Отказ Тогда
-
-			Если ТранзакцияАктивна() Тогда
-				ОтменитьТранзакцию();
-			КонецЕсли;
-
-			ВыполнитьПередачуИнформацииПриЗавершенииПередачиДанных();
-
-			ЗавершитьВедениеПротоколаОбмена();
-			мОбработкаДляЗагрузкиДанных = Неопределено;
-			ФайлОбмена = Неопределено;
-
-			ДеструкторВнешнейОбработкиОбработчиковСобытий();
-
-		КонецЕсли;
-
-	Исключение
-
-		Если ТранзакцияАктивна() Тогда
-			ОтменитьТранзакцию();
-		КонецЕсли;
-
-		Отказ = Истина;
-		СтрокаОшибки = ОписаниеОшибки();
-
-		ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-			НСтр("ru = 'Ошибка при выгрузке данных: %1'"), СтрокаОшибки), Неопределено, Истина, , , Истина);
-
-		ВыполнитьПередачуИнформацииПриЗавершенииПередачиДанных();
-
-		ЗавершитьВедениеПротоколаОбмена();
-		ЗакрытьФайл();
-		мОбработкаДляЗагрузкиДанных = Неопределено;
-
-	КонецПопытки;
-
-	Если Отказ Тогда
-		Возврат;
-	КонецЕсли;
+	// Clearing infobase by rules.
+	ProcessClearingRules(CleanupRulesTable.Rows);
 	
-	// Закрываем файл обмена
-	ЗакрытьФайл();
+	Return True;
+	
+EndFunction
 
-	Если ArchiveFile Тогда
-		СжатьРезультирующийФайлОбмена();
-	КонецЕсли;
+// Performs the following actions after the data import iteration:
+// - commits the transaction (if necessary)
+// - closes the exchange message file;
+// - Executing the AfterDataImport conversion handler
+// - completing exchange logging (if necessary).
+//
+// Parameters:
+//  No.
+// 
+Procedure ExecuteActionsAfterDataReadingCompleted() Export
+	
+	If SafeMode Then
+		SetSafeMode(True);
+		For Each SeparatorName In ConfigurationSeparators Do
+			SetDataSeparationSafeMode(SeparatorName, True);
+		EndDo;
+	EndIf;
+	
+	ExchangeFile.Close();
+	
+	// Handler AfterDataImport
+	If Not IsBlankString(Conversion.AfterImportData) Then
+		
+		Try
+			
+			If HandlersDebugModeFlag Then
+				
+				Execute(GetHandlerCallString(Conversion, "AfterImportData"));
+				
+			Else
+				
+				Execute(Conversion.AfterImportData);
+				
+			EndIf;
+			
+		Except
+			WriteErrorInfoConversionHandlers(23, ErrorDescription(), NStr("ru = 'ПослеЗагрузкиДанных (конвертация)'; en = 'AfterDataImport (conversion)'"));
+		EndTry;
+		
+	EndIf;
 
-	ВыполнитьПередачуИнформацииПриЗавершенииПередачиДанных();
+	EventHandlerExternalDataProcessorDestructor();
+	
+	WriteToExecutionLog(SubstituteParametersToString(
+		NStr("ru = 'Окончание загрузки: %1'; en = 'Import finished at: %1'"), CurrentSessionDate()), , False, , , True);
+	WriteToExecutionLog(SubstituteParametersToString(
+		NStr("ru = 'Загружено объектов: %1'; en = '%1 objects imported'"), mImportedObjectCounter), , False, , , True);
+	
+	FinishKeepExchangeLog();
+	
+	If IsInteractiveMode Then
+		MessageToUser(NStr("ru = 'Загрузка данных завершена.'; en = 'Data import completed.'"));
+	EndIf;
+	
+EndProcedure
 
-	ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Окончание выгрузки: %1'"), ТекущаяДатаСеанса()), , Ложь, , , Истина);
-	ЗаписатьВПротоколВыполнения(ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Выгружено объектов: %1'"), мСчетчикВыгруженныхОбъектов), , Ложь, , , Истина);
+// Imports data according to the set modes (exchange rules).
+//
+// Parameters:
+//  No.
+//
+Procedure ExecuteImport() Export
+	
+	ExecutionIsPossible = ExecuteActionsBeforeReadData();
+	
+	If Not ExecutionIsPossible Then
+		Return;
+	EndIf;
+	
+	If UseTransactions Then
+		BeginTransaction();
+	EndIf;
+	
+	Try
+		ReadData();
+		WriteNotWrittenObjects();
+		If UseTransactions Then
+			CommitTransaction();
+		EndIf;
+	Except
+		If UseTransactions Then
+			RollbackTransaction();
+		EndIf;
+	EndTry;
+	
+	ExecuteActionsAfterDataReadingCompleted();
+	
+EndProcedure
 
-	ЗавершитьВедениеПротоколаОбмена();
+Procedure CompressResultingExchangeFile()
+	
+	Try
+		
+		SourceExchangeFileName = ExchangeFileName;
+		If ArchiveFile Then
+			ExchangeFileName = StrReplace(ExchangeFileName, ".xml", ".zip");
+		EndIf;
+		
+		Archiver = New ZipFileWriter(ExchangeFileName, ExchangeFileCompressionPassword, NStr("ru = 'Файл обмена данными'; en = 'Data exchange file'"));
+		Archiver.Add(SourceExchangeFileName);
+		Archiver.Write();
+		
+		DeleteFiles(SourceExchangeFileName);
+		
+	Except
+		WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", DefaultLanguageCode()),
+			EventLogLevel.Error,,, DetailErrorDescription(ErrorInfo()));
+	EndTry;
+	
+EndProcedure
 
-	мОбработкаДляЗагрузкиДанных = Неопределено;
+Function UnpackZipFile(FileNameForUnpacking)
+	
+	DirectoryToUnpack = GetTempFileName();
+	CreateDirectory(DirectoryToUnpack);
+	
+	UnpackedFileName = "";
+	
+	Try
+		
+		Archiver = New ZipFileReader(FileNameForUnpacking, ExchangeFileUnpackPassword);
+		
+		If Archiver.Items.Count() > 0 Then
 
-	ДеструкторВнешнейОбработкиОбработчиковСобытий();
+			ArchiveItem = Archiver.Items.Get(0);
 
-	Если IsInteractiveMode Тогда
-		СообщитьПользователю(НСтр("ru = 'Выгрузка данных завершена.'"));
-	КонецЕсли;
+			Archiver.Extract(ArchiveItem, DirectoryToUnpack, ZIPRestoreFilePathsMode.DontRestore);
+			UnpackedFileName = GetExchangeFileName(DirectoryToUnpack, Archiver.Items[0].Name);
+			
+		Else
+			
+			UnpackedFileName = "";
+			
+		EndIf;
+		
+		Archiver.Close();
+	
+	Except
+		
+		LR = GetLogRecordStructure(2, ErrorDescription());
+		WriteToExecutionLog(2, LR, True);
+		
+		Return "";
+							
+	EndTry;
+	
+	Return UnpackedFileName;
+		
+EndFunction
 
-КонецПроцедуры
+Function SendExchangeStartedInformationToDestination(CurrentRowForWrite)
+	
+	If Not DirectReadFromDestinationIB Then
+		Return True;
+	EndIf;
+	
+	CurrentRowForWrite = CurrentRowForWrite + Chars.LF + mXMLRules + Chars.LF + "</ExchangeFile>" + Chars.LF;
+	
+	ExecutionPossible = mDataImportDataProcessor.ExecuteActionsBeforeReadData(CurrentRowForWrite);
+	
+	Return ExecutionPossible;	
+	
+EndFunction
+
+Function ExecuteInformationTransferOnCompleteDataTransfer()
+	
+	//UT++
+//	If Not DirectReadFromDestinationIB Then
+//		Return True;
+//	EndIf;
+//	
+//	mDataImportDataProcessor.ExecuteActionsAfterDataReadingCompleted();
+
+	If DirectReadFromDestinationIB Then
+		mDataImportDataProcessor.ExecuteActionsAfterDataReadingCompleted();
+	ElsIf UT_ExportViaWebService Then
+		Message(NStr("ru = 'Начало загрузки через вебсервис '; en = 'Importing via web-service started at '") + CurrentDate());
+		ArchiveCache=ArchiveFile;
+		ArchiveFile=True;
+		CompressResultingExchangeFile();
+		ArchiveFile=ArchiveCache;
+
+		BinaryData=New BinaryData(ExchangeFileName);
+
+		HTTPRequestParameters=New Structure;
+		HTTPRequestParameters.Insert("Timeout", 0);
+
+		Authentification=New Structure;
+		Authentification.Insert("Username", InfobaseConnectionUsername);
+		Authentification.Insert("Password", InfobaseConnectionPassword);
+		HTTPRequestParameters.Insert("Authentification", Authentification);
+
+		Try
+			ExportResult=UT_HTTPConnector.Post(UT_DestinationPublicationAddress + "/hs/tools-ui-1c/exchange",
+				BinaryData, HTTPRequestParameters);
+			ResultStructure=UT_HTTPConnector.AsJson(ExportResult);
+
+			ImportLog=ResultStructure["ImportLog"];
+			Text=New TextDocument;
+			Text.SetText(ImportLog);
+			For LogLineNumber = 1 To Text.LineCount() Do
+				Message(Text.GetLine(LogLineNumber));
+
+			EndDo;
+
+			If ValueIsFilled(ResultStructure["ServiceError"]) Тогда
+				Message(ResultStructure["ServiceError"]);
+			EndIf;
+		Except
+			Message(NStr("ru = 'Ошибка отправки сообщения в приемник '; en = 'A message sending error: '") + ErrorDescription());
+		EndTry;
+
+		Message(NStr("ru = 'Окончание загрузки через вебсервис '; en = 'A message sending finished '") + CurrentDate());
+
+	EndIf;
+	//UT--
+
+EndFunction
+
+Procedure SendAdditionalParametersToDestination()
+	
+	For Each Parameter In ParametersSettingsTable Do
+		
+		If Parameter.PassParameterOnExport = True Then
+			
+			SendSingleParameterToDestination(Parameter.Name, Parameter.Value, Parameter.ConversionRule);
+					
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
+
+Procedure SendTypesInformationToDestination()
+	
+	If Not IsBlankString(mTypeStringForDestination) Then
+		WriteToFile(mTypeStringForDestination);
+	EndIf;
+		
+EndProcedure
+
+// Exports data according to the set modes (exchange rules).
+//
+// Parameters:
+//  No.
+//
+Procedure ExecuteExport() Export
+	
+	DataProcessingMode = mDataProcessingModes.DataExported;
+	
+	InitializeKeepExchangeLog();
+	
+	InitializeCommentsOnDataExportAndImport();
+	
+	ExportIsPossible = True;
+	CurrentNestingLevelExportByRule = 0;
+	
+	mDataExportCallStack = New ValueTable;
+	mDataExportCallStack.Columns.Add("Ref");
+	mDataExportCallStack.Indexes.Add("Ref");
+	
+	If mExchangeRulesReadOnImport = True Then
+		
+		WriteToExecutionLog(74);
+		ExportIsPossible = False;	
+		
+	EndIf;
+	
+	If IsBlankString(ExchangeRulesFileName) Then
+		WriteToExecutionLog(12);
+		ExportIsPossible = False;
+	EndIf;
+
+	If Not DirectReadFromDestinationIB Then
+		
+		If IsBlankString(ExchangeFileName) Then
+			WriteToExecutionLog(10);
+			ExportIsPossible = False;
+		EndIf;
+		
+	Else
+		
+		mDataImportDataProcessor = EstablishConnectionWithDestinationIB(); 
+		
+		ExportIsPossible = mDataImportDataProcessor <> Undefined;
+		
+	EndIf;
+	
+	// Initializing the external data processor with export handlers.
+	InitEventHandlerExternalDataProcessor(ExportIsPossible, ThisObject);
+	
+	If Not ExportIsPossible Then
+		mDataImportDataProcessor = Undefined;
+		Return;
+	EndIf;
+	
+	WriteToExecutionLog(SubstituteParametersToString(
+		NStr("ru = 'Начало выгрузки: %1'; en = 'Export started at: %1'"), CurrentSessionDate()), , False, , , True);
+		
+	InitManagersAndMessages();
+	
+	mExportedObjectCounter = 0;
+	mSnCounter 				= 0;
+	ErrorFlag                  = False;
+
+	// Importing exchange rules
+	If Conversion.Count() = 9 Then
+		
+		ImportExchangeRules();
+		If ErrorFlag Then
+			FinishKeepExchangeLog();
+			mDataImportDataProcessor = Undefined;
+			Return;
+		EndIf;
+		
+	Else
+		
+		For Each Rule In ConversionRulesTable Do
+			Rule.Exported.Clear();
+			Rule.OnlyRefsExported.Clear();
+		EndDo;
+		
+	EndIf;
+
+	// Assigning parameters that are set in the dialog.
+	SetParametersFromDialog();
+
+	// Opening the exchange file
+	CurrentLineToWrite = OpenExportFile() + Chars.LF;
+
+	If ErrorFlag Then
+		ExchangeFile = Undefined;
+		FinishKeepExchangeLog();
+		mDataImportDataProcessor = Undefined;
+		Return; 
+	EndIf;
+	
+	// Defining handler interfaces.
+	If HandlersDebugModeFlag Then
+		
+		SupplementRulesWithHandlerInterfaces(Conversion, ConversionRulesTable, ExportRulesTable, CleanupRulesTable);
+		
+	EndIf;
+
+	If UseTransactions Then
+		BeginTransaction();
+	EndIf;
+	
+	Cancel = False;
+	
+	//UT++
+	If UT_ExportViaWebService Then
+		SafeMode=False;
+	EndIf;
+	//UT--
+
+	Try
+	
+		// Writing the exchange rules to the file.
+		ExchangeFile.WriteLine(mXMLRules);
+		
+		Cancel = Not SendExchangeStartedInformationToDestination(CurrentRowForWrite);
+		
+		If Not Cancel Then
+			
+			If SafeMode Then
+				SetSafeMode(True);
+				For Each SeparatorName In ConfigurationSeparators Do
+					SetDataSeparationSafeMode(SeparatorName, True);
+				EndDo;
+			EndIf;
+			
+			// BeforeDataExport handler
+			Try
+				
+				If HandlersDebugModeFlag Then
+					
+					If Not IsBlankString(Conversion.BeforeExportData) Then
+						
+						Execute(GetHandlerCallString(Conversion, "BeforeExportData"));
+						
+					EndIf;
+					
+				Else
+					
+					Execute(Conversion.BeforeExportData);
+					
+				EndIf;
+				
+			Except
+				WriteErrorInfoConversionHandlers(62, ErrorDescription(), "BeforeExportData (conversion)");
+				Cancel = True;
+			EndTry;
+
+			If Not Cancel Then
+				
+				If ExecuteDataExchangeInOptimizedFormat Then
+					SendTypesInformationToDestination();
+				EndIf;
+				
+				// Sending parameters to the destination.
+				SendAdditionalParametersToDestination();
+				
+				EventTextAfterParametersImport = "";
+				If Conversion.Property("AfterImportParameters", EventTextAfterParametersImport)
+					And Not IsBlankString(EventTextAfterParametersImport) Then
+					
+					WritingEvent = New XMLWriter;
+					WritingEvent.SetString();
+					deWriteElement(WritingEvent, "AfterParameterExportAlgorithm", EventTextAfterParametersImport);
+					WriteToFile(WritingEvent);
+					
+				EndIf;
+
+				NodeAndExportRuleMap = New Map();
+				StructureForChangeRegistrationDeletion = New Map();
+				
+				ProcessExportRules(ExportRulesCollection().Rows, NodeAndExportRuleMap);
+
+				SuccessfullyExportedByExchangePlans = ProcessExportForExchangePlans(NodeAndExportRuleMap, StructureForChangeRegistrationDeletion);
+				
+				If SuccessfullyExportedByExchangePlans Then
+				
+					ProcessExchangeNodeRecordChangeEditing(StructureForChangeRegistrationDeletion);
+				
+				EndIf;
+				
+				// AfterExportData handler
+				Try
+					
+					If HandlersDebugModeFlag Then
+						
+						If Not IsBlankString(Conversion.AfterExportData) Then
+							
+							Execute(GetHandlerCallString(Conversion, "AfterExportData"));
+							
+						EndIf;
+						
+					Else
+						
+						Execute(Conversion.AfterExportData);
+						
+					EndIf;
+
+				Except
+					WriteErrorInfoConversionHandlers(63, ErrorDescription(), "AfterExportData (conversion)");
+				EndTry;
+
+				WriteNotWrittenObjects();
+
+				If TransactionActive() Then
+					CommitTransaction();
+				EndIf;
+				
+			EndIf;
+			
+		EndIf;
+		
+		If Cancel Then
+			
+			If TransactionActive() Then
+				RollbackTransaction();
+			EndIf;
+			
+			ExecuteInformationTransferOnCompleteDataTransfer();
+			
+			FinishKeepExchangeLog();
+			mDataImportDataProcessor = Undefined;
+			ExchangeFile = Undefined;
+			
+			EventHandlerExternalDataProcessorDestructor();
+			
+		EndIf;
+
+	Except
+		
+		If TransactionActive() Then
+			RollbackTransaction();
+		EndIf;
+		
+		Cancel = True;
+		ErrorRow = ErrorDescription();
+		
+		WriteToExecutionLog(SubstituteParametersToString(
+			NStr("ru = 'Ошибка при выгрузке данных: %1'; en = 'Error exporting data: %1'"), ErrorRow), Undefined, True, , , True);
+		
+		ExecuteInformationTransferOnCompleteDataTransfer();
+		
+		FinishKeepExchangeLog();
+		CloseFile();
+		mDataImportDataProcessor = Undefined;
+				
+	EndTry;
+	
+	If Cancel Then
+		Return;
+	EndIf;
+	
+	// Closing the exchange file
+	CloseFile();
+	
+	If ArchiveFile Then
+		CompressResultingExchangeFile();
+	EndIf;
+	
+	ExecuteInformationTransferOnCompleteDataTransfer();
+	
+	WriteToExecutionLog(SubstituteParametersToString(
+		NStr("ru = 'Окончание выгрузки: %1'; en = 'Export completed at: %1'"), CurrentSessionDate()), , False, , ,True);
+	WriteToExecutionLog(SubstituteParametersToString(
+		NStr("ru = 'Выгружено объектов: %1'; en = 'Objects exported: %1'"), mExportedObjectCounter), , False, , , True);
+	
+	FinishKeepExchangeLog();
+	
+	mDataImportDataProcessor = Undefined;
+	
+	EventHandlerExternalDataProcessorDestructor();
+	
+	If IsInteractiveMode Then
+		MessageToUser(NStr("ru = 'Выгрузка данных завершена.'; en = 'Data has been exported.'"));
+	EndIf;
+	
+EndProcedure
 
 #EndRegion
 
@@ -14492,7 +14484,7 @@ EndProcedure
 
 #КонецОбласти
 
-#КонецОбласти
+#EndRegion
 
 #Область УИ
 
