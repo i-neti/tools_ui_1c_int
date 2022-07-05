@@ -116,6 +116,8 @@
   <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
   <commonModules>CommonModule.UT_Users</commonModules>
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
+  <commonModules>CommonModule.UT_FormsClient</commonModules>
+  <commonModules>CommonModule.UT_FormsServer</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
   <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>
@@ -158,11 +160,11 @@
   <dataProcessors>DataProcessor.UT_RegisterChangesForDataExchange</dataProcessors>
   <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
   <dataProcessors>DataProcessor.UT_Support</dataProcessors>
-  <dataProcessors>DataProcessor.UT_UniversalXMLDataExchange</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_ВыгрузкаЗагрузкаДанныхXMLСФильтрами</dataProcessors>
+  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
   <dataProcessors>DataProcessor.УИ_ДанныеДляОтладки</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_КонсольСравненияДанных</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ConsoleComparisonData</dataProcessors>
   <dataProcessors>DataProcessor.УИ_КонструкторРегулярныхВыражений</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_НавигаторПоКонфигурации</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
 </mdclass:Configuration>

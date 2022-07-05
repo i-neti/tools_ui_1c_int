@@ -1,424 +1,256 @@
-//Признак использования настроек
+//Sign of using settings
 &AtClient
-Var мИспользоватьНастройки Export;
+Var mUseSettings Export;
 
-//Types объектов, для которых может использоваться обработка.
-//To умолчанию для всех.
+//Types of objects for which processing can be used.
+//To default for everyone.
 &AtClient
-Var мТипыОбрабатываемыхОбъектов Export;
+Var mTypesOfProcessedObjects Export;
 
 &AtClient
-Var мНастройка;
+Var mSetting;
 
 ////////////////////////////////////////////////////////////////////////////////
-// ВСПОМОГАТЕЛЬНЫЕ ПРОЦЕДУРЫ And ФУНКЦИИ
+// AUXILIARY PROCEDURES AND FUNCTIONS
 
-// Определяет и устанавливает Type и Длинну номера объекта
+// Defines and sets the Type and Length of the object number
 //
 // Parameters:
 //  None.
 //
 &AtServer
-Procedure ОпределитьТипИДлиннуНомера()
-	ИмяТипаОбъектов = ОбъектПоиска.Type;
-	ОбъектМетаданных = Metadata.FindByFullName(ОбъектПоиска.Type + "." + ОбъектПоиска.Name);
-	If ИмяТипаОбъектов = "Document" Then
-		NumberType   = String(ОбъектМетаданных.NumberType);
-		NumberLength = ОбъектМетаданных.NumberLength;
-	ElsIf ИмяТипаОбъектов = "Catalog" Then
-		NumberType   = String(ОбъектМетаданных.CodeType);
-		NumberLength = ОбъектМетаданных.CodeLength;
+Procedure DefineTypeAndLengthNumbers()
+	ObjectTypeName = SearchObject.Type;
+	ObjectMetadata = Metadata.FindByFullName(SearchObject.Type + "." + SearchObject.Name);
+	If ObjectTypeName = "Document" Then
+		NumberType   = String(ObjectMetadata.NumberType);
+		NumberLength = ObjectMetadata.NumberLength;
+	ElsIf ObjectTypeName = "Catalog" Then
+		NumberType   = String(ObjectMetadata.CodeType);
+		NumberLength = ObjectMetadata.CodeLength;
 	EndIf;
 EndProcedure // ()
 
-// Выполняет обработку объектов.
+// Performs object processing.
 //
 // Parameters:
-//  Object                 - обрабатываемый объект.
-//  ПорядковыйНомерОбъекта - порядковый номер обрабатываемого объекта.
+//  ProcessedObject                 - processed object.
+//  SequenceNumberObject - serial number of the processed object.
 //
 &AtServer
-Procedure ОбработатьОбъект(Reference, ind, НеУникальныеНомера, МаксимальныйНомер, ЧисловаяЧастьНомера,
-	ПараметрыЗаписиОбъектов)
+Procedure ProcessObject(Reference, Counter, NonUniqueNumbers, MaximumNumber, NumericPartNumbers,
+	ParametersWriteObjects)
 
-	Object = Reference.GetObject();
+	ProcessedObject = Reference.GetObject();
 
 	If NumberType = "Number" Then
-		If Not НеИзменятьЧисловуюНумерацию Then
-			If ИмяТипаОбъектов = "Document" Then
-				Object.Number = ЧисловаяЧастьНомера;
+		If Not DoNotChangeNumericalNumbering Then
+			If ObjectTypeName = "Document" Then
+				ProcessedObject.Number = NumericPartNumbers;
 			Else
-				Object.Code = ЧисловаяЧастьНомера;
+				ProcessedObject.Code = NumericPartNumbers;
 			EndIf;
-			If Not UT_Common.WriteObjectToDB(Object, ПараметрыЗаписиОбъектов) Then
-				If ИмяТипаОбъектов = "Document" Then
-					Object.Number = МаксимальныйНомер - Сч;
+			If Not UT_Common.WriteObjectToDB(ProcessedObject, ParametersWriteObjects) Then
+				If ObjectTypeName = "Document" Then
+					ProcessedObject.Number = MaximumNumber - Counter;
 				Else
-					Object.Code = МаксимальныйНомер - Сч;
+					ProcessedObject.Code = MaximumNumber - Counter;
 				EndIf;
-				//				Object.Write();
+				//				ProcessedObject.Write();
 
-				If Not UT_Common.WriteObjectToDB(Object, ПараметрыЗаписиОбъектов) Then
-					Raise "Error обработки номеров объектов";
+				If Not UT_Common.WriteObjectToDB(ProcessedObject, ParametersWriteObjects) Then
+					Raise Nstr("ru = 'Ошибка обработки номеров объектов';en = 'Error processing object numbers'");
 				EndIf;
-				НеУникальныеНомера.Insert(ЧисловаяЧастьНомера, Object.Reference);
+				NonUniqueNumbers.Insert(NumericPartNumbers, ProcessedObject.Reference);
 			EndIf;
 //			Try
-//				Object.Write();
+//				ProcessedObject.Write();
 //			Except
-//				If ИмяТипаОбъектов = "Document" Then
-//					Object.Number = МаксимальныйНомер - Сч;
+//				If ObjectTypeName = "Document" Then
+//					ProcessedObject.Number = MaximumNumber - Counter;
 //				Else
-//					Object.Code = МаксимальныйНомер - Сч;
+//					ProcessedObject.Code = MaximumNumber - Counter;
 //				EndIf; 
-//				Object.Write();
-//				НеУникальныеНомера.Insert(ЧисловаяЧастьНомера, Object.Reference);
+//				ProcessedObject.Write();
+//				NonUniqueNumbers.Insert(NumericPartNumbers, ProcessedObject.Reference);
 //			EndTry;		
-			ЧисловаяЧастьНомера = ЧисловаяЧастьНомера + 1;
+			NumericPartNumbers = NumericPartNumbers + 1;
 		EndIf;
 		Return;
 	EndIf;
-	If ИмяТипаОбъектов = "Document" Then
-		ТекНомер = TrimAll(Object.Number);
+	If ObjectTypeName = "Document" Then
+		ТекНомер = TrimAll(ProcessedObject.Number);
 	Else
-		ТекНомер = TrimAll(Object.Code);
+		ТекНомер = TrimAll(ProcessedObject.Code);
 	EndIf;
 
-	If НеИзменятьЧисловуюНумерацию Then
-		СтроковаяЧастьНомера = ПолучитьПрефиксЧислоНомера(ТекНомер, ЧисловаяЧастьНомера);
+	If DoNotChangeNumericalNumbering Then
+		СтроковаяЧастьНомера = GetPrefixNumberNumbers(ТекНомер, NumericPartNumbers);
 	Else
-		СтроковаяЧастьНомера = ПолучитьПрефиксЧислоНомера(ТекНомер);
+		СтроковаяЧастьНомера = GetPrefixNumberNumbers(ТекНомер);
 	EndIf;
-	If СпособОбработкиПрефиксов = 1 Then
-		НовыйНомер = СтроковаяЧастьНомера;
-	ElsIf СпособОбработкиПрефиксов = 2 Then
-		НовыйНомер = TrimAll(СтрокаПрефикса);
-	ElsIf СпособОбработкиПрефиксов = 3 Then
-		НовыйНомер = TrimAll(СтрокаПрефикса) + СтроковаяЧастьНомера;
-	ElsIf СпособОбработкиПрефиксов = 4 Then
-		НовыйНомер = СтроковаяЧастьНомера + TrimAll(СтрокаПрефикса);
-	ElsIf СпособОбработкиПрефиксов = 5 Then
-		НовыйНомер = StrReplace(СтроковаяЧастьНомера, TrimAll(ЗаменяемаяПодстрока), TrimAll(СтрокаПрефикса));
+	If PrefixHandlingMethod = 1 Then
+		NewNumber = СтроковаяЧастьНомера;
+	ElsIf PrefixHandlingMethod = 2 Then
+		NewNumber = TrimAll(LinePrefix);
+	ElsIf PrefixHandlingMethod = 3 Then
+		NewNumber = TrimAll(LinePrefix) + СтроковаяЧастьНомера;
+	ElsIf PrefixHandlingMethod = 4 Then
+		NewNumber = СтроковаяЧастьНомера + TrimAll(LinePrefix);
+	ElsIf PrefixHandlingMethod = 5 Then
+		NewNumber = StrReplace(СтроковаяЧастьНомера, TrimAll(ReplaceableSubstring), TrimAll(LinePrefix));
 	EndIf;
 
-	While NumberLength - StrLen(НовыйНомер) - StrLen(Format(ЧисловаяЧастьНомера, "ЧГ=0")) > 0 Do
-		НовыйНомер = НовыйНомер + "0";
+	While NumberLength - StrLen(NewNumber) - StrLen(Format(NumericPartNumbers, "ЧГ=0")) > 0 Do
+		NewNumber = NewNumber + "0";
 	EndDo;
 
-	НовыйНомер 	 = НовыйНомер + Format(ЧисловаяЧастьНомера, "ЧГ=0");
+	NewNumber 	 = NewNumber + Format(NumericPartNumbers, "ЧГ=0");
 
-	If ИмяТипаОбъектов = "Document" Then
-		Object.Number = НовыйНомер;
+	If ObjectTypeName = "Document" Then
+		ProcessedObject.Number = NewNumber;
 	Else
-		Object.Code = НовыйНомер;
+		ProcessedObject.Code = NewNumber;
 	EndIf;
 
-	If Not UT_Common.WriteObjectToDB(Object, ПараметрыЗаписиОбъектов) Then
-		If ИмяТипаОбъектов = "Document" Then
-			Object.Number = Format(МаксимальныйНомер - Сч, "ЧГ=0");
+	If Not UT_Common.WriteObjectToDB(ProcessedObject, ParametersWriteObjects) Then
+		If ObjectTypeName = "Document" Then
+			ProcessedObject.Number = Format(MaximumNumber - Counter, "ЧГ=0");
 		Else
-			Object.Code = Format(МаксимальныйНомер - Сч, "ЧГ=0");
+			ProcessedObject.Code = Format(MaximumNumber - Counter, "ЧГ=0");
 		EndIf; 
-//		Object.Write();			
-		If Not UT_Common.WriteObjectToDB(Object, ПараметрыЗаписиОбъектов) Then
+//		ProcessedObject.Write();			
+		If Not UT_Common.WriteObjectToDB(ProcessedObject, ParametersWriteObjects) Then
 			Raise "Error обработки номеров объектов";
 		EndIf;
-		НеУникальныеНомера.Insert(НовыйНомер, Object.Reference);
+		NonUniqueNumbers.Insert(NewNumber, ProcessedObject.Reference);
 
 	EndIf;
 //	Try
-//		Object.Write();
+//		ProcessedObject.Write();
 //	Except
-//		If ИмяТипаОбъектов = "Document" Then
-//			Object.Number = Format(МаксимальныйНомер - Сч, "ЧГ=0");
+//		If ObjectTypeName = "Document" Then
+//			ProcessedObject.Number = Format(MaximumNumber - Counter, "ЧГ=0");
 //		Else
-//			Object.Code = Format(МаксимальныйНомер - Сч, "ЧГ=0");
+//			ProcessedObject.Code = Format(MaximumNumber - Counter, "ЧГ=0");
 //		EndIf;
-//		Object.Write();
-//		НеУникальныеНомера.Insert(НовыйНомер, Object.Reference);
+//		ProcessedObject.Write();
+//		NonUniqueNumbers.Insert(NewNumber, ProcessedObject.Reference);
 //	EndTry;
 
-	If Not НеИзменятьЧисловуюНумерацию Then
-		ЧисловаяЧастьНомера = ЧисловаяЧастьНомера + 1;
+	If Not DoNotChangeNumericalNumbering Then
+		NumericPartNumbers = NumericPartNumbers + 1;
 	EndIf;
 
-EndProcedure // ОбработатьОбъект()
+EndProcedure // ProcessObject()
 
 &AtServer
-Procedure ПроверитьНеУникальныеНомера(НеУникальныеНомера, ПараметрыЗаписиОбъектов)
-	For Each Зн In НеУникальныеНомера Do
-		НовыйНомер   = Зн.Key;
-		Object       = Зн.Value.GetObject();
-		If ИмяТипаОбъектов = "Document" Then
-			Object.Number = НовыйНомер;
+Procedure CheckNonUniqueNumbers(NonUniqueNumbers, ParametersWriteObjects)
+	For Each NonUniqueNumber In NonUniqueNumbers Do
+		NewNumber   = NonUniqueNumber.Key;
+		ProcessedObject       = NonUniqueNumber.Value.GetObject();
+		If ObjectTypeName = "Document" Then
+			ProcessedObject.Number = NewNumber;
 		Else
-			Object.Code = НовыйНомер;
+			ProcessedObject.Code = NewNumber;
 		EndIf;
-		If Not UT_Common.WriteObjectToDB(Object, ПараметрыЗаписиОбъектов) Then
+		If Not UT_Common.WriteObjectToDB(ProcessedObject, ParametersWriteObjects) Then
 			UT_CommonClientServer.MessageToUser(StrTemplate(
-				"Повтор номера: %1 за пределами данной выборки!", НовыйНомер));
+				Nstr("ru = 'Повтор номера: %1 за пределами данной выборки!';en = 'Repeating number: %1 out of range!'")
+				, NewNumber));
 		EndIf;
 //		Try
-//			Object.Write();
+//			ProcessedObject.Write();
 //		Except
-//			Message("Повтор номера: " + НовыйНомер + " за пределами данной выборки!");
+//			Message("Повтор номера: " + NewNumber + " за пределами данной выборки!");
 //		EndTry;
 	EndDo;
 EndProcedure
 
-// Выполняет обработку объектов.
+// Performs object processing.
 //
 // Parameters:
 //  None.
 //
 &AtClient
-Function ExecuteProcessing(ПараметрыЗаписиОбъектов) Export
-	ОпределитьТипИДлиннуНомера();
-	If (СпособОбработкиПрефиксов = 1) And (НеИзменятьЧисловуюНумерацию) Then
+Function ExecuteProcessing(ParametersWriteObjects) Export
+	DefineTypeAndLengthNumbers();
+	If (PrefixHandlingMethod = 1) And (DoNotChangeNumericalNumbering) Then
 		Return 0;
 	EndIf;
 
-	If (НачальныйНомер = 0) And (Not НеИзменятьЧисловуюНумерацию) Then
-		ShowMessageBox( , "Измените начальный номер!");
+	If (InitialNumber = 0) And (Not DoNotChangeNumericalNumbering) Then
+		ShowMessageBox( , Nstr("ru = 'Измените начальный номер!';en = 'Change start number!'"));
 		Return 0;
 	EndIf;
 
-	If Not НеИзменятьЧисловуюНумерацию Then
-		ЧисловаяЧастьНомера = НачальныйНомер;
+	If Not DoNotChangeNumericalNumbering Then
+		NumericPartNumbers = InitialNumber;
 	EndIf;
 
-	НеУникальныеНомера = New Map;
-	МаксимальныйНомер  = Number(ДополнитьСтрокуСимволами("", NumberLength, "9"));
+	NonUniqueNumbers = New Map;
+	MaximumNumber  = Number(SupplementStringWithCharacters("", NumberLength, "9"));
 
-	Indicator = ПолучитьИндикаторПроцесса(НайденныеОбъекты.Count());
-	For ind = 0 To НайденныеОбъекты.Count() - 1 Do
-		ОбработатьИндикатор(Indicator, ind + 1);
+	Indicator = UT_FormsClient.GetProcessIndicator(FoundObjects.Count());
+	For ind = 0 To FoundObjects.Count() - 1 Do
+		UT_FormsClient.ProcessIndicator(Indicator, ind + 1);
 
-		Object = НайденныеОбъекты.Get(ind).Value;
-		ОбработатьОбъект(Object, ind, НеУникальныеНомера, МаксимальныйНомер, ЧисловаяЧастьНомера,
-			ПараметрыЗаписиОбъектов);
+		RowFoundObjectValue = FoundObjects.Get(ind).Value;
+		ProcessObject(RowFoundObjectValue, ind, NonUniqueNumbers, MaximumNumber, NumericPartNumbers,
+			ParametersWriteObjects);
 	EndDo;
 
-	ПроверитьНеУникальныеНомера(НеУникальныеНомера, ПараметрыЗаписиОбъектов);
+	CheckNonUniqueNumbers(NonUniqueNumbers, ParametersWriteObjects);
 
 	If ind > 0 Then
-		NotifyChanged(Type(ОбъектПоиска.Type + "Reference." + ОбъектПоиска.Name));
+		NotifyChanged(Type(SearchObject.Type + "Reference." + SearchObject.Name));
 	EndIf;
 
 	Return ind;
-EndFunction // вВыполнитьОбработку()
+EndFunction // ExecuteProcessing()
 
-// Сохраняет значения реквизитов формы.
+// Restores saved form attribute values.
 //
 // Parameters:
 //  None.
 //
 &AtClient
-Procedure СохранитьНастройку() Export
+Procedure DownloadSettings() Export
 
-	If IsBlankString(ТекущаяНастройкаПредставление) Then
-		ShowMessageBox( ,
-			"Задайте имя новой настройки для сохранения или выберите существующую настройку для перезаписи.");
-	EndIf;
+	UT_FormsClient.DownloadSettings(ThisForm, mSetting);
 
-	НоваяНастройка = New Structure;
-	НоваяНастройка.Insert("Processing", ТекущаяНастройкаПредставление);
-	НоваяНастройка.Insert("Прочее", New Structure);
+	PrefixHandlingMethodOnChange("");
+	DoNotChangeNumericalNumberingOnChange("");
+	
+EndProcedure //DownloadSettings()
 
-	For Each РеквизитНастройки In мНастройка Do
-		Execute ("НоваяНастройка.Прочее.Insert(String(РеквизитНастройки.Key), " + String(РеквизитНастройки.Key)
-			+ ");");
-	EndDo;
-
-	AvailableDataProcessors = ThisForm.FormOwner.AvailableDataProcessors;
-	ТекущаяДоступнаяНастройка = Undefined;
-	For Each ТекущаяДоступнаяНастройка In AvailableDataProcessors.GetItems() Do
-		If ТекущаяДоступнаяНастройка.GetID() = Parent Then
-			Break;
-		EndIf;
-	EndDo;
-
-	If ТекущаяНастройка = Undefined Or Not ТекущаяНастройка.Processing = ТекущаяНастройкаПредставление Then
-		If ТекущаяДоступнаяНастройка <> Undefined Then
-			NewLine = ТекущаяДоступнаяНастройка.GetItems().Add();
-			NewLine.Processing = ТекущаяНастройкаПредставление;
-			NewLine.Setting.Add(НоваяНастройка);
-
-			ThisForm.FormOwner.Items.AvailableDataProcessors.CurrentLine = NewLine.GetID();
-		EndIf;
-	EndIf;
-
-	If ТекущаяДоступнаяНастройка <> Undefined And CurrentLine > -1 Then
-		For Each ТекНастройка In ТекущаяДоступнаяНастройка.GetItems() Do
-			If ТекНастройка.GetID() = CurrentLine Then
-				Break;
-			EndIf;
-		EndDo;
-
-		If ТекНастройка.Setting.Count() = 0 Then
-			ТекНастройка.Setting.Add(НоваяНастройка);
-		Else
-			ТекНастройка.Setting[0].Value = НоваяНастройка;
-		EndIf;
-	EndIf;
-
-	ТекущаяНастройка = НоваяНастройка;
-	ThisForm.Modified = False;
-EndProcedure // вСохранитьНастройку()
-
-// Восстанавливает сохраненные значения реквизитов формы.
+// Parses a string extracting a prefix and a numeric part from it
 //
 // Parameters:
-//  None.
+//  Row            - String. Parsed string
+//  NumericPart  - Number. Variable which will return the numeric part of the string
+//  Mode          - String. If "Number", then return the numeric part otherwise - prefix
 //
-&AtClient
-Procedure ЗагрузитьНастройку() Export
-
-	If Items.ТекущаяНастройка.ChoiceList.Count() = 0 Then
-		УстановитьИмяНастройки("Новая настройка");
-	Else
-		If Not ТекущаяНастройка.Прочее = Undefined Then
-			мНастройка = ТекущаяНастройка.Прочее;
-		EndIf;
-	EndIf;
-
-	For Each РеквизитНастройки In мНастройка Do
-		//@skip-warning
-		Value = мНастройка[РеквизитНастройки.Key];
-		Execute (String(РеквизитНастройки.Key) + " = Value;");
-	EndDo;
-
-	СпособОбработкиПрефиксовПриИзменении("");
-	НеИзменятьЧисловуюНумерациюПриИзменении("");
-EndProcedure //вЗагрузитьНастройку()
-
-// Устанавливает значение реквизита "ТекущаяНастройка" по имени настройки или произвольно.
-//
-// Parameters:
-//  ИмяНастройки   - произвольное имя настройки, которое необходимо установить.
-//
-&AtClient
-Procedure УстановитьИмяНастройки(ИмяНастройки = "") Export
-
-	If IsBlankString(ИмяНастройки) Then
-		If ТекущаяНастройка = Undefined Then
-			ТекущаяНастройкаПредставление = "";
-		Else
-			ТекущаяНастройкаПредставление = ТекущаяНастройка.Processing;
-		EndIf;
-	Else
-		ТекущаяНастройкаПредставление = ИмяНастройки;
-	EndIf;
-
-EndProcedure // вУстановитьИмяНастройки()
-
-// Получает структуру для индикации прогресса цикла.
-//
-// Parameters:
-//  КоличествоПроходов - Number - максимальное значение счетчика;
-//  ПредставлениеПроцесса - String, "Выполнено" - отображаемое название процесса;
-//  ВнутреннийСчетчик - Boolean, *True - использовать внутренний счетчик с начальным значением 1,
-//                    иначе нужно будет передавать значение счетчика при каждом вызове обновления индикатора;
-//  КоличествоОбновлений - Number, *100 - всего количество обновлений индикатора;
-//  ЛиВыводитьВремя - Boolean, *True - выводить приблизительное время до окончания процесса;
-//  РазрешитьПрерывание - Boolean, *True - разрешает пользователю прерывать процесс.
-//
-// Возвращаемое значение:
-//  Structure - которую потом нужно будет передавать в метод ЛксОбработатьИндикатор.
-//
-&AtClient
-Function ПолучитьИндикаторПроцесса(КоличествоПроходов, ПредставлениеПроцесса = "Выполнено", ВнутреннийСчетчик = True,
-	КоличествоОбновлений = 100, ЛиВыводитьВремя = True, РазрешитьПрерывание = True) Export
-
-	Indicator = New Structure;
-	Indicator.Insert("КоличествоПроходов", КоличествоПроходов);
-	Indicator.Insert("ДатаНачалаПроцесса", CurrentDate());
-	Indicator.Insert("ПредставлениеПроцесса", ПредставлениеПроцесса);
-	Indicator.Insert("ЛиВыводитьВремя", ЛиВыводитьВремя);
-	Indicator.Insert("РазрешитьПрерывание", РазрешитьПрерывание);
-	Indicator.Insert("ВнутреннийСчетчик", ВнутреннийСчетчик);
-	Indicator.Insert("Step", КоличествоПроходов / КоличествоОбновлений);
-	Indicator.Insert("СледующийСчетчик", 0);
-	Indicator.Insert("Счетчик", 0);
-	Return Indicator;
-
-EndFunction // ЛксПолучитьИндикаторПроцесса()
-
-// Проверяет и обновляет индикатор. Нужно вызывать на каждом проходе индицируемого цикла.
-//
-// Parameters:
-//  Indicator    - Structure - индикатора, полученная методом ЛксПолучитьИндикаторПроцесса;
-//  Счетчик      - Number - внешний счетчик цикла, используется при ВнутреннийСчетчик = False.
-//
-&AtClient
-Procedure ОбработатьИндикатор(Indicator, Счетчик = 0) Export
-
-	If Indicator.ВнутреннийСчетчик Then
-		Indicator.Счетчик = Indicator.Счетчик + 1;
-		Счетчик = Indicator.Счетчик;
-	EndIf;
-	If Indicator.РазрешитьПрерывание Then
-		UserInterruptProcessing();
-	EndIf;
-
-	If Счетчик > Indicator.СледующийСчетчик Then
-		Indicator.СледующийСчетчик = Int(Счетчик + Indicator.Step);
-		If Indicator.ЛиВыводитьВремя Then
-			ПрошлоВремени = CurrentDate() - Indicator.ДатаНачалаПроцесса;
-			Осталось = ПрошлоВремени * (Indicator.КоличествоПроходов / Счетчик - 1);
-			Часов = Int(Осталось / 3600);
-			Осталось = Осталось - (Часов * 3600);
-			Минут = Int(Осталось / 60);
-			Секунд = Int(Int(Осталось - (Минут * 60)));
-			ОсталосьВремени = Format(Часов, "ЧЦ=2; ЧН=00; ЧВН=") + ":" + Format(Минут, "ЧЦ=2; ЧН=00; ЧВН=") + ":"
-				+ Format(Секунд, "ЧЦ=2; ЧН=00; ЧВН=");
-			ТекстОсталось = "Осталось: ~" + ОсталосьВремени;
-		Else
-			ТекстОсталось = "";
-		EndIf;
-
-		If Indicator.КоличествоПроходов > 0 Then
-			ТекстСостояния = ТекстОсталось;
-		Else
-			ТекстСостояния = "";
-		EndIf;
-
-		Status(Indicator.ПредставлениеПроцесса, Счетчик / Indicator.КоличествоПроходов * 100, ТекстСостояния);
-	EndIf;
-
-	If Счетчик = Indicator.КоличествоПроходов Then
-		Status(Indicator.ПредставлениеПроцесса, 100, ТекстСостояния);
-	EndIf;
-
-EndProcedure // ЛксОбработатьИндикатор()
-
-// Разбирает строку выделяя из нее префикс и числовую часть
-//
-// Parameters:
-//  Стр            - String. Разбираемая строка
-//  ЧисловаяЧасть  - Number. Variable в которую возвратится числовая часть строки
-//  Mode          - String. If "Number", то возвратит числовую часть иначе - префикс
-//
-// Возвращаемое значение:
-//  Prefix строки
+// Return value:
+//  Prefix string
 //              
 &AtServer
-Function ПолучитьПрефиксЧислоНомера(Val Стр, ЧисловаяЧасть = "", Mode = "") Export
+Function GetPrefixNumberNumbers(Val Row, NumericPart = "", Mode = "") Export
 
-	Стр		=	TrimAll(Стр);
-	Prefix	=	Стр;
-	Length	=	StrLen(Стр);
+	Row		=	TrimAll(Row);
+	Prefix	=	Row;
+	Length	=	StrLen(Row);
 
-	For Сч = 1 To Length Do
+	For Counter = 1 To Length Do
 		Try
-			ЧисловаяЧасть = Number(Стр);
+			NumericPart = Number(Row);
 		Except
-			Стр = Right(Стр, Length - Сч);
+			Row = Right(Row, Length - Counter);
 			Continue;
 		EndTry;
 
-		If (ЧисловаяЧасть > 0) And (StrLen(Format(ЧисловаяЧасть, "ЧГ=0")) = Length - Сч + 1) Then
-			Prefix	=	Left(Prefix, Сч - 1);
+		If (NumericPart > 0) And (StrLen(Format(NumericPart, "ЧГ=0")) = Length - Counter + 1) Then
+			Prefix	=	Left(Prefix, Counter - 1);
 
 			While Right(Prefix, 1) = "0" Do
 				Prefix = Left(Prefix, StrLen(Prefix) - 1);
@@ -426,254 +258,240 @@ Function ПолучитьПрефиксЧислоНомера(Val Стр, Чис
 
 			Break;
 		Else
-			Стр = Right(Стр, Length - Сч);
+			Row = Right(Row, Length - Counter);
 		EndIf;
 
-		If ЧисловаяЧасть < 0 Then
-			ЧисловаяЧасть = -ЧисловаяЧасть;
+		If NumericPart < 0 Then
+			NumericPart = -NumericPart;
 		EndIf;
 
 	EndDo;
 
 	If Mode = "Number" Then
-		Return (ЧисловаяЧасть);
+		Return (NumericPart);
 	Else
 		Return (Prefix);
 	EndIf;
 
-EndFunction // вПолучитьПрефиксЧислоНомера()
+EndFunction // вGetPrefixNumberNumbers()
 
-// Приводит номер (код) к требуемой длине. При этом выделяется префикс
-// и числовая часть номера, остальное пространство между префиксом и
-// номером заполняется нулями
+// Brings the number (code) to the required length. This highlights the prefix
+// and the numeric part of the number, the rest of the space between the prefix and
+// number is filled with zeros
 //
 // Parameters:
-//  Стр            - Преобразовываемая строка
-//  Length          - Требуемая длина строки
+//  Row    - String to convert
+//  Length - Required string length
 //
-// Возвращаемое значение:
-//  String - код или номер, приведенная к требуемой длине
+// Return value:
+//  String - code or number reduced to the required length
 // 
 &AtServer
-Function ПривестиНомерКДлине(Val Стр, Length) Export
+Function LeadNumberToLength(Val Row, Length) Export
 
-	Стр			    =	TrimAll(Стр);
+	Row			    =	TrimAll(Row);
 
-	ЧисловаяЧасть	=	"";
-	Result		=	ПолучитьПрефиксЧислоНомера(Стр, ЧисловаяЧасть);
-	While Length - StrLen(Result) - StrLen(Format(ЧисловаяЧасть, "ЧГ=0")) > 0 Do
+	NumericPart	=	"";
+	Result		=	GetPrefixNumberNumbers(Row, NumericPart);
+	While Length - StrLen(Result) - StrLen(Format(NumericPart, "ЧГ=0")) > 0 Do
 		Result	=	Result + "0";
 	EndDo;
-	Result	=	Result + Format(ЧисловаяЧасть, "ЧГ=0");
+	Result	=	Result + Format(NumericPart, "ЧГ=0");
 
 	Return (Result);
 
-EndFunction // вПривестиНомерКДлине()
+EndFunction // LeadNumberToLength()
 
-// Добавляет к префиксу номера или кода подстроку
+// Adds a substring to the number or code prefi
 //
 // Parameters:
-//  Стр            - String. Number или код
-//  Добавок        - Добаляемая к префиксу подстрока
-//  Length          - Требуемая результрирубщая длина строки
-//  Mode          - "Left" - подстрока добавляется слева к префиксу, иначе - справа
+//  Row           - String, Number or code
+//  SubstrigToAdd - Substring to add to prefix
+//  Length        - Required result string length
+//  Mode          - "Left" - the substring is added to the left of the prefix, otherwise to the right
 //
-// Возвращаемое значение:
-//  String - номер или код, к префиксу которого добавлена указанная подстрока
+// Return value:
+//  String - the number or code to which the specified substring is prefixed
 //                                                                                                     
 &AtServer
-Function ДобавитьКПрефиксу(Val Стр, Добавок = "", Length = "", Mode = "Left") Export
+Function AddToPrefix(Val Row, SubstrigToAdd = "", Length = "", Mode = "Left") Export
 
-	Стр = TrimAll(Стр);
+	Row = TrimAll(Row);
 
 	If IsBlankString(Length) Then
-		Length = StrLen(Стр);
+		Length = StrLen(Row);
 	EndIf;
 
-	ЧисловаяЧасть	=	"";
-	Prefix			=	ПолучитьПрефиксЧислоНомера(Стр, ЧисловаяЧасть);
+	NumericPart	= "";
+	Prefix =	GetPrefixNumberNumbers(Row, NumericPart);
 	If Mode = "Left" Then
-		Result	=	TrimAll(Добавок) + Prefix;
+		Result = TrimAll(SubstrigToAdd) + Prefix;
 	Else
-		Result	=	Prefix + TrimAll(Добавок);
+		Result = Prefix + TrimAll(SubstrigToAdd);
 	EndIf;
 
-	While Length - StrLen(Result) - StrLen(Format(ЧисловаяЧасть, "ЧГ=0")) > 0 Do
-		Result	=	Result + "0";
+	While Length - StrLen(Result) - StrLen(Format(NumericPart, "ЧГ=0")) > 0 Do
+		Result = Result + "0";
 	EndDo;
-	Result	=	Result + Format(ЧисловаяЧасть, "ЧГ=0");
+	Result = Result + Format(NumericPart, "ЧГ=0");
 
 	Return (Result);
 
-EndFunction // вДобавитьКПрефиксу()
+EndFunction // AddToPrefix()
 
-// Дополняет строку указанным символом до указанной длины
+// Complements a string with the specified character to the specified length
 //
 // Parameters: 
-//  Стр            - Дополняемая строка
-//  Length          - Требуемая длина результирующей строки
-//  Чем            - Char, которым дополняется строка
+//  Row            - padding string
+//  Length          - Required length of the resulting string
+//  Char            - Char to complete the string
 //
-// Возвращаемое значение:
-//  String дополненная указанным символом до указанной длины
+// Return value:
+//  String padded with the specified character to the specified length
 //
 &AtServer
-Function ДополнитьСтрокуСимволами(Стр = "", Length, Чем = " ") Export
-	Result = TrimAll(Стр);
+Function SupplementStringWithCharacters(Row = "", Length, Char = " ") Export
+	
+	Result = TrimAll(Row);
 	While Length - StrLen(Result) > 0 Do
-		Result	=	Result + Чем;
+		Result	=	Result + Char;
 	EndDo;
 	Return (Result);
-EndFunction // вДополнитьСтрокуСимволами() 
+	
+EndFunction // SupplementStringWithCharacters() 
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ ФОРМЫ
+// FORM EVENT HANDLERS
 
 &AtClient
 Procedure OnOpen(Cancel)
-	ОпределитьТипИДлиннуНомера();
+	
+	DefineTypeAndLengthNumbers();
 	If NumberType <> "String" Then
-		Items.ПрефиксыНомеров.Visible = False;
+		Items.GroupNumberPrefixes.Visible = False;
 	EndIf;
 
-	If мИспользоватьНастройки Then
-		УстановитьИмяНастройки();
-		ЗагрузитьНастройку();
+	If mUseSettings Then
+		UT_FormsClient.SetNameSettings(ThisForm);
+		DownloadSettings();
 	Else
-		Items.ТекущаяНастройка.Enabled = False;
-		Items.СохранитьНастройки.Enabled = False;
+		Items.CurrentSetting.Enabled = False;
+		Items.SaveSettings.Enabled = False;
 	EndIf;
+	
 EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	If Parameters.Property("Setting") Then
-		ТекущаяНастройка = Parameters.Setting;
-	EndIf;
-	If Parameters.Property("НайденныеОбъекты") Then
-		НайденныеОбъекты.LoadValues(Parameters.НайденныеОбъекты);
-	EndIf;
-	CurrentLine = -1;
-	If Parameters.Property("CurrentLine") Then
-		If Parameters.CurrentLine <> Undefined Then
-			CurrentLine = Parameters.CurrentLine;
-		EndIf;
-	EndIf;
-	If Parameters.Property("Parent") Then
-		Parent = Parameters.Parent;
-	EndIf;
+	
+	UT_FormsServer.FillSettingByParametersForm(ThisForm);
 
-	If Parameters.Property("ТабличноеПолеВидыОбъектов") Then
-
-		Стр=Parameters.ТабличноеПолеВидыОбъектов[0];
-
-		ОбъектПоиска = New Structure;
-		ОбъектПоиска.Insert("Type", ?(Parameters.ObjectType = 0, "Catalog", "Document"));
-		ОбъектПоиска.Insert("Name", Стр.TableName);
-		ОбъектПоиска.Insert("Presentation", Стр.ПредставлениеТаблицы);
-
-	EndIf;
-
-	Items.ТекущаяНастройка.ChoiceList.Clear();
+	Items.CurrentSetting.ChoiceList.Clear();
 	If Parameters.Property("Settings") Then
 		For Each String In Parameters.Settings Do
-			Items.ТекущаяНастройка.ChoiceList.Add(String, String.Processing);
+			Items.CurrentSetting.ChoiceList.Add(String, String.Processing);
 		EndDo;
 	EndIf;
+	
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// ОБРАБОТЧИКИ СОБЫТИЙ, ВЫЗЫВАЕМЫЕ ИЗ ЭЛЕМЕНТОВ ФОРМЫ
+// // EVENT HANDLERS CALLED FROM FORM ELEMENTS
 
 &AtClient
-Procedure ВыполнитьОбработкуКоманда(Command)
-	ОбработаноОбъектов = ExecuteProcessing(UT_CommonClientServer.FormWriteSettings(
+Procedure ExecuteCommand(Command)
+	ProcessedObjects = ExecuteProcessing(UT_CommonClientServer.FormWriteSettings(
 		ThisObject.FormOwner));
 
-	ShowMessageBox( , "Processing <" + TrimAll(ThisForm.Title) + "> завершена!
-																		   |Обработано объектов: " + ОбработаноОбъектов
-		+ ".");
+	Message = StrTemplate(Nstr("ru = 'Обработка <%1> завершена! 
+					 |Обработано объектов: %2.';en = 'Processing of <%1> completed!
+					 |Objects processed: %2.'"), TrimAll(ThisForm.Title), ProcessedObjects);
+	ShowMessageBox(, Message);
 EndProcedure
 
 &AtClient
-Procedure СохранитьНастройкиКоманда(Command)
-	СохранитьНастройку();
+Procedure SaveSettings(Command)
+	UT_FormsClient.SaveSetting(ThisForm, mSetting);
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбора(Item, ВыбранноеЗначение, StandardProcessing)
+Procedure CurrentSettingChoiceProcessing(Item, SelectedValue, StandardProcessing)
+	
 	StandardProcessing = False;
 
-	If Not ТекущаяНастройка = ВыбранноеЗначение Then
+	If Not CurrentSetting = SelectedValue Then
 
 		If ThisForm.Modified Then
-			ShowQueryBox(New NotifyDescription("ТекущаяНастройкаОбработкаВыбораЗавершение", ThisForm,
-				New Structure("ВыбранноеЗначение", ВыбранноеЗначение)), "Save текущую настройку?",
+			ShowQueryBox(New NotifyDescription("CurrentSettingChoiceProcessingEnd", ThisForm,
+				New Structure("SelectedValue", SelectedValue)), Nstr("ru = 'Сохранить текущую настройку?';en = 'Save current setting?'"),
 				QuestionDialogMode.YesNo, , DialogReturnCode.Yes);
 			Return;
 		EndIf;
 
-		ТекущаяНастройкаОбработкаВыбораФрагмент(ВыбранноеЗначение);
+		CurrentSettingChoiceProcessingFragment(SelectedValue);
 
 	EndIf;
+	
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбораЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure CurrentSettingChoiceProcessingEnd(ResultQuestion, AdditionalParameters) Export
 
-	ВыбранноеЗначение = AdditionalParameters.ВыбранноеЗначение;
-	If РезультатВопроса = DialogReturnCode.Yes Then
-		СохранитьНастройку();
+	SelectedValue = AdditionalParameters.SelectedValue;
+	If ResultQuestion = DialogReturnCode.Yes Then
+		UT_FormsClient.SaveSetting(ThisForm, mSetting);
 	EndIf;
 
-	ТекущаяНастройкаОбработкаВыбораФрагмент(ВыбранноеЗначение);
+	CurrentSettingChoiceProcessingFragment(SelectedValue);
 
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаОбработкаВыбораФрагмент(Val ВыбранноеЗначение)
+Procedure CurrentSettingChoiceProcessingFragment(Val SelectedValue)
 
-	ТекущаяНастройка = ВыбранноеЗначение;
-	УстановитьИмяНастройки();
+	CurrentSetting = SelectedValue;
+	UT_FormsClient.SetNameSettings(ThisForm);
 
-	ЗагрузитьНастройку();
+	DownloadSettings();
 
 EndProcedure
 
 &AtClient
-Procedure ТекущаяНастройкаПриИзменении(Item)
+Procedure CurrentSettingOnChange(Item)
 	ThisForm.Modified = True;
 EndProcedure
 
 &AtClient
-Procedure НеИзменятьЧисловуюНумерациюПриИзменении(Item)
-	Items.НачальныйНомер.Enabled = Not НеИзменятьЧисловуюНумерацию;
+Procedure DoNotChangeNumericalNumberingOnChange(Item)
+	Items.InitialNumber.Enabled = Not DoNotChangeNumericalNumbering;
 EndProcedure
 
 &AtClient
-Procedure СпособОбработкиПрефиксовПриИзменении(Item)
-	If СпособОбработкиПрефиксов = 1 Then
-		Items.СтрокаПрефикса.Enabled      = False;
-		Items.ЗаменяемаяПодстрока.Enabled = False;
-	ElsIf СпособОбработкиПрефиксов = 5 Then
-		Items.СтрокаПрефикса.Enabled      = True;
-		Items.ЗаменяемаяПодстрока.Enabled = True;
+Procedure PrefixHandlingMethodOnChange(Item)
+	
+	If PrefixHandlingMethod = 1 Then
+		Items.LinePrefix.Enabled      = False;
+		Items.ReplaceableSubstring.Enabled = False;
+	ElsIf PrefixHandlingMethod = 5 Then
+		Items.LinePrefix.Enabled      = True;
+		Items.ReplaceableSubstring.Enabled = True;
 	Else
-		Items.СтрокаПрефикса.Enabled      = True;
-		Items.ЗаменяемаяПодстрока.Enabled = False;
+		Items.LinePrefix.Enabled      = True;
+		Items.ReplaceableSubstring.Enabled = False;
 	EndIf;
+	
 EndProcedure
 
 ////////////////////////////////////////////////////////////////////////////////
-// ИНИЦИАЛИЗАЦИЯ МОДУЛЬНЫХ ПЕРЕМЕННЫХ
+// INITIALIZING MODULAR VARIABLES
 
-мИспользоватьНастройки = True;
+mUseSettings = True;
 
-//Attributes настройки и значения по умолчанию.
-мНастройка = New Structure("НачальныйНомер,НеИзменятьЧисловуюНумерацию,СтрокаПрефикса,ЗаменяемаяПодстрока,СпособОбработкиПрефиксов");
+////Attributes settings and defaults.
+mSetting = New Structure("InitialNumber,DoNotChangeNumericalNumbering,LinePrefix,ReplaceableSubstring,PrefixHandlingMethod");
 
-мНастройка.НачальныйНомер              = 1;
-мНастройка.НеИзменятьЧисловуюНумерацию = False;
-мНастройка.СпособОбработкиПрефиксов    = 1;
+mSetting.InitialNumber              = 1;
+mSetting.DoNotChangeNumericalNumbering = False;
+mSetting.PrefixHandlingMethod    = 1;
 
-мТипыОбрабатываемыхОбъектов = "Catalog,Document";
+mTypesOfProcessedObjects = "Catalog,Document";

@@ -16,7 +16,7 @@
       <name>TreeTableGroup</name>
       <id>8</id>
       <items xsi:type="form:FormField">
-        <name>TreeTableRemark</name>
+        <name>TreeTableCheck</name>
         <id>9</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -25,15 +25,15 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>TreeTable.Remark</segments>
+            <segments>TreeTable.Check</segments>
           </paths>
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>TreeTableRemarkOnChange</name>
+          <name>TreeTableCheckOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>TreeTableRemarkExtendedTooltip</name>
+          <name>TreeTableCheckExtendedTooltip</name>
           <id>26</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -48,7 +48,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>TreeTableRemarkContextMenu</name>
+          <name>TreeTableCheckContextMenu</name>
           <id>10</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -632,14 +632,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Remark</name>
+      <name>Check</name>
       <title>
         <key>ru</key>
         <value>Пометка</value>
       </title>
       <title>
         <key>en</key>
-        <value>Remark</value>
+        <value>Check</value>
       </title>
       <id>3</id>
       <valueType>

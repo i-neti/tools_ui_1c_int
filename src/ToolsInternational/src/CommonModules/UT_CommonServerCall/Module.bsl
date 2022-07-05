@@ -126,13 +126,13 @@ Procedure AddObjectsArrayToCompare(Objects) Export
 EndProcedure
 
 Procedure UploadObjectsToXMLonServer(ObjectsArray, FileURLInTempStorage, FormID=Undefined) Export
-	UploadingDataProcessor = Обработки.УИ_ВыгрузкаЗагрузкаДанныхXMLСФильтрами.Создать();
+	UploadingDataProcessor = Обработки.UT_ExportImportDataXMLWithFilters.Создать();
 	UploadingDataProcessor.Инициализация();
 	UploadingDataProcessor.ВыгружатьСДокументомЕгоДвижения=Истина;
 	UploadingDataProcessor.ИспользоватьФорматFastInfoSet=Ложь;
 	
 	For Each CurrentObject In ObjectsArray Do
-		NR=UploadingDataProcessor.ДополнительныеОбъектыДляВыгрузки.Add();
+		NR=UploadingDataProcessor.AdditionalObjectsToExport.Add();
 		NR.Объект=CurrentObject;
 		NR.ИмяОбъектаДляЗапроса=UT_Common.TableNameByRef(CurrentObject);
 	EndDo;

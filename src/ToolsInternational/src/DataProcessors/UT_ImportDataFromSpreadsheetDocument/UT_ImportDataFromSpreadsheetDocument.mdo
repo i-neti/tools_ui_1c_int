@@ -14,7 +14,7 @@
     <value>Загрузка данных из табличного документа [УИ]</value>
   </synonym>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_ImportDataFromSpreadsheetDocument.Form.Форма</defaultForm>
+  <defaultForm>DataProcessor.UT_ImportDataFromSpreadsheetDocument.Form.Form</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -37,7 +37,7 @@
     <value>Обработка предназначена для загрузки данных в справочники и табличные части различных объектов из табличного документа</value>
   </explanation>
   <attributes uuid="105ab816-a28d-41ad-9af0-1bac32f234fe">
-    <name>НеСоздаватьНовыхЭлементов</name>
+    <name>DontCreateNewItems</name>
     <synonym>
       <key>en</key>
       <value>Do not create new items</value>
@@ -53,7 +53,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="8d2a7445-c18f-4597-9a97-6303554fb24b">
-    <name>РучнаяНумерацияКолонокТабличногоДокумента</name>
+    <name>ManualSpreadsheetDocumentColumnsNumeration</name>
     <synonym>
       <key>en</key>
       <value>Manual spreadsheet document columns numeration</value>
@@ -69,7 +69,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d0f9cfc8-d499-4839-968d-da7f6e6f4d75">
-    <name>ПерваяСтрокаДанныхТабличногоДокумента</name>
+    <name>SpreadsheetDocumentFirstDataRow</name>
     <synonym>
       <key>en</key>
       <value>Spreadsheet document first data row</value>
@@ -88,7 +88,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="55997912-972e-4622-8429-b82aedb2201b">
-    <name>РежимЗагрузки</name>
+    <name>ImportMode</name>
     <synonym>
       <key>en</key>
       <value>Import mode</value>
@@ -108,7 +108,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="3eadc8d5-bc33-473c-8d3f-0373d587768c">
-    <name>СсылкаИсточника</name>
+    <name>SourceRef</name>
     <synonym>
       <key>en</key>
       <value>Source reference</value>
@@ -125,7 +125,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="568e3e05-d728-4934-9417-50a2db989999">
-    <name>ТабличнаяЧастьИсточника</name>
+    <name>SourceTabularSection</name>
     <synonym>
       <key>en</key>
       <value>Source tabular section</value>
@@ -139,7 +139,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="d5e5c319-a93f-4b45-863f-0fc99b205e79">
-    <name>ПередЗаписьюОбъекта</name>
+    <name>BeforeWriteObject</name>
     <synonym>
       <key>en</key>
       <value>Before write object</value>
@@ -156,7 +156,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="5cecc2d2-7fd4-4542-ae6d-1911b93acd71">
-    <name>ПриЗаписиОбъекта</name>
+    <name>OnWriteObject</name>
     <synonym>
       <key>en</key>
       <value>On write object</value>
@@ -173,7 +173,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="7a6446c5-f4c3-4298-b78b-8682e376aaea">
-    <name>ПослеДобавленияСтроки</name>
+    <name>AfterAddRow</name>
     <synonym>
       <key>en</key>
       <value>After add row</value>
@@ -190,7 +190,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="e1a43ebd-580d-49a4-93d5-017bc193da7c">
-    <name>ИмяВидаРегистра</name>
+    <name>RegisterTypeName</name>
     <synonym>
       <key>en</key>
       <value>Register type name</value>
@@ -207,7 +207,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="96d1c50a-d7f3-474b-9fff-9c1c0668efb0">
-    <name>ЗамещатьСуществующиеЗаписи</name>
+    <name>ReplaceExistingRecords</name>
     <synonym>
       <key>en</key>
       <value>Replace existing records</value>
@@ -223,7 +223,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="fa687385-9c35-4b7d-9842-8600decca6dd">
-    <name>ТипОбъектаСправочника</name>
+    <name>CatalogObjectType</name>
     <synonym>
       <key>en</key>
       <value>Catalog object type</value>
@@ -240,21 +240,21 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="0bc54e50-916c-4431-a135-90ce1afac910">
-    <name>ДополнительныеСвойства</name>
+    <name>AdditionalProperties</name>
     <synonym>
       <key>en</key>
       <value>Additional properties</value>
     </synonym>
     <synonym>
       <key>ru</key>
-      <value>Дополнительные свойства</value>
+      <value>Additional properties</value>
     </synonym>
     <type/>
     <minValue xsi:type="core:UndefinedValue"/>
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <forms uuid="7300ef50-b49f-4a7f-b6dc-9717503e3e4c">
-    <name>Форма</name>
+    <name>Form</name>
     <synonym>
       <key>en</key>
       <value>Form</value>
@@ -267,10 +267,10 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="07cf2c58-1c60-4ae8-ae23-21cd14763003">
-    <name>ФормаРедактированияСобытий</name>
+    <name>EditEventsForm</name>
     <synonym>
       <key>en</key>
-      <value>Edit event</value>
+      <value>Edit events</value>
     </synonym>
     <synonym>
       <key>ru</key>
@@ -280,7 +280,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="3376bf75-4d23-48a0-8561-1485bed7076a">
-    <name>ФормаРедактированияВыражения</name>
+    <name>EditExpressionForm</name>
     <synonym>
       <key>en</key>
       <value>Edit expression</value>
@@ -293,7 +293,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="b4bfd7cf-a2b9-4108-b01b-009bea7b6f6e">
-    <name>ФормаРедактированияСвязи</name>
+    <name>EditLinkForm</name>
     <synonym>
       <key>en</key>
       <value>Edit link</value>
@@ -306,7 +306,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="b1345a33-7fd7-40ce-aaa7-e86397830298">
-    <name>ФормаСохраненияНастройки</name>
+    <name>SaveSettingForm</name>
     <synonym>
       <key>en</key>
       <value>Save setting</value>
@@ -319,7 +319,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="d783052e-b6ab-4654-85b2-f5e7fb9353d8">
-    <name>ФормаВыбораНастройки</name>
+    <name>SelectSettingForm</name>
     <synonym>
       <key>en</key>
       <value>Select setting</value>
@@ -332,7 +332,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <templates uuid="3905729a-8e19-4bcb-aad1-b2a72358d193">
-    <name>МакетСохраненияНастроек</name>
+    <name>SaveSettingsTemplate</name>
+    <synonym>
+      <key>en</key>
+      <value>Save settings template</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Макет сохранения настроек</value>

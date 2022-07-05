@@ -4,3 +4,4 @@ docs/.jekyll-cache
 docs/coverage
 build/
 .idea
+.settings/

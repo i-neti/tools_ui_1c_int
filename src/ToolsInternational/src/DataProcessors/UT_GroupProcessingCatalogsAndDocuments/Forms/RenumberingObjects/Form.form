@@ -5,7 +5,7 @@
     <value>Перенумерация объектов</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>ТекущаяНастройка</name>
+    <name>CurrentSetting</name>
     <id>1</id>
     <title>
       <key>ru</key>
@@ -18,15 +18,15 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ТекущаяНастройкаПредставление</segments>
+        <segments>CurrentSettingRepresentation</segments>
       </paths>
     </dataPath>
     <handlers>
       <event>OnChange</event>
-      <name>ТекущаяНастройкаПриИзменении</name>
+      <name>CurrentSettingOnChange</name>
     </handlers>
     <extendedTooltip>
-      <name>ТекущаяНастройкаExtendedTooltip</name>
+      <name>CurrentSettingExtendedTooltip</name>
       <id>21</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -41,7 +41,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ТекущаяНастройкаКонтекстноеМеню</name>
+      <name>CurrentSettingContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -58,7 +58,7 @@
     <extInfo xsi:type="form:InputFieldExtInfo">
       <handlers>
         <event>ChoiceProcessing</event>
-        <name>ТекущаяНастройкаОбработкаВыбора</name>
+        <name>CurrentSettingChoiceProcessing</name>
       </handlers>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -72,10 +72,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>Группа1</name>
+    <name>Group1</name>
     <id>11</id>
     <items xsi:type="form:FormField">
-      <name>НачальныйНомер</name>
+      <name>InitialNumber</name>
       <id>9</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -84,11 +84,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>НачальныйНомер</segments>
+          <segments>InitialNumber</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>НачальныйНомерExtendedTooltip</name>
+        <name>InitialNumberExtendedTooltip</name>
         <id>23</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -103,7 +103,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>НачальныйНомерКонтекстноеМеню</name>
+        <name>InitialNumberContextMenu</name>
         <id>10</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -127,7 +127,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>НеИзменятьЧисловуюНумерацию</name>
+      <name>DoNotChangeNumericalNumbering</name>
       <id>12</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -136,16 +136,16 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>НеИзменятьЧисловуюНумерацию</segments>
+          <segments>DoNotChangeNumericalNumbering</segments>
         </paths>
       </dataPath>
       <titleLocation>Right</titleLocation>
       <handlers>
         <event>OnChange</event>
-        <name>НеИзменятьЧисловуюНумерациюПриИзменении</name>
+        <name>DoNotChangeNumericalNumberingOnChange</name>
       </handlers>
       <extendedTooltip>
-        <name>НеИзменятьЧисловуюНумерациюExtendedTooltip</name>
+        <name>DoNotChangeNumericalNumberingExtendedTooltip</name>
         <id>24</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -160,7 +160,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>НеИзменятьЧисловуюНумерациюКонтекстноеМеню</name>
+        <name>DoNotChangeNumericalNumberingContextMenu</name>
         <id>13</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -181,8 +181,12 @@
     <userVisible>
       <common>true</common>
     </userVisible>
+    <title>
+      <key>en</key>
+      <value>Group1</value>
+    </title>
     <extendedTooltip>
-      <name>Группа1ExtendedTooltip</name>
+      <name>Group1ExtendedTooltip</name>
       <id>22</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -205,10 +209,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ПрефиксыНомеров</name>
+    <name>GroupNumberPrefixes</name>
     <id>14</id>
     <items xsi:type="form:FormField">
-      <name>СтрокаПрефикса</name>
+      <name>LinePrefix</name>
       <id>15</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -217,11 +221,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>СтрокаПрефикса</segments>
+          <segments>LinePrefix</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>СтрокаПрефиксаExtendedTooltip</name>
+        <name>LinePrefixExtendedTooltip</name>
         <id>26</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -236,7 +240,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СтрокаПрефиксаКонтекстноеМеню</name>
+        <name>LinePrefixContextMenu</name>
         <id>16</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -260,7 +264,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>СпособОбработкиПрефиксов</name>
+      <name>PrefixHandlingMethod</name>
       <id>17</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -269,16 +273,16 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>СпособОбработкиПрефиксов</segments>
+          <segments>PrefixHandlingMethod</segments>
         </paths>
       </dataPath>
       <titleLocation>None</titleLocation>
       <handlers>
         <event>OnChange</event>
-        <name>СпособОбработкиПрефиксовПриИзменении</name>
+        <name>PrefixHandlingMethodOnChange</name>
       </handlers>
       <extendedTooltip>
-        <name>СпособОбработкиПрефиксовExtendedTooltip</name>
+        <name>PrefixHandlingMethodExtendedTooltip</name>
         <id>27</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -293,7 +297,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СпособОбработкиПрефиксовКонтекстноеМеню</name>
+        <name>PrefixHandlingMethodContextMenu</name>
         <id>18</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -357,7 +361,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>ЗаменяемаяПодстрока</name>
+      <name>ReplaceableSubstring</name>
       <id>19</id>
       <title>
         <key>ru</key>
@@ -370,12 +374,12 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ЗаменяемаяПодстрока</segments>
+          <segments>ReplaceableSubstring</segments>
         </paths>
       </dataPath>
       <titleLocation>Right</titleLocation>
       <extendedTooltip>
-        <name>ЗаменяемаяПодстрокаExtendedTooltip</name>
+        <name>ReplaceableSubstringExtendedTooltip</name>
         <id>28</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -390,7 +394,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ЗаменяемаяПодстрокаКонтекстноеМеню</name>
+        <name>ReplaceableSubstringContextMenu</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -422,12 +426,16 @@
       <key>ru</key>
       <value>Префиксы номеров</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Group number prefixes</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Префиксы номеров</value>
     </toolTip>
     <extendedTooltip>
-      <name>ПрефиксыНомеровExtendedTooltip</name>
+      <name>GroupNumberPrefixesExtendedTooltip</name>
       <id>25</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -453,10 +461,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКнопки</name>
+    <name>GroupCommand</name>
     <id>5</id>
     <items xsi:type="form:Button">
-      <name>ВыполнитьОбработку</name>
+      <name>ExecuteCommand</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -466,7 +474,7 @@
       <defaultItem>true</defaultItem>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>ВыполнитьОбработкуExtendedTooltip</name>
+        <name>ExecuteCommandExtendedTooltip</name>
         <id>30</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -480,7 +488,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ВыполнитьКоманду</commandName>
+      <commandName>Form.Command.ExecuteCommand</commandName>
       <representation>Auto</representation>
       <defaultButton>true</defaultButton>
       <autoMaxWidth>true</autoMaxWidth>
@@ -489,7 +497,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>СохранитьНастройки</name>
+      <name>SaveSettings</name>
       <id>7</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -498,7 +506,7 @@
       </userVisible>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>СохранитьНастройкиExtendedTooltip</name>
+        <name>SaveSettingsExtendedTooltip</name>
         <id>31</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -512,7 +520,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.СохранитьНастройки</commandName>
+      <commandName>Form.Command.SaveSettings</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -520,7 +528,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Закрыть</name>
+      <name>Close</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -529,7 +537,7 @@
       </userVisible>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>ЗакрытьExtendedTooltip</name>
+        <name>CloseExtendedTooltip</name>
         <id>32</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -559,12 +567,16 @@
       <key>ru</key>
       <value>Группа кнопки</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Group command</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа кнопки</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаКнопкиExtendedTooltip</name>
+      <name>GroupCommandExtendedTooltip</name>
       <id>29</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -596,11 +608,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -611,10 +623,14 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>ОбъектОбработки</name>
+    <name>Object</name>
     <title>
       <key>ru</key>
       <value>Объект обработки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Object</value>
     </title>
     <id>1</id>
     <valueType>
@@ -629,10 +645,14 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ТекущаяНастройка</name>
+    <name>CurrentSetting</name>
     <title>
       <key>ru</key>
       <value>Текущая настройка</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current setting</value>
     </title>
     <id>3</id>
     <valueType/>
@@ -644,10 +664,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>НайденныеОбъекты</name>
+    <name>FoundObjects</name>
     <title>
       <key>ru</key>
       <value>Найденные объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Found objects</value>
     </title>
     <id>5</id>
     <valueType>
@@ -664,10 +688,14 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ТекущаяНастройкаПредставление</name>
+    <name>CurrentSettingRepresentation</name>
     <title>
       <key>ru</key>
       <value>Текущая настройка представление</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current setting representation</value>
     </title>
     <id>6</id>
     <valueType>
@@ -682,10 +710,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ТекущаяСтрока</name>
+    <name>CurrentLine</name>
     <title>
       <key>ru</key>
       <value>Текущая строка</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current line</value>
     </title>
     <id>4</id>
     <valueType>
@@ -702,10 +734,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ЗаменяемаяПодстрока</name>
+    <name>ReplaceableSubstring</name>
     <title>
       <key>ru</key>
       <value>Заменяемая подстрока</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Replaceable substring</value>
     </title>
     <id>2</id>
     <valueType>
@@ -720,10 +756,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>НачальныйНомер</name>
+    <name>InitialNumber</name>
     <title>
       <key>ru</key>
       <value>Начальный номер</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Initial number</value>
     </title>
     <id>7</id>
     <valueType>
@@ -741,10 +781,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>НеИзменятьЧисловуюНумерацию</name>
+    <name>DoNotChangeNumericalNumbering</name>
     <title>
       <key>ru</key>
       <value>Не изменять числовую нумерацию</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Do not change numerical numbering</value>
     </title>
     <id>8</id>
     <valueType>
@@ -758,10 +802,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СпособОбработкиПрефиксов</name>
+    <name>PrefixHandlingMethod</name>
     <title>
       <key>ru</key>
       <value>Способ обработки префиксов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Prefix handling method</value>
     </title>
     <id>9</id>
     <valueType>
@@ -779,10 +827,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СтрокаПрефикса</name>
+    <name>LinePrefix</name>
     <title>
       <key>ru</key>
       <value>Строка префикса</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Line prefix</value>
     </title>
     <id>10</id>
     <valueType>
@@ -797,10 +849,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Родитель</name>
+    <name>Parent</name>
     <title>
       <key>ru</key>
       <value>Родитель</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Parent</value>
     </title>
     <id>11</id>
     <valueType>
@@ -818,10 +874,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОбъектПоиска</name>
+    <name>SearchObject</name>
     <title>
       <key>ru</key>
       <value>Объект поиска</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Search object</value>
     </title>
     <id>12</id>
     <valueType/>
@@ -833,10 +893,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ИмяТипаОбъектов</name>
+    <name>ObjectTypeName</name>
     <title>
       <key>ru</key>
       <value>Имя типа объектов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Object type name</value>
     </title>
     <id>13</id>
     <valueType>
@@ -851,10 +915,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ТипНомера</name>
+    <name>NumberType</name>
     <title>
       <key>ru</key>
       <value>Тип номера</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Number type</value>
     </title>
     <id>14</id>
     <valueType>
@@ -869,10 +937,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ДлинаНомера</name>
+    <name>NumberLength</name>
     <title>
       <key>ru</key>
       <value>Длина номера</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Number length</value>
     </title>
     <id>15</id>
     <valueType>
@@ -889,10 +961,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>ВыполнитьКоманду</name>
+    <name>ExecuteCommand</name>
     <title>
       <key>ru</key>
       <value>Выполнить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Execute command</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -908,17 +984,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьОбработкуКоманда</name>
+        <name>ExecuteCommand</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СохранитьНастройки</name>
+    <name>SaveSettings</name>
     <title>
       <key>ru</key>
       <value>Сохранить настройки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Save settings</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -933,7 +1013,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>СохранитьНастройкиКоманда</name>
+        <name>SaveSettings</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

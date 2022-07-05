@@ -67,7 +67,7 @@
       <id>2</id>
       <items xsi:type="form:Table">
         <name>DataSelectionSettingsFilter</name>
-        <id>3</id>
+        <id>67</id>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
@@ -80,7 +80,7 @@
         <titleLocation>None</titleLocation>
         <autoCommandBar>
           <name>DataSelectionSettingsFilterCommandBar</name>
-          <id>5</id>
+          <id>68</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -96,10 +96,10 @@
             <common>true</common>
           </userVisible>
           <name>DataSelectionSettingsFilterSearchString</name>
-          <id>37</id>
+          <id>71</id>
           <extendedTooltip>
             <name>DataSelectionSettingsFilterSearchStringExtendedTooltip</name>
-            <id>39</id>
+            <id>73</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -114,7 +114,7 @@
           </extendedTooltip>
           <contextMenu>
             <name>DataSelectionSettingsFilterSearchStringContextMenu</name>
-            <id>38</id>
+            <id>72</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -133,10 +133,10 @@
             <common>true</common>
           </userVisible>
           <name>DataSelectionSettingsFilterViewStatus</name>
-          <id>40</id>
+          <id>77</id>
           <extendedTooltip>
             <name>DataSelectionSettingsFilterViewStatusExtendedTooltip</name>
-            <id>42</id>
+            <id>79</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -151,7 +151,7 @@
           </extendedTooltip>
           <contextMenu>
             <name>DataSelectionSettingsFilterViewStatusContextMenu</name>
-            <id>41</id>
+            <id>78</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -162,7 +162,6 @@
           <type>ViewStatusAddition</type>
           <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
-            <horizontalLocation>Left</horizontalLocation>
           </extInfo>
         </viewStatusAddition>
         <searchControlAddition>
@@ -172,10 +171,10 @@
             <common>true</common>
           </userVisible>
           <name>DataSelectionSettingsFilterSearchControl</name>
-          <id>43</id>
+          <id>74</id>
           <extendedTooltip>
             <name>DataSelectionSettingsFilterSearchControlExtendedTooltip</name>
-            <id>45</id>
+            <id>76</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -190,7 +189,7 @@
           </extendedTooltip>
           <contextMenu>
             <name>DataSelectionSettingsFilterSearchControlContextMenu</name>
-            <id>44</id>
+            <id>75</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -205,7 +204,7 @@
         </searchControlAddition>
         <extendedTooltip>
           <name>DataSelectionSettingsFilterExtendedTooltip</name>
-          <id>36</id>
+          <id>70</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -220,7 +219,7 @@
         </extendedTooltip>
         <contextMenu>
           <name>DataSelectionSettingsFilterContextMenu</name>
-          <id>4</id>
+          <id>69</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -253,8 +252,6 @@
         <searchStringLocation>None</searchStringLocation>
         <viewStatusLocation>None</viewStatusLocation>
         <searchControlLocation>None</searchControlLocation>
-        <viewMode>All</viewMode>
-        <settingsNamedItemDetailedRepresentation>false</settingsNamedItemDetailedRepresentation>
       </items>
       <items xsi:type="form:FormField">
         <name>SearchString</name>

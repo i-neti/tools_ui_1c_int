@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГруппаТипОбъекта</name>
+    <name>GroupTypeObject</name>
     <id>76</id>
     <items xsi:type="form:FormField">
-      <name>ТипОбъекта</name>
+      <name>ObjectType</name>
       <id>73</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -13,15 +13,15 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Объект.ObjectType</segments>
+          <segments>Object.ObjectType</segments>
         </paths>
       </dataPath>
       <handlers>
         <event>OnChange</event>
-        <name>ТипОбъектаПриИзменении</name>
+        <name>ObjectTypeOnChange</name>
       </handlers>
       <extendedTooltip>
-        <name>ТипОбъектаExtendedTooltip</name>
+        <name>ObjectTypeExtendedTooltip</name>
         <id>89</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -36,7 +36,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ТипОбъектаКонтекстноеМеню</name>
+        <name>ObjectTypeContextMenu</name>
         <id>74</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -72,7 +72,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>ОбрабатыватьТабличныеЧасти</name>
+      <name>ProcessTabularParts</name>
       <id>77</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -81,16 +81,16 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Объект.ProcessTabularParts</segments>
+          <segments>Object.ProcessTabularParts</segments>
         </paths>
       </dataPath>
       <titleLocation>Right</titleLocation>
       <handlers>
         <event>OnChange</event>
-        <name>ОбрабатыватьТабличныеЧастиПриИзменении</name>
+        <name>ProcessTabularPartsOnChange</name>
       </handlers>
       <extendedTooltip>
-        <name>ОбрабатыватьТабличныеЧастиExtendedTooltip</name>
+        <name>ProcessTabularPartsExtendedTooltip</name>
         <id>90</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -105,7 +105,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ОбрабатыватьТабличныеЧастиКонтекстноеМеню</name>
+        <name>ProcessTabularPartsContextMenu</name>
         <id>78</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -130,12 +130,16 @@
       <key>ru</key>
       <value>Группа тип объекта</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Group type object</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа тип объекта</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаТипОбъектаExtendedTooltip</name>
+      <name>GroupTypeObjectExtendedTooltip</name>
       <id>88</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -158,7 +162,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>ОбъектПоиска</name>
+    <name>SearchObject</name>
     <id>4</id>
     <title>
       <key>ru</key>
@@ -170,15 +174,15 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ОбъектПоискаПредставление</segments>
+        <segments>SearchObjectRepresentation</segments>
       </paths>
     </dataPath>
     <handlers>
       <event>OnChange</event>
-      <name>ОбъектПоискаПриИзменении</name>
+      <name>SearchObjectOnChange</name>
     </handlers>
     <extendedTooltip>
-      <name>ОбъектПоискаExtendedTooltip</name>
+      <name>SearchObjectExtendedTooltip</name>
       <id>91</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -193,7 +197,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ОбъектПоискаКонтекстноеМеню</name>
+      <name>SearchObjectContextMenu</name>
       <id>5</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -210,7 +214,7 @@
     <extInfo xsi:type="form:InputFieldExtInfo">
       <handlers>
         <event>ChoiceProcessing</event>
-        <name>ОбъектПоискаОбработкаВыбора</name>
+        <name>SearchObjectChoiceProcessing</name>
       </handlers>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -221,13 +225,13 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаСтраницы</name>
+    <name>GroupPages</name>
     <id>6</id>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаВыборОбъектов</name>
+      <name>GroupChoiseObjects</name>
       <id>75</id>
       <items xsi:type="form:Table">
-        <name>ТабличноеПолеВидыОбъектов</name>
+        <name>TableFieldTypesObjects</name>
         <id>79</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -235,11 +239,11 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>ТабличноеПолеВидыОбъектов</segments>
+          <segments>TableFieldTypesObjects</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormField">
-          <name>ТабличноеПолеВидыОбъектовИмяТаблицы</name>
+          <name>TableFieldTypesObjectsTableName</name>
           <id>82</id>
           <enabled>true</enabled>
           <userVisible>
@@ -247,11 +251,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ТабличноеПолеВидыОбъектов.ИмяТаблицы</segments>
+              <segments>TableFieldTypesObjects.TableName</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовИмяТаблицыExtendedTooltip</name>
+            <name>TableFieldTypesObjectsTableNameExtendedTooltip</name>
             <id>106</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -266,7 +270,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовИмяТаблицыКонтекстноеМеню</name>
+            <name>TableFieldTypesObjectsTableNameContextMenu</name>
             <id>83</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -290,7 +294,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ТабличноеПолеВидыОбъектовПредставлениеТаблицы</name>
+          <name>TableFieldTypesObjectsPresentationTable</name>
           <id>84</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -299,11 +303,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ТабличноеПолеВидыОбъектов.ПредставлениеТаблицы</segments>
+              <segments>TableFieldTypesObjects.PresentationTable</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовПредставлениеТаблицыExtendedTooltip</name>
+            <name>TableFieldTypesObjectsPresentationTableExtendedTooltip</name>
             <id>107</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -318,7 +322,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовПредставлениеТаблицыКонтекстноеМеню</name>
+            <name>TableFieldTypesObjectsPresentationTableContextMenu</name>
             <id>85</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -342,10 +346,10 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>ТабличноеПолеВидыОбъектовКоманднаяПанель</name>
+          <name>TableFieldTypesObjectsCommandBar</name>
           <id>81</id>
           <items xsi:type="form:Button">
-            <name>ТабличноеПолеВидыОбъектовОтбор</name>
+            <name>TableFieldTypesObjectsFilter</name>
             <id>86</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -353,7 +357,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ТабличноеПолеВидыОбъектовОтборExtendedTooltip</name>
+              <name>TableFieldTypesObjectsFilterExtendedTooltip</name>
               <id>94</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -367,7 +371,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.Отбор</commandName>
+            <commandName>Form.Command.Filter</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -375,7 +379,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>ТабличноеПолеВидыОбъектовНайтиСсылки</name>
+            <name>TableFieldTypesObjectsFindLinks</name>
             <id>87</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -383,7 +387,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ТабличноеПолеВидыОбъектовНайтиСсылкиExtendedTooltip</name>
+              <name>TableFieldTypesObjectsFindLinksExtendedTooltip</name>
               <id>95</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -397,7 +401,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.НайтиСсылки</commandName>
+            <commandName>Form.Command.FindLinks</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -414,19 +418,19 @@
         </autoCommandBar>
         <handlers>
           <event>BeforeAddRow</event>
-          <name>ТабличноеПолеВидыОбъектовПередНачаломДобавления</name>
+          <name>TableFieldTypesObjectsBeforeAddRow</name>
         </handlers>
         <handlers>
           <event>BeforeDeleteRow</event>
-          <name>ТабличноеПолеВидыОбъектовПередУдалением</name>
+          <name>TableFieldTypesObjectsBeforeDeleteRow</name>
         </handlers>
         <handlers>
           <event>BeforeRowChange</event>
-          <name>ТабличноеПолеВидыОбъектовПередНачаломИзменения</name>
+          <name>TableFieldTypesObjectsBeforeRowChange</name>
         </handlers>
         <handlers>
           <event>AfterDeleteRow</event>
-          <name>ТабличноеПолеВидыОбъектовПослеУдаления</name>
+          <name>TableFieldTypesObjectsAfterDeleteRow</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -434,10 +438,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовSearchString</name>
+          <name>TableFieldTypesObjectsSearchString</name>
           <id>97</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовSearchStringExtendedTooltip</name>
+            <name>TableFieldTypesObjectsSearchStringExtendedTooltip</name>
             <id>99</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -452,7 +456,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовSearchStringContextMenu</name>
+            <name>TableFieldTypesObjectsSearchStringContextMenu</name>
             <id>98</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -471,10 +475,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовViewStatus</name>
+          <name>TableFieldTypesObjectsViewStatus</name>
           <id>100</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовViewStatusExtendedTooltip</name>
+            <name>TableFieldTypesObjectsViewStatusExtendedTooltip</name>
             <id>102</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -489,7 +493,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовViewStatusContextMenu</name>
+            <name>TableFieldTypesObjectsViewStatusContextMenu</name>
             <id>101</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -510,10 +514,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ТабличноеПолеВидыОбъектовSearchControl</name>
+          <name>TableFieldTypesObjectsSearchControl</name>
           <id>103</id>
           <extendedTooltip>
-            <name>ТабличноеПолеВидыОбъектовSearchControlExtendedTooltip</name>
+            <name>TableFieldTypesObjectsSearchControlExtendedTooltip</name>
             <id>105</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -528,7 +532,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТабличноеПолеВидыОбъектовSearchControlContextMenu</name>
+            <name>TableFieldTypesObjectsSearchControlContextMenu</name>
             <id>104</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -543,7 +547,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>ТабличноеПолеВидыОбъектовExtendedTooltip</name>
+          <name>TableFieldTypesObjectsExtendedTooltip</name>
           <id>96</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -558,7 +562,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ТабличноеПолеВидыОбъектовКонтекстноеМеню</name>
+          <name>TableFieldTypesObjectsContextMenu</name>
           <id>80</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -601,12 +605,16 @@
         <key>ru</key>
         <value>Выбор объектов</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Group choise objects</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Группа выбор объектов</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаВыборОбъектовExtendedTooltip</name>
+        <name>GroupChoiseObjectsExtendedTooltip</name>
         <id>93</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -627,10 +635,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаНаденныеОбъекты</name>
+      <name>GroupFoundObjects</name>
       <id>11</id>
       <items xsi:type="form:Table">
-        <name>НайденныеОбъекты</name>
+        <name>FoundObjects</name>
         <id>46</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -638,12 +646,12 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>НайденныеОбъекты</segments>
+          <segments>FoundObjects</segments>
         </dataPath>
         <skipOnInput>false</skipOnInput>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormField">
-          <name>НайденныеОбъектыВыбрать</name>
+          <name>FoundObjectsChoose</name>
           <id>52</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -652,12 +660,12 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>НайденныеОбъекты.Выбрать</segments>
+              <segments>FoundObjects.Choose</segments>
             </paths>
           </dataPath>
           <titleLocation>None</titleLocation>
           <extendedTooltip>
-            <name>НайденныеОбъектыВыбратьExtendedTooltip</name>
+            <name>FoundObjectsChooseExtendedTooltip</name>
             <id>124</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -672,7 +680,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыВыбратьКонтекстноеМеню</name>
+            <name>FoundObjectsChooseContextMenu</name>
             <id>53</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -689,7 +697,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>НайденныеОбъектыКартинка</name>
+          <name>FoundObjectsPicture</name>
           <id>71</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -698,12 +706,12 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>НайденныеОбъекты.Картинка</segments>
+              <segments>FoundObjects.Picture</segments>
             </paths>
           </dataPath>
           <titleLocation>None</titleLocation>
           <extendedTooltip>
-            <name>НайденныеОбъектыКартинкаExtendedTooltip</name>
+            <name>FoundObjectsPictureExtendedTooltip</name>
             <id>125</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -718,7 +726,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыКартинкаКонтекстноеМеню</name>
+            <name>FoundObjectsPictureContextMenu</name>
             <id>72</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -737,11 +745,10 @@
             <autoMaxHeight>true</autoMaxHeight>
             <horizontalStretch>true</horizontalStretch>
             <verticalStretch>true</verticalStretch>
-            <valuesPicture xsi:type="form:FormPicture"/>
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>НайденныеОбъектыОбъект</name>
+          <name>FoundObjectsObject</name>
           <id>50</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -750,11 +757,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>НайденныеОбъекты.Объект</segments>
+              <segments>FoundObjects.Object</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>НайденныеОбъектыОбъектExtendedTooltip</name>
+            <name>FoundObjectsObjectExtendedTooltip</name>
             <id>126</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -769,7 +776,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыОбъектКонтекстноеМеню</name>
+            <name>FoundObjectsObjectContextMenu</name>
             <id>51</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -795,13 +802,13 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>НайденныеОбъектыКоманднаяПанель</name>
+          <name>FoundObjectsCommandBar</name>
           <id>48</id>
           <items xsi:type="form:FormGroup">
-            <name>Группа1</name>
+            <name>Group1</name>
             <id>61</id>
             <items xsi:type="form:Button">
-              <name>НайденныеОбъектыВыбратьВсе</name>
+              <name>FoundObjectsCheckAll</name>
               <id>56</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -810,7 +817,7 @@
               </userVisible>
               <skipOnInput>false</skipOnInput>
               <extendedTooltip>
-                <name>НайденныеОбъектыВыбратьВсеExtendedTooltip</name>
+                <name>FoundObjectsCheckAllExtendedTooltip</name>
                 <id>110</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -824,7 +831,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command.ВыбратьВсе</commandName>
+              <commandName>Form.Command.CheckAll</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -832,7 +839,7 @@
               <representationInContextMenu>Auto</representationInContextMenu>
             </items>
             <items xsi:type="form:Button">
-              <name>НайденныеОбъектыОтменитьВыборВсех</name>
+              <name>FoundObjectsUncheckAll</name>
               <id>57</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -841,7 +848,7 @@
               </userVisible>
               <skipOnInput>false</skipOnInput>
               <extendedTooltip>
-                <name>НайденныеОбъектыОтменитьВыборВсехExtendedTooltip</name>
+                <name>FoundObjectsUncheckAllExtendedTooltip</name>
                 <id>111</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -855,7 +862,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command.ОтменитьВыборВсех</commandName>
+              <commandName>Form.Command.UncheckAll</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -867,8 +874,12 @@
             <userVisible>
               <common>true</common>
             </userVisible>
+            <title>
+              <key>en</key>
+              <value>Group1</value>
+            </title>
             <extendedTooltip>
-              <name>Группа1ExtendedTooltip</name>
+              <name>Group1ExtendedTooltip</name>
               <id>109</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -885,7 +896,7 @@
             <extInfo xsi:type="form:ButtonGroupExtInfo"/>
           </items>
           <items xsi:type="form:Button">
-            <name>НайденныеОбъектыОтбор</name>
+            <name>FoundObjectsFilter</name>
             <id>60</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -894,7 +905,7 @@
             </userVisible>
             <skipOnInput>false</skipOnInput>
             <extendedTooltip>
-              <name>НайденныеОбъектыОтборExtendedTooltip</name>
+              <name>FoundObjectsFilterExtendedTooltip</name>
               <id>112</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -908,7 +919,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.Отбор</commandName>
+            <commandName>Form.Command.Filter</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -916,7 +927,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>НайтиСсылки</name>
+            <name>FindLinks</name>
             <id>49</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -925,7 +936,7 @@
             </userVisible>
             <skipOnInput>false</skipOnInput>
             <extendedTooltip>
-              <name>НайтиСсылкиExtendedTooltip</name>
+              <name>FindLinksExtendedTooltip</name>
               <id>113</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -939,7 +950,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.НайтиСсылки</commandName>
+            <commandName>Form.Command.FindLinks</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -947,7 +958,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>НайденныеОбъектыРедактироватьОбъект</name>
+            <name>FoundObjectsEditObject</name>
             <id>163</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -955,7 +966,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>НайденныеОбъектыРедактироватьОбъектРасширеннаяПодсказка</name>
+              <name>FoundObjectsEditObjectExtendedTooltip</name>
               <id>164</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -969,7 +980,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.РедактироватьОбъект</commandName>
+            <commandName>Form.Command.EditObject</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -986,7 +997,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>НайденныеОбъектыВыбор</name>
+          <name>FoundObjectsSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -994,10 +1005,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НайденныеОбъектыSearchString</name>
+          <name>FoundObjectsSearchString</name>
           <id>115</id>
           <extendedTooltip>
-            <name>НайденныеОбъектыSearchStringExtendedTooltip</name>
+            <name>FoundObjectsSearchStringExtendedTooltip</name>
             <id>117</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1012,7 +1023,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыSearchStringContextMenu</name>
+            <name>FoundObjectsSearchStringContextMenu</name>
             <id>116</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1031,10 +1042,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НайденныеОбъектыViewStatus</name>
+          <name>FoundObjectsViewStatus</name>
           <id>118</id>
           <extendedTooltip>
-            <name>НайденныеОбъектыViewStatusExtendedTooltip</name>
+            <name>FoundObjectsViewStatusExtendedTooltip</name>
             <id>120</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1049,7 +1060,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыViewStatusContextMenu</name>
+            <name>FoundObjectsViewStatusContextMenu</name>
             <id>119</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1070,10 +1081,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НайденныеОбъектыSearchControl</name>
+          <name>FoundObjectsSearchControl</name>
           <id>121</id>
           <extendedTooltip>
-            <name>НайденныеОбъектыSearchControlExtendedTooltip</name>
+            <name>FoundObjectsSearchControlExtendedTooltip</name>
             <id>123</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1088,7 +1099,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НайденныеОбъектыSearchControlContextMenu</name>
+            <name>FoundObjectsSearchControlContextMenu</name>
             <id>122</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1103,7 +1114,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>НайденныеОбъектыExtendedTooltip</name>
+          <name>FoundObjectsExtendedTooltip</name>
           <id>114</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1118,19 +1129,19 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>НайденныеОбъектыКонтекстноеМеню</name>
+          <name>FoundObjectsContextMenu</name>
           <id>47</id>
           <items xsi:type="form:Button">
-            <name>НайденныеОбъектыКонтекстноеМенюРедактироватьОбъект</name>
-            <id>165</id>
+            <name>FoundObjectsContextMenuEditObject</name>
+            <id>167</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>НайденныеОбъектыКонтекстноеМенюРедактироватьОбъектРасширеннаяПодсказка</name>
-              <id>166</id>
+              <name>FoundObjectsContextMenuEditObjectExtendedTooltip</name>
+              <id>168</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
@@ -1143,11 +1154,12 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.РедактироватьОбъект</commandName>
+            <commandName>Form.Command.EditObject</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
             <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <visible>true</visible>
@@ -1190,12 +1202,16 @@
         <key>ru</key>
         <value>Найденные объекты</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Group found objects</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Группа наденные объекты</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаНаденныеОбъектыExtendedTooltip</name>
+        <name>GroupFoundObjectsExtendedTooltip</name>
         <id>108</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1216,13 +1232,13 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаОбработки</name>
+      <name>GroupDataProcessors</name>
       <id>29</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаНастроекОбработок</name>
+        <name>GroupSettingsDataProcessors</name>
         <id>159</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаПараметрыЗаписи</name>
+          <name>GroupParametersRecord</name>
           <id>161</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1233,8 +1249,12 @@
             <key>ru</key>
             <value>Параметры записи</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group parameters record</value>
+          </title>
           <extendedTooltip>
-            <name>Группа2РасширеннаяПодсказка1</name>
+            <name>GroupParametersRecordExtendedTooltip</name>
             <id>162</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1270,8 +1290,12 @@
         <userVisible>
           <common>true</common>
         </userVisible>
+        <title>
+          <key>en</key>
+          <value>Group settings data processors</value>
+        </title>
         <extendedTooltip>
-          <name>Группа2РасширеннаяПодсказка</name>
+          <name>GroupSettingsDataProcessorsExtendedTooltip</name>
           <id>160</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1295,10 +1319,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаНастройкиОбработки</name>
+        <name>GroupSettingsDataProcessor</name>
         <id>37</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаДоступныеОбработки</name>
+          <name>GroupAvailableDataProcessors</name>
           <id>44</id>
           <items xsi:type="form:Table">
             <name>AvailableDataProcessors</name>
@@ -1314,10 +1338,10 @@
             <skipOnInput>false</skipOnInput>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormGroup">
-              <name>Группа</name>
+              <name>Group</name>
               <id>66</id>
               <items xsi:type="form:FormField">
-                <name>Картинка</name>
+                <name>AvailableDataProcessorsPicture</name>
                 <id>67</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1326,12 +1350,12 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>AvailableDataProcessors.Картинка</segments>
+                    <segments>AvailableDataProcessors.Picture</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <extendedTooltip>
-                  <name>КартинкаExtendedTooltip</name>
+                  <name>AvailableDataProcessorsPictureExtendedTooltip</name>
                   <id>141</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1346,7 +1370,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>КартинкаКонтекстноеМеню</name>
+                  <name>AvailableDataProcessorsPictureContextMenu</name>
                   <id>68</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1371,7 +1395,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormField">
-                <name>ДоступныеОбработкиОбработка</name>
+                <name>AvailableDataProcessorsProcessing</name>
                 <id>69</id>
                 <title>
                   <key>ru</key>
@@ -1384,11 +1408,11 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>AvailableDataProcessors.Обработка</segments>
+                    <segments>AvailableDataProcessors.Processing</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>ДоступныеОбработкиОбработкаExtendedTooltip</name>
+                  <name>AvailableDataProcessorsProcessingExtendedTooltip</name>
                   <id>142</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1403,7 +1427,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ДоступныеОбработкиОбработкаКонтекстноеМеню</name>
+                  <name>AvailableDataProcessorsProcessingContextMenu</name>
                   <id>70</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1431,8 +1455,12 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
+              <title>
+                <key>en</key>
+                <value>Group</value>
+              </title>
               <extendedTooltip>
-                <name>ГруппаExtendedTooltip</name>
+                <name>GroupExtendedTooltip</name>
                 <id>140</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1465,27 +1493,27 @@
             </autoCommandBar>
             <handlers>
               <event>OnEditEnd</event>
-              <name>ДоступныеОбработкиПриОкончанииРедактирования</name>
+              <name>AvailableDataProcessorsEditEnd</name>
             </handlers>
             <handlers>
               <event>Selection</event>
-              <name>ДоступныеОбработкиВыбор</name>
+              <name>AvailableDataProcessorsSelection</name>
             </handlers>
             <handlers>
               <event>BeforeAddRow</event>
-              <name>ДоступныеОбработкиПередНачаломДобавления</name>
+              <name>AvailableDataProcessorsBeforeAddRow</name>
             </handlers>
             <handlers>
               <event>BeforeDeleteRow</event>
-              <name>ДоступныеОбработкиПередУдалением</name>
+              <name>AvailableDataProcessorsBeforeDeleteRow</name>
             </handlers>
             <handlers>
               <event>DragStart</event>
-              <name>ДоступныеОбработкиНачалоПеретаскивания</name>
+              <name>AvailableDataProcessorsDragStart</name>
             </handlers>
             <handlers>
               <event>BeforeRowChange</event>
-              <name>ДоступныеОбработкиПередНачаломИзменения</name>
+              <name>AvailableDataProcessorsBeforeRowChange</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -1661,12 +1689,16 @@
             <key>ru</key>
             <value>Доступные обработки</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group available data processors</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа доступные обработки</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаДоступныеОбработкиExtendedTooltip</name>
+            <name>GroupAvailableDataProcessorsExtendedTooltip</name>
             <id>129</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1692,7 +1724,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаВыбранныеОбработки</name>
+          <name>GroupSelectedDataProcessors</name>
           <id>45</id>
           <items xsi:type="form:Table">
             <name>SelectedDataProcessors</name>
@@ -1709,7 +1741,7 @@
             <titleLocation>None</titleLocation>
             <excludedCommands>Add</excludedCommands>
             <items xsi:type="form:FormField">
-              <name>ВыбранныеОбработкиВыбрать</name>
+              <name>SelectedDataProcessorsChoose</name>
               <id>62</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1718,12 +1750,12 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>SelectedDataProcessors.Выбрать</segments>
+                  <segments>SelectedDataProcessors.Choose</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
               <extendedTooltip>
-                <name>ВыбранныеОбработкиВыбратьExtendedTooltip</name>
+                <name>SelectedDataProcessorsChooseExtendedTooltip</name>
                 <id>157</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1738,7 +1770,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ВыбранныеОбработкиВыбратьКонтекстноеМеню</name>
+                <name>SelectedDataProcessorsChooseContextMenu</name>
                 <id>63</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1755,7 +1787,7 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:FormField">
-              <name>ВыбранныеОбработкиОбработкаНастройка</name>
+              <name>SelectedDataProcessorsProcessingSetting</name>
               <id>41</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1764,11 +1796,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>SelectedDataProcessors.ОбработкаНастройка</segments>
+                  <segments>SelectedDataProcessors.ProcessingSetting</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ВыбранныеОбработкиОбработкаНастройкаExtendedTooltip</name>
+                <name>SelectedDataProcessorsProcessingSettingExtendedTooltip</name>
                 <id>158</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1783,7 +1815,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ВыбранныеОбработкиОбработкаНастройкаКонтекстноеМеню</name>
+                <name>SelectedDataProcessorsProcessingSettingContextMenu</name>
                 <id>42</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1811,7 +1843,7 @@
               <name>SelectedDataProcessorsCommandBar</name>
               <id>40</id>
               <items xsi:type="form:Button">
-                <name>ВыбранныеОбработкиВыбратьВсе</name>
+                <name>SelectedDataProcessorsCheckAll</name>
                 <id>64</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1820,7 +1852,7 @@
                 </userVisible>
                 <skipOnInput>false</skipOnInput>
                 <extendedTooltip>
-                  <name>ВыбранныеОбработкиВыбратьВсеExtendedTooltip</name>
+                  <name>SelectedDataProcessorsCheckAllExtendedTooltip</name>
                   <id>144</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1834,7 +1866,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ВыбратьВсе</commandName>
+                <commandName>Form.Command.CheckAll</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -1842,7 +1874,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ВыбранныеОбработкиОтменитьВыборВсех</name>
+                <name>SelectedDataProcessorsUncheckAll</name>
                 <id>65</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1851,7 +1883,7 @@
                 </userVisible>
                 <skipOnInput>false</skipOnInput>
                 <extendedTooltip>
-                  <name>ВыбранныеОбработкиОтменитьВыборВсехExtendedTooltip</name>
+                  <name>SelectedDataProcessorsUncheckAllExtendedTooltip</name>
                   <id>145</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1865,7 +1897,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ОтменитьВыборВсех</commandName>
+                <commandName>Form.Command.UncheckAll</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -1873,7 +1905,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ВыбранныеОбработкиВыполнитьОбработку</name>
+                <name>SelectedDataProcessorsExecuteProcessing</name>
                 <id>43</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1882,7 +1914,7 @@
                 </userVisible>
                 <skipOnInput>false</skipOnInput>
                 <extendedTooltip>
-                  <name>ВыбранныеОбработкиВыполнитьОбработкуExtendedTooltip</name>
+                  <name>SelectedDataProcessorsExecuteProcessingExtendedTooltip</name>
                   <id>146</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1896,7 +1928,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ВыполнитьОбработку</commandName>
+                <commandName>Form.Command.ExecuteProcessing</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -1913,7 +1945,7 @@
             </autoCommandBar>
             <handlers>
               <event>Drag</event>
-              <name>ВыбранныеОбработкиПеретаскивание</name>
+              <name>SelectedDataProcessorsDrag</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -2088,12 +2120,16 @@
             <key>ru</key>
             <value>Выбранные обработки (перетащить из доступных обработок)</value>
           </title>
+          <title>
+            <key>en</key>
+            <value>Group selected data processors</value>
+          </title>
           <toolTip>
             <key>ru</key>
             <value>Группа выбранные обработки</value>
           </toolTip>
           <extendedTooltip>
-            <name>ГруппаВыбранныеОбработкиExtendedTooltip</name>
+            <name>GroupSelectedDataProcessorsExtendedTooltip</name>
             <id>143</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2123,12 +2159,16 @@
         <userVisible>
           <common>true</common>
         </userVisible>
+        <title>
+          <key>en</key>
+          <value>Group settings data processor</value>
+        </title>
         <toolTip>
           <key>ru</key>
           <value>Группа настройки обработки</value>
         </toolTip>
         <extendedTooltip>
-          <name>ГруппаНастройкиОбработкиExtendedTooltip</name>
+          <name>GroupSettingsDataProcessorExtendedTooltip</name>
           <id>128</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2159,12 +2199,16 @@
         <key>ru</key>
         <value>Обработки</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Group data processors</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Группа обработки</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаОбработкиExtendedTooltip</name>
+        <name>GroupDataProcessorsExtendedTooltip</name>
         <id>127</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -2189,12 +2233,16 @@
     <userVisible>
       <common>true</common>
     </userVisible>
+    <title>
+      <key>en</key>
+      <value>Group pages</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа страницы</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаСтраницыExtendedTooltip</name>
+      <name>GroupPagesExtendedTooltip</name>
       <id>92</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -2227,15 +2275,15 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnLoadDataFromSettingsAtServer</event>
-    <name>ПриЗагрузкеДанныхИзНастроекНаСервере</name>
+    <name>OnLoadDataFromSettingsAtServer</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <autoTitle>true</autoTitle>
@@ -2248,7 +2296,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
+    <title>
+      <key>en</key>
+      <value>Object</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_GroupProcessingCatalogsAndDocuments</types>
@@ -2260,21 +2312,25 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ProcessTabularParts</segments>
+      <segments>Object.ProcessTabularParts</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.SearchMode</segments>
+      <segments>Object.SearchMode</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ObjectType</segments>
+      <segments>Object.ObjectType</segments>
     </settingsSavedData>
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ОбъектПоиска</name>
+    <name>SearchObject</name>
     <title>
       <key>ru</key>
       <value>Объект поиска</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Search object</value>
     </title>
     <id>3</id>
     <valueType/>
@@ -2285,14 +2341,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ОбъектПоиска</segments>
+      <segments>SearchObject</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ОбъектПоискаПредставление</name>
+    <name>SearchObjectRepresentation</name>
     <title>
       <key>ru</key>
       <value>Объект поиска представление</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Search object representation</value>
     </title>
     <id>4</id>
     <valueType>
@@ -2306,14 +2366,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ОбъектПоискаПредставление</segments>
+      <segments>SearchObjectRepresentation</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ТекстЗапроса</name>
+    <name>QueryText</name>
     <title>
       <key>ru</key>
       <value>Текст запроса</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Query text</value>
     </title>
     <id>5</id>
     <valueType>
@@ -2327,7 +2391,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ТекстЗапроса</segments>
+      <segments>QueryText</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
@@ -2354,10 +2418,14 @@
       <segments>AvailableDataProcessors</segments>
     </settingsSavedData>
     <columns>
-      <name>Обработка</name>
+      <name>Processing</name>
       <title>
         <key>ru</key>
         <value>Обработка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Processing</value>
       </title>
       <id>1</id>
       <valueType>
@@ -2372,10 +2440,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяФормы</name>
+      <name>FormName</name>
       <title>
         <key>ru</key>
         <value>Имя формы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Form name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -2390,10 +2462,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Настройка</name>
+      <name>Setting</name>
       <title>
         <key>ru</key>
         <value>Настройка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Setting</value>
       </title>
       <id>4</id>
       <valueType>
@@ -2407,10 +2483,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Картинка</name>
+      <name>Picture</name>
       <title>
         <key>ru</key>
         <value>Картинка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Picture</value>
       </title>
       <id>3</id>
       <valueType>
@@ -2445,10 +2525,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ОбработкаНастройка</name>
+      <name>ProcessingSetting</name>
       <title>
         <key>ru</key>
         <value>Настройка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Processing setting</value>
       </title>
       <id>1</id>
       <valueType>
@@ -2488,10 +2572,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Выбрать</name>
+      <name>Choose</name>
       <title>
         <key>ru</key>
         <value>Выбрать</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Choose</value>
       </title>
       <id>3</id>
       <valueType>
@@ -2505,10 +2593,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Настройка</name>
+      <name>Setting</name>
       <title>
         <key>ru</key>
         <value>Настройка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Setting</value>
       </title>
       <id>4</id>
       <valueType>
@@ -2523,10 +2615,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>НайденныеОбъекты</name>
+    <name>FoundObjects</name>
     <title>
       <key>ru</key>
       <value>Найденные объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Found objects</value>
     </title>
     <id>10</id>
     <valueType>
@@ -2539,10 +2635,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Объект</name>
+      <name>Object</name>
       <title>
         <key>ru</key>
         <value>Объект</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Object</value>
       </title>
       <id>1</id>
       <valueType/>
@@ -2554,10 +2654,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Выбрать</name>
+      <name>Choose</name>
       <title>
         <key>ru</key>
         <value>Выбрать</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Choose</value>
       </title>
       <id>2</id>
       <valueType>
@@ -2571,7 +2675,11 @@
       </edit>
     </columns>
     <columns>
-      <name>Картинка</name>
+      <name>Picture</name>
+      <title>
+        <key>en</key>
+        <value>Picture</value>
+      </title>
       <id>3</id>
       <valueType>
         <types>Number</types>
@@ -2589,10 +2697,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ДобавленныеРеквизиты</name>
+    <name>AddedAttributes</name>
     <title>
       <key>ru</key>
       <value>Добавленные реквизиты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Added attributes</value>
     </title>
     <id>11</id>
     <valueType>
@@ -2609,10 +2721,14 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ДобавленныеЭлементы</name>
+    <name>AddedItems</name>
     <title>
       <key>ru</key>
       <value>Добавленные элементы</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Added items</value>
     </title>
     <id>12</id>
     <valueType>
@@ -2629,10 +2745,14 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ОтборДанных</name>
+    <name>DataSelection</name>
     <title>
       <key>ru</key>
       <value>Отбор данных</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Data selection</value>
     </title>
     <id>2</id>
     <valueType/>
@@ -2643,14 +2763,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ОтборДанных</segments>
+      <segments>DataSelection</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>СтрокаПоиска</name>
+    <name>SearchString</name>
     <title>
       <key>ru</key>
       <value>Строка поиска</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Search string</value>
     </title>
     <id>6</id>
     <valueType>
@@ -2664,7 +2788,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>СтрокаПоиска</segments>
+      <segments>SearchString</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
@@ -2769,10 +2893,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ТекстПроизвольногоЗапроса</name>
+    <name>ArbitraryQueryText</name>
     <title>
       <key>ru</key>
       <value>Текст произвольного запроса</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Arbitrary query text</value>
     </title>
     <id>14</id>
     <valueType>
@@ -2786,14 +2914,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ТекстПроизвольногоЗапроса</segments>
+      <segments>ArbitraryQueryText</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ТабличноеПолеВидыОбъектов</name>
+    <name>TableFieldTypesObjects</name>
     <title>
       <key>ru</key>
       <value>Табличное поле виды объектов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Table field types objects</value>
     </title>
     <id>15</id>
     <valueType>
@@ -2806,13 +2938,17 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ТабличноеПолеВидыОбъектов</segments>
+      <segments>TableFieldTypesObjects</segments>
     </settingsSavedData>
     <columns>
-      <name>ИмяТаблицы</name>
+      <name>TableName</name>
       <title>
         <key>ru</key>
         <value>Имя таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Table name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -2827,10 +2963,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПредставлениеТаблицы</name>
+      <name>PresentationTable</name>
       <title>
         <key>ru</key>
         <value>Представление таблицы</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation table</value>
       </title>
       <id>2</id>
       <valueType>
@@ -2846,10 +2986,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ВКонфигурацииЕстьСвойства</name>
+    <name>InConfigurationYesProperties</name>
     <title>
       <key>ru</key>
       <value>В конфигурации есть свойства</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>In configuration yes properties</value>
     </title>
     <id>13</id>
     <valueType>
@@ -2863,10 +3007,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ВКонфигурацииЕстьКатегории</name>
+    <name>InConfigurationYesCategories</name>
     <title>
       <key>ru</key>
       <value>В конфигурации есть категории</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>In configuration yes categories</value>
     </title>
     <id>16</id>
     <valueType>
@@ -2880,10 +3028,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ВКонфигурацииЕстьУправлениеЗаказами</name>
+    <name>InConfigurationYesOrderManagement</name>
     <title>
       <key>ru</key>
       <value>В конфигурации есть управление заказами</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>In configuration yes order management</value>
     </title>
     <id>17</id>
     <valueType>
@@ -2897,10 +3049,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОграничениеНаСтрокиНеограниченнойДлины</name>
+    <name>RestrictionOnStringsUnlimitedLength</name>
     <title>
       <key>ru</key>
       <value>Ограничение на строки неограниченной длины</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Restriction on strings unlimited length</value>
     </title>
     <id>18</id>
     <valueType>
@@ -2917,10 +3073,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОтборПоКатегориям</name>
+    <name>SelectionByCategories</name>
     <title>
       <key>ru</key>
       <value>Отбор по категориям</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Selection by categories</value>
     </title>
     <id>19</id>
     <valueType>
@@ -2934,10 +3094,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОтборПоСвойствам</name>
+    <name>SelectionByProperties</name>
     <title>
       <key>ru</key>
       <value>Отбор по свойствам</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Selection by properties</value>
     </title>
     <id>20</id>
     <valueType>
@@ -2971,10 +3135,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -2989,10 +3157,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
       </title>
       <id>2</id>
       <valueType>
@@ -3007,10 +3179,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Тип</name>
+      <name>Type</name>
       <title>
         <key>ru</key>
         <value>Тип</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Type</value>
       </title>
       <id>3</id>
       <valueType>
@@ -3024,10 +3200,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ЭтоТЧ</name>
+      <name>ThisTP</name>
       <title>
         <key>ru</key>
         <value>Это ТЧ</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>This TP</value>
       </title>
       <id>4</id>
       <valueType>
@@ -3042,10 +3222,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>мСформированныйРежим</name>
+    <name>mShapedMode</name>
     <title>
       <key>ru</key>
       <value>М сформированный режим</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>M shaped mode</value>
     </title>
     <id>23</id>
     <valueType/>
@@ -3081,10 +3265,14 @@
     </extInfo>
   </attributes>
   <formCommands>
-    <name>НайтиСсылки</name>
+    <name>FindLinks</name>
     <title>
       <key>ru</key>
       <value>Найти ссылки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Find links</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -3100,17 +3288,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>НайтиСсылки</name>
+        <name>FindLinks</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыбратьВсе</name>
+    <name>CheckAll</name>
     <title>
       <key>ru</key>
       <value>Выбрать все</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Check all</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -3125,16 +3317,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыбратьВсе</name>
+        <name>CheckAll</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ОтменитьВыборВсех</name>
+    <name>UncheckAll</name>
     <title>
       <key>ru</key>
       <value>Отменить выбор всех</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Uncheck all</value>
     </title>
     <id>3</id>
     <toolTip>
@@ -3149,16 +3345,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОтменитьВыборВсех</name>
+        <name>UncheckAll</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыполнитьОбработку</name>
+    <name>ExecuteProcessing</name>
     <title>
       <key>ru</key>
       <value>Выполнить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Execute processing</value>
     </title>
     <id>4</id>
     <toolTip>
@@ -3173,17 +3373,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьОбработку</name>
+        <name>ExecuteProcessing</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>Отбор</name>
+    <name>Filter</name>
     <title>
       <key>ru</key>
       <value>Настройки отбора</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Filter</value>
     </title>
     <id>5</id>
     <toolTip>
@@ -3198,17 +3402,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Отбор</name>
+        <name>Filter</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыбратьВсеОбработки</name>
+    <name>CheckAllDataProcessors</name>
     <title>
       <key>ru</key>
       <value>Выбрать все</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Check all data processors</value>
     </title>
     <id>6</id>
     <toolTip>
@@ -3223,16 +3431,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыбратьВсеОбработки</name>
+        <name>CheckAllDataProcessors</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ОтменитьВыборВсехОбработок</name>
+    <name>UncheckAllDataProcessors</name>
     <title>
       <key>ru</key>
       <value>Отменить выбор всех</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Uncheck all data processors</value>
     </title>
     <id>7</id>
     <toolTip>
@@ -3247,16 +3459,20 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОтменитьВыборВсехОбработок</name>
+        <name>UncheckAllDataProcessors</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>РедактироватьОбъект</name>
+    <name>EditObject</name>
     <title>
       <key>ru</key>
       <value>Редактировать объект</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Edit object</value>
     </title>
     <id>8</id>
     <use>
@@ -3267,7 +3483,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>РедактироватьОбъект</name>
+        <name>EditObject</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

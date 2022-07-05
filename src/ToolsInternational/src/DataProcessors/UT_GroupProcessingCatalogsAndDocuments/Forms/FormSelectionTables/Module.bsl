@@ -46,7 +46,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			EndIf;
 
 		Else
-			RemarkParent = Undefined;
+			CheckParent = Undefined;
 			For Each TabularSection In MetadataItem.TabularSections Do
 
 				RowTabularSection            			= String.Rows.Add();
@@ -60,14 +60,14 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 				EndIf;
 
-				If RemarkParent = Undefined Then
-					RemarkParent = RowTabularSection.Check;
-				ElsIf Not RemarkParent = 2 And RemarkParent <> RowTabularSection.Check Then
-					RemarkParent = 2;
+				If CheckParent = Undefined Then
+					CheckParent = RowTabularSection.Check;
+				ElsIf Not CheckParent = 2 And CheckParent <> RowTabularSection.Check Then
+					CheckParent = 2;
 				EndIf;
 
 			EndDo;
-			String.Check = RemarkParent;
+			String.Check = CheckParent;
 		EndIf;
 	EndDo;
 
@@ -75,7 +75,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 EndProcedure
 
 &AtClient
-Procedure TreeTableRemarkOnChange(Item)
+Procedure TreeTableCheckOnChange(Item)
 	CurrentData = Items.TreeTable.CurrentData;
 
 	If CurrentData.Check = 2 Then
@@ -83,14 +83,14 @@ Procedure TreeTableRemarkOnChange(Item)
 	EndIf;
 
 	If CurrentData.GetParent() <> Undefined Then
-		RemarkParent = CurrentData.Check;
+		CheckParent = CurrentData.Check;
 		For Each String In CurrentData.GetParent().GetItems() Do
-			If String.Check <> RemarkParent Then
-				RemarkParent = 2;
+			If String.Check <> CheckParent Then
+				CheckParent = 2;
 				Break;
 			EndIf;
 		EndDo;
-		CurrentData.GetParent().Check = RemarkParent;
+		CurrentData.GetParent().Check = CheckParent;
 	Else
 		For Each String In CurrentData.GetItems() Do
 			String.Check = CurrentData.Check;
@@ -128,12 +128,12 @@ Procedure Choose(Command)
 EndProcedure
 
 &AtClient
-Procedure SetRemarksOnAllLines(NewRemark)
+Procedure SetChecksOnAllLines(NewCheck)
 	For Each String In TreeTable.GetItems() Do
-		String.Check = NewRemark;
+		String.Check = NewCheck;
 		If ProcessTabularParts Then
 			For Each RowTable In String.GetItems() Do
-				RowTable.Check = NewRemark;
+				RowTable.Check = NewCheck;
 			EndDo;
 		EndIf;
 
@@ -143,10 +143,10 @@ EndProcedure
 
 &AtClient
 Procedure SetMarks(Command)
-	SetRemarksOnAllLines(1);
+	SetChecksOnAllLines(1);
 EndProcedure
 
 &AtClient
 Procedure RemoveMarks(Command)
-	SetRemarksOnAllLines(0);
+	SetChecksOnAllLines(0);
 EndProcedure

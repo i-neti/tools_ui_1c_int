@@ -177,7 +177,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_КонсольСравненияДанных</name>
+		<name>DataProcessor.UT_ConsoleComparisonData</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
@@ -199,7 +199,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_НавигаторПоКонфигурации</name>
+		<name>DataProcessor.UT_ConfigurationNavigator</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
@@ -239,7 +239,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_ВыгрузкаЗагрузкаДанныхXMLСФильтрами</name>
+		<name>DataProcessor.UT_ExportImportDataXMLWithFilters</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>

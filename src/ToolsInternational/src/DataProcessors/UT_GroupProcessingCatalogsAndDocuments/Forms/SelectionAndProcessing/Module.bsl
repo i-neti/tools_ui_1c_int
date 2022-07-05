@@ -1,297 +1,296 @@
 &AtClient
-Var ОбработкаПеретаскивание;
+Var ProcessingDragAndDrop;
 
 &AtServer
-Function ОписаниеТипа(ТипСтрокой) Export
-
-	МассивТипов = New Array;
-	МассивТипов.Add(Type(ТипСтрокой));
-	TypeDescription = New TypeDescription(МассивТипов);
-
-	Return TypeDescription;
-
-EndFunction
-
-// вОписаниеТипа()
-&AtServer
-Function ПолучитьСписокВидовОбъектов()
-	ТЗ = FormDataToValue(ТабличноеПолеВидыОбъектов, Type("ValueTable"));
+Function GetListTypesObjects()
+	
+	ValueTable = FormDataToValue(TableFieldTypesObjects, Type("ValueTable"));
 
 	ListOfSelected = New ValueList;
-	ListOfSelected.LoadValues(ТЗ.UnloadColumn("TableName"));
+	ListOfSelected.LoadValues(ValueTable.UnloadColumn("TableName"));
 
 	Return ListOfSelected;
+	
 EndFunction
 
 &AtClient
-Procedure ОткрытьФормуВыбораТаблицы()
-	СтруктураПараметров = New Structure;
-	СтруктураПараметров.Insert("ObjectType", Object.ТипОбъекта);
-	СтруктураПараметров.Insert("ProcessTabularParts", Object.ОбрабатыватьТабличныеЧасти);
-	СтруктураПараметров.Insert("ListOfSelected", ПолучитьСписокВидовОбъектов());
+Procedure OpenFormSelectionTable()
+	
+	StructureParameters = New Structure;
+	StructureParameters.Insert("ObjectType", Object.ObjectType);
+	StructureParameters.Insert("ProcessTabularParts", Object.ProcessTabularParts);
+	StructureParameters.Insert("ListOfSelected", GetListTypesObjects());
 
-	OpenForm(ПолучитьПолноеИмяФормы("ФормаВыбораТаблиц"), СтруктураПараметров, ThisObject, , , ,
-		New NotifyDescription("ОткрытьФормуВыбораТаблицыЗавершение", ThisObject),
+	OpenForm(GetFullFormName("FormSelectionTables"), StructureParameters, ThisObject, , , ,
+		New NotifyDescription("OpenFormSelectionTableEnd", ThisObject),
 		FormWindowOpeningMode.LockOwnerWindow);
+		
 EndProcedure
 
 &AtClient
-Procedure ОткрытьФормуВыбораТаблицыЗавершение(Result, AdditionalParameters) Export
+Procedure OpenFormSelectionTableEnd(Result, AdditionalParameters) Export
+	
 	If Result = Undefined Then
 		Return;
 	EndIf;
 
-	ТабличноеПолеВидыОбъектов.Clear();
+	TableFieldTypesObjects.Clear();
 	For Each Value In Result Do
 
-		String = ТабличноеПолеВидыОбъектов.Add();
+		String = TableFieldTypesObjects.Add();
 		String.TableName = Value.Value;
-		String.ПредставлениеТаблицы = Value.Presentation;
+		String.PresentationTable = Value.Presentation;
 
 	EndDo;
-	ИнициализацияЗапроса();
+	QueryInitialization();
 
 EndProcedure
 
 // () 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПередНачаломДобавления(Item, Cancel, Copy, Parent, Group)
-	ОткрытьФормуВыбораТаблицы();
+Procedure TableFieldTypesObjectsBeforeAddRow(Item, Cancel, Copy, Parent, Group)
+	OpenFormSelectionTable();
 	Cancel = True;
 EndProcedure
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-//	ОбработкаПеретаскивание = False;
-	ChoiceList = Items.ОбъектПоиска.ChoiceList;
-	Items.ОбъектПоиска.ChoiceListHeight = 15;
+//	ProcessingDragAndDrop = False;
+	ChoiceList = Items.SearchObject.ChoiceList;
+	Items.SearchObject.ChoiceListHeight = 15;
 
 	For Each Catalog In Metadata.Catalogs Do
-		If AccessRight("Browse", Catalog) Then
-			ИмяСправочника = Catalog.Synonym;
-			If ИмяСправочника = "" Then
-				ИмяСправочника = Catalog.Name;
+		If AccessRight("View", Catalog) Then
+			CatalogName = Catalog.Synonym;
+			If CatalogName = "" Then
+				CatalogName = Catalog.Name;
 			EndIf;
 
 			Structure = New Structure;
 			Structure.Insert("Type", "Catalog");
 			Structure.Insert("Name", Catalog.Name);
-			Structure.Insert("Presentation", ИмяСправочника);
+			Structure.Insert("Presentation", CatalogName);
 
-			ChoiceList.Add(Structure, ИмяСправочника, , PictureLib.Catalog);
+			ChoiceList.Add(Structure, CatalogName, , PictureLib.Catalog);
 		EndIf;
 	EndDo;
 
 	For Each Document In Metadata.Documents Do
-		If AccessRight("Browse", Document) Then
-			ИмяДокумента = Document.Synonym;
-			If ИмяДокумента = "" Then
-				ИмяДокумента = Document.Name;
+		If AccessRight("View", Document) Then
+			DocumentName = Document.Synonym;
+			If DocumentName = "" Then
+				DocumentName = Document.Name;
 			EndIf;
 
 			Structure = New Structure;
 			Structure.Insert("Type", "Document");
 			Structure.Insert("Name", Document.Name);
-			Structure.Insert("Presentation", ИмяДокумента);
+			Structure.Insert("Presentation", DocumentName);
 
-			ChoiceList.Add(Structure, ИмяДокумента, , PictureLib.Document);
+			ChoiceList.Add(Structure, DocumentName, , PictureLib.Document);
 		EndIf;
 	EndDo;
 
 	FormAttributeToValue("Object").DownloadDataProcessors(ThisForm, AvailableDataProcessors, SelectedDataProcessors);
 
-	ВКонфигурацииЕстьКатегории = Metadata.Catalogs.Find("КатегорииОбъектов") <> Undefined;
-	ВКонфигурацииЕстьСвойства = Metadata.ChartsOfCharacteristicTypes.Find("ObjectProperties") <> Undefined;
-	ВКонфигурацииЕстьУправлениеЗаказами = Metadata.InformationRegisters.Find(
-		"НоменклатураНеиспользуемаяВВебУправленииЗаказами") <> Undefined;
+	// CategoriesObjects - КатегорииОбъектов
+	InConfigurationYesCategories = Metadata.Catalogs.Find("CategoriesObjects") <> Undefined;
+	InConfigurationYesProperties = Metadata.ChartsOfCharacteristicTypes.Find("ObjectProperties") <> Undefined;
+	InConfigurationYesOrderManagement = Metadata.InformationRegisters.Find(
+		"ProductsUnusedInWebOrderManagement") <> Undefined;
 
 	UT_Forms.CreateWriteParametersAttributesFormOnCreateAtServer(ThisObject,
-		Items.ГруппаПараметрыЗаписи);
+		Items.GroupParametersRecord);
 	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
 	
 EndProcedure
 
 &AtClient
-Procedure ОбъектПоискаПриИзменении(Item)
-	ПриИзмененииОбъектаПоиска();
+Procedure SearchObjectOnChange(Item)
+	SearchObjectOnChangeAtServer();
 EndProcedure
 
 &AtServer
-Procedure ПриИзмененииОбъектаПоиска()
+Procedure SearchObjectOnChangeAtServer()
 //	УстановитьВидимостьДоступность();
 	QueryText = GetQueryText();
-	ТекстПроизвольногоЗапроса = QueryText;
-	ОтборДанных = Undefined;
+	ArbitraryQueryText = QueryText;
+	DataSelection = Undefined;
 	QueryParameters.Clear();
 EndProcedure
 
 &AtServer
-Function СформироватьУсловиеПоискаПоСтроке()
-	УсловиеПоискаПоСтроке = "";
+Function GenerateSearchConditionByString()
+	SearchConditionByString = "";
 
 	If SearchString <> "" Then
-		ИскомыйОбъект = ОбъектПоиска;
-		ОбъектМетаданных = Metadata.FindByFullName(ИскомыйОбъект.Type + "." + ИскомыйОбъект.Name);
+		SearchableObject = SearchObject;
+		MetadataObject = Metadata.FindByFullName(SearchableObject.Type + "." + SearchableObject.Name);
 
-		УсловиеПоискаПоСтроке = "";
+		SearchConditionByString = "";
 
-		СтрокаДляПоиска = StrReplace(SearchString, """", """""");
+		StringForSearch = StrReplace(SearchString, """", """""");
 
-		If ИскомыйОбъект.Type = "Catalog" Then
-			If ОбъектМетаданных.DescriptionLength <> 0 Then
-				If УсловиеПоискаПоСтроке <> "" Then
-					УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " ИЛИ ";
+		If SearchableObject.Type = "Catalog" Then
+			If MetadataObject.DescriptionLength <> 0 Then
+				If SearchConditionByString <> "" Then
+					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " Title ПОДОБНО ""%" + СтрокаДляПоиска + "%""";
+				SearchConditionByString = SearchConditionByString + " Presentation LIKE ""%" + StringForSearch + "%""";
 			EndIf;
 
-			If ОбъектМетаданных.CodeLength <> 0 And ОбъектМетаданных.CodeType
+			If MetadataObject.CodeLength <> 0 And MetadataObject.CodeType
 				= Metadata.ObjectProperties.CatalogCodeType.String Then
-				If УсловиеПоискаПоСтроке <> "" Then
-					УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " ИЛИ ";
+				If SearchConditionByString <> "" Then
+					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " Code ПОДОБНО ""%" + СтрокаДляПоиска + "%""";
+				SearchConditionByString = SearchConditionByString + " Code LIKE ""%" + StringForSearch + "%""";
 			EndIf;
-		ElsIf ИскомыйОбъект.Type = "Document" Then
-			If ОбъектМетаданных.NumberType = Metadata.ObjectProperties.DocumentNumberType.String Then
-				If УсловиеПоискаПоСтроке <> "" Then
-					УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " ИЛИ ";
+		ElsIf SearchableObject.Type = "Document" Then
+			If MetadataObject.NumberType = Metadata.ObjectProperties.DocumentNumberType.String Then
+				If SearchConditionByString <> "" Then
+					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " Number ПОДОБНО ""%" + СтрокаДляПоиска + "%""";
+				SearchConditionByString = SearchConditionByString + " Number LIKE ""%" + StringForSearch + "%""";
 			EndIf;
 		EndIf;
 
-		For Each Attribute In ОбъектМетаданных.Attributes Do
+		For Each Attribute In MetadataObject.Attributes Do
 			If Attribute.Type.ContainsType(Type("String")) Then
-				If УсловиеПоискаПоСтроке <> "" Then
-					УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + " ИЛИ ";
+				If SearchConditionByString <> "" Then
+					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				УсловиеПоискаПоСтроке = УсловиеПоискаПоСтроке + Attribute.Name + " ПОДОБНО ""%" + СтрокаДляПоиска + "%""";
+				SearchConditionByString = SearchConditionByString + Attribute.Name + " LIKE ""%" + StringForSearch + "%""";
 			EndIf;
 		EndDo;
 	EndIf;
 
-	Return УсловиеПоискаПоСтроке;
+	Return SearchConditionByString;
 EndFunction
 
 &AtServer
 Function GetQueryText()
 
-	ИскомыйОбъект = ОбъектПоиска;
-	ОбъектМетаданных = Metadata.FindByFullName(ИскомыйОбъект.Type + "." + ИскомыйОбъект.Name);
+	SearchableObject = SearchObject;
+	MetadataObject = Metadata.FindByFullName(SearchableObject.Type + "." + SearchableObject.Name);
 	Condition = "";
 
-	QueryText = "ВЫБРАТЬ 
-				   |	Reference КАК Object, 
+	QueryText = "Select 
+				   |	Ref As Object, 
 				   |	Presentation";
 
-	If ИскомыйОбъект.Type = "Catalog" Then
-		If ОбъектМетаданных.DefaultPresentation
+	If SearchableObject.Type = "Catalog" Then
+		If MetadataObject.DefaultPresentation
 			<> Metadata.ObjectProperties.CatalogMainPresentation.AsDescription Then
-			If ОбъектМетаданных.DescriptionLength <> 0 Then
+			If MetadataObject.DescriptionLength <> 0 Then
 				QueryText = QueryText + ", 
-											  |	Title";
+											  |	Presentation";
 			EndIf;
-			If ОбъектМетаданных.CodeLength <> 0 Then
+			If MetadataObject.CodeLength <> 0 Then
 				Condition = "Code";
 			EndIf;
 		EndIf;
-		If ОбъектМетаданных.DefaultPresentation
+		If MetadataObject.DefaultPresentation
 			<> Metadata.ObjectProperties.CatalogMainPresentation.AsCode Then
-			If ОбъектМетаданных.CodeLength <> 0 Then
+			If MetadataObject.CodeLength <> 0 Then
 				QueryText = QueryText + ",
 											  |	Code";
 			EndIf;
-			If ОбъектМетаданных.DescriptionLength <> 0 Then
-				Condition = "Title";
+			If MetadataObject.DescriptionLength <> 0 Then
+				Condition = "Presentation";
 			EndIf;
 		EndIf;
-	ElsIf ИскомыйОбъект.Type = "Document" Then
+	ElsIf SearchableObject.Type = "Document" Then
 		Condition = "Date, Number";
 	EndIf;
 
-	For Each Attribute In ОбъектМетаданных.Attributes Do
+	For Each Attribute In MetadataObject.Attributes Do
 		QueryText = QueryText + ",
 									  |	" + Attribute.Name;
 	EndDo;
 
-	QueryText = QueryText + Chars.LF + "ИЗ" + Chars.LF;
-	QueryText = QueryText + "	" + ИскомыйОбъект.Type + "." + ОбъектМетаданных.Name + " КАК _Таблица" + Chars.LF;
+	QueryText = QueryText + Chars.LF + "FROM" + Chars.LF;
+	QueryText = QueryText + "	" + SearchableObject.Type + "." + MetadataObject.Name + " AS _Table" + Chars.LF;
 
-	For Each ТЧ In ОбъектМетаданных.TabularSections Do
-		For Each ТЧР In ТЧ.Attributes Do
+	For Each TabularSection In MetadataObject.TabularSections Do
+		For Each AttributeTP In TabularSection.Attributes Do
 			If Condition <> "" Then
 				Condition = Condition + ",";
 			EndIf;
-			Condition = Condition + ТЧ.Name + "." + ТЧР.Name + ".* КАК " + ТЧ.Name + ТЧР.Name;
+			Condition = Condition + TabularSection.Name + "." + AttributeTP.Name + ".* AS " + TabularSection.Name + AttributeTP.Name;
 		EndDo;
 	EndDo;
 
 	//If Condition <> "" Then
-	//	QueryText = QueryText + "{ГДЕ " + Condition + "}" + Chars.LF;
+	//	QueryText = QueryText + "{WHERE " + Condition + "}" + Chars.LF;
 	//EndIf;
 
-	//If УсловиеПоискаПоСтроке <> "" Then
-	//	QueryText = QueryText + "ГДЕ " + УсловиеПоискаПоСтроке + Chars.LF;
+	//If SearchConditionByString <> "" Then
+	//	QueryText = QueryText + "WHERE " + SearchConditionByString + Chars.LF;
 	//EndIf;
 	Return QueryText;
+	
 EndFunction
 
 &AtClient
-Procedure ОбъектПоискаОбработкаВыбора(Item, ВыбранноеЗначение, StandardProcessing)
+Procedure SearchObjectChoiceProcessing(Item, SelectedValue, StandardProcessing)
+	
 	StandardProcessing = False;
 
-	If ValueIsFilled(ВыбранноеЗначение) Then
-		ОбъектПоискаПредставление = ВыбранноеЗначение.Presentation;
-		ОбъектПоиска = ВыбранноеЗначение;
+	If ValueIsFilled(SelectedValue) Then
+		SearchObjectRepresentation = SelectedValue.Presentation;
+		SearchObject = SelectedValue;
 	Else
-		ОбъектПоискаПредставление = "";
-		ОбъектПоиска = Undefined;
+		SearchObjectRepresentation = "";
+		SearchObject = Undefined;
 	EndIf;
 
-	ПриИзмененииОбъектаПоиска();
+	SearchObjectOnChangeAtServer();
+	
 EndProcedure
 
 &AtClient
-Procedure НайтиСсылки(Command)
-	Status("Поиск ссылок...");
-	НайтиСсылкиПоОтбору();
-	Items.ГруппаСтраницы.CurrentPage = Items.ГруппаНаденныеОбъекты;
+Procedure FindLinks(Command)
+	
+	Status(Nstr("ru = 'Поиск ссылок...';en = 'Search for links...'"));
+	FindLinksByFilter();
+	Items.GroupPages.CurrentPage = Items.GroupFoundObjects;
+	
 EndProcedure
 
 &AtServer
-Procedure НайтиСсылкиПоОтбору()
+Procedure FindLinksByFilter()
 
-	ОбработкаОбъект = FormAttributeToValue("Object");
+	DataProcessorObject = FormAttributeToValue("Object");
 
 	Query = New Query;
 
 	If Object.SearchMode = 1 Then
-		Query.Text = ТекстПроизвольногоЗапроса;
-		For Each СтрокаПараметров In QueryParameters Do
-			If СтрокаПараметров.ThisExpression Then
-				Query.SetParameter(СтрокаПараметров.ParameterName, Eval(СтрокаПараметров.ParameterValue));
+		Query.Text = ArbitraryQueryText;
+		For Each RowParameters In QueryParameters Do
+			If RowParameters.ThisExpression Then
+				Query.SetParameter(RowParameters.ParameterName, Eval(RowParameters.ParameterValue));
 			Else
-				Query.SetParameter(СтрокаПараметров.ParameterName, СтрокаПараметров.ParameterValue);
+				Query.SetParameter(RowParameters.ParameterName, RowParameters.ParameterValue);
 			EndIf;
 		EndDo;
 	Else
 		Query.Text = QueryText;
-		УсловиеПоискаПоСтроке = СформироватьУсловиеПоискаПоСтроке();
-		СписокУсловий = УсловиеПоискаПоСтроке;
+		SearchConditionByString = GenerateSearchConditionByString();
+		ListConditions = SearchConditionByString;
 
-		If ОтборДанных <> Undefined Then
-			For Each FilterItem In ОтборДанных.Filter.Items Do
+		If DataSelection <> Undefined Then
+			For Each FilterItem In DataSelection.Filter.Items Do
 				If Not FilterItem.Use Then
 					Continue;
 				EndIf;
 
-				IndexOf = ОтборДанных.Filter.Items.IndexOf(FilterItem);
+				IndexOf = DataSelection.Filter.Items.IndexOf(FilterItem);
 				ParameterName = StrReplace(String(FilterItem.LeftValue) + IndexOf, ".", "");
 
-				СписокУсловий = СписокУсловий + ?(СписокУсловий = "", "", "
+				ListConditions = ListConditions + ?(ListConditions = "", "", "
 																		  |	And ")
-					+ ОбработкаОбъект.ПолучитьВидСравнения(FilterItem.LeftValue, FilterItem.ComparisonType,
+					+ DataProcessorObject.GetComparisonType(FilterItem.LeftValue, FilterItem.ComparisonType,
 					ParameterName);
 
 				If TypeOf(FilterItem.RightValue) = Type("StandardBeginningDate") Then
@@ -302,140 +301,143 @@ Procedure НайтиСсылкиПоОтбору()
 			EndDo;
 		EndIf;
 
-		If СписокУсловий <> "" Then
+		If ListConditions <> "" Then
 			Query.Text = Query.Text + "
-										  |ГДЕ 
-										  |	" + СписокУсловий;
+										  |WHERE 
+										  |	" + ListConditions;
 		EndIf;
 
-		ТекстЗапросаОкончание = "";
+		QueryTextEnding = "";
 
 		If Object.ObjectType = 1 Then
 
-			ТекстЗапросаОкончание = ТекстЗапросаОкончание + "
-															|УПОРЯДОЧИТЬ ПО
-															|	Ш_Дата,
+			QueryTextEnding = QueryTextEnding + "
+															|ORDER BY
+															|	H_Date,
 															|	Object";
-			ПоляСортировки = "Ш_Дата,Object";
+			FieldsSort = "H_Date,Object";
 
 		Else
 
-			ТекстЗапросаОкончание = ТекстЗапросаОкончание + "
-															|УПОРЯДОЧИТЬ ПО
-															|	Ш_Вид,
+			QueryTextEnding = QueryTextEnding + "
+															|ORDER BY
+															|	H_Kind,
 															|	Object";
-			ПоляСортировки = "Ш_Вид,Object";
+			FieldsSort = "H_Kind,Object";
 
 		EndIf;
 
 		If Object.ProcessTabularParts Then
-			ТекстЗапросаОкончание = ТекстЗапросаОкончание + ",
-															|	Т_ТЧ,
-															|	Т_НомерСтроки";
-			ПоляСортировки = ПоляСортировки + ",Т_ТЧ,Т_НомерСтроки";
+			QueryTextEnding = QueryTextEnding + ",
+															|	T_TP,
+															|	T_LineNumber";
+			FieldsSort = FieldsSort + ",T_TP,T_LineNumber";
 		EndIf;
 
-		Query.Text = Query.Text + ТекстЗапросаОкончание;
+		Query.Text = Query.Text + QueryTextEnding;
 
 	EndIf;
 
 	Try
-		ТЗ = Query.Execute().Unload();
+		ValueTable = Query.Execute().Unload();
 	Except
 		Message(ErrorDescription());
 		Return;
 	EndTry;
 
-	МассивРеквизитов = New Array;
-	МассивРеквизитов.Add("Object");
-	МассивРеквизитов.Add("Picture");
-	МассивРеквизитов.Add("StartChoosing");
+	ArrayAttributes = New Array;
+	ArrayAttributes.Add("Object");
+	ArrayAttributes.Add("Picture");
+	ArrayAttributes.Add("Choose");
 
-	CreateColumns(ТЗ, МассивРеквизитов);
+	CreateColumns(ValueTable, ArrayAttributes);
 
 EndProcedure
 
 &AtClient
-Procedure ВыбратьВсе(Command)
-	ВыбратьЭлементы(True);
+Procedure CheckAll(Command)
+	SelectItems(True);
 EndProcedure
 
 &AtClient
-Procedure ОтменитьВыборВсех(Command)
-	ВыбратьЭлементы(False);
+Procedure UncheckAll(Command)
+	SelectItems(False);
 EndProcedure
 
 &AtServer
-Procedure ВыбратьЭлементы(Selection)
-	For Each Стр In НайденныеОбъекты Do
-		Стр.StartChoosing = Selection;
+Procedure SelectItems(Selection)
+	For Each Row In FoundObjects Do
+		Row.Choose = Selection;
 	EndDo;
 EndProcedure
 
 &AtClient
 Procedure ExecuteProcessing(Command)
+	
 	For Each String In SelectedDataProcessors Do
 		UserInterruptProcessing();
 
-		If Not String.StartChoosing Then
+		If Not String.Choose Then
 			Continue;
 		EndIf;
 
-		Стр = AvailableDataProcessors.FindByID(String.RowAvailableDataProcessor);
-		Parent = Стр.GetParent();
+		Row = AvailableDataProcessors.FindByID(String.RowAvailableDataProcessor);
+		Parent = Row.GetParent();
 
-		СтруктураПараметров = СформироватьСтруктуруПараметров();
-		СтруктураПараметров.Setting = Стр.Setting[0].Value;
+		StructureParameters = FormAStructureOfParameters();
+		StructureParameters.Setting = Row.Setting[0].Value;
 
 		If Parent = Undefined Then
-			ИмяФормыОбработки = Стр.FormName;
+			ProcessingFormName = Row.FormName;
 
-			СтруктураПараметров.Settings = СформироватьНастройки(Стр);
-			СтруктураПараметров.Insert("Parent", Стр.GetID());
-			СтруктураПараметров.Insert("CurrentLine", Undefined);
+			StructureParameters.Settings = FormTheSettings(Row);
+			StructureParameters.Insert("Parent", Row.GetID());
+			StructureParameters.Insert("CurrentLine", Undefined);
 		Else
-			ИмяФормыОбработки = Parent.FormName;
+			ProcessingFormName = Parent.FormName;
 
-			СтруктураПараметров.Settings = СформироватьНастройки(Parent);
-			СтруктураПараметров.Insert("Parent", Parent.GetID());
-			СтруктураПараметров.Insert("CurrentLine", String.RowAvailableDataProcessor);
+			StructureParameters.Settings = FormTheSettings(Parent);
+			StructureParameters.Insert("Parent", Parent.GetID());
+			StructureParameters.Insert("CurrentLine", String.RowAvailableDataProcessor);
 		EndIf;
 
-		If Not ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"), ИмяФормыОбработки) Then
-			Message("Processing " + FormName + " недоступна для типа <" + ОбъектПоиска.Type + ">");
+		If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), ProcessingFormName) Then
+			Message("Processing " + FormName + " недоступна для типа <" + SearchObject.Type + ">");
 			Continue;
 		EndIf;
 
-		Processing = GetForm(ПолучитьПолноеИмяФормы(ИмяФормыОбработки), СтруктураПараметров, ThisForm);
-		Processing.ЗагрузитьНастройку();
+		Processing = GetForm(GetFullFormName(ProcessingFormName), StructureParameters, ThisForm);
+		Processing.DownloadSettings();
 		Processing.ExecuteProcessing();
 	EndDo;
+	
 EndProcedure
 
 &AtServer
-Procedure CreateColumns(ТЗ, МассивРеквизитовПоУмолчанию = Undefined) Export
-	ТаблицаЭлемент = Items.НайденныеОбъекты;
+Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
+	
+	TableItem = Items.FoundObjects;
 
-	//очистка
-	For Each ДобавленныйЭлемент In ДобавленныеЭлементы Do
-		Items.Delete(Items[ДобавленныйЭлемент.Value]);
+	//clear
+	For Each AddedItem In AddedItems Do
+		Items.Delete(Items[AddedItem.Value]);
 	EndDo;
-	ДобавленныеЭлементы.Clear();
+	AddedItems.Clear();
 
-	//добавляем реквизиты
-	МассивРеквизитов = New Array;
-	For Each Column In ТЗ.Cols Do
-		If МассивРеквизитовПоУмолчанию <> Undefined And МассивРеквизитовПоУмолчанию.Find(Column.Name)
+	//add attributes
+	ArrayAttributes = New Array;
+	For Each Column In ValueTable.Columns Do
+		If ArrayAttributesDefault <> Undefined And ArrayAttributesDefault.Find(Column.Name)
 			<> Undefined Then
 			Continue;
 		EndIf;
 
 		ColumnType = String(Column.ValueType);
-		If Column.Name = "Presentation" Or Find(ColumnType, "Хранилище значения") > 0 Then
+		If Column.Name = "Presentation" Or (Find(ColumnType, "Value storage") > 0 Or Find(ColumnType, "Хранилище значения") > 0) Then
 			Continue;
 		EndIf;
 
-		FormAttribute = New FormAttribute(Column.Name, Column.ValueType, ТаблицаЭлемент.Name);
+		FormAttribute = New FormAttribute(Column.Name, Column.ValueType, TableItem.Name);
 
 		Presentation = "";
 
@@ -447,195 +449,210 @@ Procedure CreateColumns(ТЗ, МассивРеквизитовПоУмолчан
 		EndDo;
 
 		FormAttribute.Title = Presentation;
-		МассивРеквизитов.Add(FormAttribute);
+		ArrayAttributes.Add(FormAttribute);
 	EndDo;
 
-	ChangeAttributes(МассивРеквизитов, ДобавленныеРеквизиты.UnloadValues());
-	ДобавленныеРеквизиты.Clear();
+	ChangeAttributes(ArrayAttributes, AddedAttributes.UnloadValues());
+	AddedAttributes.Clear();
 
-	//добавляем элементы управления
-	For Each Attribute In МассивРеквизитов Do
-		ДобавленныеРеквизиты.Add(Attribute.Path + "." + Attribute.Name);
+	//adding controls
+	For Each Attribute In ArrayAttributes Do
+		AddedAttributes.Add(Attribute.Path + "." + Attribute.Name);
 
-		Item = Items.Add(ТаблицаЭлемент.Name + Attribute.Name, Type("FormField"), ТаблицаЭлемент);
+		Item = Items.Add(TableItem.Name + Attribute.Name, Type("FormField"), TableItem);
 		Item.Type = FormFieldType.TextBox;
-		Item.DataPath = ТаблицаЭлемент.Name + "." + Attribute.Name;
+		Item.DataPath = TableItem.Name + "." + Attribute.Name;
 		Item.ReadOnly = True;
 
-		ДобавленныеЭлементы.Add(Item.Name);
+		AddedItems.Add(Item.Name);
 	EndDo;
 
-	//заполнение данными
-	РедТЗ = FormAttributeToValue(ТаблицаЭлемент.Name);
-	РедТЗ.Clear();
-	For Each Стр In ТЗ Do
-		НовСтр = РедТЗ.Add();
-		FillPropertyValues(НовСтр, Стр);
+	//data filling
+	РедValueTable = FormAttributeToValue(TableItem.Name);
+	РедValueTable.Clear();
+	For Each Row In ValueTable Do
+		NewRow = РедValueTable.Add();
+		FillPropertyValues(NewRow, Row);
 
-		НовСтр.StartChoosing = True;
+		NewRow.Choose = True;
 
-		//If ОбъектПоиска = Undefined Then
+		//If SearchObject = Undefined Then
 		//	Continue;
 		//EndIf;
 		If Object.ObjectType = 0 Then //"Catalog" Then
-			If Стр.Object.IsFolder Then
-				If Стр.Object.DeletionMark Then
-					НовСтр.Picture = 3;
+			If Row.Object.IsFolder Then
+				If Row.Object.DeletionMark Then
+					NewRow.Picture = 3;
 				Else
-					НовСтр.Picture = 0;
+					NewRow.Picture = 0;
 				EndIf;
 			Else
-				If Стр.Object.DeletionMark Then
-					НовСтр.Picture = 4;
+				If Row.Object.DeletionMark Then
+					NewRow.Picture = 4;
 				Else
-					НовСтр.Picture = 1;
+					NewRow.Picture = 1;
 				EndIf;
 			EndIf;
 		Else
-			If Стр.Object.Posted Then
-				НовСтр.Picture = 7;
-			ElsIf Стр.Object.DeletionMark Then
-				НовСтр.Picture = 8;
+			If Row.Object.Posted Then
+				NewRow.Picture = 7;
+			ElsIf Row.Object.DeletionMark Then
+				NewRow.Picture = 8;
 			Else
-				НовСтр.Picture = 6;
+				NewRow.Picture = 6;
 			EndIf;
 		EndIf;
 	EndDo;
 
-	ValueToFormAttribute(РедТЗ, ТаблицаЭлемент.Name);
+	ValueToFormAttribute(РедValueTable, TableItem.Name);
+	
 EndProcedure
 
 &AtServer
-Function ПолучитьПолноеИмяФормы(ИмяНужнойФормы)
-	МассивСтрок = StrSplit(ThisForm.FormName, ".");
-	МассивСтрок[МассивСтрок.Count() - 1] = ИмяНужнойФормы;
+Function GetFullFormName(NameDesiredForm)
+	
+	ArrayString = StrSplit(ThisForm.FormName, ".");
+	ArrayString[ArrayString.Count() - 1] = NameDesiredForm;
 
-	Return StrConcat(МассивСтрок, ".");
+	Return StrConcat(ArrayString, ".");
+	
 EndFunction
 
 &AtClient
 Procedure Filter(Command)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+	
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
-	СтруктураПараметров = New Structure;
-	СтруктураПараметров.Insert("QueryText", QueryText);
-	СтруктураПараметров.Insert("ТекстПроизвольногоЗапроса", ТекстПроизвольногоЗапроса);
-	СтруктураПараметров.Insert("SearchString", SearchString);
-	СтруктураПараметров.Insert("Settings", ОтборДанных);
-	СтруктураПараметров.Insert("ListOfSelected", ПолучитьСписокВидовОбъектов());
-	СтруктураПараметров.Insert("SearchMode", Object.РежимПоиска);
-	СтруктураПараметров.Insert("QueryParameters", QueryParameters);
-	СтруктураПараметров.Insert("ViewList", ViewList);
+	StructureParameters = New Structure;
+	StructureParameters.Insert("QueryText", QueryText);
+	StructureParameters.Insert("ArbitraryQueryText", ArbitraryQueryText);
+	StructureParameters.Insert("SearchString", SearchString);
+	StructureParameters.Insert("Settings", DataSelection);
+	StructureParameters.Insert("ListOfSelected", GetListTypesObjects());
+	StructureParameters.Insert("SearchMode", Object.SearchMode);
+	StructureParameters.Insert("QueryParameters", QueryParameters);
+	StructureParameters.Insert("ViewList", ViewList);
 
-	OpenForm(ПолучитьПолноеИмяФормы("ФормаОтбора"), СтруктураПараметров, ThisObject, , , ,
-		New NotifyDescription("ОтборЗавершение", ThisObject), FormWindowOpeningMode.LockOwnerWindow);
+	OpenForm(GetFullFormName("FormSelection"), StructureParameters, ThisObject, , , ,
+		New NotifyDescription("FilterEnd", ThisObject), FormWindowOpeningMode.LockOwnerWindow);
+		
 EndProcedure
 
 &AtClient
-Procedure ОтборЗавершение(Result, AdditionalParameters) Export
+Procedure FilterEnd(Result, AdditionalParameters) Export
+	
 	If Result = Undefined Then
 		Return;
 	EndIf;
 
-	ОбработатьРезультатОтбора(Result);
+	ProcessSelectionResult(Result);
+	
 EndProcedure
 
 &AtServer
-Procedure ОбработатьРезультатОтбора(РезультатОтбора)
-	ОтборДанных = РезультатОтбора.Settings;
-	SearchString = РезультатОтбора.SearchString;
-	QueryParameters.Load(РезультатОтбора.QueryParameters.Unload());
+Procedure ProcessSelectionResult(ResultSelection)
+	
+	DataSelection = ResultSelection.Settings;
+	SearchString = ResultSelection.SearchString;
+	QueryParameters.Load(ResultSelection.QueryParameters.Unload());
 
-	QueryText = РезультатОтбора.QueryText;
-	ТекстПроизвольногоЗапроса = РезультатОтбора.ТекстПроизвольногоЗапроса;
-	Object.SearchMode = РезультатОтбора.SearchMode;
+	QueryText = ResultSelection.QueryText;
+	ArbitraryQueryText = ResultSelection.ArbitraryQueryText;
+	Object.SearchMode = ResultSelection.SearchMode;
+	
 EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
 //	УстановитьВидимостьДоступность();
-	УстановитьКартинкиОбработок();
+	SetPicturesProcessing();
 EndProcedure
 
 &AtClient
-Procedure ДоступныеОбработкиВыбор(Item, SelectedRow, Field, StandardProcessing)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+Procedure AvailableDataProcessorsSelection(Item, SelectedRow, Field, StandardProcessing)
+	
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
 	StandardProcessing = False;
 
-	RowIndex = Items.AvailableDataProcessors.CurrentLine;
+	RowIndex = Items.AvailableDataProcessors.CurrentRow;
 	CurrentLine = AvailableDataProcessors.FindByID(RowIndex);
 
-	СтруктураПараметров = СформироватьСтруктуруПараметров();
-	СтруктураПараметров.Setting = CurrentLine.Setting[0].Value;
+	StructureParameters = FormAStructureOfParameters();
+	StructureParameters.Setting = CurrentLine.Setting[0].Value;
 
 	Parent = CurrentLine.GetParent();
 	If Parent = Undefined Then
-		If Not ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"), CurrentLine.FormName) Then
-			ShowMessageBox( , "Данная обработка недоступна для типа <" + ?(Object.ObjectType = 0, "Catalog",
-				"Document") + ">");
+		If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), CurrentLine.FormName) Then
+			Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
+				, ?(Object.ObjectType = 0, Nstr("ru = 'Справочник';en = 'Catalog'"), Nstr("ru = 'Документ';en = 'Document'")));
+			ShowMessageBox( , Message);
 			Return;
 		EndIf;
 
-		СтруктураПараметров.Settings = СформироватьНастройки(Item.CurrentData);
-		СтруктураПараметров.Insert("Parent", CurrentLine.GetID());
-		СтруктураПараметров.Insert("CurrentLine", Undefined);
+		StructureParameters.Settings = FormTheSettings(Item.CurrentData);
+		StructureParameters.Insert("Parent", CurrentLine.GetID());
+		StructureParameters.Insert("CurrentLine", Undefined);
 
-		ИмяФормыДляОткрытия=ПолучитьПолноеИмяФормы(CurrentLine.FormName);
+		FormNameToOpen = GetFullFormName(CurrentLine.FormName);
 	Else
-		If Not ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"), Parent.FormName) Then
-			ShowMessageBox( , "Данная обработка недоступна для типа <" + ?(Object.ObjectType = 0, "Catalog",
-				"Document") + ">");
+		If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), Parent.FormName) Then
+			Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
+				, ?(Object.ObjectType = 0, Nstr("ru = 'Справочник';en = 'Catalog'"), Nstr("ru = 'Документ';en = 'Document'")));
+			ShowMessageBox( , Message);
 			Return;
 		EndIf;
 
-		СтруктураПараметров.Settings = СформироватьНастройки(Parent);
-		СтруктураПараметров.Insert("Parent", Parent.GetID());
-		СтруктураПараметров.Insert("CurrentLine", RowIndex);
+		StructureParameters.Settings = FormTheSettings(Parent);
+		StructureParameters.Insert("Parent", Parent.GetID());
+		StructureParameters.Insert("CurrentLine", RowIndex);
 
-		ИмяФормыДляОткрытия=ПолучитьПолноеИмяФормы(Parent.FormName);
+		FormNameToOpen = GetFullFormName(Parent.FormName);
 	EndIf;
 
-	OpenForm(ИмяФормыДляОткрытия, СтруктураПараметров, ThisObject, , , ,
-		New NotifyDescription("ДоступныеОбработкиВыборЗавершение", ThisObject),
+	OpenForm(FormNameToOpen, StructureParameters, ThisObject, , , ,
+		New NotifyDescription("AvailableDataProcessorsSelectionEnd", ThisObject),
 		FormWindowOpeningMode.LockOwnerWindow);
+		
 EndProcedure
 
 &AtClient
-Procedure ДоступныеОбработкиВыборЗавершение(Result, AdditionalParameters) Export
+Procedure AvailableDataProcessorsSelectionEnd(Result, AdditionalParameters) Export
 	If Result = Undefined Then
 		Return;
 	EndIf;
 EndProcedure
 
 &AtServer
-Function СформироватьСтруктуруПараметров()
-	СтруктураПараметров = New Structure;
-	СтруктураПараметров.Insert("Setting", Undefined);
-	СтруктураПараметров.Insert("Settings", New Array);
-	СтруктураПараметров.Insert("ObjectType", Object.ТипОбъекта);
-	СтруктураПараметров.Insert("TableAttributes", TableAttributes);
-	СтруктураПараметров.Insert("ProcessTabularParts", Object.ОбрабатыватьТабличныеЧасти);
-	СтруктураПараметров.Insert("ListOfSelected", ПолучитьСписокВидовОбъектов());
-	СтруктураПараметров.Insert("ТабличноеПолеВидыОбъектов", ТабличноеПолеВидыОбъектов);
+Function FormAStructureOfParameters()
+	
+	StructureParameters = New Structure;
+	StructureParameters.Insert("Setting", Undefined);
+	StructureParameters.Insert("Settings", New Array);
+	StructureParameters.Insert("ObjectType", Object.ObjectType);
+	StructureParameters.Insert("TableAttributes", TableAttributes);
+	StructureParameters.Insert("ProcessTabularParts", Object.ProcessTabularParts);
+	StructureParameters.Insert("ListOfSelected", GetListTypesObjects());
+	StructureParameters.Insert("TableFieldTypesObjects", TableFieldTypesObjects);
 
-	СтруктураПараметров.Insert("НайденныеОбъектыТЧ", НайденныеОбъекты);
+	StructureParameters.Insert("FoundObjectsTP", FoundObjects);
 
-	СтруктураОтбора = New Structure;
-	СтруктураОтбора.Insert("StartChoosing", True);
-	СтруктураПараметров.Insert("НайденныеОбъекты", НайденныеОбъекты.Unload(СтруктураОтбора,
+	StructureSelection = New Structure;
+	StructureSelection.Insert("Choose", True);
+	StructureParameters.Insert("FoundObjects", FoundObjects.Unload(StructureSelection,
 		"Object").UnloadColumn("Object"));
 
-	Return СтруктураПараметров;
+	Return StructureParameters;
+	
 EndFunction
 
 &AtClient
-Procedure ДоступныеОбработкиПередНачаломДобавления(Item, Cancel, Copy, Parent, Group)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+Procedure AvailableDataProcessorsBeforeAddRow(Item, Cancel, Copy, Parent, Group)
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
@@ -647,217 +664,232 @@ Procedure ДоступныеОбработкиПередНачаломДобав
 		If Copy Then
 			Cancel = True;
 		Else
-			If Not ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"),
+			If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"),
 				Item.CurrentData.FormName) Then
-				ShowMessageBox( , "Данная обработка недоступна для типа <" + ?(Object.ObjectType = 0,
-					"Catalog", "Document") + ">");
+				Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
+				, ?(Object.ObjectType = 0, Nstr("ru = 'Справочник';en = 'Catalog'"), Nstr("ru = 'Документ';en = 'Document'")));
+				ShowMessageBox( , Message);
 				Cancel = True;
 				Return;
 			EndIf;
 
-			Cancel = Not GetForm(ПолучитьПолноеИмяФормы(Item.CurrentData.FormName)).мИспользоватьНастройки;
+			Cancel = Not GetForm(GetFullFormName(Item.CurrentData.FormName)).mUseSettings;
 			If Not Cancel Then
-			//свое добавление
+			//your addition
 				Cancel = True;
 				AddRow(Item.CurrentData);
 			EndIf;
 		EndIf;
 	Else
-		If Not ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"),
+		If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"),
 			Item.CurrentData.GetParent().FormName) Then
-			ShowMessageBox( , "Данная обработка недоступна для типа <" + ?(Object.ObjectType = 0, "Catalog",
-				"Document") + ">");
+			Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
+				, ?(Object.ObjectType = 0, Nstr("ru = 'Справочник';en = 'Catalog'"), Nstr("ru = 'Документ';en = 'Document'")));
+			ShowMessageBox( , Message);
 			Cancel = True;
 			Return;
 		EndIf;
 		Cancel = True;
 		If Not Copy Then
-			If GetForm(ПолучитьПолноеИмяФормы(
-				Item.CurrentData.GetParent().FormName)).мИспользоватьНастройки Then
+			If GetForm(GetFullFormName(
+				Item.CurrentData.GetParent().FormName)).mUseSettings Then
 				AddRow(Item.CurrentData.GetParent());
 			EndIf;
 		Else
-			ТекСтрока = Item.CurrentData;
+			CurrentData = Item.CurrentData;
 			Parent = Item.CurrentData.GetParent();
-			NewLine = AddRow(Parent);
+			NewRow = AddRow(Parent);
 
-			If Not ТекСтрока.Setting[0].Value = Undefined Then
-				НоваяНастройка = New Structure;
-				For Each РеквизитНастройки In ТекСтрока.Setting[0].Value Do
+			If Not CurrentData.Setting[0].Value = Undefined Then
+				NewSetting = New Structure;
+				For Each AttributeSetting In CurrentData.Setting[0].Value Do
 				//@skip-warning
-					Value = РеквизитНастройки.Value;
-					Execute ("НоваяНастройка.Insert(String(РеквизитНастройки.Key), Value);");
+					Value = AttributeSetting.Value;
+					Execute ("NewSetting.Insert(String(AttributeSetting.Key), Value);");
 				EndDo;
 
-				NewLine.Setting[0].Value = НоваяНастройка;
+				NewRow.Setting[0].Value = NewSetting;
 			EndIf;
 		EndIf;
 	EndIf;
 EndProcedure
 
 &AtClient
-Function AddRow(ТекСтрока)
+Function AddRow(CurrentLine)
 
-	NewLine = ТекСтрока.GetItems().Add();
+	NewRow = CurrentLine.GetItems().Add();
 
 	Setting = New Structure;
-	Setting.Insert("Processing", ТекСтрока.Processing);
-	Setting.Insert("Прочее", Undefined);
+	Setting.Insert("Processing", CurrentLine.Processing);
+	Setting.Insert("Other", Undefined);
 
-	NewLine.Setting.Add(Setting);
+	NewRow.Setting.Add(Setting);
 
-	Items.AvailableDataProcessors.CurrentLine = NewLine.GetID();
+	Items.AvailableDataProcessors.CurrentLine = NewRow.GetID();
 	Items.AvailableDataProcessors.ChangeRow();
 
-	Return NewLine;
+	Return NewRow;
+	
 EndFunction
 
 &AtClient
-Function СформироватьНастройки(ТекСтрока)
+Function FormTheSettings(CurrentLine)
 
-	МассивНастроек = New Array;
-	For Each Стр In ТекСтрока.GetItems() Do
-		If Стр.Setting[0].Value = Undefined Then
+	ArraySettings = New Array;
+	For Each Row In CurrentLine.GetItems() Do
+		If Row.Setting[0].Value = Undefined Then
 			Continue;
 		EndIf;
 
-		МассивНастроек.Add(Стр.Setting[0].Value);
+		ArraySettings.Add(Row.Setting[0].Value);
 	EndDo;
 
-	Return МассивНастроек;
+	Return ArraySettings;
+	
 EndFunction
 
 &AtClient
-Procedure ДоступныеОбработкиПередНачаломИзменения(Item, Cancel)
-	If ТабличноеПолеВидыОбъектов.Count() = 0 Then
+Procedure AvailableDataProcessorsBeforeRowChange(Item, Cancel)
+	
+	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
 
 	If Item.CurrentData.GetParent() = Undefined Then
 		Cancel = True;
 	EndIf;
+	
 EndProcedure
 
 &AtClient
-Procedure ДоступныеОбработкиПередУдалением(Item, Cancel)
+Procedure AvailableDataProcessorsBeforeDeleteRow(Item, Cancel)
+	
 	If Item.CurrentData.GetParent() = Undefined Then
 		Return;
 	EndIf;
 
 	Cancel=True;
 
-	ShowQueryBox(New NotifyDescription("ДоступныеОбработкиПередУдалениемЗавершение", ThisForm,
+	ShowQueryBox(New NotifyDescription("AvailableDataProcessorsBeforeDeleteRowEnd", ThisForm,
 		New Structure("CurrentLine", Item.CurrentLine)), "Delete настройку?", QuestionDialogMode.OKCancel, ,
 		DialogReturnCode.OK);
+		
 EndProcedure
 
 &AtClient
-Procedure ДоступныеОбработкиПередУдалениемЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure AvailableDataProcessorsBeforeDeleteRowEnd(ResultQuestion, AdditionalParameters) Export
 
 	CurrentLine = AdditionalParameters.CurrentLine;
-	If РезультатВопроса = DialogReturnCode.OK Then
-		ПараметрыОтбора = New Structure;
-		ПараметрыОтбора.Insert("RowAvailableDataProcessor", CurrentLine);
+	If ResultQuestion = DialogReturnCode.OK Then
+		SelectionParameters = New Structure;
+		SelectionParameters.Insert("RowAvailableDataProcessor", CurrentLine);
 
-		МассивДляУдаления = SelectedDataProcessors.FindRows(ПараметрыОтбора);
-		For IndexOf = 0 To МассивДляУдаления.Count() - 1 Do
-			SelectedDataProcessors.Delete(МассивДляУдаления[IndexOf]);
+		ArrayToDelete = SelectedDataProcessors.FindRows(SelectionParameters);
+		For IndexOf = 0 To ArrayToDelete.Count() - 1 Do
+			SelectedDataProcessors.Delete(ArrayToDelete[IndexOf]);
 		EndDo;
 	EndIf;
 
 EndProcedure
 
 &AtClient
-Procedure ДоступныеОбработкиНачалоПеретаскивания(Item, DragParameters, StandardProcessing)
-	If Not ПроверитьДоступностьОбработки() Then
+Procedure AvailableDataProcessorsDragStart(Item, DragParameters, StandardProcessing)
+	
+	If Not CheckAvailabilityProcessing() Then
 		StandardProcessing = False;
-		ShowMessageBox( , "Данная обработка недоступна для типа <" + ?(Object.ObjectType = 0, "Catalog",
-			"Document") + ">");
+		Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
+				, ?(Object.ObjectType = 0, Nstr("ru = 'Справочник';en = 'Catalog'"), Nstr("ru = 'Документ';en = 'Document'")));
+		ShowMessageBox( , Message);
 		Return;
 	EndIf;
 
-	ОбработкаПеретаскивание = True;
+	ProcessingDragAndDrop = True;
+	
 EndProcedure
 
 &AtClient
-Function ПроверитьДоступностьОбработки()
-	RowIndex = Items.AvailableDataProcessors.CurrentLine;
+Function CheckAvailabilityProcessing()
+	
+	RowIndex = Items.AvailableDataProcessors.CurrentRow;
 	CurrentLine = AvailableDataProcessors.FindByID(RowIndex);
 
 	Parent = CurrentLine.GetParent();
 	If Parent = Undefined Then
-		Return ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"), CurrentLine.FormName);
+		Return ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), CurrentLine.FormName);
 	EndIf;
 
-	Return ОбработкаДоступна(?(Object.ObjectType = 0, "Catalog", "Document"), Parent.FormName);
+	Return ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), Parent.FormName);
+	
 EndFunction
 
 &AtClient
-Procedure ВыбранныеОбработкиПеретаскивание(Item, DragParameters, StandardProcessing, String, Field)
-	If Not ОбработкаПеретаскивание Then
+Procedure SelectedDataProcessorsDrag(Item, DragParameters, StandardProcessing, Row, Field)
+	
+	If Not ProcessingDragAndDrop Then
 		Return;
 	EndIf;
 
-	For Each СтрВыбранных In DragParameters.Value Do
-		СтрДоступных = AvailableDataProcessors.FindByID(СтрВыбранных.GetID());
+	For Each RowSelected In DragParameters.Value Do
+		RowAvailable = AvailableDataProcessors.FindByID(RowSelected.GetID());
 
-		НовСтр = SelectedDataProcessors.Add();
-		НовСтр.ОбработкаНастройка = СтрДоступных.Processing;
-		НовСтр.RowAvailableDataProcessor = СтрДоступных.GetID();
-		НовСтр.StartChoosing = True;
-		НовСтр.Setting = СтрДоступных.Setting;
+		NewRow = SelectedDataProcessors.Add();
+		NewRow.ProcessingSetting = RowAvailable.Processing;
+		NewRow.RowAvailableDataProcessor = RowAvailable.GetID();
+		NewRow.Choose = True;
+		NewRow.Setting = RowAvailable.Setting;
 	EndDo;
 
-	ОбработкаПеретаскивание = False;
+	ProcessingDragAndDrop = False;
+	
 EndProcedure
 
 &AtClient
-Procedure ВыбратьВсеОбработки(Command)
-	ВыбратьОбработки(True);
+Procedure CheckAllDataProcessors(Command)
+	CheckDataProcessors(True);
 EndProcedure
 
 &AtClient
-Procedure ОтменитьВыборВсехОбработок(Command)
-	ВыбратьОбработки(False);
+Procedure UncheckAllDataProcessors(Command)
+	CheckDataProcessors(False);
 EndProcedure
 
 &AtServer
-Procedure ВыбратьОбработки(Selection)
-	For Each Стр In SelectedDataProcessors Do
-		Стр.StartChoosing = Selection;
+Procedure CheckDataProcessors(Selection)
+	For Each Row In SelectedDataProcessors Do
+		Row.Choose = Selection;
 	EndDo;
 EndProcedure
 
 &AtClient
-Function ОбработкаДоступна(ПроверяемыйТипОбъекта = "", ИмяОбработки)
+Function ProcessingAvailable(CheckedObjectType = "", ProcessingName)
 
-	If IsBlankString(ПроверяемыйТипОбъекта) Then
+	If IsBlankString(CheckedObjectType) Then
 		Return False;
 	EndIf;
 
 	Try
-		ТипыОбрабатываемыхОбъектов = GetForm(ПолучитьПолноеИмяФормы(ИмяОбработки)).мТипыОбрабатываемыхОбъектов;
+		TypesOfProcessedObjects = GetForm(GetFullFormName(ProcessingName)).mTypesOfProcessedObjects;
 	Except
 		ShowMessageBox( , ErrorDescription());
 		Return False;
 	EndTry;
 
-	If ИмяОбработки = "RenumberingObjects" Then
-		If ТабличноеПолеВидыОбъектов.Count() > 1 Then
-			Message("Выбрано более одного вида объектов. Перенумерация невозможна");
+	If ProcessingName = "RenumberingObjects" Then
+		If TableFieldTypesObjects.Count() > 1 Then
+			Message(Nstr("ru = 'Выбрано более одного вида объектов. Перенумерация невозможна';en = 'More than one type of objects has been selected. Renumbering is not possible'"));
 			Return False;
 		EndIf;
 
 		If Object.ProcessTabularParts Then
-			Message("Перенумерация при обработке табличных частей запрещена");
+			Message(Nstr("ru = 'Перенумерация при обработке табличных частей запрещена';en = 'Renumbering is prohibited when processing tabular parts'"));
 			Return False;
 		EndIf;
 	EndIf;
 
-	If ТипыОбрабатываемыхОбъектов = Undefined Then
+	If TypesOfProcessedObjects = Undefined Then
 		Return True;
 	Else
-		If Find(ТипыОбрабатываемыхОбъектов, ПроверяемыйТипОбъекта) Then
+		If Find(TypesOfProcessedObjects, CheckedObjectType) Then
 			Return True;
 		Else
 			Return False;
@@ -866,76 +898,83 @@ Function ОбработкаДоступна(ПроверяемыйТипОбъе
 EndFunction
 
 &AtClient
-Procedure ДоступныеОбработкиПриОкончанииРедактирования(Item, NewLine, ОтменаРедактирования)
+Procedure AvailableDataProcessorsEditEnd(Item, NewRow, CancelEdit)
+	
 	If Item.CurrentData.GetParent() = Undefined Then
 		Return;
 	EndIf;
 
 	Setting = Item.CurrentData.Setting[0].Value;
 	Setting.Processing = Item.CurrentData.Processing;
+	
 EndProcedure
 
 &AtClient
-Procedure УстановитьКартинкиОбработок()
-	For Each Стр In AvailableDataProcessors.GetItems() Do
-		Стр.Picture = PictureLib.Processing;
+Procedure SetPicturesProcessing()
+	For Each Row In AvailableDataProcessors.GetItems() Do
+		Row.Picture = PictureLib.DataProcessor;
 	EndDo;
 EndProcedure
 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПередНачаломИзменения(Item, Cancel)
-	ОткрытьФормуВыбораТаблицы();
+Procedure TableFieldTypesObjectsBeforeRowChange(Item, Cancel)
+	OpenFormSelectionTable();
 	Cancel = True;
 EndProcedure
 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПередУдалением(Item, Cancel)
+Procedure TableFieldTypesObjectsBeforeDeleteRow(Item, Cancel)
 	
 	Cancel=True;
 	
-	CurrentLine = Items.ТабличноеПолеВидыОбъектов.CurrentData.GetID();
-	ДопПараметрыОповещения = New Structure("CurrentLine", CurrentLine);
-	ПроверкаНеобходимостиОчищатьРезультаты(
-			New NotifyDescription("ТабличноеПолеВидыОбъектовПередУдалениемЗавершение", 
+	CurrentLine = Items.TableFieldTypesObjects.CurrentData.GetID();
+	AdditionalParametersNotify = New Structure("CurrentLine", CurrentLine);
+	CheckNecessaryClearResults(
+			New NotifyDescription("TableFieldTypesObjectsBeforeDeleteRowEnd", 
 										ThisObject, 
-										ДопПараметрыОповещения
+										AdditionalParametersNotify
 									)
 	);
 	
 EndProcedure
 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПередУдалениемЗавершение(Result, AdditionalParameters) Export
+Procedure TableFieldTypesObjectsBeforeDeleteRowEnd(Result, AdditionalParameters) Export
+	
 	If Not Result Then
 		Return;
 	EndIf;
 
-	ТекСтрока=AdditionalParameters.CurrentLine;
-	ТабличноеПолеВидыОбъектов.Delete(ТабличноеПолеВидыОбъектов.FindByID(ТекСтрока));
+	CurrentLine = AdditionalParameters.CurrentLine;
+	TableFieldTypesObjects.Delete(TableFieldTypesObjects.FindByID(CurrentLine));
 
-	Items.ТабличноеПолеВидыОбъектов.Update();
+	Items.TableFieldTypesObjects.Refresh();
+	
 EndProcedure
-Function УсечьМассив(Array, Массив2)
+
+Function TruncateArray(Array, Array2)
+	
 	Мас = New Array;
 
-	For Each ТекЭлемент In Array Do
-		If Массив2.Find(ТекЭлемент) = Undefined Then
+	For Each CurrentElement In Array Do
+		If Array2.Find(CurrentElement) = Undefined Then
 			Continue;
 		EndIf;
 
-		Мас.Add(ТекЭлемент);
+		Мас.Add(CurrentElement);
 	EndDo;
 
 	Return Мас;
+	
 EndFunction
 
 &AtServer
-Procedure ИнициализацияЗапроса()
+Procedure QueryInitialization()
 
-	масЗапросовПоОбъектам = New Array;
+	ArrayQueriesToObjects = New Array;
 
-	ВсегоСтрок = ТабличноеПолеВидыОбъектов.Count();
-	//If ВсегоСтрок = 0 Then
+	TotalRows = TableFieldTypesObjects.Count();
+	//If TotalRows = 0 Then
 	//	If Not QueryBuilder = Undefined And Not QueryBuilder.Filter = Undefined Then
 	//		КоличествоОтборов = QueryBuilder.Filter.Count();
 	//		For IndexOf = 1 To КоличествоОтборов Do
@@ -950,606 +989,609 @@ Procedure ИнициализацияЗапроса()
 	//EndIf; 
 
 
-	///============================= ИНИЦИАЛИЦАЗИЯ ПЕРЕМЕННЫХ
-	МетаданныеОбъектов = Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
-	ИмяТипаТаблицы = ?(Object.ObjectType = 1, "Document", "Catalog");
-	Prefix = ?(Object.ОбрабатыватьТабличныеЧасти, "Reference.", "");
+	///============================= INITIALIZING VARIABLES
+	MetadataObjects = Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
+	TableTypeName = ?(Object.ObjectType = 1, "Document", "Catalog");
+	Prefix = ?(Object.ProcessTabularParts, "Ref.", "");
 
-	МассивТипов = New Array;
-	МассивТипов.Add(Type("ValueStorage"));
-	ОписаниеТипаХранилище = New TypeDescription(МассивТипов);
+	ArrayTypes = New Array;
+	ArrayTypes.Add(Type("ValueStorage"));
+	DescriptionTypeStorage = New TypeDescription(ArrayTypes);
 
-	МассивТипов = New Array;
+	ArrayTypes = New Array;
 	ViewList.Clear(); //      = New ValueList;
-	СтруктураРеквизитовШапки = New Structure;
-	СтруктураРеквизитовТЧ = New Structure;
-	СтруктураТиповОбъектов = New Structure;
-	СтруктураКатегорий = New Structure;
-	СтруктураСвойств = New Structure;
-	//	МассивНастроекОтбора     = New Array;
+	StructureAttributesHeaders = New Structure;
+	StructureAttributesTP = New Structure;
+	StructureTypesObjects = New Structure;
+	StructureCategories = New Structure;
+	StructureProperties = New Structure;
+	//	ArraySettingsFilter     = New Array;
 	TableAttributes.Clear();
 
-	ИмяВидаОдногоТипа = Undefined;
-	ПрошлоеЗначение = Undefined;
-	///============================= ПОДСЧЕТ ОДОИМЕННЫХ РЕКВИЗИТОВ
-	For Each String In ТабличноеПолеВидыОбъектов Do
+	KindNameSingleType = Undefined;
+	PastValue = Undefined;
+	///============================= COUNTING OF NAMED DETAILS
+	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
-			ИмяВида = String.TableName;
-			ИмяТЧ="";
+			KindName = String.TableName;
+			NameTP="";
 		Else
-			ПозТЧК = Find(String.TableName, ".");
-			ИмяВида = Left(String.TableName, ПозТЧК - 1);
-			ИмяТЧ = Mid(String.TableName, ПозТЧК + 1);
+			PositionTP = Find(String.TableName, ".");
+			KindName = Left(String.TableName, PositionTP - 1);
+			NameTP = Mid(String.TableName, PositionTP + 1);
 		EndIf;
 
-		If МетаданныеОбъектов.Find(ИмяВида) = Undefined Then
+		If MetadataObjects.Find(KindName) = Undefined Then
 			Continue;
 		EndIf;
 
-		МетаданныеСтрокиОбъектов=МетаданныеОбъектов[ИмяВида];
+		MetadataRowObjects = MetadataObjects[KindName];
 
-		МетаданныеРеквизитов = МетаданныеСтрокиОбъектов.Attributes;
+		MatadataAttributes = MetadataRowObjects.Attributes;
 
 		If Object.ProcessTabularParts Then
-			МетаданныеРеквизитовТЧ = МетаданныеСтрокиОбъектов.TabularSections[ИмяТЧ].Attributes;
+			MetadataAttributesTP = MetadataRowObjects.TabularSections[NameTP].Attributes;
 		EndIf;
 
 		If Object.ObjectType = 1 Then
-			If МетаданныеСтрокиОбъектов.NumberLength > 0 Then
-				СтруктураРеквизитовШапки.Insert("Number", ?(СтруктураРеквизитовШапки.Property("Number",
-					ПрошлоеЗначение), ПрошлоеЗначение + 1, 1));
+			If MetadataRowObjects.NumberLength > 0 Then
+				StructureAttributesHeaders.Insert("Number", ?(StructureAttributesHeaders.Property("Number",
+					PastValue), PastValue + 1, 1));
 			EndIf;
 
 			Filter = New Structure;
 			Filter.Insert("Name", "Number");
-			Filter.Insert("ЭтоТЧ", False);
-			МассивСтрок = TableAttributes.FindRows(Filter);
-			If МетаданныеСтрокиОбъектов.NumberType = Metadata.ObjectProperties.DocumentNumberType.String Then
-				ТекТип = ОписаниеТипа("String");
+			Filter.Insert("ThisTP", False);
+			ArrayString = TableAttributes.FindRows(Filter);
+			If MetadataRowObjects.NumberType = Metadata.ObjectProperties.DocumentNumberType.String Then
+				CurrentType = UT_FormsServer.TypeDescription("String");
 			Else
-				ТекТип = ОписаниеТипа("Number");
+				CurrentType = UT_FormsServer.TypeDescription("Number");
 			EndIf;
 
-			If МассивСтрок.Count() > 0 Then
-				СтрокаРеквизитов = МассивСтрок[0];
+			If ArrayString.Count() > 0 Then
+				RowAttributes = ArrayString[0];
 			Else
-				СтрокаРеквизитов = TableAttributes.Add();
-				СтрокаРеквизитов.Name = "Number";
-				СтрокаРеквизитов.Presentation = "Number";
-				СтрокаРеквизитов.Type = ТекТип;
-				СтрокаРеквизитов.ЭтоТЧ = False;
+				RowAttributes = TableAttributes.Add();
+				RowAttributes.Name = "Number";
+				RowAttributes.Presentation = "Number";
+				RowAttributes.Type = CurrentType;
+				RowAttributes.ThisTP = False;
 			EndIf;
 
-			СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(), ТекТип.Types()));
+			RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(), CurrentType.Types()));
 
-			СтруктураРеквизитовШапки.Insert("Date", ?(СтруктураРеквизитовШапки.Property("Date", ПрошлоеЗначение), ПрошлоеЗначение
+			StructureAttributesHeaders.Insert("Date", ?(StructureAttributesHeaders.Property("Date", PastValue), PastValue
 				+ 1, 1));
 
 			Filter = New Structure;
 			Filter.Insert("Name", "Date");
-			Filter.Insert("ЭтоТЧ", False);
-			МассивСтрок = TableAttributes.FindRows(Filter);
-			ТекТип = ОписаниеТипа("Date");
+			Filter.Insert("ThisTP", False);
+			ArrayString = TableAttributes.FindRows(Filter);
+			CurrentType = UT_FormsServer.TypeDescription("Date");
 
-			If МассивСтрок.Count() > 0 Then
-				СтрокаРеквизитов = МассивСтрок[0];
+			If ArrayString.Count() > 0 Then
+				RowAttributes = ArrayString[0];
 			Else
-				СтрокаРеквизитов = TableAttributes.Add();
-				СтрокаРеквизитов.Name = "Date";
-				СтрокаРеквизитов.Presentation = "Date";
-				СтрокаРеквизитов.Type = ТекТип;
-				СтрокаРеквизитов.ЭтоТЧ = False;
+				RowAttributes = TableAttributes.Add();
+				RowAttributes.Name = "Date";
+				RowAttributes.Presentation = "Date";
+				RowAttributes.Type = CurrentType;
+				RowAttributes.ThisTP = False;
 			EndIf;
-			СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(), ТекТип.Types()));
+			RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(), CurrentType.Types()));
 
-			СтруктураРеквизитовШапки.Insert("Posted", ?(СтруктураРеквизитовШапки.Property("Posted",
-				ПрошлоеЗначение), ПрошлоеЗначение + 1, 1));
+			StructureAttributesHeaders.Insert("Posted", ?(StructureAttributesHeaders.Property("Posted",
+				PastValue), PastValue + 1, 1));
 
 			Filter = New Structure;
 			Filter.Insert("Name", "Posted");
-			Filter.Insert("ЭтоТЧ", False);
-			МассивСтрок = TableAttributes.FindRows(Filter);
-			ТекТип = ОписаниеТипа("Boolean");
+			Filter.Insert("ThisTP", False);
+			ArrayString = TableAttributes.FindRows(Filter);
+			CurrentType = UT_FormsServer.TypeDescription("Boolean");
 
-			If МассивСтрок.Count() > 0 Then
-				СтрокаРеквизитов = МассивСтрок[0];
+			If ArrayString.Count() > 0 Then
+				RowAttributes = ArrayString[0];
 			Else
-				СтрокаРеквизитов = TableAttributes.Add();
-				СтрокаРеквизитов.Name = "Posted";
-				СтрокаРеквизитов.Presentation = "Posted";
-				СтрокаРеквизитов.Type = ТекТип;
-				СтрокаРеквизитов.ЭтоТЧ = False;
+				RowAttributes = TableAttributes.Add();
+				RowAttributes.Name = "Posted";
+				RowAttributes.Presentation = "Posted";
+				RowAttributes.Type = CurrentType;
+				RowAttributes.ThisTP = False;
 			EndIf;
-			СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(), ТекТип.Types()));
+			RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(), CurrentType.Types()));
 		Else
-			If МетаданныеСтрокиОбъектов.CodeLength > 0 Then
-				СтруктураРеквизитовШапки.Insert("Code", ?(СтруктураРеквизитовШапки.Property("Code", ПрошлоеЗначение), ПрошлоеЗначение
+			If MetadataRowObjects.CodeLength > 0 Then
+				StructureAttributesHeaders.Insert("Code", ?(StructureAttributesHeaders.Property("Code", PastValue), PastValue
 					+ 1, 1));
 
 				Filter = New Structure;
 				Filter.Insert("Name", "Code");
-				Filter.Insert("ЭтоТЧ", False);
-				МассивСтрок = TableAttributes.FindRows(Filter);
-				If МетаданныеСтрокиОбъектов.CodeType = Metadata.ObjectProperties.CatalogCodeType.String Then
-					ТекТип = ОписаниеТипа("String");
+				Filter.Insert("ThisTP", False);
+				ArrayString = TableAttributes.FindRows(Filter);
+				If MetadataRowObjects.CodeType = Metadata.ObjectProperties.CatalogCodeType.String Then
+					CurrentType = UT_FormsServer.TypeDescription("String");
 				Else
-					ТекТип = ОписаниеТипа("Number");
+					CurrentType = UT_FormsServer.TypeDescription("Number");
 				EndIf;
 
-				If МассивСтрок.Count() > 0 Then
-					СтрокаРеквизитов = МассивСтрок[0];
+				If ArrayString.Count() > 0 Then
+					RowAttributes = ArrayString[0];
 				Else
-					СтрокаРеквизитов = TableAttributes.Add();
-					СтрокаРеквизитов.Name = "Code";
-					СтрокаРеквизитов.Presentation = "Code";
-					СтрокаРеквизитов.Type = ТекТип;
-					СтрокаРеквизитов.ЭтоТЧ = False;
+					RowAttributes = TableAttributes.Add();
+					RowAttributes.Name = "Code";
+					RowAttributes.Presentation = "Code";
+					RowAttributes.Type = CurrentType;
+					RowAttributes.ThisTP = False;
 				EndIf;
-				СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(), ТекТип.Types()));
+				RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(), CurrentType.Types()));
 			EndIf;
 
-			If МетаданныеСтрокиОбъектов.DescriptionLength > 0 Then
-				СтруктураРеквизитовШапки.Insert("Title", ?(СтруктураРеквизитовШапки.Property("Title",
-					ПрошлоеЗначение), ПрошлоеЗначение + 1, 1));
+			If MetadataRowObjects.DescriptionLength > 0 Then
+				StructureAttributesHeaders.Insert("Description", ?(StructureAttributesHeaders.Property("Description",
+					PastValue), PastValue + 1, 1));
 
 				Filter = New Structure;
-				Filter.Insert("Name", "Title");
-				Filter.Insert("ЭтоТЧ", False);
-				МассивСтрок = TableAttributes.FindRows(Filter);
-				ТекТип = ОписаниеТипа("String");
+				Filter.Insert("Name", "Description");
+				Filter.Insert("ThisTP", False);
+				ArrayString = TableAttributes.FindRows(Filter);
+				CurrentType = UT_FormsServer.TypeDescription("String");
 
-				If МассивСтрок.Count() > 0 Then
-					СтрокаРеквизитов = МассивСтрок[0];
+				If ArrayString.Count() > 0 Then
+					RowAttributes = ArrayString[0];
 				Else
-					СтрокаРеквизитов = TableAttributes.Add();
-					СтрокаРеквизитов.Name = "Title";
-					СтрокаРеквизитов.Presentation = "Title";
-					СтрокаРеквизитов.Type = ТекТип;
-					СтрокаРеквизитов.ЭтоТЧ = False;
+					RowAttributes = TableAttributes.Add();
+					RowAttributes.Name = "Description";
+					RowAttributes.Presentation = "Description";
+					RowAttributes.Type = CurrentType;
+					RowAttributes.ThisTP = False;
 				EndIf;
-				СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(), ТекТип.Types()));
+				RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(), CurrentType.Types()));
 			EndIf;
 		EndIf;
 
-		If ИмяВидаОдногоТипа = Undefined Then
-			ИмяВидаОдногоТипа = ИмяВида;
-		ElsIf ИмяВидаОдногоТипа <> ИмяВида Then
-			ИмяВидаОдногоТипа = False;
+		If KindNameSingleType = Undefined Then
+			KindNameSingleType = KindName;
+		ElsIf KindNameSingleType <> KindName Then
+			KindNameSingleType = False;
 		EndIf;
 
-		For Each РеквизитМетаданного In МетаданныеОбъектов[ИмяВида].Attributes Do
+		For Each AttributeMetadata In MetadataObjects[KindName].Attributes Do
 
-			If РеквизитМетаданного.Type = ОписаниеТипаХранилище Then
+			If AttributeMetadata.Type = DescriptionTypeStorage Then
 				Continue;
-			ElsIf РеквизитМетаданного.Name = "Type" Then
+			ElsIf AttributeMetadata.Name = "Type" Then
 				Continue;
 			EndIf;
 
-			СтруктураРеквизитовШапки.Insert(РеквизитМетаданного.Name, ?(СтруктураРеквизитовШапки.Property(
-				РеквизитМетаданного.Name, ПрошлоеЗначение), ПрошлоеЗначение + 1, 1));
+			StructureAttributesHeaders.Insert(AttributeMetadata.Name, ?(StructureAttributesHeaders.Property(
+				AttributeMetadata.Name, PastValue), PastValue + 1, 1));
 
 			Filter = New Structure;
-			Filter.Insert("Name", РеквизитМетаданного.Name);
-			Filter.Insert("ЭтоТЧ", False);
-			МассивСтрок = TableAttributes.FindRows(Filter);
+			Filter.Insert("Name", AttributeMetadata.Name);
+			Filter.Insert("ThisTP", False);
+			ArrayString = TableAttributes.FindRows(Filter);
 
-			If МассивСтрок.Count() > 0 Then
-				СтрокаРеквизитов = МассивСтрок[0];
+			If ArrayString.Count() > 0 Then
+				RowAttributes = ArrayString[0];
 			Else
-				СтрокаРеквизитов = TableAttributes.Add();
-				СтрокаРеквизитов.Name = РеквизитМетаданного.Name;
-				СтрокаРеквизитов.Presentation = РеквизитМетаданного.Synonym;
-				СтрокаРеквизитов.Type = РеквизитМетаданного.Type;
-				СтрокаРеквизитов.ЭтоТЧ = False;
+				RowAttributes = TableAttributes.Add();
+				RowAttributes.Name = AttributeMetadata.Name;
+				RowAttributes.Presentation = AttributeMetadata.Synonym;
+				RowAttributes.Type = AttributeMetadata.Type;
+				RowAttributes.ThisTP = False;
 			EndIf;
 
-			СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(),
-				РеквизитМетаданного.Type.Types()));
+			RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(),
+				AttributeMetadata.Type.Types()));
 
 		EndDo;
 
 		If Object.ProcessTabularParts Then
 
-			For Each РеквизитМетаданного In МетаданныеРеквизитовТЧ Do
+			For Each AttributeMetadata In MetadataAttributesTP Do
 
-				If РеквизитМетаданного.Type = ОписаниеТипаХранилище Then
+				If AttributeMetadata.Type = DescriptionTypeStorage Then
 					Continue;
 				EndIf;
 
-				СтруктураРеквизитовТЧ.Insert(РеквизитМетаданного.Name, ?(СтруктураРеквизитовТЧ.Property(
-					РеквизитМетаданного.Name, ПрошлоеЗначение), ПрошлоеЗначение + 1, 1));
+				StructureAttributesTP.Insert(AttributeMetadata.Name, ?(StructureAttributesTP.Property(
+					AttributeMetadata.Name, PastValue), PastValue + 1, 1));
 
 				Filter = New Structure;
-				Filter.Insert("Name", РеквизитМетаданного.Name);
-				Filter.Insert("ЭтоТЧ", True);
-				МассивСтрок = TableAttributes.FindRows(Filter);
+				Filter.Insert("Name", AttributeMetadata.Name);
+				Filter.Insert("ThisTP", True);
+				ArrayString = TableAttributes.FindRows(Filter);
 
-				If МассивСтрок.Count() > 0 Then
-					СтрокаРеквизитов = МассивСтрок[0];
+				If ArrayString.Count() > 0 Then
+					RowAttributes = ArrayString[0];
 				Else
-					СтрокаРеквизитов = TableAttributes.Add();
-					СтрокаРеквизитов.Name = РеквизитМетаданного.Name;
-					СтрокаРеквизитов.Presentation = РеквизитМетаданного.Synonym;
-					СтрокаРеквизитов.Type = РеквизитМетаданного.Type;
-					СтрокаРеквизитов.ЭтоТЧ = True;
+					RowAttributes = TableAttributes.Add();
+					RowAttributes.Name = AttributeMetadata.Name;
+					RowAttributes.Presentation = AttributeMetadata.Synonym;
+					RowAttributes.Type = AttributeMetadata.Type;
+					RowAttributes.ThisTP = True;
 				EndIf;
 
-				СтрокаРеквизитов.Type = New TypeDescription(УсечьМассив(СтрокаРеквизитов.Type.Types(),
-					РеквизитМетаданного.Type.Types()));
+				RowAttributes.Type = New TypeDescription(TruncateArray(RowAttributes.Type.Types(),
+					AttributeMetadata.Type.Types()));
 			EndDo;
 		EndIf;
-		СтруктураТиповОбъектов.Insert(МетаданныеОбъектов[ИмяВида].Name, Type(ИмяТипаТаблицы + "Reference." + ИмяВида));
+		StructureTypesObjects.Insert(MetadataObjects[KindName].Name, Type(TableTypeName + "Ref." + KindName));
 	EndDo;
-	If ИмяВидаОдногоТипа = False Then
-		ИмяВидаОдногоТипа = Undefined;
+	If KindNameSingleType = False Then
+		KindNameSingleType = Undefined;
 	EndIf;
-	ВКонфигурацииЕстьОстаткиНоменклатуры = Not Metadata.AccumulationRegisters.Find("ТоварыНаСкладах") = Undefined;
-	КонтрольОстатковНоменклатуры = (Object.ObjectType = 0) And (ИмяВидаОдногоТипа = "Номенклатура")
-		And ВКонфигурацииЕстьОстаткиНоменклатуры;
+	//ВКонфигурацииЕстьОстаткиНоменклатуры - InConfigurationIsBalanceProducts
+	//GoodsInWarehouses
+	InConfigurationIsBalanceProducts = Not Metadata.AccumulationRegisters.Find("GoodsInWarehouses") = Undefined;
+	ControlBalanceProducts = (Object.ObjectType = 0) And (KindNameSingleType = "Products")
+		And InConfigurationIsBalanceProducts;
 		//
-	ДоступностьВВебПриложенииНоменклатуры = ВКонфигурацииЕстьУправлениеЗаказами And (ОБъект.ObjectType = 0)
-		And (ИмяВидаОдногоТипа = "Номенклатура");
+	AccessibilityInWebApplicationProducts = InConfigurationYesOrderManagement And (Object.ObjectType = 0)
+		And (KindNameSingleType = "Products");
 
-		///============================= ОПРЕДЕЛЕНИЕ ОБЩИХ СВОЙСТВ And КАТЕГОРИЙ
-	For Each KeyAndValue In СтруктураТиповОбъектов Do
-		МассивТипов.Add(KeyAndValue.Value);
+		///============================= DEFINITION OF GENERAL PROPERTIES AND CATEGORIES
+	For Each KeyAndValue In StructureTypesObjects Do
+		ArrayTypes.Add(KeyAndValue.Value);
 	EndDo;
-	//	ОписаниеВсехТипов = New TypeDescription(МассивТипов);
+	//	ОписаниеВсехТипов = New TypeDescription(ArrayTypes);
 
 
-	///============================= ОПРЕДЕЛЕНИЕ СОСТАВА РЕКВИЗИТОВ
-	Счетчик = 0;
-	For Each KeyAndValue In СтруктураРеквизитовТЧ Do
+	///============================= DETERMINATION OF THE COMPOSITION OF DETAILS
+	Counter = 0;
+	For Each KeyAndValue In StructureAttributesTP Do
 
-		If Not KeyAndValue.Value = ВсегоСтрок Then
+		If Not KeyAndValue.Value = TotalRows Then
 
-			СтруктураРеквизитовТЧ.Delete(KeyAndValue.Key);
+			StructureAttributesTP.Delete(KeyAndValue.Key);
 
 		Else
-			Счетчик = Счетчик + 1;
-			СтруктураРеквизитовТЧ.Insert(KeyAndValue.Key, "Т_" + KeyAndValue.Key);
+			Counter = Counter + 1;
+			StructureAttributesTP.Insert(KeyAndValue.Key, "Т_" + KeyAndValue.Key);
 
 		EndIf;
 
 	EndDo;
 
-	Счетчик = 0;
-	For Each KeyAndValue In СтруктураРеквизитовШапки Do
+	Counter = 0;
+	For Each KeyAndValue In StructureAttributesHeaders Do
 
-		If Not KeyAndValue.Value = ВсегоСтрок Then
+		If Not KeyAndValue.Value = TotalRows Then
 
-			СтруктураРеквизитовШапки.Delete(KeyAndValue.Key);
+			StructureAttributesHeaders.Delete(KeyAndValue.Key);
 
 		Else
-			Счетчик = Счетчик + 1;
-			СтруктураРеквизитовШапки.Insert(KeyAndValue.Key, "Ш_" + KeyAndValue.Key);
+			Counter = Counter + 1;
+			StructureAttributesHeaders.Insert(KeyAndValue.Key, "H_" + KeyAndValue.Key);
 		EndIf;
 
 	EndDo;
 
-	///============================= ОПРЕДЕЛЕНИЕ ПОРЯДКА And ПРЕДСТАВЛЕНИЯ РЕКВИЗИТОВ
-	ViewList.Add("Type " + ИмяТипаТаблицы + "а", "Ш_Вид");
-	ViewList.Add("Type " + ИмяТипаТаблицы + "а", "Ш_ВидПредставление");
-	ViewList.Add("Reference", "Object");
+	///============================= DETERMINING THE ORDER AND PRESENTING DETAILS
+	ViewList.Add("Type " + TableTypeName + "а", "H_Kind");
+	ViewList.Add("Type " + TableTypeName + "а", "H_KindRepresentation");
+	ViewList.Add("Ref", "Object");
 
 	If Object.ProcessTabularParts Then
 
-		ViewList.Add("Name ТЧ", "Т_ТЧ");
-		ViewList.Add("Name ТЧ", "Т_ТЧПредставление");
-		ViewList.Add("№ строки", "Т_НомерСтроки");
+		ViewList.Add(Nstr("ru = 'Имя ТЧ';en = 'Name TP'"), "T_TP");
+		ViewList.Add(Nstr("ru = 'Имя ТЧ';en = 'Name TP'"), "T_TPPresentation");
+		ViewList.Add(Nstr("ru = '№ строки';en = '№ line'"), "T_LineNumber");
 
-		For Each KeyAndValue In СтруктураРеквизитовТЧ Do
-			ViewList.Add(МетаданныеРеквизитовТЧ[KeyAndValue.Key].Presentation(),
+		For Each KeyAndValue In StructureAttributesTP Do
+			ViewList.Add(MetadataAttributesTP[KeyAndValue.Key].Presentation(),
 				KeyAndValue.Value);
 		EndDo;
 
 	EndIf;
 
-	ViewList.Add(Prefix + "Check удаления", "Ш_ПометкаУдаления");
+	ViewList.Add(Prefix + "Пометка удаления", "H_DeletionMark");
 
-	If Object.ObjectType = 0 And Not ИмяВидаОдногоТипа = Undefined Then
+	If Object.ObjectType = 0 And Not KindNameSingleType = Undefined Then
 
-		If МетаданныеОбъектов[ИмяВидаОдногоТипа].Owners.Count() > 0 Then
+		If MetadataObjects[KindNameSingleType].Owners.Count() > 0 Then
 
-			СтруктураРеквизитовШапки.Insert("Owner", "Ш_Владелец");
+			StructureAttributesHeaders.Insert("Owner", "H_Owner");
 
 		EndIf;
 
-		If МетаданныеОбъектов[ИмяВидаОдногоТипа].Hierarchical Then
+		If MetadataObjects[KindNameSingleType].Hierarchical Then
 
-			СтруктураРеквизитовШапки.Insert("Parent", "Ш_Родитель");
+			StructureAttributesHeaders.Insert("Parent", "H_Parent");
 
 		EndIf;
 
 	EndIf;
 
-	//If КонтрольОстатковНоменклатуры Then
+	//If ControlBalanceProducts Then
 	//	
-	//	СписокПредставлений.Add(Prefix+"Balance товара","Р_Остаток");
-	//	СписокПредставлений.Add(Prefix+"Balance-Резерв товара","Р_Резерв");
+	//	ListPresentations.Add(Prefix+"Balance товара","R_Balance");
+	//	ListPresentations.Add(Prefix+"Balance-Резерв товара","R_Reserve");
 	//	
 	//EndIf;
 
-	//If ДоступностьВВебПриложенииНоменклатуры Then
+	//If AccessibilityInWebApplicationProducts Then
 	//	
-	//	СписокПредставлений.Add(Prefix+"Доступна в веб-приложении ""Управление заказами""","П_ДоступнаВВебПриложенииУпрЗаказами");
+	//	ListPresentations.Add(Prefix+"Доступна в веб-приложении ""Управление заказами""","П_ДоступнаВВебПриложенииУпрЗаказами");
 	//	
 	//EndIf;
-	For Each KeyAndValue In СтруктураРеквизитовШапки Do
-		МетаданныеРеквизита = МетаданныеРеквизитов.Find(KeyAndValue.Key);
-		If Not МетаданныеРеквизита = Undefined Then
-			ViewList.Add(Prefix + МетаданныеРеквизита.Presentation(), KeyAndValue.Value);
+	For Each KeyAndValue In StructureAttributesHeaders Do
+		MatadataAttribute = MatadataAttributes.Find(KeyAndValue.Key);
+		If Not MatadataAttribute = Undefined Then
+			ViewList.Add(Prefix + MatadataAttribute.Presentation(), KeyAndValue.Value);
 		Else
 			ViewList.Add(Prefix + KeyAndValue.Key, KeyAndValue.Value);
 		EndIf;
 
 	EndDo;
 
-	For Each KeyAndValue In СтруктураКатегорий Do
+	For Each KeyAndValue In StructureCategories Do
 		ViewList.Add(KeyAndValue.Value, KeyAndValue.Key);
 	EndDo;
 
-	For Each KeyAndValue In СтруктураСвойств Do
+	For Each KeyAndValue In StructureProperties Do
 		ViewList.Add(KeyAndValue.Value, KeyAndValue.Key);
 	EndDo;
 
-	///============================= ДОБАВЛЕНИЕ ОБЩИХ РЕКВИЗИТОВ
-	СтруктураРеквизитовШапки.Insert("DeletionMark", "Ш_ПометкаУдаления");
+	///============================= ADDING COMMON ATTRIBUTES
+	StructureAttributesHeaders.Insert("DeletionMark", "H_DeletionMark");
 
 	If Object.ProcessTabularParts Then
-		СтруктураРеквизитовТЧ.Insert("LineNumber", "Т_НомерСтроки");
+		StructureAttributesTP.Insert("LineNumber", "T_LineNumber");
 	EndIf;
 
-	///============================= ФОРМИРОВАНИЕ ТЕКСТА ЗАПРОСА
-	ТекстЗапросаОкончание = "";
+	///============================= FORMING THE QUERY TEXT
+	QueryTextEnding = "";
 
 	//If Object.ObjectType = 1 Then
 	//	
-	//	ТекстЗапросаОкончание = ТекстЗапросаОкончание + "
-	//	|УПОРЯДОЧИТЬ ПО
-	//	|	Ш_Дата,
+	//	QueryTextEnding = QueryTextEnding + "
+	//	|ORDER BY
+	//	|	H_Date,
 	//	|	Object";
-	//	ПоляСортировки = "Ш_Дата,Object";
+	//	FieldsSort = "H_Date,Object";
 	//	
 	//Else
 	//	
-	//	ТекстЗапросаОкончание = ТекстЗапросаОкончание + "
-	//	|УПОРЯДОЧИТЬ ПО
-	//	|	Ш_Вид,
+	//	QueryTextEnding = QueryTextEnding + "
+	//	|ORDER BY
+	//	|	H_Kind,
 	//	|	Object";
-	//	ПоляСортировки = "Ш_Вид,Object";
+	//	FieldsSort = "H_Kind,Object";
 	//	
 	//EndIf;
 	//
 	//If Object.ProcessTabularParts Then
-	//	ТекстЗапросаОкончание = ТекстЗапросаОкончание + ",
-	//	|	Т_ТЧ,
-	//	|	Т_НомерСтроки";
-	//	ПоляСортировки = ПоляСортировки + ",Т_ТЧ,Т_НомерСтроки";
+	//	QueryTextEnding = QueryTextEnding + ",
+	//	|	T_TP,
+	//	|	T_LineNumber";
+	//	FieldsSort = FieldsSort + ",T_TP,T_LineNumber";
 	//EndIf;
 	QueryText = "";
 
-	For Each String In ТабличноеПолеВидыОбъектов Do
+	For Each String In TableFieldTypesObjects Do
 
 		If Not Object.ProcessTabularParts Then
-			ИмяВида = String.TableName;
+			KindName = String.TableName;
 		Else
-			ПозТЧК = Find(String.TableName, ".");
-			ИмяВида = Left(String.TableName, ПозТЧК - 1);
-			ИмяТЧ = Mid(String.TableName, ПозТЧК + 1);
+			PositionTP = Find(String.TableName, ".");
+			KindName = Left(String.TableName, PositionTP - 1);
+			NameTP = Mid(String.TableName, PositionTP + 1);
 		EndIf;
 
-		If МетаданныеОбъектов.Find(ИмяВида) = Undefined Then
+		If MetadataObjects.Find(KindName) = Undefined Then
 			Continue;
 		EndIf;
 
-		МетаданныеСтрокиОбъектов=МетаданныеОбъектов[ИмяВида];
+		MetadataRowObjects=MetadataObjects[KindName];
 
-		МетаданныеРеквизитов = МетаданныеСтрокиОбъектов.Attributes;
+		MatadataAttributes = MetadataRowObjects.Attributes;
 
 		If Object.ProcessTabularParts Then
-			МетаданныеРеквизитовТЧ = МетаданныеСтрокиОбъектов.TabularSections[ИмяТЧ].Attributes;
+			MetadataAttributesTP = MetadataRowObjects.TabularSections[NameTP].Attributes;
 		EndIf;
 
-		TableName = ИмяТипаТаблицы + "." + String.TableName;
-		ПсевдонимТаблицы = StrReplace(TableName, ".", "_");
+		TableName = TableTypeName + "." + String.TableName;
+		AliasTable = StrReplace(TableName, ".", "_");
 
-		///============================= ФОРМИРОВАНИЕ ТЕКСТА ЗАПРОСА ПО РЕКВИЗИТАМ
-		ТекстЗапросаОбъект = "";
-		ТекстЗапросаОбъект = ТекстЗапросаОбъект + "" + Chars.LF + "	""" + ИмяВида + """ КАК Ш_Вид";
-		ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	""" + StrReplace(
-			МетаданныеОбъектов[ИмяВида].Presentation(), """", "") + """ КАК Ш_ВидПредставление";
-		ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	" + ПсевдонимТаблицы + "." + Prefix
-			+ "Reference КАК Object";
+		///============================= FORMING THE QUERY TEXT BY ATTRIBUTES
+		QueryTextObject = "";
+		QueryTextObject = QueryTextObject + "" + Chars.LF + "	""" + KindName + """ AS H_Kind";
+		QueryTextObject = QueryTextObject + "," + Chars.LF + "	""" + StrReplace(
+			MetadataObjects[KindName].Presentation(), """", "") + """ AS H_KindRepresentation";
+		QueryTextObject = QueryTextObject + "," + Chars.LF + "	" + AliasTable + "." + Prefix
+			+ "Ref AS Object";
 
-		For Each KeyAndValue In СтруктураРеквизитовШапки Do
-			МетаданноеРеквизита = МетаданныеРеквизитов.Find(KeyAndValue.Key);
-			If Not МетаданноеРеквизита = Undefined And МетаданноеРеквизита.Type.ContainsType(Type("String"))
-				And МетаданноеРеквизита.Type.StringQualifiers.Length = 0 Then
-				ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	ПОДСТРОКА(" + ПсевдонимТаблицы + "."
-					+ Prefix + KeyAndValue.Key + ",1," + ОграничениеНаСтрокиНеограниченнойДлины + ")";
+		For Each KeyAndValue In StructureAttributesHeaders Do
+			MatadataAttribute = MatadataAttributes.Find(KeyAndValue.Key);
+			If Not MatadataAttribute = Undefined And MatadataAttribute.Type.ContainsType(Type("String"))
+				And MatadataAttribute.Type.StringQualifiers.Length = 0 Then
+				QueryTextObject = QueryTextObject + "," + Chars.LF + "	SUBSTRING(" + AliasTable + "."
+					+ Prefix + KeyAndValue.Key + ",1," + RestrictionOnStringsUnlimitedLength + ")";
 			Else
-				ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	" + ПсевдонимТаблицы + "." + Prefix
+				QueryTextObject = QueryTextObject + "," + Chars.LF + "	" + AliasTable + "." + Prefix
 					+ KeyAndValue.Key;
 			EndIf;
-			ТекстЗапросаОбъект = ТекстЗапросаОбъект + " КАК " + KeyAndValue.Value;
+			QueryTextObject = QueryTextObject + " AS " + KeyAndValue.Value;
 		EndDo;
 
 		If Object.ProcessTabularParts Then
 
-			ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	""" + ИмяТЧ + """ КАК Т_ТЧ";
-			ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	"""
-				+ МетаданныеСтрокиОбъектов.TabularSections[ИмяТЧ].Presentation() + """ КАК Т_ТЧПредставление";
+			QueryTextObject = QueryTextObject + "," + Chars.LF + "	""" + NameTP + """ AS T_TP";
+			QueryTextObject = QueryTextObject + "," + Chars.LF + "	"""
+				+ MetadataRowObjects.TabularSections[NameTP].Presentation() + """ AS T_TPPresentation";
 
-			For Each KeyAndValue In СтруктураРеквизитовТЧ Do
+			For Each KeyAndValue In StructureAttributesTP Do
 
-				МетаданноеРеквизита = МетаданныеРеквизитовТЧ.Find(KeyAndValue.Key);
+				MatadataAttribute = MetadataAttributesTP.Find(KeyAndValue.Key);
 
-				If Not МетаданноеРеквизита = Undefined And МетаданноеРеквизита.Type.ContainsType(Type("String"))
-					And МетаданноеРеквизита.Type.StringQualifiers.Length = 0 Then
+				If Not MatadataAttribute = Undefined And MatadataAttribute.Type.ContainsType(Type("String"))
+					And MatadataAttribute.Type.StringQualifiers.Length = 0 Then
 
-					ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	ПОДСТРОКА(" + ПсевдонимТаблицы
-						+ "." + KeyAndValue.Key + ",1," + ОграничениеНаСтрокиНеограниченнойДлины + ")";
+					QueryTextObject = QueryTextObject + "," + Chars.LF + "	SUBSTRING(" + AliasTable
+						+ "." + KeyAndValue.Key + ",1," + RestrictionOnStringsUnlimitedLength + ")";
 
 				Else
 
-					ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	" + ПсевдонимТаблицы + "."
+					QueryTextObject = QueryTextObject + "," + Chars.LF + "	" + AliasTable + "."
 						+ KeyAndValue.Key;
 
 				EndIf;
 
-				ТекстЗапросаОбъект = ТекстЗапросаОбъект + " КАК " + KeyAndValue.Value;
+				QueryTextObject = QueryTextObject + " AS " + KeyAndValue.Value;
 
 			EndDo;
 		EndIf;
 
-		///============================= ФОРМИРОВАНИЕ ТЕКСТА ЗАПРОСА ПО СВОЙСТВАМ And КАТЕГОРИЯМ
-		If ОтборПоКатегориям Then
+		///============================= FORMING THE QUERY TEXT BY PROPERTIES AND CATEGORIES
+		If SelectionByCategories Then
 		//
-			//For каждого KeyAndValue In СтруктураКатегорий Do
+			//For Each KeyAndValue In StructureCategories Do
 			//	
-			//	ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + 
-			//	"	ВЫБОР КОГДА Таблица_"+KeyAndValue.Key+".Category ЕСТЬ NULL ТОГДА ЛОЖЬ ИНАЧЕ ИСТИНА КОНЕЦ КАК " + KeyAndValue.Key;
+			//	QueryTextObject = QueryTextObject + "," + Chars.LF + 
+			//	"	SELECT THEN Table_"+KeyAndValue.Key+".Category IS NULL THEN FALSE ELSE TRUE END AS " + KeyAndValue.Key;
 			//	
 			//EndDo; 
 		EndIf;
 
-		If ОтборПоСвойствам Then
+		If SelectionByProperties Then
 
-		//For каждого KeyAndValue In СтруктураСвойств Do
+		//For Each KeyAndValue In StructureProperties Do
 			//	
-			//	ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + Chars.LF + "	Таблица_"+KeyAndValue.Key+".Value КАК "+KeyAndValue.Key;
+			//	QueryTextObject = QueryTextObject + "," + Chars.LF + "	Table_"+KeyAndValue.Key+".Value AS "+KeyAndValue.Key;
 			//	
 			//EndDo; 
 		EndIf;
 
-		///============================= ФОРМИРОВАНИЕ ТЕКСТА ЗАПРОСА ПО ОСТАТКАМ НОМЕНКЛАТУРЫ
-		If КонтрольОстатковНоменклатуры Then
+		///============================= FORMING THE QUERY TEXT BY BALANCE PRODUCTS
+		If ControlBalanceProducts Then
 
-		//ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + "
-			//|	ЕСТЬNULL(Таблица_Р_Остаток.КоличествоОстаток,0) Как Р_Остаток,
-			//|	ЕСТЬNULL(Таблица_Р_Остаток.КоличествоОстаток, 0) - ЕСТЬNULL(Таблица_Р_Резерв.КоличествоОстаток, 0) КАК Р_Резерв";
+		//QueryTextObject = QueryTextObject + "," + "
+			//|	ЕСТЬNULL(Table_R_Balance.QuantityBalance,0) AS R_Balance,
+			//|	ЕСТЬNULL(Table_R_Balance.QuantityBalance, 0) - ЕСТЬNULL(Table_R_Reserve.QuantityBalance, 0) AS R_Reserve";
 		EndIf;
 
-		If ДоступностьВВебПриложенииНоменклатуры Then
+		If AccessibilityInWebApplicationProducts Then
 
-		//ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + "
-			//|	ВЫБОР
-			//|		КОГДА Таблица_П_Веб.Номенклатура ЕСТЬ NULL ТОГДА True
-			//|		ИНАЧЕ False
-			//|	КОНЕЦ КАК П_ДоступнаВВебПриложенииУпрЗаказами";
+		//QueryTextObject = QueryTextObject + "," + "
+			//|	CASE
+			//|		WHEN Table_П_Веб.Products IS NULL THEN True
+			//|		ELSE False
+			//|	END AS П_ДоступнаВВебПриложенииУпрЗаказами";
 		EndIf;
 
-		///============================= ФОРМИРОВАНИЕ ТЕКСТА ЗАПРОСА ПО "ИЗ" And "СОЕДИНЕНИЕ"
-		ТекстЗапросаОбъект = ТекстЗапросаОбъект + Chars.LF + "ИЗ" + Chars.LF + "	" + TableName + " КАК "
-			+ ПсевдонимТаблицы;
-		If ОтборПоКатегориям Then
+		///============================= FORMING THE QUERY TEXT BY "WHERE" And "JOIN"
+		QueryTextObject = QueryTextObject + Chars.LF + "FROM" + Chars.LF + "	" + TableName + " AS "
+			+ AliasTable;
+		If SelectionByCategories Then
 		//
-			//For каждого KeyAndValue In СтруктураКатегорий Do
+			//For Each KeyAndValue In StructureCategories Do
 			//	
-			//	ТекстЗапросаОбъект = ТекстЗапросаОбъект + "
-			//	|	ЛЕВОЕ СОЕДИНЕНИЕ InformationRegister.КатегорииОбъектов КАК Таблица_"+KeyAndValue.Key+"
-			//	|		ПО " + ПсевдонимТаблицы + ".Reference = Таблица_"+KeyAndValue.Key+".Object
-			//	|		And (Таблица_"+KeyAndValue.Key+".Category = &"+KeyAndValue.Key+")";
+			//	QueryTextObject = QueryTextObject + "
+			//	|	LEFT JOIN InformationRegister.CategoriesObjects AS Table_"+KeyAndValue.Key+"
+			//	|		ПО " + AliasTable + ".Ref = Table_"+KeyAndValue.Key+".Object
+			//	|		And (Table_"+KeyAndValue.Key+".Category = &"+KeyAndValue.Key+")";
 			//	
 			//	
 			//EndDo;
 		EndIf;
 
-		If ОтборПоСвойствам Then
+		If SelectionByProperties Then
 
-		//For каждого KeyAndValue In СтруктураСвойств Do
+		//For Each KeyAndValue In StructureProperties Do
 			//	
-			//	ТекстЗапросаОбъект = ТекстЗапросаОбъект + "
-			//	|	ЛЕВОЕ СОЕДИНЕНИЕ InformationRegister.ЗначенияСвойствОбъектов КАК Таблица_"+KeyAndValue.Key+"
-			//	|		ПО " + ПсевдонимТаблицы + ".Reference = Таблица_"+KeyAndValue.Key+".Object
-			//	|		And (Таблица_"+KeyAndValue.Key+".Property = &"+KeyAndValue.Key+")";
+			//	QueryTextObject = QueryTextObject + "
+			//	|	LEFT JOIN InformationRegister.ЗначенияСвойствОбъектов AS Table_"+KeyAndValue.Key+"
+			//	|		ПО " + AliasTable + ".Ref = Table_"+KeyAndValue.Key+".Object
+			//	|		And (Table_"+KeyAndValue.Key+".Property = &"+KeyAndValue.Key+")";
 			//	
 			//EndDo;
 		EndIf;
 
-		If КонтрольОстатковНоменклатуры Then
+		If ControlBalanceProducts Then
 
-		//ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + "
-			//|	ЛЕВОЕ СОЕДИНЕНИЕ AccumulationRegister.ТоварыНаСкладах.Balance КАК Таблица_Р_Остаток
-			//|		ПО " + ПсевдонимТаблицы + ".Reference = Таблица_Р_Остаток.Номенклатура
-			//|	ЛЕВОЕ СОЕДИНЕНИЕ AccumulationRegister.ТоварыВРезервеНаСкладах.Balance КАК Таблица_Р_Резерв
-			//|		ПО " + ПсевдонимТаблицы + ".Reference = Таблица_Р_Резерв.Номенклатура";
+		//QueryTextObject = QueryTextObject + "," + "
+			//|	LEFT JOIN AccumulationRegister.GoodsInWarehouses.Balance AS Table_R_Balance
+			//|		ПО " + AliasTable + ".Ref = Table_R_Balance.Products
+			//|	LEFT JOIN AccumulationRegister.ТоварыВРезервеНаСкладах.Balance AS Table_R_Reserve
+			//|		ПО " + AliasTable + ".Ref = Table_R_Reserve.Products";
 			//
 		EndIf;
 
-		If ДоступностьВВебПриложенииНоменклатуры Then
+		If AccessibilityInWebApplicationProducts Then
 
-		//ТекстЗапросаОбъект = ТекстЗапросаОбъект + "," + "
-			//|	ЛЕВОЕ СОЕДИНЕНИЕ InformationRegister.НоменклатураНеиспользуемаяВВебУправленииЗаказами КАК Таблица_П_Веб
-			//|	ПО " + ПсевдонимТаблицы + ".Reference = Таблица_П_Веб.Номенклатура";
+		//НоменклатураНеиспользуемаяВВебУправленииЗаказами - ProductsUnusedInWebOrderManagement
+		//QueryTextObject = QueryTextObject + "," + "
+			//|	LEFT JOIN InformationRegister.ProductsUnusedInWebOrderManagement AS Table_П_Веб
+			//|	ПО " + AliasTable + ".Ref = Table_П_Веб.Products";
 			//
 		EndIf;
 
-		If Object.ObjectType = 0 And МетаданныеСтрокиОбъектов.Hierarchical And МетаданныеСтрокиОбъектов.HierarchyType
+		If Object.ObjectType = 0 And MetadataRowObjects.Hierarchical And MetadataRowObjects.HierarchyType
 			= Metadata.ObjectProperties.HierarchyType.HierarchyFoldersAndItems Then
 
-			ТекстЗапросаОбъект = ТекстЗапросаОбъект + "
-													  |ГДЕ
-													  |	" + ПсевдонимТаблицы + ".Reference.IsFolder = ЛОЖЬ";
+			QueryTextObject = QueryTextObject + "
+													  |WHERE
+													  |	" + AliasTable + ".Ref.IsFolder = FALSE";
 
 		EndIf;
 
-		QueryText = ?(QueryText = "", "StartChoosing ", QueryText + Chars.LF + Chars.LF + "ОБЪЕДИНИТЬ ВСЕ"
-			+ Chars.LF + Chars.LF + "ВЫБРАТЬ") + ТекстЗапросаОбъект;
+		QueryText = ?(QueryText = "", "SELECT ", QueryText + Chars.LF + Chars.LF + "UNION ALL"
+			+ Chars.LF + Chars.LF + "SELECT") + QueryTextObject;
 
-		ТекстЗапросаОбъект = "StartChoosing " + ТекстЗапросаОбъект + ТекстЗапросаОкончание;
-		масЗапросовПоОбъектам.Add(ТекстЗапросаОбъект);
+		QueryTextObject = "SELECT " + QueryTextObject + QueryTextEnding;
+		ArrayQueriesToObjects.Add(QueryTextObject);
 
 	EndDo;
 
-	QueryText = QueryText + ТекстЗапросаОкончание;
+	QueryText = QueryText + QueryTextEnding;
 
-	НовыйТекстЗапроса = "StartChoosing РАЗРЕШЕННЫЕ * ИЗ (" + QueryText + ") КАК _Таблица";
+	NewQueryText = "SELECT ALLOWED * FROM (" + QueryText + ") AS _Table";
 
-		///============================= СОХРАНЕНИЕ НАСТРОЕК ОТБОРА ПРЕДЫДУЩЕГО ЗАПРОСА
-	//For IndexOf = 0 To ПостроительЗапроса_Отбор.Count() - 1 Do
-	//	МассивНастроекОтбора.Add(ПостроительЗапроса_Отбор.Get(IndexOf));
+		///============================= SAVING PREVIOUS QUERY SELECT SETTINGS
+	//For IndexOf = 0 To QueryBuilder_Filter.Count() - 1 Do
+	//	ArraySettingsFilter.Add(QueryBuilder_Filter.Get(IndexOf));
 	//EndDo; 
 
-	///============================= ИНИЦИАЛИЗАЦИЯ ТЕКСТА And ПОЛЕЙ ЗАПРОСА
+	///============================= INITIALIZING TEXT AND QUERY FIELDS
 
 
 	//QueryText = GetQueryText();
-	QueryText = НовыйТекстЗапроса;
-	ТекстПроизвольногоЗапроса = QueryText;
-	ОтборДанных = Undefined;
+	QueryText = NewQueryText;
+	ArbitraryQueryText = QueryText;
+	DataSelection = Undefined;
 	QueryParameters.Clear();
 
 	//QueryBuilder.Text = QueryText;
 	//QueryBuilder.FillSettings();
 	//
-	//КоличествоПолей = QueryBuilder.AvailableFields.Count();
-	//For к = 0 To КоличествоПолей - 1 Do
-	//	ДоступноеПоле = QueryBuilder.AvailableFields[КоличествоПолей - к - 1];
+	//NumberOfFields = QueryBuilder.AvailableFields.Count();
+	//For к = 0 To NumberOfFields - 1 Do
+	//	AvailableField = QueryBuilder.AvailableFields[NumberOfFields - к - 1];
 	//	
-	//	If QueryBuilder.SelectedFields.Find(ДоступноеПоле.Name) = Undefined Then
-	//		QueryBuilder.AvailableFields.Delete(ДоступноеПоле);
+	//	If QueryBuilder.SelectedFields.Find(AvailableField.Name) = Undefined Then
+	//		QueryBuilder.AvailableFields.Delete(AvailableField);
 	//	EndIf;
 	//EndDo;
 	//
-	//КоличествоПолей = QueryBuilder.SelectedFields.Count();
-	//For к = 0 To КоличествоПолей - 1 Do
-	//	FieldName = QueryBuilder.SelectedFields[КоличествоПолей - к - 1].Name;
-	//	ДоступноеПоле = QueryBuilder.AvailableFields.Find(FieldName);
-	//	QueryBuilder.AvailableFields.Move(ДоступноеПоле,-1000);
+	//NumberOfFields = QueryBuilder.SelectedFields.Count();
+	//For к = 0 To NumberOfFields - 1 Do
+	//	FieldName = QueryBuilder.SelectedFields[NumberOfFields - к - 1].Name;
+	//	AvailableField = QueryBuilder.AvailableFields.Find(FieldName);
+	//	QueryBuilder.AvailableFields.Move(AvailableField,-1000);
 	//	
 	//EndDo;
 	// 
 	//
-	//For каждого ЭлементПредставления In СписокПредставлений Do
-	//	ДоступноеПоле = QueryBuilder.AvailableFields.Find(ЭлементПредставления.Presentation);
-	//	If Not ДоступноеПоле = Undefined Then
+	//For Each ItemPresentations In ListPresentations Do
+	//	AvailableField = QueryBuilder.AvailableFields.Find(ItemPresentations.Presentation);
+	//	If Not AvailableField = Undefined Then
 	//		
-	//		ДоступноеПоле.Presentation = ПолучитьПредставление(ЭлементПредставления);
-	//		If Left(ДоступноеПоле.Name , 2) = "С_" Then
-	//			ДоступноеПоле.ValueType = СтруктураСвойств[ДоступноеПоле.Name].ValueType;
+	//		AvailableField.Presentation = GetPresentation(ItemPresentations);
+	//		If Left(AvailableField.Name , 2) = "С_" Then
+	//			AvailableField.ValueType = StructureProperties[AvailableField.Name].ValueType;
 	//		EndIf; 
 	//		
 	//	EndIf;
@@ -1557,70 +1599,70 @@ Procedure ИнициализацияЗапроса()
 	//EndDo; 
 	//
 	//FilterAvailableFields = QueryBuilder.Filter.GetAvailableFields();
-	//FilterAvailableFields.Delete(FilterAvailableFields.Ш_ВидПредставление);
-	//FilterAvailableFields.Ш_Ссылка.Fields.Clear();
-	////FilterAvailableFields.Delete(FilterAvailableFields.Ш_Ссылка);
+	//FilterAvailableFields.Delete(FilterAvailableFields.H_KindRepresentation);
+	//FilterAvailableFields.H_Ref.Fields.Clear();
+	////FilterAvailableFields.Delete(FilterAvailableFields.H_Ref);
 	//If Object.ProcessTabularParts Then
-	//	FilterAvailableFields.Delete(FilterAvailableFields.Т_ТЧПредставление);
-	//	FilterAvailableFields.Delete(FilterAvailableFields.Т_ТЧ);
+	//	FilterAvailableFields.Delete(FilterAvailableFields.T_TPPresentation);
+	//	FilterAvailableFields.Delete(FilterAvailableFields.T_TP);
 	//EndIf; 
 	//
-	/////============================= ВОССТАНОВЛЕНИЕ НАСТРОЕК ОТБОРА ПРЕДЫДУЩЕГО ЗАПРОСА
-	//For каждого FilterItem In МассивНастроекОтбора Do
-	//	ДоступноеПоле = FilterAvailableFields.Find(FilterItem.DataPath);
+	/////============================= RESTORING THE SELECTING SETTINGS OF THE PREVIOUS QUERY
+	//For Each FilterItem In ArraySettingsFilter Do
+	//	AvailableField = FilterAvailableFields.Find(FilterItem.DataPath);
 	//	Try
-	//		НовыйЭлементОтбора = QueryBuilder.Filter.Add(FilterItem.DataPath);
-	//		НовыйЭлементОтбора.Use = FilterItem.Use;
-	//		НовыйЭлементОтбора.ComparisonType = FilterItem.ComparisonType;
-	//		НовыйЭлементОтбора.Value = FilterItem.Value;
-	//		НовыйЭлементОтбора.ValueFrom = FilterItem.ValueFrom;
-	//		НовыйЭлементОтбора.ValueTo = FilterItem.ValueTo;
+	//		NewFilterItem = QueryBuilder.Filter.Add(FilterItem.DataPath);
+	//		NewFilterItem.Use = FilterItem.Use;
+	//		NewFilterItem.ComparisonType = FilterItem.ComparisonType;
+	//		NewFilterItem.Value = FilterItem.Value;
+	//		NewFilterItem.ValueFrom = FilterItem.ValueFrom;
+	//		NewFilterItem.ValueTo = FilterItem.ValueTo;
 	//	Except
 	//	EndTry; 
 	//EndDo; 
 	//
 	//
-	ПредопределенныеРеквизиты = New ValueList;
-	//Template = GetTemplate("ПредопределенныеРеквизиты");
+	PredefinedAttributes = New ValueList;
+	//Template = GetTemplate("PredefinedAttributes");
 	//Region = Template.Areas[?(Object.ObjectType = 0,"Catalogs","Documents")];
-	//Счетчик = 0;
-	//ВидОбъекта = "*";
+	//Counter = 0;
+	//ObjectType = "*";
 	//For к =  Region.Top To Region.Bottom Do
 	//	
-	//	ТекВидОбъекта = TrimAll(Template.Region("R"+к+"C1").Text);
+	//	CurrentTypeObject = TrimAll(Template.Region("R"+к+"C1").Text);
 	//	
-	//	If  ТекВидОбъекта <> "" Then
-	//		If ТекВидОбъекта = "*" Then
-	//			ВидОбъекта = ТекВидОбъекта;
+	//	If  CurrentTypeObject <> "" Then
+	//		If CurrentTypeObject = "*" Then
+	//			ObjectType = CurrentTypeObject;
 	//		Else
-	//			ВидОбъекта = ТекВидОбъекта;
+	//			ObjectType = CurrentTypeObject;
 	//		EndIf; 
 	//		
 	//	EndIf;
 	//	
-	//	If ИмяВидаОдногоТипа = ВидОбъекта ИЛИ ВидОбъекта = "*" Then
+	//	If KindNameSingleType = ObjectType ИЛИ ObjectType = "*" Then
 	//		
-	//		ПолноеИмяРеквизита = TrimAll(Template.Region("R"+к+"C2").Text);
+	//		FullNameAttribute = TrimAll(Template.Region("R"+к+"C2").Text);
 	//		LongDesc = TrimAll(Template.Region("R"+к+"C3").Text);
 	//		ЧерезТочку = False;
-	//		ПозТЧК = Find(ПолноеИмяРеквизита,".");
-	//		ЭтоСоставнойРеквизит = Not(ПозТЧК = 0);
-	//		ИмяКорня = "Ш_"+?(ПозТЧК = 0,ПолноеИмяРеквизита,Left(ПолноеИмяРеквизита,ПозТЧК-1));
+	//		PositionTP = Find(FullNameAttribute,".");
+	//		ItIsCompoundAttribute = Not(PositionTP = 0);
+	//		ИмяКорня = "H_"+?(PositionTP = 0,FullNameAttribute,Left(FullNameAttribute,PositionTP-1));
 	//		//CustomField = QueryBuilder.AvailableFields.Find(ИмяКорня);
-	//		//While Not ПозТЧК = 0 And Not CustomField = Undefined Do
-	//		//	ПолноеИмяРеквизита = Mid(ПолноеИмяРеквизита,ПозТЧК+1);
-	//		//	ПозТЧК = Find(ПолноеИмяРеквизита,".");
-	//		//	CustomField = CustomField.Fields.Find(?(ПозТЧК = 0,ПолноеИмяРеквизита,Left(ПолноеИмяРеквизита,ПозТЧК-1)));
+	//		//While Not PositionTP = 0 And Not CustomField = Undefined Do
+	//		//	FullNameAttribute = Mid(FullNameAttribute,PositionTP+1);
+	//		//	PositionTP = Find(FullNameAttribute,".");
+	//		//	CustomField = CustomField.Fields.Find(?(PositionTP = 0,FullNameAttribute,Left(FullNameAttribute,PositionTP-1)));
 	//		//	ЧерезТочку = True;
 	//		//EndDo; 
 	//		//If Not CustomField = Undefined Then
-	//			If ЭтоСоставнойРеквизит Then
-	//				Счетчик = Счетчик+1;
-	//				//QueryBuilder.SelectedFields.Add(CustomField.DataPath,"Д_"+Счетчик);
-	//				СписокПредставлений.Add(LongDesc,"Д_"+Счетчик);
-	//				ПредопределенныеРеквизиты.Add(New Structure("Name,CustomField","Д_"+Счетчик,CustomField),LongDesc);
+	//			If ItIsCompoundAttribute Then
+	//				Counter = Counter+1;
+	//				//QueryBuilder.SelectedFields.Add(CustomField.DataPath,"Д_"+Counter);
+	//				ListPresentations.Add(LongDesc,"Д_"+Counter);
+	//				PredefinedAttributes.Add(New Structure("Name,CustomField","Д_"+Counter,CustomField),LongDesc);
 	//			Else
-	//				ПредопределенныеРеквизиты.Add(New Structure("Name,CustomField",CustomField.Name,CustomField),LongDesc);
+	//				PredefinedAttributes.Add(New Structure("Name,CustomField",CustomField.Name,CustomField),LongDesc);
 	//			EndIf; 
 	//			
 	//		//EndIf; 
@@ -1629,131 +1671,146 @@ Procedure ИнициализацияЗапроса()
 	//EndDo; 
 	////
 	/////============================= 
-	//ПостроительЗапроса_Отбор = QueryBuilder.Filter;
+	//QueryBuilder_Filter = QueryBuilder.Filter;
 	//QueryBuilder.PresentationAdding = PresentationAdditionType.DontAdd;
-	ОтображаемыеКолонки = New Structure("Ш_ВидПредставление,Ш_Ссылка");
+	DisplayedColumns = New Structure("H_KindRepresentation,H_Ref");
 	If Object.ProcessTabularParts Then
-		ОтображаемыеКолонки.Insert("Т_ТЧПредставление");
-		ОтображаемыеКолонки.Insert("Т_НомерСтроки");
+		DisplayedColumns.Insert("T_TPPresentation");
+		DisplayedColumns.Insert("T_LineNumber");
 	EndIf;
-	мСформированныйРежим = New Structure("ViewList,ДанныеОтобраны,ИмяВидаОдногоТипа,ПредопределенныеРеквизиты,ОтображаемыеКолонки,СтруктураСвойств,СтруктураКатегорий",
-		ViewList, False, ИмяВидаОдногоТипа, ПредопределенныеРеквизиты, ОтображаемыеКолонки, СтруктураСвойств,
-		СтруктураКатегорий);
+	mShapedMode = New Structure("ViewList,DataSelected,KindNameSingleType,PredefinedAttributes,DisplayedColumns,StructureProperties,StructureCategories",
+		ViewList, False, KindNameSingleType, PredefinedAttributes, DisplayedColumns, StructureProperties,
+		StructureCategories);
 
 EndProcedure
 
-// ИнициализацияЗапроса() 
+// QueryInitialization() 
 &AtClient
-Procedure ПроверкаНеобходимостиОчищатьРезультаты(ОписаниеОповещенияОЗавершении)
+Procedure CheckNecessaryClearResults(CompletionNotifyDescription)
 
-	ДополнительныеПараметрыОповщения=New Structure;
-	ДополнительныеПараметрыОповщения.Insert("ОписаниеОповещенияОЗавершении", ОписаниеОповещенияОЗавершении);
+	AdditionalParametersNotify = New Structure;
+	AdditionalParametersNotify.Insert("CompletionNotifyDescription", CompletionNotifyDescription);
 
-	If Not мСформированныйРежим = Undefined And мСформированныйРежим.ДанныеОтобраны Then
-		ВопросОбОчисткеРезультатаОтбора(New NotifyDescription("ПроверкаНеобходимостиОчищатьРезультатыЗавершение",
-			ThisObject, ДополнительныеПараметрыОповщения));
+	If Not mShapedMode = Undefined And mShapedMode.DataSelected Then
+		QuestionAboutCleaningSelectionResult(New NotifyDescription("CheckNecessaryClearResultsEnd",
+			ThisObject, AdditionalParametersNotify));
 	EndIf;
 
-	ПроверкаНеобходимостиОчищатьРезультатыЗавершение(True, ДополнительныеПараметрыОповщения);
+	CheckNecessaryClearResultsEnd(True, AdditionalParametersNotify);
+	
 EndProcedure
 
 &AtClient
-Procedure ПроверкаНеобходимостиОчищатьРезультатыЗавершение(Result, AdditionalParameters) Export
-	ОповщениеОЗавершении=AdditionalParameters.ОписаниеОповещенияОЗавершении;
+Procedure CheckNecessaryClearResultsEnd(Result, AdditionalParameters) Export
+	
+	CompletionNotifyDescription = AdditionalParameters.CompletionNotifyDescription;
 	If Result Then
-		ОчиститьРезультаты();
-		мСформированныйРежим = Undefined;
+		ClearResults();
+		mShapedMode = Undefined;
 	EndIf;
 
-	ExecuteNotifyProcessing(ОповщениеОЗавершении, Result);
-EndProcedure
-&AtClient
-Procedure ВопросОбОчисткеРезультатаОтбора(ОписаниеОповещенияОЗавершении) Export
-	Ответ = Undefined;
-
-	ShowQueryBox(New NotifyDescription("ВопросОбОчисткеРезультатаОтбораЗавершение", ThisForm,
-		New Structure("ОписаниеОповещенияОЗавершении", ОписаниеОповещенияОЗавершении)),
-		"Result отбора будет очищен. Continue?", QuestionDialogMode.OKCancel);
+	ExecuteNotifyProcessing(CompletionNotifyDescription, Result);
+	
 EndProcedure
 
 &AtClient
-Procedure ВопросОбОчисткеРезультатаОтбораЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure QuestionAboutCleaningSelectionResult(CompletionNotifyDescription) Export
+	
+	Answer = Undefined;
+	
+	Message = Nstr("ru = 'Результат отбора будет очищен. Продолжить?';en = 'The selection result will be cleared. Proceed?'");
+	ShowQueryBox(New NotifyDescription("QuestionAboutCleaningSelectionResultEnd", ThisForm,
+		New Structure("CompletionNotifyDescription", CompletionNotifyDescription)),
+		Message, QuestionDialogMode.OKCancel);
+		
+EndProcedure
 
-	ОписаниеОповещенияОЗавершении = AdditionalParameters.ОписаниеОповещенияОЗавершении;
-	Result=РезультатВопроса = DialogReturnCode.Cancel;
-	ExecuteNotifyProcessing(ОписаниеОповещенияОЗавершении, Result);
+&AtClient
+Procedure QuestionAboutCleaningSelectionResultEnd(ResultQuestion, AdditionalParameters) Export
+
+	CompletionNotifyDescription = AdditionalParameters.CompletionNotifyDescription;
+	Result = ResultQuestion = DialogReturnCode.Cancel;
+	ExecuteNotifyProcessing(CompletionNotifyDescription, Result);
 
 EndProcedure
 
 // () 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПослеУдаления(Item)
-	ПроверкаНеобходимостиОчищатьРезультаты(New NotifyDescription("ТабличноеПолеВидыОбъектовПослеУдаленияЗавершение",
+Procedure TableFieldTypesObjectsAfterDeleteRow(Item)
+	CheckNecessaryClearResults(New NotifyDescription("TableFieldTypesObjectsAfterDeleteRowEnd",
 		ThisObject));
 EndProcedure
 
 &AtClient
-Procedure ТабличноеПолеВидыОбъектовПослеУдаленияЗавершение(Result, AdditionalParameters) Export
+Procedure TableFieldTypesObjectsAfterDeleteRowEnd(Result, AdditionalParameters) Export
 	If Result Then
-		ИнициализацияЗапроса();
+		QueryInitialization();
 	EndIf;
 EndProcedure
-Procedure ОчиститьРезультаты()
-	НайденныеОбъекты.Clear();
+
+Procedure ClearResults()
+	FoundObjects.Clear();
 EndProcedure
 
 // () 
 &AtServer
 Procedure OnLoadDataFromSettingsAtServer(Settings)
-	МассивСтрокКУдалению=New Array;
-	МетаданныеОбъектов=Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
+	
+	ArrayOfStringsToDelete = New Array;
+	MetadataObjects = Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
 
-	For Each СтрокаТаблицы In ТабличноеПолеВидыОбъектов Do
-		МассивИмени=StrSplit(СтрокаТаблицы.TableName, ".");
+	For Each RowTable In TableFieldTypesObjects Do
+		ArrayName = StrSplit(RowTable.TableName, ".");
 
-		ИмяВида=МассивИмени[0];
-		If МетаданныеОбъектов.Find(ИмяВида) = Undefined Then
-			МассивСтрокКУдалению.Add(СтрокаТаблицы);
+		KindName = ArrayName[0];
+		If MetadataObjects.Find(KindName) = Undefined Then
+			ArrayOfStringsToDelete.Add(RowTable);
 		EndIf;
 	EndDo;
 	
-	//Удаляем того что сейчас не можем обработать
-	For Each УдаляемаяСтрока In МассивСтрокКУдалению Do
-		ТабличноеПолеВидыОбъектов.Delete(УдаляемаяСтрока);
+	// Delete what we can't process now
+	For Each StringToRemove In ArrayOfStringsToDelete Do
+		TableFieldTypesObjects.Delete(StringToRemove);
 	EndDo;
 
-	ИнициализацияЗапроса();
+	QueryInitialization();
 	FormAttributeToValue("Object").DownloadDataProcessors(ThisForm, AvailableDataProcessors, SelectedDataProcessors);
 
 EndProcedure
 
 &AtClient
-Procedure ОбрабатыватьТабличныеЧастиПриИзменении(Item)
-	ПроверкаНеобходимостиОчищатьРезультаты(New NotifyDescription("ОбрабатыватьТабличныеЧастиПриИзмененииЗавершение",
+Procedure ProcessTabularPartsOnChange(Item)
+	CheckNecessaryClearResults(New NotifyDescription("ProcessTabularPartsOnChangeEnd",
 		ThisObject, New Structure("Item", Item)));
 EndProcedure
 
 &AtClient
-Procedure ОбрабатыватьТабличныеЧастиПриИзмененииЗавершение(Result, AdditionalParameters) Export
-	Item=AdditionalParameters.Item;
+Procedure ProcessTabularPartsOnChangeEnd(Result, AdditionalParameters) Export
+	
+	Item = AdditionalParameters.Item;
 	If Result Then
-		ТабличноеПолеВидыОбъектов.Clear();
-		ИнициализацияЗапроса();
+		TableFieldTypesObjects.Clear();
+		QueryInitialization();
 	Else
 		Item.Value = Not Item.Value;
 	EndIf;
+	
 EndProcedure
 
 &AtClient
-Procedure ТипОбъектаПриИзменении(Item)
-	ТабличноеПолеВидыОбъектов.Clear();
-	ИнициализацияЗапроса();
+Procedure ObjectTypeOnChange(Item)
+	
+	TableFieldTypesObjects.Clear();
+	QueryInitialization();
+	
 EndProcedure
 
 &AtClient
-Procedure НайденныеОбъектыВыбор(Item, SelectedRow, Field, StandardProcessing)
-	ДанныеТекущейСтроки=НайденныеОбъекты.FindByID(SelectedRow);
-	ShowValue(Undefined, ДанныеТекущейСтроки.Object);
+Procedure FoundObjectsSelection(Item, SelectedRow, Field, StandardProcessing)
+	
+	CurrentData = FoundObjects.FindByID(SelectedRow);
+	ShowValue(Undefined, CurrentData.Object);
+	
 EndProcedure
 
 //@skip-warning
@@ -1763,13 +1820,15 @@ Procedure Attachable_SetWriteSettings(Command)
 EndProcedure
 
 &AtClient
-Procedure РедактироватьОбъект(Command)
-	ТекДанные=Items.НайденныеОбъекты.CurrentData;
-	If ТекДанные = Undefined Then
+Procedure EditObject(Command)
+	
+	CurrentData = Items.FoundObjects.CurrentData;
+	If CurrentData = Undefined Then
 		Return;
 	EndIf;
 
-	UT_CommonClient.EditObject(ТекДанные.Object);
+	UT_CommonClient.EditObject(CurrentData.Object);
+	
 EndProcedure
 
 &AtClient

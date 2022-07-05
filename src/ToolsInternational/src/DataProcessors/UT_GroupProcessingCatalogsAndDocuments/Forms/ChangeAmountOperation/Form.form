@@ -5,7 +5,7 @@
     <value>Изменить сумму операции</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>ТекущаяНастройка</name>
+    <name>CurrentSetting</name>
     <id>1</id>
     <title>
       <key>ru</key>
@@ -18,15 +18,15 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ТекущаяНастройкаПредставление</segments>
+        <segments>CurrentSettingRepresentation</segments>
       </paths>
     </dataPath>
     <handlers>
       <event>OnChange</event>
-      <name>ТекущаяНастройкаПриИзменении</name>
+      <name>CurrentSettingOnChange</name>
     </handlers>
     <extendedTooltip>
-      <name>ТекущаяНастройкаExtendedTooltip</name>
+      <name>CurrentSettingExtendedTooltip</name>
       <id>16</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -41,7 +41,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ТекущаяНастройкаКонтекстноеМеню</name>
+      <name>CurrentSettingContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -58,7 +58,7 @@
     <extInfo xsi:type="form:InputFieldExtInfo">
       <handlers>
         <event>ChoiceProcessing</event>
-        <name>ТекущаяНастройкаОбработкаВыбора</name>
+        <name>CurrentSettingChoiceProcessing</name>
       </handlers>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -72,7 +72,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>ТекущийРеквизит</name>
+    <name>CurrentAttribute</name>
     <id>9</id>
     <title>
       <key>ru</key>
@@ -85,11 +85,11 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ТекущийРеквизит</segments>
+        <segments>CurrentAttribute</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>ТекущийРеквизитExtendedTooltip</name>
+      <name>CurrentAttributeExtendedTooltip</name>
       <id>17</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -104,7 +104,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ТекущийРеквизитКонтекстноеМеню</name>
+      <name>CurrentAttributeContextMenu</name>
       <id>10</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -129,10 +129,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ВыборДействия</name>
+    <name>TypeOfAction</name>
     <id>13</id>
     <items xsi:type="form:FormField">
-      <name>ВидДействияНадСуммой</name>
+      <name>TypeOfActionOnTheAmount</name>
       <id>11</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -141,11 +141,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ВидДействияНадСуммой</segments>
+          <segments>TypeOfActionOnTheAmount</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>ВидДействияНадСуммойExtendedTooltip</name>
+        <name>TypeOfActionOnTheAmountExtendedTooltip</name>
         <id>19</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -160,7 +160,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ВидДействияНадСуммойКонтекстноеМеню</name>
+        <name>TypeOfActionOnTheAmountContextMenu</name>
         <id>12</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -233,7 +233,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>ПараметрДействия</name>
+      <name>ActionParameter</name>
       <id>14</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -242,11 +242,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ПараметрДействия</segments>
+          <segments>ActionParameter</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>ПараметрДействияExtendedTooltip</name>
+        <name>ActionParameterExtendedTooltip</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -261,7 +261,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрДействияКонтекстноеМеню</name>
+        <name>ActionParameterContextMenu</name>
         <id>15</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -293,12 +293,16 @@
       <key>ru</key>
       <value>Выбор действия</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Type of action</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Выбор действия</value>
     </toolTip>
     <extendedTooltip>
-      <name>ВыборДействияExtendedTooltip</name>
+      <name>TypeOfActionExtendedTooltip</name>
       <id>18</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -321,10 +325,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКнопки</name>
+    <name>GroupCommand</name>
     <id>5</id>
     <items xsi:type="form:Button">
-      <name>ВыполнитьОбработку</name>
+      <name>ExecuteCommand</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -334,7 +338,7 @@
       <defaultItem>true</defaultItem>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>ВыполнитьОбработкуExtendedTooltip</name>
+        <name>ExecuteCommandExtendedTooltip</name>
         <id>22</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -348,7 +352,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ВыполнитьКоманду</commandName>
+      <commandName>Form.Command.ExecuteCommand</commandName>
       <representation>Auto</representation>
       <defaultButton>true</defaultButton>
       <autoMaxWidth>true</autoMaxWidth>
@@ -357,7 +361,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>СохранитьНастройки</name>
+      <name>SaveSettings</name>
       <id>7</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -366,7 +370,7 @@
       </userVisible>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>СохранитьНастройкиExtendedTooltip</name>
+        <name>SaveSettingsExtendedTooltip</name>
         <id>23</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -380,7 +384,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.СохранитьНастройки</commandName>
+      <commandName>Form.Command.SaveSettings</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -388,7 +392,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Закрыть</name>
+      <name>Close</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -397,7 +401,7 @@
       </userVisible>
       <skipOnInput>false</skipOnInput>
       <extendedTooltip>
-        <name>ЗакрытьExtendedTooltip</name>
+        <name>CloseExtendedTooltip</name>
         <id>24</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -427,12 +431,16 @@
       <key>ru</key>
       <value>Группа кнопки</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Group command</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа кнопки</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаКнопкиExtendedTooltip</name>
+      <name>GroupCommandExtendedTooltip</name>
       <id>21</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -464,11 +472,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -479,10 +487,14 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>ОбъектОбработки</name>
+    <name>Object</name>
     <title>
       <key>ru</key>
       <value>Объект обработки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Object</value>
     </title>
     <id>1</id>
     <valueType>
@@ -497,10 +509,14 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ТекущаяНастройка</name>
+    <name>CurrentSetting</name>
     <title>
       <key>ru</key>
       <value>Текущая настройка</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current setting</value>
     </title>
     <id>3</id>
     <valueType/>
@@ -512,10 +528,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>НайденныеОбъекты</name>
+    <name>FoundObjects</name>
     <title>
       <key>ru</key>
       <value>Найденные объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Found objects</value>
     </title>
     <id>5</id>
     <valueType>
@@ -532,10 +552,14 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ТекущаяНастройкаПредставление</name>
+    <name>CurrentSettingRepresentation</name>
     <title>
       <key>ru</key>
       <value>Текущая настройка представление</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current setting representation</value>
     </title>
     <id>6</id>
     <valueType>
@@ -550,10 +574,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ТекущаяСтрока</name>
+    <name>CurrentLine</name>
     <title>
       <key>ru</key>
       <value>Текущая строка</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current line</value>
     </title>
     <id>4</id>
     <valueType>
@@ -570,10 +598,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Родитель</name>
+    <name>Parent</name>
     <title>
       <key>ru</key>
       <value>Родитель</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Parent</value>
     </title>
     <id>2</id>
     <valueType>
@@ -591,10 +623,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОбъектПоиска</name>
+    <name>SearchObject</name>
     <title>
       <key>ru</key>
       <value>Объект поиска</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Search object</value>
     </title>
     <id>7</id>
     <valueType/>
@@ -606,10 +642,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>НайденныеОбъектыТЧ</name>
+    <name>FoundObjectsTP</name>
     <title>
       <key>ru</key>
       <value>Найденные объекты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Found objects TP</value>
     </title>
     <id>8</id>
     <valueType>
@@ -622,10 +662,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Объект</name>
+      <name>Object</name>
       <title>
         <key>ru</key>
         <value>Объект</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Object</value>
       </title>
       <id>1</id>
       <valueType/>
@@ -637,10 +681,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Т_ТЧ</name>
+      <name>T_TP</name>
       <title>
         <key>ru</key>
         <value>Т ТЧ</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>T TP</value>
       </title>
       <id>2</id>
       <valueType>
@@ -655,10 +703,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Т_НомерСтроки</name>
+      <name>T_LineNumber</name>
       <title>
         <key>ru</key>
         <value>Т номер строки</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>T line number</value>
       </title>
       <id>3</id>
       <valueType>
@@ -675,10 +727,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Выбрать</name>
+      <name>Choose</name>
       <title>
         <key>ru</key>
         <value>Выбрать</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Choose</value>
       </title>
       <id>4</id>
       <valueType>
@@ -693,10 +749,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>Реквизиты</name>
+    <name>Attributes</name>
     <title>
       <key>ru</key>
       <value>Реквизиты</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Attributes</value>
     </title>
     <id>9</id>
     <valueType>
@@ -709,10 +769,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Реквизит</name>
+      <name>Attribute</name>
       <title>
         <key>ru</key>
         <value>Реквизит</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Attribute</value>
       </title>
       <id>1</id>
       <valueType>
@@ -727,10 +791,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Идентификатор</name>
+      <name>ID</name>
       <title>
         <key>ru</key>
         <value>Идентификатор</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>ID</value>
       </title>
       <id>2</id>
       <valueType>
@@ -745,10 +813,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Тип</name>
+      <name>Type</name>
       <title>
         <key>ru</key>
         <value>Тип</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Type</value>
       </title>
       <id>3</id>
       <valueType>
@@ -762,10 +834,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Значение</name>
+      <name>Value</name>
       <title>
         <key>ru</key>
         <value>Значение</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Value</value>
       </title>
       <id>4</id>
       <valueType>
@@ -791,10 +867,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Выбрать</name>
+      <name>Choose</name>
       <title>
         <key>ru</key>
         <value>Выбрать</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Choose</value>
       </title>
       <id>5</id>
       <valueType>
@@ -808,10 +888,14 @@
       </edit>
     </columns>
     <columns>
-      <name>РеквизитТЧ</name>
+      <name>AttributeTP</name>
       <title>
         <key>ru</key>
         <value>Реквизит ТЧ</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Attribute TP</value>
       </title>
       <id>6</id>
       <valueType>
@@ -826,10 +910,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ТекущийРеквизит</name>
+    <name>CurrentAttribute</name>
     <title>
       <key>ru</key>
       <value>Текущий реквизит</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Current attribute</value>
     </title>
     <id>10</id>
     <valueType/>
@@ -841,10 +929,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ВидДействияНадСуммой</name>
+    <name>TypeOfActionOnTheAmount</name>
     <title>
       <key>ru</key>
       <value>Вид действия над суммой</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Type of action on the amount</value>
     </title>
     <id>11</id>
     <valueType>
@@ -861,10 +953,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПараметрДействия</name>
+    <name>ActionParameter</name>
     <title>
       <key>ru</key>
       <value>Параметр действия</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Action parameter</value>
     </title>
     <id>12</id>
     <valueType>
@@ -882,10 +978,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ОбрабатыватьТабличныеЧасти</name>
+    <name>ProcessTabularParts</name>
     <title>
       <key>ru</key>
       <value>Обрабатывать табличные части</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Process tabular parts</value>
     </title>
     <id>13</id>
     <valueType>
@@ -899,10 +999,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>ВыполнитьКоманду</name>
+    <name>ExecuteCommand</name>
     <title>
       <key>ru</key>
       <value>Выполнить</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Execute command</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -918,17 +1022,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьОбработкуКоманда</name>
+        <name>ExecuteCommand</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СохранитьНастройки</name>
+    <name>SaveSettings</name>
     <title>
       <key>ru</key>
       <value>Сохранить настройки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Save settings</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -943,7 +1051,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>СохранитьНастройкиКоманда</name>
+        <name>SaveSettings</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

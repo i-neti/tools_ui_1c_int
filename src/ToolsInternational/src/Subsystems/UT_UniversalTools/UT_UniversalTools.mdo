@@ -30,7 +30,7 @@
   <content>Report.UT_ReportsConsole</content>
   <content>DataProcessor.UT_DynamicList</content>
   <content>DataProcessor.UT_HTTPRequestConsole</content>
-  <content>DataProcessor.УИ_ВыгрузкаЗагрузкаДанныхXMLСФильтрами</content>
+  <content>DataProcessor.UT_ExportImportDataXMLWithFilters</content>
   <content>CommonPicture.UT_UniversalToolsSybsystem</content>
   <content>CommonPicture.UT_ExecuteScheduledJobManually</content>
   <content>CommonPicture.UT_ExchangePlanStates</content>
@@ -69,17 +69,17 @@
   <content>CommonModule.UT_AlgorithmsClientServer</content>
   <content>CommonModule.UT_HTTPConnector</content>
   <content>CommonModule.UT_</content>
-  <content>DataProcessor.УИ_НавигаторПоКонфигурации</content>
+  <content>DataProcessor.UT_ConfigurationNavigator</content>
   <content>DataProcessor.УИ_КонструкторРегулярныхВыражений</content>
   <content>DataProcessor.UT_FileManager</content>
   <content>DataProcessor.UT_LicenseInformation1C</content>
-  <content>DataProcessor.УИ_КонсольСравненияДанных</content>
+  <content>DataProcessor.UT_ConsoleComparisonData</content>
   <content>DataProcessor.UT_ConsoleWebServices</content>
   <content>DataProcessor.UT_ImportDataFromSpreadsheetDocument</content>
   <content>DataProcessor.UT_SettingsStoragesManager</content>
   <content>DataProcessor.UT_JSONEditor</content>
   <content>DataProcessor.UT_HTMLEditor</content>
-  <content>DataProcessor.UT_UniversalXMLDataExchange</content>
+  <content>DataProcessor.UT_UniversalDataExchangeXML</content>
   <content>CommonModule.UT_RegexpsClientServer</content>
   <content>CommonModule.UT_CodeEditorServer</content>
   <content>CommonModule.UT_CodeEditorClient</content>
