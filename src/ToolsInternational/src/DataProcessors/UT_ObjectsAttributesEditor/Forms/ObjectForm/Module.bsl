@@ -1,2435 +1,2437 @@
-&НаКлиенте
-Var мТипХЗ;
+&AtClient
+Var mTypeVS;
 
-&НаКлиенте
-Var мТипUUID;
+&AtClient
+Var mTypeUUID;
 
-&НаКлиенте
-Var мПоследнийUUID;
-&НаСервере
-Функция вПолучитьОбработку()
-	Возврат РеквизитФормыВЗначение("Объект");
-КонецФункции
+&AtClient
+Var mLastUUID;
+&AtServer
+Function vGetDataProcessor()
+	Return FormAttributeToValue("Object");
+EndFunction
 
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
-	ПутьКФормам = вПолучитьОбработку().Метаданные().ПолноеИмя() + ".Форма.";
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	FormsPath = vGetDataProcessor().Metadata().FullName() + ".Form.";
 
-	_ПрефиксДляНовыхЭлементов = "__XXX__";
-	_ТипОбъекта = "";
-	_ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки = Истина;
-	_КонфигурацияДопускаетДопДвижения = (Метаданные.Документы.Найти("РегистраторРасчетов") <> Неопределено);
-	мОбъектСсылкаПредыдущий = Неопределено;
+	_PrefixForNewItems = "__XXX__";
+	_ObjectType = "";
+	_ProcessOnlySelectedRows = True;
+	_ConfigurationAllowsAdditionalRecords = (Metadata.Documents.Find("CalculationRecorder") <> Undefined);
+	mPreviousObjectRef = Undefined;
 
-	Элементы.СтрДвиженияДокумента.Видимость = Ложь;
-	Элементы._ОткрытьРедакторДвиженийДоп.Видимость = Ложь;
+	Items.DocumentRecordsPage.Visible = False;
+	Items._OpenAdditionalRecordsEditor.Visible = False;
 
-	Если Не UT_Users.IsFullUser() Тогда
-		Элементы.Форма_УдалитьОбъект.Видимость = Ложь;
-	КонецЕсли;
+	If Not UT_Users.IsFullUser() Then
+		Items.Form_DeleteObject.Visible = False;
+	EndIf;
 
-	Если Параметры.Свойство("mObjectRef") Тогда
-		mObjectRef = Параметры.mObjectRef;
-	ИначеЕсли Параметры.Свойство("ДанныеОтладки") Тогда
-		ДанныеДляОтладки = ПолучитьИзВременногоХранилища(Параметры.ДанныеОтладки);
-		mObjectRef = ДанныеДляОтладки.Объект;
+	If Parameters.Property("mObjectRef") Then
+		mObjectRef = Parameters.mObjectRef;
+	ElsIf Parameters.Property("DebugData") Then
+		DataToDebug = GetFromTempStorage(Parameters.DebugData);
+		mObjectRef = DataToDebug.Object;
 
-	КонецЕсли;
+	EndIf;
 
-	UT_Forms.CreateWriteParametersAttributesFormOnCreateAtServer(ЭтотОбъект,
-		Элементы.ГруппаПараметрыЗаписи);
-	UT_Common.ToolFormOnCreateAtServer(ЭтотОбъект, Отказ, СтандартнаяОбработка);
-КонецПроцедуры
+	UT_Forms.CreateWriteParametersAttributesFormOnCreateAtServer(ThisObject,
+		Items.WriteParametersGroup);
+	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
+EndProcedure
 
-&НаКлиенте
-Процедура ПриОткрытии(Отказ)
-	мТипХЗ = Тип("ХранилищеЗначения");
-	мТипUUID = Тип("УникальныйИдентификатор");
+&AtClient
+Procedure OnOpen(Cancel)
+	mTypeVS = Type("ValueStorage");
+	mTypeUUID = Type("UUID");
 
-	ОбновитьДанныеОбъекта(Неопределено);
-КонецПроцедуры
+	RefreshObjectData(Undefined);
+EndProcedure
 
-&НаКлиенте
-Процедура мОбъектСсылкаНачалоВыбора(Элемент, ДанныеВыбора, СтандартнаяОбработка)
-	Если mObjectRef = Неопределено Тогда
-		СтандартнаяОбработка = Ложь;
-		СтрукПарам = Новый Структура("CloseOnOwnerClose", Истина);
-		ОткрытьФорму("CommonForm.UT_MetadataSelectionForm", СтрукПарам, Элемент, , , , ,
-			РежимОткрытияОкнаФормы.БлокироватьОкноВладельца);
-	Иначе
-		Массив = Новый Массив;
-		Массив.Добавить(ТипЗнч(mObjectRef));
-		Элемент.ОграничениеТипа = Новый ОписаниеТипов(Массив);
+&AtClient
+Procedure mObjectRefStartChoice(Item, ChoiceData, StandardProcessing)
+	If mObjectRef = Undefined Then
+		StandardProcessing = False;
+		ParamStruct = New Structure("CloseOnOwnerClose", True);
+		OpenForm("CommonForm.UT_MetadataSelectionForm", ParamStruct, Item, , , , ,
+			FormWindowOpeningMode.LockOwnerWindow);
+	Else
+		Array = New Array;
+		Array.Add(TypeOf(mObjectRef));
+		Item.TypeRestriction = New TypeDescription(Array);
 
-		Если _ИспользоватьНеСтандартнуюФормуДляВыбора Тогда
-			СтандартнаяОбработка = Ложь;
-			пПолноеИмя = вПолучитьПолноеИмяМД(mObjectRef);
-			СтрукПараметры = Новый Структура("MetadataObjectName", пПолноеИмя);
-			СтрукПараметры.Вставить("ChoiceMode", Истина);
-			Попытка
-				ОткрытьФорму("DataProcessor.UT_DynamicList.Form", СтрукПараметры, Элемент, Истина, , , ,
-					РежимОткрытияОкнаФормы.БлокироватьОкноВладельца);
-			Исключение
-				пОписаниеОшибки = ОписаниеОшибки();
-				СтандартнаяОбработка = Истина;
-			КонецПопытки;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+		If _UseNonStandardFormToSelect Then
+			StandardProcessing = False;
+			pFullName = vGetFullNameMD(mObjectRef);
+			ParametersStruct = New Structure("MetadataObjectName", pFullName);
+			ParametersStruct.Insert("ChoiceMode", True);
+			Try
+				OpenForm("DataProcessor.UT_DynamicList.Form", ParamStruct, Item, True, , , ,
+					FormWindowOpeningMode.LockOwnerWindow);
+			Except
+				pErrorDescription = ErrorDescription();
+				StandardProcessing = True;
+			EndTry;
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура мОбъектСсылкаПриИзменении(Элемент)
-	ЭтаФорма.КлючУникальности = mObjectRef;
+&AtClient
+Procedure mObjectRefOnChange(Item)
+	ThisForm.UniqueKey = mObjectRef;
 
 	_URL = "";
 
-	If mObjectRef <> Неопределено Тогда
+	If mObjectRef <> Undefined Then
 		_UUID = "";
-	КонецЕсли;
+	EndIf;
 
-	ОбновитьДанныеОбъекта(Неопределено);
-КонецПроцедуры
+	RefreshObjectData(Undefined);
+EndProcedure
 
-&НаКлиенте
-Процедура мОбъектСсылкаОчистка(Элемент, СтандартнаяОбработка)
-	Элемент.ОграничениеТипа = Новый ОписаниеТипов;
-КонецПроцедуры
+&AtClient
+Procedure mObjectRefClearing(Item, StandardProcessing)
+	Item.TypeRestriction = New TypeDescription;
+EndProcedure
 
-&НаКлиенте
-Процедура _ВыбратьУдаленныйОбъект(Команда)
-	ПоказатьВводСтроки(Новый ОписаниеОповещения("вОбработатьВводСтроки_ОбъектНеНайден", ЭтаФорма), ,
-		NSTR("ru = 'Введите битую ссылку: <Объект не найден> ... ';en = 'Enter the broken ref: <Object not found> ...'"), , Ложь);
-КонецПроцедуры
+&AtClient
+Procedure _SelectDeletedObject(Command)
+	ShowInputString(New NotifyDescription("vProcessInputString_ObjectNotFound", ThisForm), ,
+		NSTR("ru = 'Введите битую ссылку: <Объект не найден> ... ';en = 'Enter the broken ref: <Object not found> ...'"), , False);
+EndProcedure
 
-&НаКлиенте
-Процедура вОбработатьВводСтроки_ОбъектНеНайден(Строка, ДопПарам = Неопределено) Экспорт
-	Если Строка <> Неопределено И Не ПустаяСтрока(Строка) Тогда
-		пСтрук = вПолучитьСсылкуНаУдаленныйОбъект(Строка);
-		Если Не пСтрук.Отказ Тогда
-			mObjectRef = пСтрук.Ссылка;
-			ОбновитьДанныеОбъекта(Неопределено);
-		ИначеЕсли Не ПустаяСтрока(пСтрук.ПричинаОтказа) Тогда
-			Сообщить(пСтрук.ПричинаОтказа);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure vProcessInputString_ObjectNotFound(String, AddParam = Undefined) Export
+	If String <> Undefined And Not IsBlankString(String) Then
+		pStruct = vGetRemoteObjectRef(String);
+		If Not pStruct.Cancel Then
+			mObjectRef = pStruct.Ref;
+			RefreshObjectData(Undefined);
+		ElsIf Not IsBlankString(pStruct.CancelCause) Then
+			Message(pStruct.CancelCause);
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура _URLПриИзменении(Элемент)
-	Если Не ПустаяСтрока(_URL) Тогда
-		НайтиОбъектПоURL(Неопределено);
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure _URLOnChange(Item)
+	If Not IsBlankString(_URL) Then
+		FindObjectByURL(Undefined);
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура _ИмяНабораЗаписейПриИзменении(Элемент)
-	вОбновитьНаборЗаписей();
-КонецПроцедуры
+&AtClient
+Procedure _RecordSetNameOnChange(Item)
+	vRefreshRecordSet();
+EndProcedure
 
-&НаКлиенте
-Процедура ОбновитьДанныеОбъекта(Команда)
-	вОбновитьДанныеОбъекта();
-КонецПроцедуры
+&AtClient
+Procedure RefreshObjectData(Command)
+	vRefreshObjectData();
+EndProcedure
 
-&НаКлиенте
-Процедура _ЗаполнитьПоОбразцу(Команда)
-	Если mObjectRef = Неопределено Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан объект для обработки!';en = 'No object has been set for processing!'"), 20);
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure _FillBySample(Command)
+	If mObjectRef = Undefined Then
+		ShowMessageBox( , NSTR("ru = 'Не задан объект для обработки!';en = 'No object has been set for processing!'"), 20);
+		Return;
+	EndIf;
 
-	пПолноеИмя = вПолучитьПолноеИмяМД(mObjectRef);
-	ОткрытьФорму(пПолноеИмя + ".ChoiceForm", , , , , ,
-		Новый ОписаниеОповещения("вОбработатьВыборОбразцаДляЗаполнения", ЭтаФорма),
-		РежимОткрытияОкнаФормы.БлокироватьОкноВладельца);
-КонецПроцедуры
+	pFullName = vGetFullNameMD(mObjectRef);
+	OpenForm(pFullName + ".ChoiceForm", , , , , ,
+		New NotifyDescription("pProcessFillingSampleSelection", ThisForm),
+		FormWindowOpeningMode.LockOwnerWindow);
+EndProcedure
 
-&НаКлиенте
-Процедура вОбработатьВыборОбразцаДляЗаполнения(РезультатЗакрытия, ДопПарам = Неопределено) Экспорт
-	Если РезультатЗакрытия <> Неопределено Тогда
-		пОбъектСсылка = mObjectRef;
-		mObjectRef = РезультатЗакрытия;
+&AtClient
+Procedure pProcessFillingSampleSelection(ClosingResult, AddParam = Undefined) Export
+	If ClosingResult <> Undefined Then
+		pObjectRef = mObjectRef;
+		mObjectRef = ClosingResult;
 
-		Попытка
-			вОбновитьДанныеОбъекта();
-		Исключение
-		КонецПопытки;
+		Try
+			vRefreshObjectData();
+		Except
+		EndTry;
 
-		mObjectRef = пОбъектСсылка;
-		_UUID = mObjectRef.УникальныйИдентификатор();
-		_URL  = вПолучитьНавигационнуюСсылку(mObjectRef);
-	КонецЕсли;
-КонецПроцедуры
-&НаКлиенте
-Процедура ЗаписатьОбъект(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан объект для записи!';en = 'Not set object for write!'"), 20);
-		Возврат;
-	КонецЕсли;
-	ПоказатьВопрос(Новый ОписаниеОповещения("ЗаписатьОбъектДалее", ЭтаФорма),
-		NSTR("ru = 'Объект будет записан в базу. Продолжить?';en = 'Object will be writed to the database. Continue?'"), РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
+		mObjectRef = pObjectRef;
+		_UUID = mObjectRef.UUID();
+		_URL  = vGetURL(mObjectRef);
+	EndIf;
+EndProcedure
+&AtClient
+Procedure WriteObject(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан объект для записи!';en = 'Not set object for write!'"), 20);
+		Return;
+	EndIf;
+	ShowQueryBox(New NotifyDescription("WriteObjectNext", ThisForm),
+		NSTR("ru = 'Объект будет записан в базу. Продолжить?';en = 'Object will be writed to the database. Continue?'"), QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
 
-&НаКлиенте
-Процедура _ЗаписатьОбъектКакНовый(Команда)
-	Если mObjectRef = Неопределено Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не заданы данные объекта для записи!';en = 'Object data is not set for recording!'"), 20);
-		Возврат;
-	КонецЕсли;
-	ПоказатьВопрос(Новый ОписаниеОповещения("ЗаписатьОбъектКакНовыйДалее", ЭтаФорма),
-		NSTR("ru = 'В базу будет записан новый объект. Продолжить?';en = 'New object will be written to database. Continue?'"), РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
+&AtClient
+Procedure _WriteObjectAsNew(Command)
+	If mObjectRef = Undefined Then
+		ShowMessageBox( , NSTR("ru = 'Не заданы данные объекта для записи!';en = 'Object data is not set for recording!'"), 20);
+		Return;
+	EndIf;
+	ShowQueryBox(New NotifyDescription("WriteObjectAsNewNext", ThisForm),
+		NSTR("ru = 'В базу будет записан New объект. Продолжить?';en = 'New object will be written to database. Continue?'"), QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
 
-&НаКлиенте
-Процедура _ЗаписатьОбъектКакНовыйСУказаннымUUID(Команда)
-	Если mObjectRef = Неопределено Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не заданы данные объекта для записи!';en = 'Object data is not set for recording!'"), 20);
-		Возврат;
-	ИначеЕсли ПустаяСтрока(_UUID) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан UUID для нового объекта!';en = 'UUID for new object is not set!'"), 20);
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure _WriteObjectAsNewWithSpecifiedUUID(Command)
+	If mObjectRef = Undefined Then
+		ShowMessageBox( , NSTR("ru = 'Не заданы данные объекта для записи!';en = 'Object data is not set for recording!'"), 20);
+		Return;
+	ElsIf IsBlankString(_UUID) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан UUID для нового объекта!';en = 'UUID for new object is not set!'"), 20);
+		Return;
+	EndIf;
 
-		пТекст =	StrTemplate(NSTR("ru = 'В базу будет записан новый объект с заданным UUID.
+		pText =	StrTemplate(NSTR("ru = 'В базу будет записан New объект с заданным UUID.
 							 |UUID: %1
 							 |
 							 |Продолжить?';en = 'New object with  specified UUID will be written to database.
 							 |UUID: %1
 							 |
 							 |Continue?'"),_UUID);
-	ПоказатьВопрос(Новый ОписаниеОповещения("ЗаписатьОбъектКакНовыйДалее", ЭтаФорма, _UUID), пТекст,
-		РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
+	ShowQueryBox(New NotifyDescription("WriteObjectAsNewNext", ThisForm, _UUID), pText,
+		QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
 
-&НаКлиенте
-Процедура _УдалитьОбъект(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( ,NSTR("ru = 'Не задан объект для удаления!';en = 'Object to delete is not specified!'") , 20);
-		Возврат;
-	КонецЕсли;
-	ТекстВопроса = NSTR("ru = 'Объект будет удален из базы!
+&AtClient
+Procedure _DeleteObject(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( ,NSTR("ru = 'Не задан объект для удаления!';en = 'Object to delete is not specified!'") , 20);
+		Return;
+	EndIf;
+	QueryText = NSTR("ru = 'Объект будет удален из базы!
 				  |Никакие проверки производиться не будут (возможно появление битых ссылок)!
 				  |
 				  |Продолжить?';en = 'The object will be deleted from the database!
-				|No checks will be performed (broken  references may appear)!
+				  |No checks will be performed (broken  references may appear)!
 				  |
-|Continue?'");
-	ПоказатьВопрос(Новый ОписаниеОповещения("УдалитьОбъектДалее", ЭтаФорма), ТекстВопроса,
-		РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ЗаписатьОбъектДалее(РезультатВопроса, ДопПараметры) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		Если вЗаписатьОбъект(Ложь) Тогда
-			ОтобразитьИзменениеДанных(mObjectRef, ВидИзмененияДанных.Изменение);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ЗаписатьОбъектКакНовыйДалее(РезультатВопроса, ДопПараметры = Неопределено) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		Если вЗаписатьОбъект(Истина, ДопПараметры) Тогда
-			ОтобразитьИзменениеДанных(mObjectRef, ВидИзмененияДанных.Добавление);
-			Если ДопПараметры <> Неопределено Тогда
-				ОтобразитьИзменениеДанных(mObjectRef, ВидИзмененияДанных.Изменение);
-				//ПоказатьПредупреждение(,"Объект успешно записан!
-				//|Для отображения новой ссылки необходимо перевыбрать объект.", 20);
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура УдалитьОбъектДалее(РезультатВопроса, ДопПараметры) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		пМассив = Новый Массив;
-		пМассив.Добавить(ТипЗнч(mObjectRef));
-		пОписаниеТипов = Новый ОписаниеТипов(пМассив);
-
-		Если вУдалитьОбъектНаСервере(mObjectRef) Тогда
-			ОтобразитьИзменениеДанных(mObjectRef, ВидИзмененияДанных.Удаление);
-			mObjectRef = пОписаниеТипов.ПривестиЗначение();
-			ОбновитьДанныеОбъекта(Неопределено);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ПереключитьАктивностьЗаписей(Команда)
-	Для Каждого Стр Из _НаборЗаписей Цикл
-		Стр.Активность = Не Стр.Активность;
-	КонецЦикла;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ОбновитьНаборЗаписей(Команда)
-	вОбновитьНаборЗаписей();
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ЗаписатьНаборЗаписей(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан объект для записи движений';en = 'Object for write records is not specified'"), 20);
-		Возврат;
-	КонецЕсли;
-	Если ПустаяСтрока(_ИмяНабораЗаписей) Тогда
-		ПоказатьПредупреждение( , "ru = 'Не задан набор записей для сохранения';en = 'Recordset for save records is not set'", 20);
-		Возврат;
-	КонецЕсли;
-	ПоказатьВопрос(Новый ОписаниеОповещения("_ЗаписатьНаборЗаписейДалее", ЭтаФорма),
-		NSTR("ru = 'Набор записей будет записан в базу. Продолжить?';en = 'Recordset will be saved to database. Continue?'"), РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ЗаписатьНаборЗаписейДалее(РезультатВопроса, ДопПараметры) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		вЗаписатьНаборЗаписей();
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ПоказатьВсеДвижения(Команда)
-	Если ЗначениеЗаполнено(mObjectRef) Тогда
-		СписокРегистров = Элементы._ИмяНабораЗаписей.СписокВыбора.Скопировать();
-		Если СписокРегистров.Количество() <> 0 Тогда
-			ТДок = вСформироватьОтчетПоДвижениям(mObjectRef, СписокРегистров, _КонфигурацияДопускаетДопДвижения);
-			ТДок.Показать(NSTR("ru = 'Наличие движений';en = 'Records existence'"));
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НайтиОбъектПоUUID(Команда)
-	НайтиОбъектПоUUIDСервер();
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НайтиОбъектПоТипу_UUID(Команда)
-	НайтиОбъектПоТипу_UUIDСервер();
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НайтиОбъектПоURL(Команда)
-	Значение = вНайтиОбъектПоURL(_URL);
-
-	Если mObjectRef <> Значение Тогда
-		mObjectRef = Значение;
-		ОбновитьДанныеОбъекта(Неопределено);
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ОткрытьФормуСписка(Команда)
-	Если mObjectRef <> Неопределено Тогда
-		пПолноеИмя = вПолучитьПолноеИмяМД(mObjectRef);
-		UT_CommonClient.ОpenDynamicList(пПолноеИмя);
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОткрытьОбъект(Команда)
-	Значение = Неопределено;
-
-	ЭФ = ЭтаФорма.ТекущийЭлемент;
-
-	Имя = вПолучитьПутьКДаннымТекущегоЭлемента();
-	Если Не ЗначениеЗаполнено(Имя) Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если ТипЗнч(ЭФ) = Тип("ПолеФормы") Тогда
-		Значение = ЭтаФорма[Имя];
-	ИначеЕсли ТипЗнч(ЭФ) = Тип("ТаблицаФормы") Тогда
-		ТекДанные = ЭФ.ТекущиеДанные;
-		Если ТекДанные <> Неопределено Тогда
-			Если ЭФ.Имя = "РеквизитыОбъекта" Тогда
-				Значение = ТекДанные.Значение;
-			Иначе
-				Значение = ТекДанные[Имя];
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-
-	Если ЗначениеЗаполнено(Значение) Тогда
-		Если ТипЗнч(Значение) = мТипХЗ Тогда
-			вПоказатьЗначениеХЗ(Значение);
-
-		ИначеЕсли вЭтоОбъектМетаданных(ТипЗнч(Значение)) Тогда
-			UT_CommonClient.EditObject(Значение);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _ПоказатьТипЗначения(Команда)
-	_ТипЗначенияТекущегоПоля = "";
-
-	Значение = Неопределено;
-
-	ЭФ = ЭтаФорма.ТекущийЭлемент;
-
-	Имя = вПолучитьПутьКДаннымТекущегоЭлемента();
-	Если Не ЗначениеЗаполнено(Имя) Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если ТипЗнч(ЭФ) = Тип("ПолеФормы") Тогда
-		Значение = ЭтаФорма[Имя];
-	ИначеЕсли ТипЗнч(ЭФ) = Тип("ТаблицаФормы") Тогда
-		ТекДанные = ЭФ.ТекущиеДанные;
-		Если ТекДанные <> Неопределено Тогда
-			Если ЭФ.Имя = "РеквизитыОбъекта" Тогда
-				Значение = ТекДанные.Значение;
-			Иначе
-				Значение = ТекДанные[Имя];
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-
-	Если Значение = Неопределено Тогда
-		ИмяТипа = "Неопределено";
-	Иначе
-		ИмяТипа = вСформироватьИмяТипаПоЗначению(Значение);
-	КонецЕсли;
-
-	_ТипЗначенияТекущегоПоля = ИмяТипа;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура вПоказатьЗначениеХЗ(Значение)
-	СтрукПарам = Новый Структура("ПутьКФормам, ValueStorageData", ПутьКФормам, Значение);
-	ОткрытьФорму("ОбщаяФорма.UT_ValueStorageForm", СтрукПарам, , ТекущаяДата());
-КонецПроцедуры
-&НаСервере
-Функция вПолучитьПутьКДаннымТекущегоЭлемента()
-	ЭФ = ЭтаФорма.ТекущийЭлемент;
-
-	Если ТипЗнч(ЭФ) = Тип("ТаблицаФормы") Тогда
-		ТекПоле = ЭФ.ТекущийЭлемент;
-		Если ТипЗнч(ТекПоле) = Тип("ПолеФормы") Тогда
-			Значение = ТекПоле.ПутьКДанным;
-			Поз = Найти(Значение, ".");
-			Если Поз <> 0 Тогда
-				Значение = Сред(Значение, Поз + 1);
-				Если Найти(Значение, ".") = 0 Тогда
-					Возврат Значение;
-				КонецЕсли;
-			КонецЕсли;
-		КонецЕсли;
-	ИначеЕсли ТипЗнч(ЭФ) = Тип("ПолеФормы") Тогда
-		Возврат ЭФ.ПутьКДанным;
-	КонецЕсли;
-
-	Возврат "";
-КонецФункции
-
-&НаСервере
-Функция вПолучитьСвойстваТабличногоПоля(Знач ИмяЭФ)
-	пРезультат = Новый Структура("Отказ, Таблица, Поле", Истина, "", "");
-
-	ЭФ = ЭтаФорма.Элементы[ИмяЭФ];
-
-	Если ТипЗнч(ЭФ) = Тип("ТаблицаФормы") Тогда
-		пРезультат.Вставить("Таблица", ЭФ.ПутьКДанным);
-
-		ТекПоле = ЭФ.ТекущийЭлемент;
-		Если ТипЗнч(ТекПоле) = Тип("ПолеФормы") Тогда
-			Значение = ТекПоле.ПутьКДанным;
-			Поз = Найти(Значение, ".");
-			Если Поз <> 0 Тогда
-				Значение = Сред(Значение, Поз + 1);
-				пРезультат.Вставить("Поле", Значение);
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-
-	пРезультат.Отказ = (ПустаяСтрока(пРезультат.Таблица) Или ПустаяСтрока(пРезультат.Поле));
-
-	Возврат пРезультат;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вСформироватьИмяТипаПоЗначению(Знач Значение)
-	пТип = ТипЗнч(Значение);
-
-	ОбъектМД = Метаданные.НайтиПоТипу(пТип);
-	Если ОбъектМД <> Неопределено Тогда
-		ИмяТипа = ОбъектМД.ПолноеИмя();
-	Иначе
-		ИмяТипа = Строка(пТип);
-	КонецЕсли;
-
-	Возврат ИмяТипа;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вЭтоОбъектМетаданных(Знач Тип)
-	ОбъектМД = Метаданные.НайтиПоТипу(Тип);
-	Возврат (ОбъектМД <> Неопределено И Не Метаданные.Перечисления.Содержит(ОбъектМД));
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вПолучитьПолноеИмяМД(Ссыдка)
-	Возврат Ссыдка.Метаданные().ПолноеИмя();
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вНайтиОбъектПоURL(Знач URL)
-	Поз1 = Найти(URL, "e1cib/data/");
-	Поз2 = Найти(URL, "?ref=");
-
-	Если Поз1 = 0 Или Поз2 = 0 Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Попытка
-		ИмяТипа = Сред(URL, Поз1 + 11, Поз2 - Поз1 - 11);
-		ШаблонЗначения = ЗначениеВСтрокуВнутр(ПредопределенноеЗначение(ИмяТипа + ".EmptyRef"));
-		ЗначениеСсылки = СтрЗаменить(ШаблонЗначения, "00000000000000000000000000000000", Сред(URL, Поз2 + 5));
-		Ссылка = ЗначениеИзСтрокиВнутр(ЗначениеСсылки);
-	Исключение
-		Возврат Неопределено;
-	КонецПопытки;
-
-	Возврат Ссылка;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вПолучитьСсылкуНаУдаленныйОбъект(Знач пСтрокаОбъектНеНайден)
-	пРезультат = Новый Структура("Отказ, ПричинаОтказа, Ссылка", Истина, "");
-	пРезультат.ПричинаОтказа = NSTR("ru = 'Неправильный формат строки!';en = 'Incorrect string format!'");
-
-	Если ПустаяСтрока(пСтрокаОбъектНеНайден) Тогда
-		пСтрокаОбъектНеНайден = "<Object no found> (769:b1390050568b35ac11e6e46fdd2c3861)";
-	КонецЕсли;
-
-	пСтрокаОбъектНеНайден = Сред(пСтрокаОбъектНеНайден, СтрНайти(пСтрокаОбъектНеНайден, "(") + 1);
-	пСтрокаОбъектНеНайден = СтрЗаменить(пСтрокаОбъектНеНайден, ")", "");
-	пСтрокаОбъектНеНайден = СокрЛП(пСтрокаОбъектНеНайден);
-
-	Поз = СтрНайти(пСтрокаОбъектНеНайден, ":");
-
-	пТип = Лев(пСтрокаОбъектНеНайден, Поз - 1);
-	пСтрока = Сред(пСтрокаОбъектНеНайден, Поз + 1);
-
-	Попытка
-		пUUID = Сред(пСтрока, 25, 8) + "-" + Сред(пСтрока, 21, 4) + "-" + Сред(пСтрока, 17, 4) + "-" + Сред(пСтрока, 1,
-			4) + "-" + Сред(пСтрока, 5, 12);
-		пUUID = Новый УникальныйИдентификатор(пUUID);
-
-		пСтрукОбъектыМД = Новый Структура("ПланыОбмена, Справочники, Документы, ПланыВидовРасчета, ПланыВидовХарактеристик, ПланыСчетов, БизнесПроцессы, Задачи");
-
-		Для Каждого пРаздел Из пСтрукОбъектыМД Цикл
-			Для Каждого Элем Из Метаданные[пРаздел.Ключ] Цикл
-				пМенеджер = Вычислить(пРаздел.Ключ + "[Элем.Имя]");
-				пСтрока = ЗначениеВСтрокуВнутр(пМенеджер.ПустаяСсылка());
-				Поз1 = СтрНайти(пСтрока, ",", НаправлениеПоиска.СКонца);
-				Поз2 = СтрНайти(пСтрока, ":");
-
-				Если Сред(пСтрока, Поз1 + 1, Поз2 - Поз1 - 1) = пТип Тогда
-					пРезультат.Ссылка = пМенеджер.ПолучитьСсылку(пUUID);
-					пРезультат.Отказ = Ложь;
-
-					Возврат пРезультат;
-				КонецЕсли;
-			КонецЦикла;
-		КонецЦикла;
-	Исключение
-		пРезультат.ПричинаОтказа = пРезультат.ПричинаОтказа + Символы.ПС + КраткоеПредставлениеОшибки(
-			ИнформацияОбОшибке());
-		Возврат пРезультат;
-	КонецПопытки;
-
-	Возврат пРезультат;
-КонецФункции
-&НаСервере
-Процедура НайтиОбъектПоUUIDСервер()
-	Если Не ПустаяСтрока(_UUID) Тогда
-		mObjectRef = Неопределено;
-		_ТипОбъекта = "";
-
-		Попытка
-			УИД = Новый УникальныйИдентификатор(_UUID);
-		Исключение
-				Сообщить(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value!'"));
-			Возврат;
-		КонецПопытки;
-
-		Если Не ЗначениеЗаполнено(УИД) Тогда
-			Возврат;
-		КонецЕсли;
-
-		Струк = Новый Структура("Справочники, Документы, ПланыВидовРасчета, ПланыВидовХарактеристик, ПланыСчетов, БизнесПроцессы, Задачи");
-		Для Каждого Элем Из Струк Цикл
-			ОбъектыМенеджер = Вычислить(Элем.Ключ);
-			Для Каждого Менеджер Из ОбъектыМенеджер Цикл
-				Х = Менеджер.ПолучитьСсылку(УИД);
-				Если Х.ПолучитьОбъект() <> Неопределено Тогда
-					mObjectRef = Х;
-					_ТипОбъекта = mObjectRef.Метаданные().ПолноеИмя();
-					вОбновитьДанныеОбъекта();
-					Возврат;
-				КонецЕсли;
-			КонецЦикла;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаСервере
-Процедура НайтиОбъектПоТипу_UUIDСервер()
-	Если Не ПустаяСтрока(_ТипОбъекта) И Не ПустаяСтрока(_UUID) Тогда
-		Попытка
-			УИД = Новый УникальныйИдентификатор(_UUID);
-		Исключение
-				Сообщить(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value!'"));
-			Возврат;
-		КонецПопытки;
-
-		ИмяТипа = СтрЗаменить(_ТипОбъекта, ".", "Ref.");
-		Попытка
-			mObjectRef = XMLЗначение(Тип(ИмяТипа), _UUID);
-			вОбновитьДанныеОбъекта();
-		Исключение
-		КонецПопытки;
-	КонецЕсли;
-КонецПроцедуры
-&НаСервере
-Функция вСоздатьНовыйОбъект(ОбъектМД)
-	пИмя = ОбъектМД.Имя;
-
-	Если Метаданные.Справочники.Содержит(ОбъектМД) Или Метаданные.ПланыВидовХарактеристик.Содержит(ОбъектМД) Тогда
-		ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
-
-		Если ЭтоИерархияГруппИЭлементов Тогда
-			Массив = РеквизитыОбъекта.НайтиСтроки(Новый Структура("Имя", "ЭтоГруппа"));
-			пЭтоГруппа = (Массив.Количество() = 1 И Массив[0].ЭтоГруппа = Истина);
-		Иначе
-			пЭтоГруппа = Ложь;
-		КонецЕсли;
-
-		Если Метаданные.Справочники.Содержит(ОбъектМД) Тогда
-			Менеджер = Справочники;
-		Иначе
-			Менеджер = ПланыВидовХарактеристик;
-		КонецЕсли;
-
-		НовыйОбъект = ?(пЭтоГруппа, Менеджер[пИмя].СоздатьГруппу(), Менеджер[пИмя].СоздатьЭлемент());
-
-	ИначеЕсли Метаданные.ПланыОбмена.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = ПланыОбмена[пИмя].СоздатьУзел();
-
-	ИначеЕсли Метаданные.Документы.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = Документы[пИмя].СоздатьДокумент();
-
-	ИначеЕсли Метаданные.ПланыСчетов.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = ПланыСчетов[пИмя].СоздатьСчет();
-
-	ИначеЕсли Метаданные.ПланыВидовРасчета.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = ПланыВидовРасчета[пИмя].СоздатьВидРасчета();
-
-	ИначеЕсли Метаданные.БизнесПроцессы.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = БизнесПроцессы[пИмя].СоздатьБизнесПроцесс();
-
-	ИначеЕсли Метаданные.Задачи.Содержит(ОбъектМД) Тогда
-		НовыйОбъект = Задачи[пИмя].СоздатьЗадачу();
-
-	Иначе
-		НовыйОбъект = Неопределено;
-	КонецЕсли;
-
-	Возврат НовыйОбъект;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вУстановитьСсылкуНового(пОбъект, Знач пСтрокаUUID)
-	Попытка
-		пUUID = Новый УникальныйИдентификатор(пСтрокаUUID);
-	Исключение
-		Сообщить(NSTR("ru = 'Неправильный формат UUID!';en = 'Incorrect UUID format!'"));
-		Возврат Ложь;
-	КонецПопытки;
-
-	ОбъектМД = пОбъект.Метаданные();
-	пИмя = ОбъектМД.Имя;
-
-	Если Метаданные.Справочники.Содержит(ОбъектМД) Тогда
-		пМенеджер = Справочники[пИмя];
-
-	ИначеЕсли Метаданные.ПланыВидовХарактеристик.Содержит(ОбъектМД) Тогда
-		пМенеджер = ПланыВидовХарактеристик[пИмя];
-
-	ИначеЕсли Метаданные.ПланыОбмена.Содержит(ОбъектМД) Тогда
-		пМенеджер = ПланыОбмена[пИмя];
-
-	ИначеЕсли Метаданные.Документы.Содержит(ОбъектМД) Тогда
-		пМенеджер = Документы[пИмя];
-
-	ИначеЕсли Метаданные.ПланыСчетов.Содержит(ОбъектМД) Тогда
-		пМенеджер = ПланыСчетов[пИмя];
-
-	ИначеЕсли Метаданные.ПланыВидовРасчета.Содержит(ОбъектМД) Тогда
-		пМенеджер = ПланыВидовРасчета[пИмя];
-
-	ИначеЕсли Метаданные.БизнесПроцессы.Содержит(ОбъектМД) Тогда
-		пМенеджер = БизнесПроцессы[пИмя];
-
-	ИначеЕсли Метаданные.Задачи.Содержит(ОбъектМД) Тогда
-		пМенеджер = Задачи[пИмя];
-
-	Иначе
-		Сообщить(ОбъектМД.ПолноеИмя() + NSTR("ru = ' - данный тип не обрабатывается!';en = '- this type is not processed!'"));
-		Возврат Ложь;
-	КонецЕсли;
-
-	Попытка
-		пНоваяСсылка = пМенеджер.ПолучитьСсылку(пUUID);
-		пОбъект.УстановитьСсылкуНового(пНоваяСсылка);
-	Исключение
-		Сообщить(NSTR("ru = 'Не удалось установить ссылку для нового объекта!';en = 'Failed to set reference for new object!'"));
-		Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-		Возврат Ложь;
-	КонецПопытки;
-
-	Возврат Истина;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вПолучитьСсылкуНаОбъект(Знач пСсылка)
-	УстановитьПривилегированныйРежим(Истина);
-
-	пПолноеИмя = пСсылка.Метаданные().ПолноеИмя();
-
-	Запрос = Новый Запрос;
-	Запрос.УстановитьПараметр("Ссылка", пСсылка);
-
-	Запрос.Текст = "ВЫБРАТЬ ПЕРВЫЕ 1
-				   |	т.Ссылка КАК Ссылка
-				   |ИЗ
-				   |	" + пПолноеИмя + " КАК т
-										 |ГДЕ
-										 |	т.Ссылка = &Ссылка";
-
-	Выборка = Запрос.Выполнить().Выбрать();
-
-	Возврат ?(Выборка.Следующий(), Выборка.Ссылка, Неопределено);
-КонецФункции
-
-&НаСервере
-Функция вЗаписатьОбъект(Знач КакНовый = Ложь, Знач пСтрокаUUID = Неопределено)
-	Если КакНовый Тогда
-		Если Не вПроверитьСуществованиеОбъекта(mObjectRef) Тогда
-			ОбъектМД = mObjectRef.Метаданные();
-			ОбъектДляЗаписи = вСоздатьНовыйОбъект(ОбъектМД);
-			Если ОбъектДляЗаписи = Неопределено Тогда
-				Сообщить(NSTR("ru = 'Не удалось создать новый объект типа ';en = 'Failed to create a new object of type'") + ОбъектМД.ПолноеИмя());
-				Возврат Ложь;
-			КонецЕсли;
-		Иначе
-			ОбъектДляЗаписи = mObjectRef.Скопировать();
-		КонецЕсли;
-
-		Если пСтрокаUUID <> Неопределено Тогда
-			Если Не вУстановитьСсылкуНового(ОбъектДляЗаписи, пСтрокаUUID) Тогда
-				Возврат Ложь;
-			КонецЕсли;
-		КонецЕсли;
-	Иначе
-		ОбъектДляЗаписи = mObjectRef.ПолучитьОбъект();
-	КонецЕсли;
-
-	Если ОбъектДляЗаписи = Неопределено Тогда
-		Сообщить(NSTR("ru = 'Не удалось получить объект для записи (битая ссылка)!';en = 'Failed to get object to write to (broken reference)!'"));
-		Возврат Ложь;
-	КонецЕсли;
-
-//	Если _ЗаписьВРежимеЗагрузки Тогда
-//		ОбъектДляЗаписи.ОбменДанными.Загрузка = Истина;
-//	КонецЕсли;
-
-//	Если _ИспользоватьДополнительныеСвойстваПриЗаписи И _ДополнительныеСвойства.Количество() <> 0 Тогда
-//		Попытка
-//			Для Каждого Стр Из _ДополнительныеСвойства Цикл
-//				ОбъектДляЗаписи.ДополнительныеСвойства.Вставить(Стр.Ключ, Стр.Значение);
-//			КонецЦикла;
-//		Исключение
-//			Сообщить("Ошибка при установке ДополнительныхСвойств: неправильное значение ключа """ + Стр.Ключ + """");
-//			Возврат Ложь;
-//		КонецПопытки;
-//	КонецЕсли;
-
-	Струк = Новый Структура("ЭтоГруппа");
-
-	Попытка
-		ОбъектМД = ОбъектДляЗаписи.Метаданные();
-		ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
-		ЭтоГруппа = ?(ЭтоИерархияГруппИЭлементов, ОбъектДляЗаписи.ЭтоГруппа, Ложь);
-
-		Для Каждого Стр Из РеквизитыОбъекта Цикл
-			Если Не Струк.Свойство(Стр.Имя) И Стр.Категория <> -1 Тогда
-				Если ЭтоИерархияГруппИЭлементов Тогда
-					Если (ЭтоГруппа И Стр.ДляГруппыИлиЭлемента = 1) Или (Не ЭтоГруппа И Стр.ДляГруппыИлиЭлемента = -1) Тогда
-						Продолжить;
-					КонецЕсли;
-				КонецЕсли;
-				Если ОбъектДляЗаписи[Стр.Имя] <> Стр.Значение Тогда
-					ОбъектДляЗаписи[Стр.Имя] = Стр.Значение;
-				КонецЕсли;
-			КонецЕсли;
-		КонецЦикла;
+				  |Continue?'");
+	ShowQueryBox(New NotifyDescription("DeleteObjectNext", ThisForm), QueryText,
+		QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
+
+&AtClient
+Procedure WriteObjectNext(QueryResult, AdditionalParameters) Export
+	If QueryResult = DialogReturnCode.Yes Then
+		If vWriteObject(False) Then
+			RepresentDataChange(mObjectRef, DataChangeType.Update);
+		EndIf;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure WriteObjectAsNewNext(QueryResult, AdditionalParameters = Undefined) Export
+	If QueryResult = DialogReturnCode.Yes Then
+		If vWriteObject(True, AdditionalParameters) Then
+			RepresentDataChange(mObjectRef, DataChangeType.Create);
+			If AdditionalParameters <> Undefined Then
+				RepresentDataChange(mObjectRef, DataChangeType.Update);
+				//ShowMessageBox(,NStr("ru = 'Объект успешно записан!
+				//|Для отображения новой ссылки необходимо перевыбрать объект.';
+				//|en = 'Object successfully written.
+				//|Reselect object to display new reference.'"), 20);
+			EndIf;
+		EndIf;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure DeleteObjectNext(QueryResult, AdditionalParameters) Export
+	If QueryResult = DialogReturnCode.Yes Then
+		pArray = New Array;
+		pArray.Add(TypeOf(mObjectRef));
+		pTypeDescription = New TypeDescription(pArray);
+
+		If vDeleteObjectAtServer(mObjectRef) Then
+			RepresentDataChange(mObjectRef, DataChangeType.Delete);
+			mObjectRef = pTypeDescription.AdjustValue();
+			RefreshObjectData(Undefined);
+		EndIf;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure _SwitchRecordsActivity(Command)
+	For Each Row In _RecordSet Do
+		Row.Active = Not Row.Active;
+	EndDo;
+EndProcedure
+
+&AtClient
+Procedure _RefreshRecordSet(Command)
+	vRefreshRecordSet();
+EndProcedure
+
+&AtClient
+Procedure _WriteRecordSet(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан объект для записи движений';en = 'Object for write records is not specified'"), 20);
+		Return;
+	EndIf;
+	If IsBlankString(_RecordSetName) Then
+		ShowMessageBox( , NStr("ru = 'Не задан набор записей для сохранения';en = 'Recordset for save records is not set'"), 20);
+		Return;
+	EndIf;
+	ShowQueryBox(New NotifyDescription("_WriteRecordSetNext", ThisForm),
+		NSTR("ru = 'Набор записей будет записан в базу. Продолжить?';en = 'Recordset will be saved to database. Continue?'"), QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
+
+&AtClient
+Procedure _WriteRecordSetNext(QueryResult, AdditionalParameters) Export
+	If QueryResult = DialogReturnCode.Yes Then
+		vWriteRecordSet();
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure _ShowAllRecords(Command)
+	If ValueIsFilled(mObjectRef) Then
+		RegisterList = Items._RecordSetName.ChoiceList.Copy();
+		If RegisterList.Count() <> 0 Then
+			TDoc = vGenerateRecordsReport(mObjectRef, RegisterList, _ConfigurationAllowsAdditionalRecords);
+			TDoc.Show(NSTR("ru = 'Наличие движений';en = 'Records existence'"));
+		EndIf;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure FindObjectByUUID(Command)
+	FindObjectByUUIDServer();
+EndProcedure
+
+&AtClient
+Procedure FindObjectByType_UUID(Command)
+	FindObjectByType_UUIDServer();
+EndProcedure
+
+&AtClient
+Procedure FindObjectByURL(Command)
+	Value = pFindObjectByURL(_URL);
+
+	If mObjectRef <> Value Then
+		mObjectRef = Value;
+		RefreshObjectData(Undefined);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure _OpenListForm(Command)
+	If mObjectRef <> Undefined Then
+		pFullName = vGetFullNameMD(mObjectRef);
+		UT_CommonClient.ОpenDynamicList(pFullName);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure OpenObject(Command)
+	Value = Undefined;
+
+	FI = ThisForm.CurrentItem;
+
+	Name = vGetCurrentItemDataPath();
+	If Not ValueIsFilled(Name) Then
+		Return;
+	EndIf;
+
+	If TypeOf(FI) = Type("FormField") Then
+		Value = ThisForm[Name];
+	ElsIf TypeOf(FI) = Type("FormTable") Then
+		CurData = FI.CurrentData;
+		If CurData <> Undefined Then
+			If FI.Name = "ObjectAttributes" Then
+				Value = CurData.Value;
+			Else
+				Value = CurData[Name];
+			EndIf;
+		EndIf;
+	EndIf;
+
+	If ValueIsFilled(Value) Then
+		If TypeOf(Value) = mTypeVS Then
+			vShowValueVS(Value);
+
+		ElsIf vIsMetadataObject(TypeOf(Value)) Then
+			UT_CommonClient.EditObject(Value);
+		EndIf;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure _ShowValueType(Command)
+	_CurrentFieldValueType = "";
+
+	Value = Undefined;
+
+	FI = ThisForm.CurrentItem;
+
+	Name = vGetCurrentItemDataPath();
+	If Not ValueIsFilled(Name) Then
+		Return;
+	EndIf;
+
+	If TypeOf(FI) = Type("FormField") Then
+		Value = ThisForm[Name];
+	ElsIf TypeOf(FI) = Type("FormTable") Then
+		CurData = FI.CurrentData;
+		If CurData <> Undefined Then
+			If FI.Name = "ObjectAttributes" Then
+				Value = CurData.Value;
+			Else
+				Value = CurData[Name];
+			EndIf;
+		EndIf;
+	EndIf;
+
+	If Value = Undefined Then
+		TypeName = "Undefined";
+	Else
+		TypeName = vGenerateTypeNameByValue(Value);
+	EndIf;
+
+	_CurrentFieldValueType = TypeName;
+EndProcedure
+
+&AtClient
+Procedure vShowValueVS(Value)
+	ParamStruct = New Structure("FormsPath, ValueStorageData", FormsPath, Value);
+	OpenForm("CommonForm.UT_ValueStorageForm", ParamStruct, , CurrentDate());
+EndProcedure
+&AtServer
+Function vGetCurrentItemDataPath()
+	FI = ThisForm.CurrentItem;
+
+	If TypeOf(FI) = Type("FormTable") Then
+		CurField = FI.CurrentItem;
+		If TypeOf(CurField) = Type("FormField") Then
+			Value = CurField.DataPath;
+			Pos = Find(Value, ".");
+			If Pos <> 0 Then
+				Value = Mid(Value, Pos + 1);
+				If Find(Value, ".") = 0 Then
+					Return Value;
+				EndIf;
+			EndIf;
+		EndIf;
+	ElsIf TypeOf(FI) = Type("FormField") Then
+		Return FI.DataPath;
+	EndIf;
+
+	Return "";
+EndFunction
+
+&AtServer
+Function vGetTableFieldProperties(Val FIName)
+	pResult = New Structure("Cancel, Table, Field", True, "", "");
+
+	FI = ThisForm.Items[FIName];
+
+	If TypeOf(FI) = Type("FormTable") Then
+		pResult.Insert("Table", FI.DataPath);
+
+		CurField = FI.CurrentItem;
+		If TypeOf(CurField) = Type("FormField") Then
+			Value = CurField.DataPath;
+			Pos = Find(Value, ".");
+			If Pos <> 0 Then
+				Value = Mid(Value, Pos + 1);
+				pResult.Insert("Field", Value);
+			EndIf;
+		EndIf;
+	EndIf;
+
+	pResult.Cancel = (IsBlankString(pResult.Table) Or IsBlankString(pResult.Field));
+
+	Return pResult;
+EndFunction
+
+&AtServerNoContext
+Function vGenerateTypeNameByValue(Val Value)
+	pType = TypeOf(Value);
+
+	MDObject = Metadata.FindByType(pType);
+	If MDObject <> Undefined Then
+		TypeName = MDObject.FullName();
+	Else
+		TypeName = String(pType);
+	EndIf;
+
+	Return TypeName;
+EndFunction
+
+&AtServerNoContext
+Function vIsMetadataObject(Val Type)
+	MDObject = Metadata.FindByType(Type);
+	Return (MDObject <> Undefined And Not Metadata.Enums.Contains(MDObject));
+EndFunction
+
+&AtServerNoContext
+Function vGetFullNameMD(Ref)
+	Return Ref.Metadata().FullName();
+EndFunction
+
+&AtServerNoContext
+Function pFindObjectByURL(Val URL)
+	Pos1 = Find(URL, "e1cib/data/");
+	Pos2 = Find(URL, "?ref=");
+
+	If Pos1 = 0 Or Pos2 = 0 Then
+		Return Undefined;
+	EndIf;
+
+	Try
+		TypeName = Mid(URL, Pos1 + 11, Pos2 - Pos1 - 11);
+		ValueTemplate = ValueToStringInternal(PredefinedValue(TypeName + ".EmptyRef"));
+		RefValue = StrReplace(ValueTemplate, "00000000000000000000000000000000", Mid(URL, Pos2 + 5));
+		Ref = ValueFromStringInternal(RefValue);
+	Except
+		Return Undefined;
+	EndTry;
+
+	Return Ref;
+EndFunction
+
+&AtServerNoContext
+Function vGetRemoteObjectRef(Val pObjectNotFoundString)
+	pResult = New Structure("Cancel, CancelCause, Ref", True, "");
+	pResult.CancelCause = NSTR("ru = 'Неправильный формат строки!';en = 'Incorrect string format.'");
+
+	If IsBlankString(pObjectNotFoundString) Then
+		pObjectNotFoundString = "<Object no found> (769:b1390050568b35ac11e6e46fdd2c3861)";
+	EndIf;
+
+	pObjectNotFoundString = Mid(pObjectNotFoundString, StrFind(pObjectNotFoundString, "(") + 1);
+	pObjectNotFoundString = StrReplace(pObjectNotFoundString, ")", "");
+	pObjectNotFoundString = TrimAll(pObjectNotFoundString);
+
+	Pos = StrFind(pObjectNotFoundString, ":");
+
+	pType = Left(pObjectNotFoundString, Pos - 1);
+	pString = Mid(pObjectNotFoundString, Pos + 1);
+
+	Try
+		pUUID = Mid(pString, 25, 8) + "-" + Mid(pString, 21, 4) + "-" + Mid(pString, 17, 4) + "-" + Mid(pString, 1,
+			4) + "-" + Mid(pString, 5, 12);
+		pUUID = New UUID(pUUID);
+
+		pStructMDObjects = New Structure("ExchangePlans, Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts, BusinessProcesses, Tasks");
+
+		For Each pSection In pStructMDObjects Do
+			For Each Item In Metadata[pSection.Key] Do
+				pManager = Eval(pSection.Key + "[Item.Name]");
+				pString = ValueToStringInternal(pManager.EmptyRef());
+				Pos1 = StrFind(pString, ",", SearchDirection.FromEnd);
+				Pos2 = StrFind(pString, ":");
+
+				If Mid(pString, Pos1 + 1, Pos2 - Pos1 - 1) = pType Then
+					pResult.Ref = pManager.GetRef(pUUID);
+					pResult.Cancel = False;
+
+					Return pResult;
+				EndIf;
+			EndDo;
+		EndDo;
+	Except
+		pResult.CancelCause = pResult.CancelCause + Chars.LF + BriefErrorDescription(
+			ErrorInfo());
+		Return pResult;
+	EndTry;
+
+	Return pResult;
+EndFunction
+&AtServer
+Procedure FindObjectByUUIDServer()
+	If Not IsBlankString(_UUID) Then
+		mObjectRef = Undefined;
+		_ObjectType = "";
+
+		Try
+			UID = New UUID(_UUID);
+		Except
+				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
+			Return;
+		EndTry;
+
+		If Not ValueIsFilled(UID) Then
+			Return;
+		EndIf;
+
+		Struct = New Structure("Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts, BusinessProcesses, Tasks");
+		For Each Item In Struct Do
+			ObjectsManager = Eval(Item.Key);
+			For Each Manager In ObjectsManager Do
+				X = Manager.GetRef(UID);
+				If X.GetObject() <> Undefined Then
+					mObjectRef = X;
+					_ObjectType = mObjectRef.Metadata().FullName();
+					vRefreshObjectData();
+					Return;
+				EndIf;
+			EndDo;
+		EndDo;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure FindObjectByType_UUIDServer()
+	If Not IsBlankString(_ObjectType) And Not IsBlankString(_UUID) Then
+		Try
+			UID = New UUID(_UUID);
+		Except
+				Message(NSTR("ru = 'Неправильное значение UUID';en = 'Incorrect UUID value.'"));
+			Return;
+		EndTry;
+
+		TypeName = StrReplace(_ObjectType, ".", "Ref.");
+		Try
+			mObjectRef = XMLValue(Type(TypeName), _UUID);
+			vRefreshObjectData();
+		Except
+		EndTry;
+	EndIf;
+EndProcedure
+&AtServer
+Function vCreateNewОбъект(MDObject)
+	pName = MDObject.Name;
+
+	If Metadata.Catalogs.Contains(MDObject) Or Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Then
+		IsHierarchyFoldersAndItems = vIsHierarchyFoldersAndItems(MDObject);
+
+		If IsHierarchyFoldersAndItems Then
+			Array = ObjectAttributes.FindRows(New Structure("Name", "IsFolder"));
+			pIsFolder = (Array.Count() = 1 And Array[0].IsFolder = True);
+		Else
+			pIsFolder = False;
+		EndIf;
+
+		If Metadata.Catalogs.Contains(MDObject) Then
+			Manager = Catalogs;
+		Else
+			Manager = ChartsOfCharacteristicTypes;
+		EndIf;
+
+		NewObject = ?(pIsFolder, Manager[pName].CreateFolder(), Manager[pName].CreateItem());
+
+	ElsIf Metadata.ExchangePlans.Contains(MDObject) Then
+		NewObject = ExchangePlans[pName].CreateNode();
+
+	ElsIf Metadata.Documents.Contains(MDObject) Then
+		NewObject = Documents[pName].CreateDocument();
+
+	ElsIf Metadata.ChartsOfAccounts.Contains(MDObject) Then
+		NewObject = ChartsOfAccounts[pName].CreateAccount();
+
+	ElsIf Metadata.ChartsOfCalculationTypes.Contains(MDObject) Then
+		NewObject = ChartsOfCalculationTypes[pName].CreateCalculationType();
+
+	ElsIf Metadata.BusinessProcesses.Contains(MDObject) Then
+		NewObject = BusinessProcesses[pName].CreateBusinessProcess();
+
+	ElsIf Metadata.Tasks.Contains(MDObject) Then
+		NewObject = Tasks[pName].CreateTask();
+
+	Else
+		NewObject = Undefined;
+	EndIf;
+
+	Return NewObject;
+EndFunction
+
+&AtServerNoContext
+Function vSetNewObjectRef(pObject, Val pStringUUID)
+	Try
+		pUUID = New UUID(pStringUUID);
+	Except
+		Message(NSTR("ru = 'Неправильный формат UUID!';en = 'Incorrect UUID format.'"));
+		Return False;
+	EndTry;
+
+	MDObject = pObject.Metadata();
+	pName = MDObject.Name;
+
+	If Metadata.Catalogs.Contains(MDObject) Then
+		pManager = Catalogs[pName];
+
+	ElsIf Metadata.ChartsOfCharacteristicTypes.Contains(MDObject) Then
+		pManager = ChartsOfCharacteristicTypes[pName];
+
+	ElsIf Metadata.ExchangePlans.Contains(MDObject) Then
+		pManager = ExchangePlans[pName];
+
+	ElsIf Metadata.Documents.Contains(MDObject) Then
+		pManager = Documents[pName];
+
+	ElsIf Metadata.ChartsOfAccounts.Contains(MDObject) Then
+		pManager = ChartsOfAccounts[pName];
+
+	ElsIf Metadata.ChartsOfCalculationTypes.Contains(MDObject) Then
+		pManager = ChartsOfCalculationTypes[pName];
+
+	ElsIf Metadata.BusinessProcesses.Contains(MDObject) Then
+		pManager = BusinessProcesses[pName];
+
+	ElsIf Metadata.Tasks.Contains(MDObject) Then
+		pManager = Tasks[pName];
+
+	Else
+		Message(MDObject.FullName() + NSTR("ru = ' - данный тип не обрабатывается!';en = '- this type is not processed.'"));
+		Return False;
+	EndIf;
+
+	Try
+		pNewRef = pManager.GetRef(pUUID);
+		pObject.SetNewObjectRef(pNewRef);
+	Except
+		Message(NSTR("ru = 'Не удалось установить ссылку для нового объекта!';en = 'Failed to set reference for new object.'"));
+		Message(BriefErrorDescription(ErrorInfo()));
+		Return False;
+	EndTry;
+
+	Return True;
+EndFunction
+
+&AtServerNoContext
+Function vGetObjectRef(Val pRef)
+	SetPrivilegedMode(True);
+
+	pFullName = pRef.Metadata().FullName();
+
+	Query = New Query;
+	Query.SetParameter("Ref", pRef);
+
+	Query.Text = "SELECT TOP 1
+				 |	t.Ref AS Ref
+				 |FROM
+				 |	" + pFullName + " AS t
+									|WHERE
+									|	t.Ref = &Ref";
+
+	Selection = Query.Execute().Select();
+
+	Return ?(Selection.Next(), Selection.Ref, Undefined);
+EndFunction
+
+&AtServer
+Function vWriteObject(Val AsNew = False, Val pStringUUID = Undefined)
+	If AsNew Then
+		If Not vCheckObjectExistence(mObjectRef) Then
+			MDObject = mObjectRef.Metadata();
+			ObjectToWrite = vCreateNewОбъект(MDObject);
+			If ObjectToWrite = Undefined Then
+				Message(NSTR("ru = 'Не удалось создать New объект типа ';en = 'Failed to create a new object of type.'") + MDObject.FullName());
+				Return False;
+			EndIf;
+		Else
+			ObjectToWrite = mObjectRef.Copy();
+		EndIf;
+
+		If pStringUUID <> Undefined Then
+			If Not vSetNewObjectRef(ObjectToWrite, pStringUUID) Then
+				Return False;
+			EndIf;
+		EndIf;
+	Else
+		ObjectToWrite = mObjectRef.GetObject();
+	EndIf;
+
+	If ObjectToWrite = Undefined Then
+		Message(NSTR("ru = 'Не удалось получить объект для записи (битая ссылка)!';en = 'Failed to get object to write to (broken reference).'"));
+		Return False;
+	EndIf;
+
+//	If _WriteInLoadingMode Then
+//		ObjectToWrite.DataExchange.Load = True;
+//	EndIf;
+
+//	If _UseAdditionalPropertiesOnWrite И _AdditionalProperties.Count() <> 0 Then
+//		Try
+//			For Each Str In _AdditionalProperties Do
+//				ObjectToWrite.AdditionalProperties.Insert(Str.Key, Str.Value);
+//			EndDo;
+//		Except
+//			Message(NStr("ru = 'Ошибка при установке ДополнительныхСвойств: неправильное значение ключа '; en = 'AdditionalProperties set error: wrong key value.'""") + Str.Key + """");
+//			Return False;
+//		EndTry;
+//	EndIf;
+
+	Struct = New Structure("IsFolder");
+
+	Try
+		MDObject = ObjectToWrite.Metadata();
+		IsHierarchyFoldersAndItems = vIsHierarchyFoldersAndItems(MDObject);
+		IsFolder = ?(IsHierarchyFoldersAndItems, ObjectToWrite.IsFolder, False);
+
+		For Each Str In ObjectAttributes Do
+			If Not Struct.Property(Str.Name) And Str.Категория <> -1 Then
+				If IsHierarchyFoldersAndItems Then
+					If (IsFolder And Str.ForFolderAndItem = 1) Or (Not IsFolder And Str.ForFolderAndItem = -1) Then
+						Continue;
+					EndIf;
+				EndIf;
+				If ObjectToWrite[Str.Name] <> Str.Value Then
+					ObjectToWrite[Str.Name] = Str.Value;
+				EndIf;
+			EndIf;
+		EndDo;
 		
-		// специализированные табличные части 1С
-		вЗаписатьСпециализированныеТабличныеЧасти(ОбъектМД, ОбъектДляЗаписи);
+		// 1C special tabular sections
+		vWriteSpecialTabularSections(MDObject, ObjectToWrite);
 
-		Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-			Если ЭтоИерархияГруппИЭлементов Тогда
-				Если (ЭтоГруппа И ЭлемТЧ.Использование
-					= Метаданные.СвойстваОбъектов.ИспользованиеРеквизита.ДляЭлемента) Тогда
-					Продолжить;
-				КонецЕсли;
-				Если (Не ЭтоГруппа И ЭлемТЧ.Использование
-					= Метаданные.СвойстваОбъектов.ИспользованиеРеквизита.ДляГруппы) Тогда
-					Продолжить;
-				КонецЕсли;
-			КонецЕсли;
-			ТабЧасть = ОбъектДляЗаписи[ЭлемТЧ.Имя];
-			ТабЧасть.Очистить();
-			ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-			ТабРезультат = РеквизитФормыВЗначение(ИмяТаб);
-			ТабЧасть.Загрузить(ТабРезультат);
-		КонецЦикла;
+		For Each TSItem In MDObject.TabularSections Do
+			If IsHierarchyFoldersAndItems Then
+				If (IsFolder And TSItem.Use
+					= Metadata.ObjectProperties.AttributeUse.ForItem) Then
+					Continue;
+				EndIf;
+				If (Not IsFolder And TSItem.Use
+					= Metadata.ObjectProperties.AttributeUse.ForFolder) Then
+					Continue;
+				EndIf;
+			EndIf;
+			TabSection = ObjectToWrite[TSItem.Name];
+			TabSection.Clear();
+			TabName = _PrefixForNewItems + TSItem.Name;
+			TabResult = FormAttributeToValue(TabName);
+			TabSection.Load(TabResult);
+		EndDo;
 
-//		Если _ИспользоватьПроцедуруПередЗаписью И Не ПустаяСтрока(_ПроцедураПередЗаписью) Тогда
-//			Если Не вВыполнитьПроцедуруПередЗаписью(ОбъектДляЗаписи, _ПроцедураПередЗаписью) Тогда
-//				Возврат Ложь;
-//			КонецЕсли;
-//		КонецЕсли;
+//		If _UseBeforeWriteProcedure And Not IsBlankString(_BeforeWriteProcedure) Then
+//			If Not vExecuteBeforeWriteProcedure(ObjectToWrite, _BeforeWriteProcedure) Then
+//				Return False;
+//			EndIf;
+//		EndIf;
 //
-//		ОбъектДляЗаписи.Записать();
+//		ObjectToWrite.Write();
 
-		Если UT_Common.WriteObjectToDB(ОбъектДляЗаписи,
-			UT_CommonClientServer.FormWriteSettings(ЭтотОбъект)) Тогда
-			mObjectRef = ОбъектДляЗаписи.Ссылка;
-			вОбновитьДанныеОбъекта();
-			Возврат Истина;
-		Иначе
-			Возврат Ложь;
-		КонецЕсли;
-	Исключение
-		Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-		Возврат Ложь;
-	КонецПопытки;
-КонецФункции
+		If UT_Common.WriteObjectToDB(ObjectToWrite,
+			UT_CommonClientServer.FormWriteSettings(ThisObject)) Then
+			mObjectRef = ObjectToWrite.Ref;
+			vRefreshObjectData();
+			Return True;
+		Else
+			Return False;
+		EndIf;
+	Except
+		Message(BriefErrorDescription(ErrorInfo()));
+		Return False;
+	EndTry;
+EndFunction
 
-&НаСервереБезКонтекста
-Функция вПроверитьСуществованиеОбъекта(Знач пСсылка)
-	Если пСсылка = Неопределено Или Не ЗначениеЗаполнено(пСсылка) Тогда
-		Возврат Ложь;
-	КонецЕсли;
+&AtServerNoContext
+Function vCheckObjectExistence(Val pRef)
+	If pRef = Undefined Or Not ValueIsFilled(pRef) Then
+		Return False;
+	EndIf;
 
-	УстановитьПривилегированныйРежим(Истина);
+	SetPrivilegedMode(True);
 
-	пПолноеИмя = пСсылка.Метаданные().ПолноеИмя();
+	pFullName = pRef.Metadata().FullName();
 
-	Запрос = Новый Запрос;
-	Запрос.УстановитьПараметр("Ссылка", пСсылка);
+	Query = New Query;
+	Query.SetParameter("Ref", pRef);
 
-	Запрос.Текст = "ВЫБРАТЬ ПЕРВЫЕ 1
-				   |	т.Ссылка КАК Ссылка
-				   |ИЗ
-				   |	" + пПолноеИмя + " КАК т
-										 |ГДЕ
-										 |	т.Ссылка = &Ссылка";
+	Query.Текст = "SELECT TOP 1
+				   |	t.Ref AS Ref
+				   |FROM
+				   |	" + pFullName + " AS t
+										 |WHERE
+										 |	t.Ref = &Ref";
 
-	Возврат Не Запрос.Выполнить().Пустой();
-КонецФункции
+	Return Not Query.Execute().IsEmpty();
+EndFunction
 
-&НаСервере
-Функция вУдалитьОбъектНаСервере(Знач Ссылка)
-	Попытка
-		пОбъект = Ссылка.ПолучитьОбъект();
-		Если пОбъект = Неопределено Тогда
-			Возврат Ложь;
-		КонецЕсли;
+&AtServer
+Function vDeleteObjectAtServer(Val Ref)
+	Try
+		pObject = Ref.GetObject();
+		If pObject = Undefined Then
+			Return False;
+		EndIf;
 
-//		Если ЗаписьВРежимеЗагрузки Тогда
-//			пОбъект.ОбменДанными.Загрузка = Истина;
-//		КонецЕсли;
+//		If WriteInLoadingMode Then
+//			пОбъект.DataExchange.Load = True;
+//		EndIf;
 
-		Если UT_Common.WriteObjectToDB(пОбъект, UT_CommonClientServer.FormWriteSettings(
-			ЭтотОбъект)) Тогда
-//		пОбъект.Удалить();
+		If UT_Common.WriteObjectToDB(pObject, UT_CommonClientServer.FormWriteSettings(
+			ThisObject)) Then
+//		pObject.Delete();
 
-			Возврат Истина;
-		Иначе
-			Возврат Ложь;
-		КонецЕсли;
-	Исключение
-		Сообщить(NSTR("ru = 'Ошибка при удалении объекта:';en = 'Error while deleting object:'") + Символы.ПС + КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-		Возврат Ложь;
-	КонецПопытки;
-КонецФункции
+			Return True;
+		Else
+			Return False;
+		EndIf;
+	Except
+		Message(NSTR("ru = 'Ошибка при удалении объекта:';en = 'Error while deleting object:'") + Chars.LF + BriefErrorDescription(ErrorInfo()));
+		Return False;
+	EndTry;
+EndFunction
 
-&НаСервере
-Процедура вОбновитьНаборЗаписей()
-	_НаборЗаписей.Очистить();
+&AtServer
+Procedure vRefreshRecordSet()
+	_RecordSet.Clear();
 
-	НадоИзменитьРеквизиты = (_ИмяНабораЗаписей <> _ИмяНабораЗаписейПредыдущий);
+	ChangeAttributes = (_RecordSetName <> _RecordSetNamePrevious);
 
-	МассивКСозданию = Новый Массив;
-	МассивКУдалению = Новый Массив;
+	ArrayToCreate = New Array;
+	ArrayToDelete = New Array;
 
-	Если НадоИзменитьРеквизиты Тогда
-		ТабРезультат = РеквизитФормыВЗначение("_НаборЗаписей");
-		Для Каждого Колонка Из ТабРезультат.Колонки Цикл
-			МассивКУдалению.Добавить("_НаборЗаписей." + Колонка.Имя);
-			Элем = Элементы.Найти("_НаборЗаписей_" + Колонка.Имя);
-			Если Элем <> Неопределено Тогда
-				Элементы.Удалить(Элем);
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
+	If ChangeAttributes Then
+		TabResult = FormAttributeToValue("_RecordSet");
+		For Each Column In TabResult.Columns Do
+			ArrayToDelete.Add("_RecordSet." + Column.Name);
+			Item = Items.Find("_RecordSet_" + Column.Name);
+			If Item <> Undefined Then
+				Items.Delete(Item);
+			EndIf;
+		EndDo;
+	EndIf;
 
-	Если Не ПустаяСтрока(_ИмяНабораЗаписей) Тогда
-		Менеджер = вСоздатьМенеджерНабораЗаписей(_ИмяНабораЗаписей);
-		Если Менеджер = Неопределено Тогда
-			Если НадоИзменитьРеквизиты Тогда
-				ИзменитьРеквизиты(МассивКСозданию, МассивКУдалению);
-			КонецЕсли;
-			Возврат;
-		КонецЕсли;
+	If Not IsBlankString(_RecordSetName) Then
+		Manager = vCreateRecordSetManager(_RecordSetName);
+		If Manager = Undefined Then
+			If ChangeAttributes Then
+				ChangeAttributes(ArrayToCreate, ArrayToDelete);
+			EndIf;
+			Return;
+		EndIf;
 
-		Набор = Менеджер.СоздатьНаборЗаписей();
-		Набор.Отбор.Регистратор.Установить(mObjectRef);
-		Набор.Прочитать();
+		Set = Manager.CreateRecordSet();
+		Set.Filter.Recorder.Set(mObjectRef);
+		Set.Read();
 
-		ТабРезультат = Набор.Выгрузить();
+		TabResult = Set.Unload();
 
-		Попытка
-			Если НадоИзменитьРеквизиты Тогда
-				ТипХЗ = Тип("ХранилищеЗначения");
-				ТипТТ = Тип("Тип");
-				ТипМВ = Тип("МоментВремени");
-				ТипUUID = Тип("УникальныйИдентификатор");
+		Try
+			If ChangeAttributes Then
+				TypeVS = Type("ValueStorage");
+				TypeTT = Type("Type");
+				TypePT = Type("PointInTime");
+				TypeUUID = Type("UUID");
 
-				СтрукСпецКолонки = Новый Структура("Регистратор, МоментВремени");
+				SpecColumnsStruct = New Structure("Recorder, PointInTime");
 
-				Для Каждого Колонка Из ТабРезультат.Колонки Цикл
-					//Если СтрукСпецКолонки.Свойство(Колонка.Имя) Тогда
-					//	Продолжить;
-					//КонецЕсли;
+				For Each Column In TabResult.Columns Do
+					//If SpecColumnsStruct.Property(Column.Name) Then
+					//	Continue;
+					//EndIf;
 
-					Если Колонка.ТипЗначения.СодержитТип(ТипХЗ) Тогда
-						ТипЗначенияРеквизита = Новый ОписаниеТипов;
-					ИначеЕсли Колонка.ТипЗначения.СодержитТип(ТипТТ) Тогда
-						ТипЗначенияРеквизита = Новый ОписаниеТипов;
-					ИначеЕсли Колонка.ТипЗначения.СодержитТип(ТипМВ) Тогда
-						ТипЗначенияРеквизита = Новый ОписаниеТипов;
-					ИначеЕсли Колонка.ТипЗначения.СодержитТип(ТипUUID) Тогда
-						ТипЗначенияРеквизита = вОписаниеТиповДляUUID(Колонка.ТипЗначения);
-					Иначе
-						ТипЗначенияРеквизита = Колонка.ТипЗначения;
-					КонецЕсли;
-					МассивКСозданию.Добавить(Новый РеквизитФормы(Колонка.Имя, ТипЗначенияРеквизита, "_НаборЗаписей",
-						Колонка.Заголовок, Ложь));
-				КонецЦикла;
+					If Column.ValueType.ContainsType(TypeVS) Then
+						AttributeValueType = New TypeDescription;
+					ElsIf Column.ValueType.ContainsType(TypeTT) Then
+						AttributeValueType = New TypeDescription;
+					ElsIf Column.ValueType.ContainsType(TypePT) Then
+						AttributeValueType = New TypeDescription;
+					ElsIf Column.ValueType.ContainsType(TypeUUID) Then
+						AttributeValueType = vUUIDTypeDescription(Column.ValueType);
+					Else
+						AttributeValueType = Column.ValueType;
+					EndIf;
+					ArrayToCreate.Add(New FormAttribute(Column.Name, AttributeValueType, "_RecordSet",
+						Column.Title, False));
+				EndDo;
 
-				ИзменитьРеквизиты(МассивКСозданию, МассивКУдалению);
-			КонецЕсли;
+				ChangeAttributes(ArrayToCreate, ArrayToDelete);
+			EndIf;
 
-			ЗначениеВРеквизитФормы(ТабРезультат, "_НаборЗаписей");
+			ValueToFormAttribute(TabResult, "_RecordSet");
 
-			Если НадоИзменитьРеквизиты Тогда
-				Для Каждого Колонка Из ТабРезультат.Колонки Цикл
-					Если СтрукСпецКолонки.Свойство(Колонка.Имя) Тогда
-						Продолжить;
-					КонецЕсли;
+			If ChangeAttributes Then
+				For Each Column In TabResult.Columns Do
+					If SpecColumnsStruct.Property(Column.Name) Then
+						Continue;
+					EndIf;
 
-					Элем = ЭтаФорма.Элементы.Добавить("_НаборЗаписей_" + Колонка.Имя, Тип("ПолеФормы"),
-						ЭтаФорма.Элементы._НаборЗаписей);
-					Элем.ПутьКДанным="_НаборЗаписей." + Колонка.Имя;
-					Элем.Вид=ВидПоляФормы.ПолеВвода;
-					Элем.ДоступныеТипы=Колонка.ТипЗначения;
-					Элем.КнопкаОчистки = Истина;
+					Item = ThisForm.Items.Add("_RecordSet_" + Column.Name, Type("FormField"),
+						ThisForm.Items._RecordSet);
+					Item.DataPath="_RecordSet." + Column.Name;
+					Item.Type=FormFieldType.InputField;
+					Item.AvailableTypes=Column.ValueType;
+					Item.ClearButton = True;
 
-					Если Колонка.ТипЗначения.СодержитТип(ТипХЗ) Тогда // версия 033
-						Элем.ТолькоПросмотр = Истина;
-					КонецЕсли;
-				КонецЦикла;
-			КонецЕсли;
+					If Column.ValueType.ContainsType(TypeVS) Then // 033 version
+						Item.ReadOnly = True;
+					EndIf;
+				EndDo;
+			EndIf;
 
-		Исключение
-			Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-		КонецПопытки;
+		Except
+			Message(BriefErrorDescription(ErrorInfo()));
+		EndTry;
 
-	ИначеЕсли НадоИзменитьРеквизиты Тогда
-		ИзменитьРеквизиты(МассивКСозданию, МассивКУдалению);
-	КонецЕсли;
+	ElsIf ChangeAttributes Then
+		ChangeAttributes(ArrayToCreate, ArrayToDelete);
+	EndIf;
 
-	_ИмяНабораЗаписейПредыдущий = _ИмяНабораЗаписей;
-КонецПроцедуры
+	_RecordSetNamePrevious = _RecordSetName;
+EndProcedure
 
-&НаСервере
-Процедура вЗаписатьНаборЗаписей()
-	Если Не ПустаяСтрока(_ИмяНабораЗаписей) И ЗначениеЗаполнено(mObjectRef) Тогда
-		Менеджер = вСоздатьМенеджерНабораЗаписей(_ИмяНабораЗаписей);
-		Если Менеджер <> Неопределено Тогда
-			Набор = Менеджер.СоздатьНаборЗаписей();
-			Набор.Отбор.Регистратор.Установить(mObjectRef);
-			ПараметрыЗаписи=UT_CommonClientServer.FormWriteSettings(ЭтотОбъект);
+&AtServer
+Procedure vWriteRecordSet()
+	If Not IsBlankString(_RecordSetName) And ValueIsFilled(mObjectRef) Then
+		Manager = vCreateRecordSetManager(_RecordSetName);
+		If Manager <> Undefined Then
+			Set = Manager.CreateRecordSet();
+			Set.Filter.Recorder.Set(mObjectRef);
+			WriteParameters=UT_CommonClientServer.FormWriteSettings(ThisObject);
 
-			Если ПараметрыЗаписи.ЗаписьВРежимеЗагрузки Тогда
-				Набор.ОбменДанными.Загрузка = Истина;
-			КонецЕсли;
+			If WriteParameters.WriteInLoadingMode Then
+				Set.DataExchange.Load = True;
+			EndIf;
 
-			Попытка
-				ТабРезультат = РеквизитФормыВЗначение("_НаборЗаписей");
-				ТабРезультат.ЗаполнитьЗначения(mObjectRef, "Регистратор");
-				Набор.Загрузить(ТабРезультат);
+			Try
+				TabResult = FormAttributeToValue("_RecordSet");
+				TabResult.FillValues(mObjectRef, "Recorder");
+				Set.Load(TabResult);
 
-				Набор.Записать(Истина);
+				Set.Write(True);
 
-				вОбновитьНаборЗаписей();
-			Исключение
-				Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-			КонецПопытки;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+				vRefreshRecordSet();
+			Except
+				Message(BriefErrorDescription(ErrorInfo()));
+			EndTry;
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаСервереБезКонтекста
-Функция вСоздатьМенеджерНабораЗаписей(Знач пИмяНабораЗаписей)
-	Поз = СтрНайти(пИмяНабораЗаписей, ".");
+&AtServerNoContext
+Function vCreateRecordSetManager(Val pRecordSetName)
+	Pos = StrFind(pRecordSetName, ".");
 
-	пВидРегистра = Лев(пИмяНабораЗаписей, Поз - 1);
-	пИмяРегистра = Сред(пИмяНабораЗаписей, Поз + 1);
+	pRegisterType = Left(pRecordSetName, Pos - 1);
+	pRegisterName = Mid(pRecordSetName, Pos + 1);
 
-	Менеджер = Неопределено;
+	Manager = Undefined;
 
-	Если пВидРегистра = "РегистрСведений" Тогда
-		Менеджер = РегистрыСведений[пИмяРегистра];
-	ИначеЕсли пВидРегистра = "РегистрНакопления" Тогда
-		Менеджер = РегистрыНакопления[пИмяРегистра];
-	ИначеЕсли пВидРегистра = "РегистрРасчета" Тогда
-		Менеджер = РегистрыРасчета[пИмяРегистра];
-	ИначеЕсли пВидРегистра = "РегистрБухгалтерии" Тогда
-		Менеджер = РегистрыБухгалтерии[пИмяРегистра];
-	КонецЕсли;
+	If pRegisterType = "InformationRegister" Then
+		Manager = InformationRegisters[pRegisterName];
+	ElsIf pRegisterType = "AccumulationRegister" Then
+		Manager = AccumulationRegisters[pRegisterName];
+	ElsIf pRegisterType = "CalculationRegister" Then
+		Manager = CalculationRegisters[pRegisterName];
+	ElsIf pRegisterType = "AccountingRegister" Then
+		Manager = AccountingRegisters[pRegisterName];
+	EndIf;
 
-	Возврат Менеджер;
-КонецФункции
-&НаСервереБезКонтекста
-Функция вОписаниеТиповДляUUID(пОписаниеТипов)
-	Если пОписаниеТипов.Типы().Количество() = 1 Тогда
-		пНовоеОписаниеТипов = Новый ОписаниеТипов(пОписаниеТипов, "Строка");
-	Иначе
-		пНовоеОписаниеТипов = пОписаниеТипов;
-	КонецЕсли;
+	Return Manager;
+EndFunction
+&AtServerNoContext
+Function vUUIDTypeDescription(pTypeDescription)
+	If pTypeDescription.Types().Count() = 1 Then
+		pNewTypeDescription = New TypeDescription(pTypeDescription, "String");
+	Else
+		pNewTypeDescription = pTypeDescription;
+	EndIf;
 
-	Возврат пНовоеОписаниеТипов;
-КонецФункции
+	Return pNewTypeDescription;
+EndFunction
 
-&НаСервере
-Процедура вОчиститьДанныеОбъекта()
-	РеквизитыОбъекта.Очистить();
-КонецПроцедуры
+&AtServer
+Procedure vClearObjectData()
+	ObjectAttributes.Clear();
+EndProcedure
 
-&НаСервере
-Процедура вЗаполнитьДанныеОбъекта(НадоСоздаватьРеквизиты)
-	Перем НС;
+&AtServer
+Procedure vFillObjectData(CreateAttributes)
+	Var NS;
 
-	СтрукТипы = вСформироватьСтруктуруТипов();
-	пТипХЗ = Тип("ХранилищеЗначения");
+	StructTypes = vGenerateTypesStructure();
+	pTypeVS = Type("ValueStorage");
 
-	Если НадоСоздаватьРеквизиты Тогда
-		МассивКСозданию = Новый Массив;
-		МассивКУдалению = Новый Массив;
+	If CreateAttributes Then
+		ArrayToCreate = New Array;
+		ArrayToDelete = New Array;
 		
-		// специализированные табличные части 1С
-		СтрукСпецДанные = Новый Структура(вПереченьСпециализированныхТабличныхЧастей("ПланСчетов") + ", "
-			+ вПереченьСпециализированныхТабличныхЧастей("ПланВидовРасчета"));
+		// 1С special tabular sections
+		StructSpecData = New Structure(vSpecialTabularSectionsList("ChartOfAccounts") + ", "
+			+ vSpecialTabularSectionsList("ChartOfCalculationTypes"));
 
-		Если мОбъектСсылкаПредыдущий <> Неопределено Тогда
-			ОбъектМД = мОбъектСсылкаПредыдущий.Метаданные();
-			Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-				МассивКУдалению.Добавить(ИмяТаб);
-			КонецЦикла;
+		If mPreviousObjectRef <> Undefined Then
+			MDObject = mPreviousObjectRef.Metadata();
+			For Each TSItem In MDObject.TabularSections Do
+				TabName = _PrefixForNewItems + TSItem.Name;
+				ArrayToDelete.Add(TabName);
+			EndDo;
 			
-			// специализированные табличные части 1С
-			Для Каждого Элем Из СтрукСпецДанные Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + Элем.Ключ;
-				Если вПроверитьНаличиеРеквизитаФормы(ИмяТаб) Тогда
-					МассивКУдалению.Добавить(ИмяТаб);
-				КонецЕсли;
-			КонецЦикла;
-		КонецЕсли;
-		_ИмяНабораЗаписей = "";
-		ВидимостьРазделаДвижения = Ложь;
-		Если Не ПустаяСтрока(_ИмяНабораЗаписейПредыдущий) Тогда
-			вОбновитьНаборЗаписей();
-		КонецЕсли;
+			// 1С special tabular sections
+			For Each Item In StructSpecData Do
+				TabName = _PrefixForNewItems + Item.Key;
+				If vCheckFormAttributeExistence(TabName) Then
+					ArrayToDelete.Add(TabName);
+				EndIf;
+			EndDo;
+		EndIf;
+		_RecordSetName = "";
+		RecordSectionVisibility = False;
+		If Not IsBlankString(_RecordSetNamePrevious) Then
+			vRefreshRecordSet();
+		EndIf;
 
-		Если mObjectRef <> Неопределено Тогда
-			ОбъектМД = mObjectRef.Метаданные();
+		If mObjectRef <> Undefined Then
+			MDObject = mObjectRef.Metadata();
 
-			Если Метаданные.Документы.Содержит(ОбъектМД) Тогда
-				Если ОбъектМД.Движения.Количество() <> 0 Тогда
-					ВидимостьРазделаДвижения = Истина;
-					_ПроведениеРазрешено = (ОбъектМД.Проведение = Метаданные.СвойстваОбъектов.Проведение.Разрешить);
+			If Metadata.Documents.Contains(MDObject) Then
+				If MDObject.RegisterRecords.Count() <> 0 Then
+					RecordSectionVisibility = True;
+					_PostingIsAllowed = (MDObject.Posting = Metadata.ObjectProperties.Posting.Allow);
 
-					Список = Элементы._ИмяНабораЗаписей.СписокВыбора;
-					Список.Очистить();
-					Для Каждого ОбъектРегистрМД Из ОбъектМД.Движения Цикл
-						Список.Добавить(ОбъектРегистрМД.ПолноеИмя(), ОбъектРегистрМД.Представление());
-					КонецЦикла;
+					List = Items._RecordSetName.ChoiceList;
+					List.Clear();
+					For Each MDRegisterObject In MDObject.RegisterRecords Do
+						List.Add(MDRegisterObject.FullName(), MDRegisterObject.Presentation());
+					EndDo;
 
-					Список.СортироватьПоЗначению();
-				КонецЕсли;
-			КонецЕсли;
+					List.SortByValue();
+				EndIf;
+			EndIf;
 			
-			// специализированные табличные части 1С
-			вСоздатьСпециализированныеТабличныеЧасти(ОбъектМД, МассивКСозданию);
+			// 1С special tabular sections
+			vCreateSpecialTabularSections(MDObject, ArrayToCreate);
 
-			Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-				МассивКСозданию.Добавить(Новый РеквизитФормы(ИмяТаб, Новый ОписаниеТипов("ТаблицаЗначений"), ,
-					ЭлемТЧ.Имя));
-				Для Каждого Элем Из ЭлемТЧ.Реквизиты Цикл
-					Если Элем.Тип.СодержитТип(пТипХЗ) Тогда
-						МассивКСозданию.Добавить(Новый РеквизитФормы(Элем.Имя, Новый ОписаниеТипов, ИмяТаб, Элем.Имя));
-					ИначеЕсли Элем.Тип.СодержитТип(СтрукТипы.мТипУникальныйИдентификатор) Тогда
-						МассивКСозданию.Добавить(Новый РеквизитФормы(Элем.Имя, вОписаниеТиповДляUUID(Элем.Тип), ИмяТаб,
-							Элем.Имя));
-					Иначе
-						МассивКСозданию.Добавить(Новый РеквизитФормы(Элем.Имя, Элем.Тип, ИмяТаб, Элем.Имя));
-					КонецЕсли;
-				КонецЦикла;
-			КонецЦикла;
-		КонецЕсли;
-		Элементы.СтрДвиженияДокумента.Видимость = ВидимостьРазделаДвижения;
+			For Each TSItem In MDObject.TabularSections Do
+				TabName = _PrefixForNewItems + TSItem.Name;
+				ArrayToCreate.Add(New FormAttribute(TabName, New TypeDescription("ValueTable"), ,
+					TSItem.Name));
+				For Each Item In TSItem.Attributes Do
+					If Item.Type.ContainsType(pTypeVS) Then
+						ArrayToCreate.Add(New FormAttribute(Item.Name, New TypeDescription, TabName, Item.Name));
+					ElsIf Item.Type.ContainsType(StructTypes.mTypeUUID) Then
+						ArrayToCreate.Add(New FormAttribute(Item.Name, vUUIDTypeDescription(Item.Type), TabName,
+							Item.Name));
+					Else
+						ArrayToCreate.Add(New FormAttribute(Item.Name, Item.Type, TabName, Item.Name));
+					EndIf;
+				EndDo;
+			EndDo;
+		EndIf;
+		Items.DocumentRecordsPage.Visible = RecordSectionVisibility;
 
-		Если МассивКСозданию.Количество() <> 0 Или МассивКУдалению.Количество() <> 0 Тогда
-			ИзменитьРеквизиты(МассивКСозданию, МассивКУдалению);
-		КонецЕсли;
+		If ArrayToCreate.Count() <> 0 Or ArrayToDelete.Count() <> 0 Then
+			ChangeAttributes(ArrayToCreate, ArrayToDelete);
+		EndIf;
 
-		Если МассивКУдалению.Количество() <> 0 Тогда
-			ОбъектМД = мОбъектСсылкаПредыдущий.Метаданные();
+		If ArrayToDelete.Count() <> 0 Then
+			MDObject = mPreviousObjectRef.Metadata();
 			
-			// специализированные табличные части 1С
-			Для Каждого Элем Из СтрукСпецДанные Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + Элем.Ключ;
-				ЭФ = Элементы.Найти("Стр" + ИмяТаб);
-				Если ЭФ <> Неопределено Тогда
-					Элементы.Удалить(ЭФ);
-				КонецЕсли;
-			КонецЦикла;
+			// 1С special tabular sections
+			For Each Item In StructSpecData Do
+				TabName = _PrefixForNewItems + Item.Key;
+				FI = Items.Find("Str" + TabName);
+				If FI <> Undefined Then
+					Items.Delete(FI);
+				EndIf;
+			EndDo;
 
-			Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-				Элементы.Удалить(Элементы.Найти("Стр" + ИмяТаб));
-			КонецЦикла;
-		КонецЕсли;
+			For Each TSItem In MDObject.TabularSections Do
+				TabName = _PrefixForNewItems + TSItem.Name;
+				Items.Delete(Items.Find("Str" + TabName));
+			EndDo;
+		EndIf;
 
-		Если МассивКСозданию.Количество() <> 0 Тогда
-			ОбъектМД = mObjectRef.Метаданные();
+		If ArrayToCreate.Count() <> 0 Then
+			MDObject = mObjectRef.Metadata();
 			
-			// специализированные табличные части 1С
-			вСоздатьСпециализированныеТабличныеЧасти_Элементы(ОбъектМД);
+			// 1С special tabular sections
+			vCreateSpecialTabularSections_Items(MDObject);
 
-			Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-				НоваяСтраница = Элементы.Добавить("Стр" + ИмяТаб, Тип("ГруппаФормы"), Элементы.ГруппаСтраницы);
-				НоваяСтраница.Вид = ВидГруппыФормы.Страница;
-				НоваяСтраница.Заголовок = ЭлемТЧ.Имя;
-				НоваяСтраница.Подсказка = ЭлемТЧ.Представление();
+			For Each TSItem In MDObject.TabularSections Do
+				TabName = _PrefixForNewItems + TSItem.Name;
+				NewPage = Items.Add("Str" + TabName, Type("FormGroup"), Items.PagesGroup);
+				NewPage.Type = FormGroupType.Page;
+				NewPage.Title = TSItem.Name;
+				NewPage.ToolTip = TSItem.Presentation();
 
-				ШаблонОформленияЭФ = Элементы.ДекорацияРеквизитыОбъекта;
-				ЭФ = Элементы.Добавить("Надпись_" + ИмяТаб, Тип("ДекорацияФормы"), НоваяСтраница);
-				ЭФ.Вид = ВидДекорацииФормы.Надпись;
-				ЭФ.ЦветТекста = ШаблонОформленияЭФ.ЦветТекста;
-				ЭФ.Шрифт = ШаблонОформленияЭФ.Шрифт;
-				ЭФ.АвтоМаксимальнаяШирина = Ложь;
-				ЭФ.РастягиватьПоГоризонтали = Истина;
-				ЭФ.Заголовок = ЭлемТЧ.Имя + ": " + ЭлемТЧ.Представление();
+				FIAppearanceTemplate = Items.ObjectAttributesDecoration;
+				FI = Items.Add("Label_" + TabName, Type("FormDecoration"), NewPage);
+				FI.Type = FormDecorationType.Label;
+				FI.TextColor = FIAppearanceTemplate.TextColor;
+				FI.Font = FIAppearanceTemplate.Font;
+				FI.AutoMaxWidth = False;
+				FI.HorizontalStretch = True;
+				FI.Title = TSItem.Name + ": " + TSItem.Presentation();
 
-				НоваяТаблица = Элементы.Добавить(ИмяТаб, Тип("ТаблицаФормы"), НоваяСтраница);
-				НоваяТаблица.ПутьКДанным = ИмяТаб;
+				NewTable = Items.Add(TabName, Type("FormTable"), NewPage);
+				NewTable.DataPath = TabName;
 
-				Для Каждого Элем Из ЭлемТЧ.Реквизиты Цикл
-					НоваяКолонка = Элементы.Добавить(ИмяТаб + Элем.Имя, Тип("ПолеФормы"), НоваяТаблица);
-					НоваяКолонка.Вид = ВидПоляФормы.ПолеВвода;
-					НоваяКолонка.ПутьКДанным = ИмяТаб + "." + Элем.Имя;
-					НоваяКолонка.КнопкаОчистки = Истина;
-					Если Не Элем.Тип.СодержитТип(пТипХЗ) Тогда
-						//Если не Элем.Тип.СодержитТип(СтрукТипы.мТипУникальныйИдентификатор) Тогда
-						//	НоваяКолонка.ДоступныеТипы = Элем.Тип;
-						//КонецЕсли;
-						НоваяКолонка.ДоступныеТипы = Элем.Тип;
-					Иначе
-						НоваяКолонка.ТолькоПросмотр = Истина;
-					КонецЕсли;
-				КонецЦикла;
+				For Each Item In TSItem.Attributes Do
+					NewColumn = Items.Add(TabName + Item.Name, Type("FormField"), NewTable);
+					NewColumn.Type = FormFieldType.InputField;
+					NewColumn.DataPath = TabName + "." + Item.Name;
+					NewColumn.ClearButton = True;
+					If Not Item.Type.ContainsType(pTypeVS) Then
+						//If Not Item.Type.ContainsType(StructTypes.mTypeUUID) Then
+						//	NewColumn.AvailableTypes = Item.Type;
+						//EndIf;
+						NewColumn.AvailableTypes = Item.Type;
+					Else
+						NewColumn.ReadOnly = True;
+					EndIf;
+				EndDo;
 
-				НоваяТаблица.УстановитьДействие("Выбор", "ТабличнаяЧастьВыбор");
+				NewTable.SetAction("Selection", "TabularSectionSelection");
 				
-				// контекстное меню
-				ГруппаКнопок = Элементы.Добавить("Группа_" + ИмяТаб, Тип("ГруппаФормы"), НоваяТаблица.КонтекстноеМеню);
-				ГруппаКнопок.Вид = ВидГруппыФормы.ГруппаКнопок;
+				// context menu
+				ButtonGroup = Items.Add("Group_" + TabName, Type("FormGroup"), NewTable.ContextMenu);
+				ButtonGroup.Type = FormGroupType.ButtonGroup;
 
-				Кнопка = Элементы.Добавить("_ВставитьУникальныйИдентификатор_" + ИмяТаб, Тип("КнопкаФормы"),
-					ГруппаКнопок);
-				Кнопка.Вид = ВидКнопкиФормы.КнопкаКоманднойПанели;
-				Кнопка.ИмяКоманды = "_ВставитьУникальныйИдентификатор";
+				Button = Items.Add("_InsertUUID_" + TabName, Type("FormButton"),
+					ButtonGroup);
+				Button.Type = FormButtonType.CommandBarButton;
+				Button.CommandName = "_InsertUUID";
 
-				Кнопка = Элементы.Добавить("ОткрытьОбъект_" + ИмяТаб, Тип("КнопкаФормы"), ГруппаКнопок);
-				Кнопка.Вид = ВидКнопкиФормы.КнопкаКоманднойПанели;
-				Кнопка.ИмяКоманды = "ОткрытьОбъект";
-			КонецЦикла;
-		КонецЕсли;
-	КонецЕсли;	
+				Button = Items.Add("OpenObject_" + TabName, Type("FormButton"), ButtonGroup);
+				Button.Type = FormButtonType.CommandBarButton;
+				Button.CommandName = "OpenObject";
+			EndDo;
+		EndIf;
+	EndIf;	
 	
-	Если mObjectRef <> Неопределено Тогда
-		ПолноеИмя = mObjectRef.Метаданные().ПолноеИмя();
-		ВидОбъекта = Лев(ПолноеИмя, Найти(ПолноеИмя, ".") - 1);
-		_ТипОбъекта = ПолноеИмя;
+	If mObjectRef <> Undefined Then
+		FullName = mObjectRef.Metadata().FullName();
+		ObjectType = Left(FullName, Find(FullName, ".") - 1);
+		_ObjectType = FullName;
 
-		_UUID = mObjectRef.УникальныйИдентификатор();
-		_URL  = вПолучитьНавигационнуюСсылку(mObjectRef);
+		_UUID = mObjectRef.UUID();
+		_URL  = vGetURL(mObjectRef);
 
-		ОбъектМД = Метаданные.НайтиПоПолномуИмени(ПолноеИмя);
+		MDObject = Metadata.FindByFullName(FullName);
 
-		Если ОбъектМД <> Неопределено Тогда
+		If MDObject <> Undefined Then
 
-			ЭтоИерархияГруппИЭлементов = вЭтоИерархияГруппИЭлементов(ОбъектМД);
+			IsHierarchyFoldersAndItems = vIsHierarchyFoldersAndItems(MDObject);
 
-			вЗаполнитьСтандартныеРеквизиты(ОбъектМД);
+			vFillStandardAttributes(MDObject);
 			
-			Для Каждого ОбщийРеквизит Из Метаданные.ОбщиеРеквизиты Цикл
-				ЭлементСостава = ОбщийРеквизит.Состав.Найти(ОбъектМД);
-				Если ЭлементСостава <> Неопределено
-					И ЭлементСостава.Использование = Метаданные.СвойстваОбъектов.ИспользованиеОбщегоРеквизита.Использовать 
-					Тогда
+			For Each CommonAttribute In Metadata.CommonAttributes Do
+				ContentItem = CommonAttribute.Content.Find(MDObject);
+				If ContentItem <> Undefined
+					And ContentItem.Use = Metadata.ObjectProperties.CommonAttributeUse.Use 
+					Then
 					
-					НС = РеквизитыОбъекта.Добавить();
-					НС.Имя = ОбщийРеквизит.Имя;
-					НС.Представление = ОбщийРеквизит.Представление();
-					НС.Категория = 1;
-					НС.ТипЗначения = ОбщийРеквизит.Тип;
-					НС.ТипСтрокой = вОписаниеТиповВСтроку(ОбщийРеквизит.Тип, СтрукТипы);
-					НС.Значение = mObjectRef[НС.Имя];
+					NR = ObjectAttributes.Add();
+					NR.Name = CommonAttribute.Name;
+					NR.Presentation = CommonAttribute.Presentation();
+					NR.Category = 1;
+					NR.ValueType = CommonAttribute.Type;
+					NR.TypeString = vTypeDescriptionToString(CommonAttribute.Type, StructTypes);
+					NR.Value = mObjectRef[NR.Name];
 					
-				КонецЕсли;	
-			КонецЦикла;
+				EndIf;	
+			EndDo;
 
-			Для Каждого Элем Из ОбъектМД.Реквизиты Цикл
-				НС = РеквизитыОбъекта.Добавить();
-				НС.Имя = Элем.Имя;
-				НС.Представление = Элем.Представление();
-				НС.Категория = 1;
-				НС.ТипЗначения = Элем.Тип;
-				НС.ТипСтрокой = вОписаниеТиповВСтроку(Элем.Тип, СтрукТипы);
-				НС.Значение = mObjectRef[Элем.Имя];
+			For Each Item In MDObject.Attributes Do
+				NR = ObjectAttributes.Add();
+				NR.Name = Item.Name;
+				NR.Presentation = Item.Presentation();
+				NR.Category = 1;
+				NR.ValueType = Item.Type;
+				NR.TypeString = vTypeDescriptionToString(Item.Type, StructTypes);
+				NR.Value = mObjectRef[Item.Name];
 
-				Если ЭтоИерархияГруппИЭлементов Тогда
-					Если Элем.Использование = Метаданные.СвойстваОбъектов.ИспользованиеРеквизита.ДляГруппы Тогда
-						НС.ДляГруппыИлиЭлемента = -1;
-					ИначеЕсли Элем.Использование = Метаданные.СвойстваОбъектов.ИспользованиеРеквизита.ДляЭлемента Тогда
-						НС.ДляГруппыИлиЭлемента = 1;
-					Иначе
-						НС.ДляГруппыИлиЭлемента = 0;
-					КонецЕсли;
-				КонецЕсли;
-			КонецЦикла;
+				If IsHierarchyFoldersAndItems Then
+					If Item.Use = Metadata.ObjectProperties.AttributeUse.ForFolder Then
+						NR.ForFolderAndItem = -1;
+					ElsIf Item.Use = Metadata.ObjectProperties.AttributeUse.ForItem Then
+						NR.ForFolderAndItem = 1;
+					Else
+						NR.ForFolderAndItem = 0;
+					EndIf;
+				EndIf;
+			EndDo;
 
-			Если ВидОбъекта = "ПланСчетов" Тогда
-				Для Каждого Элем Из ОбъектМД.ПризнакиУчета Цикл
-					НС = РеквизитыОбъекта.Добавить();
-					НС.Имя = Элем.Имя;
-					НС.Представление = Элем.Представление();
-					НС.Категория = 1;
-					НС.ТипЗначения = Элем.Тип;
-					НС.ТипСтрокой = вОписаниеТиповВСтроку(Элем.Тип, СтрукТипы);
-					НС.Значение = mObjectRef[Элем.Имя];
-				КонецЦикла;
-			КонецЕсли;
+			If ObjectType = "ChartOfAccounts" Then
+				For Each Item In MDObject.AccountingFlags Do
+					NR = ObjectAttributes.Add();
+					NR.Name = Item.Name;
+					NR.Presentation = Item.Presentation();
+					NR.Category = 1;
+					NR.ValueType = Item.Type;
+					NR.TypeString = vTypeDescriptionToString(Item.Type, StructTypes);
+					NR.Value = mObjectRef[Item.Name];
+				EndDo;
+			EndIf;
 
-			Если ВидОбъекта = "Задача" Тогда
-				Для Каждого Элем Из ОбъектМД.РеквизитыАдресации Цикл
-					НС = РеквизитыОбъекта.Добавить();
-					НС.Имя = Элем.Имя;
-					НС.Представление = Элем.Представление();
-					НС.Категория = 1;
-					НС.ТипЗначения = Элем.Тип;
-					НС.ТипСтрокой = вОписаниеТиповВСтроку(Элем.Тип, СтрукТипы);
-					НС.Значение = mObjectRef[Элем.Имя];
-				КонецЦикла;
-			КонецЕсли;
+			If ObjectType = "Task" Then
+				For Each Item In MDObject.AddressingAttributes Do
+					NR = ObjectAttributes.Add();
+					NR.Name = Item.Name;
+					NR.Presentation = Item.Presentation();
+					NR.Category = 1;
+					NR.ValueType = Item.Type;
+					NR.TypeString = vTypeDescriptionToString(Item.Type, StructTypes);
+					NR.Value = mObjectRef[Item.Name];
+				EndDo;
+			EndIf;
 
-			РеквизитыОбъекта.Сортировать("Категория, Имя");
+			ObjectAttributes.Sort("Category, Name");
 			
-			// специализированные табличные части 1С
-			вЗаполнитьСпециализированныеТабличныеЧасти(ОбъектМД);
-
-			Для Каждого ЭлемТЧ Из ОбъектМД.ТабличныеЧасти Цикл
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ЭлемТЧ.Имя;
-				ТабРезультат = mObjectRef[ЭлемТЧ.Имя].Выгрузить();
-				ЗначениеВРеквизитФормы(ТабРезультат, ИмяТаб);
-			КонецЦикла;
-		КонецЕсли;
-	Иначе
-		_ТипОбъекта = "";
-	КонецЕсли;
-КонецПроцедуры
-&НаСервереБезКонтекста
-Функция вПереченьСпециализированныхТабличныхЧастей(ВидОбъекта)
-	Если ВидОбъекта = "ПланСчетов" Тогда
-		Возврат "ВидыСубконто";
-	ИначеЕсли ВидОбъекта = "ПланВидовРасчета" Тогда
-		Возврат "БазовыеВидыРасчета, ВедущиеВидыРасчета, ВытесняющиеВидыРасчета";
-	Иначе
-		Возврат "";
-	КонецЕсли;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вПроверитьНаличиеРеквизитаОбъекта(Ссылка, ИмяРеквизита, ЗначениеДляОтсутствующего = -1)
-	Струк = Новый Структура(ИмяРеквизита, ЗначениеДляОтсутствующего);
-	ЗаполнитьЗначенияСвойств(Струк, Ссылка);
-
-	Возврат (Струк[ИмяРеквизита] <> ЗначениеДляОтсутствующего);
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вСформироватьОтчетПоДвижениям(Знач ДокСсылка, Знач СписокРегистров, Знач пКонфигурацияДопускаетДопДвижения)
-	пЧислоТаблицВЗапросе = 200;
-
-	Если пКонфигурацияДопускаетДопДвижения Тогда
-		пСтрук = вОпределитьДополнительныеРегистрыДокумента(ДокСсылка);
-		Если пСтрук.ЕстьДанные Тогда
-			Для Каждого Элем Из пСтрук.ДополнительныеРегистры Цикл
-				СписокРегистров.Добавить("+" + Элем.Ключ, Элем.Значение);
-			КонецЦикла;
-		КонецЕсли;
-	КонецЕсли;
-
-	Запрос = Новый Запрос;
-	Запрос.УстановитьПараметр("Регистратор", ДокСсылка);
-
-	ТекстНачалаЗапроса = "ВЫБРАТЬ 0 КАК Инд, 100000000 КАК ПолеА ГДЕ ложь";
-	ТекстЗапроса = ТекстНачалаЗапроса;
-
-	ТабРезультат = Неопределено;
-	Инд = -1;
-	Сч = 0;
-
-	Для Каждого Элем Из СписокРегистров Цикл
-		Инд = Инд + 1;
-		Сч = Сч + 1;
-
-		Если Сч > пЧислоТаблицВЗапросе Тогда
-			Сч = 1;
-
-			Запрос.Текст = ТекстЗапроса;
-			ТабДанные = Запрос.Выполнить().Выгрузить();
-
-			Если ТабРезультат = Неопределено Тогда
-				ТабРезультат = ТабДанные;
-			Иначе
-				Для Каждого Стр Из ТабДанные Цикл
-					ЗаполнитьЗначенияСвойств(ТабРезультат.Добавить(), Стр);
-				КонецЦикла;
-			КонецЕсли;
-
-			ТекстЗапроса = ТекстНачалаЗапроса;
-		КонецЕсли;
-
-		Если Лев(Элем.Значение, 1) = "+" Тогда
-			ТекстЗапроса = ТекстЗапроса + "
-										  |ОБЪЕДИНИТЬ ВСЕ
-										  |ВЫБРАТЬ " + Инд + ", КОЛИЧЕСТВО(*) ИЗ " + Сред(Элем.Значение, 2)
-				+ " КАК т ГДЕ т.ДокументРегистратор = &Регистратор ИМЕЮЩИЕ КОЛИЧЕСТВО(*) > 0";
-		Иначе
-			ТекстЗапроса = ТекстЗапроса + "
-										  |ОБЪЕДИНИТЬ ВСЕ
-										  |ВЫБРАТЬ " + Инд + ", КОЛИЧЕСТВО(*) ИЗ " + Элем.Значение
-				+ " КАК т ГДЕ т.Регистратор = &Регистратор ИМЕЮЩИЕ КОЛИЧЕСТВО(*) > 0";
-		КонецЕсли;
-	КонецЦикла;
-
-	Запрос.Текст = ТекстЗапроса;
-	ТабДанные = Запрос.Выполнить().Выгрузить();
-
-	Если ТабРезультат = Неопределено Тогда
-		ТабРезультат = ТабДанные;
-	Иначе
-		Для Каждого Стр Из ТабДанные Цикл
-			ЗаполнитьЗначенияСвойств(ТабРезультат.Добавить(), Стр);
-		КонецЦикла;
-	КонецЕсли;
-
-	Линия1 = Новый Линия(ТипЛинииЯчейкиТабличногоДокумента.Сплошная, 2);
-
-	ТДок = Новый ТабличныйДокумент;
-
-	ТДок.Область( , 1, , 1).ШиринаКолонки = 2;
-	ТДок.Область( , 2, , 2).ШиринаКолонки = 50;
-	ТДок.Область( , 3, , 3).ШиринаКолонки = 50;
-	ТДок.Область( , 4, , 4).ШиринаКолонки = 12;
-
-	ТДок.Область(2, 2).Текст = Строка(ДокСсылка);
-	ТДок.Область(2, 2, 2, 3).Обвести( , , , Линия1);
-
-	ТДок.Область(4, 2).Текст = "Имя регистра";
-	ТДок.Область(4, 3).Текст = "Представление";
-	ТДок.Область(4, 4).Текст = "Число записей";
-	ТДок.Область(4, 2, 4, 4).ЦветФона = WebЦвета.СветлоЖелтыйЗолотистый;
-	ТДок.Область(4, 2, 4, 4).Обвести(Линия1, Линия1, Линия1, Линия1);
-
-	НПП = 4;
-	Для Каждого Стр Из ТабРезультат Цикл
-		НПП = НПП + 1;
-		пИмяРегистра = СписокРегистров[Стр.Инд].Значение;
-		пЭтоДопДвижение = пКонфигурацияДопускаетДопДвижения И (Лев(пИмяРегистра, 1) = "+");
-
-		ТДок.Область(НПП, 2).Текст = ?(пЭтоДопДвижение, Сред(пИмяРегистра, 2), пИмяРегистра);
-		ТДок.Область(НПП, 3).Текст = СписокРегистров[Стр.Инд].Представление;
-		ТДок.Область(НПП, 4).Текст = Стр.ПолеА;
-
-		Если пЭтоДопДвижение Тогда
-			ТДок.Область(НПП, 2, НПП, 4).ЦветТекста = WebЦвета.Зеленый;
-		КонецЕсли;
-	КонецЦикла;
-
-	ТДок.Область(4, 2, НПП, 4).Обвести(Линия1, Линия1, Линия1, Линия1);
-
-	Возврат ТДок;
-КонецФункции
-
-&НаКлиентеНаСервереБезКонтекста
-Функция вПолучитьНавигационнуюСсылку(Ссылка)
-	// на некотрых платформах возникает ошибка при получении НавСсылки определенных объектов (на пример, счета БУ)
-
-	Попытка
-		Возврат ПолучитьНавигационнуюСсылку(Ссылка);
-	Исключение
-		Возврат "";
-	КонецПопытки;
-КонецФункции
-
-&НаСервере
-Функция вПроверитьНаличиеРеквизитаФормы(ИмяРеквизита, ЗначениеДляОтсутствующего = -1)
-	Струк = Новый Структура(ИмяРеквизита, ЗначениеДляОтсутствующего);
-	ЗаполнитьЗначенияСвойств(Струк, ЭтаФорма);
-
-	Возврат (Струк[ИмяРеквизита] <> ЗначениеДляОтсутствующего);
-КонецФункции
-
-&НаСервере
-Процедура вСоздатьСпециализированныеТабличныеЧасти(Знач ОбъектМД, Знач МассивКСозданию)
-	ПолноеИмя = ОбъектМД.ПолноеИмя();
-	ВидОбъекта = Лев(ПолноеИмя, Найти(ПолноеИмя, ".") - 1);
-
-	ПереченьТЧ = вПереченьСпециализированныхТабличныхЧастей(ВидОбъекта);
-	Если Не ПустаяСтрока(ПереченьТЧ) Тогда
-		Струк = Новый Структура(ПереченьТЧ);
-		Для Каждого Элем Из Струк Цикл
-			ИмяТЧ = Элем.Ключ;
-			Если вПроверитьНаличиеРеквизитаОбъекта(mObjectRef, ИмяТЧ) Тогда
-				ТабРезультат = mObjectRef[ИмяТЧ].Выгрузить();
-
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ИмяТЧ;
-				МассивКСозданию.Добавить(Новый РеквизитФормы(ИмяТаб, Новый ОписаниеТипов("ТаблицаЗначений"), , ИмяТЧ));
-				Для Каждого Элем Из ТабРезультат.Колонки Цикл
-					Если Элем.Имя <> "НомерСтроки" Тогда
-						МассивКСозданию.Добавить(Новый РеквизитФормы(Элем.Имя, Элем.ТипЗначения, ИмяТаб, Элем.Имя));
-					КонецЕсли;
-				КонецЦикла;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаСервере
-Процедура вСоздатьСпециализированныеТабличныеЧасти_Элементы(Знач ОбъектМД)
-	ПолноеИмя = ОбъектМД.ПолноеИмя();
-	ВидОбъекта = Лев(ПолноеИмя, Найти(ПолноеИмя, ".") - 1);
-
-	ПереченьТЧ = вПереченьСпециализированныхТабличныхЧастей(ВидОбъекта);
-	Если Не ПустаяСтрока(ПереченьТЧ) Тогда
-		Струк = Новый Структура(ПереченьТЧ);
-		Для Каждого Элем Из Струк Цикл
-			ИмяТЧ = Элем.Ключ;
-			Если вПроверитьНаличиеРеквизитаОбъекта(mObjectRef, ИмяТЧ) Тогда
-				ТабРезультат = mObjectRef[ИмяТЧ].Выгрузить();
-
-				ИмяТаб = _ПрефиксДляНовыхЭлементов + ИмяТЧ;
-				НоваяСтраница = Элементы.Добавить("Стр" + ИмяТаб, Тип("ГруппаФормы"), Элементы.ГруппаСтраницы);
-				НоваяСтраница.Вид = ВидГруппыФормы.Страница;
-				НоваяСтраница.Заголовок = ИмяТЧ;
-
-				НоваяТаблица = Элементы.Добавить(ИмяТаб, Тип("ТаблицаФормы"), НоваяСтраница);
-				НоваяТаблица.ПутьКДанным = ИмяТаб;
-
-				Для Каждого Элем Из ТабРезультат.Колонки Цикл
-					Если Элем.Имя <> "НомерСтроки" Тогда
-						НоваяКолонка = Элементы.Добавить(ИмяТаб + Элем.Имя, Тип("ПолеФормы"), НоваяТаблица);
-						НоваяКолонка.Вид = ВидПоляФормы.ПолеВвода;
-						НоваяКолонка.ПутьКДанным = ИмяТаб + "." + Элем.Имя;
-					КонецЕсли;
-				КонецЦикла;
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаСервере
-Процедура вЗаполнитьСпециализированныеТабличныеЧасти(Знач ОбъектМД)
-	ПолноеИмя = ОбъектМД.ПолноеИмя();
-	ВидОбъекта = Лев(ПолноеИмя, Найти(ПолноеИмя, ".") - 1);
-
-	ПереченьТЧ = вПереченьСпециализированныхТабличныхЧастей(ВидОбъекта);
-	Если Не ПустаяСтрока(ПереченьТЧ) Тогда
-		Струк = Новый Структура(ПереченьТЧ);
-		Для Каждого Элем Из Струк Цикл
-			ИмяТЧ = Элем.Ключ;
-			ИмяТаб = _ПрефиксДляНовыхЭлементов + ИмяТЧ;
-
-			Если вПроверитьНаличиеРеквизитаОбъекта(mObjectRef, ИмяТЧ) Тогда
-				ТабРезультат = mObjectRef[ИмяТЧ].Выгрузить();
-				ЗначениеВРеквизитФормы(ТабРезультат, ИмяТаб);
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаСервере
-Процедура вЗаписатьСпециализированныеТабличныеЧасти(ОбъектМД, ОбъектДляЗаписи)
-	ПолноеИмя = ОбъектМД.ПолноеИмя();
-	ВидОбъекта = Лев(ПолноеИмя, Найти(ПолноеИмя, ".") - 1);
-
-	ПереченьТЧ = вПереченьСпециализированныхТабличныхЧастей(ВидОбъекта);
-	Если Не ПустаяСтрока(ПереченьТЧ) Тогда
-		Струк = Новый Структура(ПереченьТЧ);
-		Для Каждого Элем Из Струк Цикл
-			ИмяТЧ = Элем.Ключ;
-			ИмяТаб = _ПрефиксДляНовыхЭлементов + ИмяТЧ;
-
-			Если вПроверитьНаличиеРеквизитаОбъекта(ОбъектДляЗаписи, ИмяТЧ) Тогда
-				ТабЧасть = ОбъектДляЗаписи[ИмяТЧ];
-				ТабЧасть.Очистить();
-
-				ТабРезультат = РеквизитФормыВЗначение(ИмяТаб);
-				ТабЧасть.Загрузить(ТабРезультат);
-			КонецЕсли;
-		КонецЦикла;
-	КонецЕсли;
-КонецПроцедуры
-&НаСервереБезКонтекста
-Функция вОписаниеТиповВСтроку(ОписаниеТипов, СтрукТипы)
-	Если ОписаниеТипов = Неопределено Тогда
-		Возврат "";
-	КонецЕсли;
-
-	Значение = "";
-	Типы = ОписаниеТипов.Типы();
-	Для Каждого Элем Из Типы Цикл
-		ИмяТипа = вИмяТипаСтрокой(СтрукТипы, Элем, ОписаниеТипов);
-		Если Не ПустаяСтрока(ИмяТипа) Тогда
-			Значение = Значение + "," + ИмяТипа;
-		КонецЕсли;
-	КонецЦикла;
-
-	Возврат Сред(Значение, 2);
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вИмяТипаСтрокой(СтрукТипы, Тип, ОписаниеТипов)
-	ИмяТипа = "";
-
-	Если Тип = СтрукТипы.мТипЧисло Тогда
-		ИмяТипа = "Число";
-		Если ОписаниеТипов.КвалификаторыЧисла.Разрядность <> 0 Тогда
-			ИмяТипа = ИмяТипа + "(" + ОписаниеТипов.КвалификаторыЧисла.Разрядность + "."
-				+ ОписаниеТипов.КвалификаторыЧисла.РазрядностьДробнойЧасти + ")";
-		КонецЕсли;
-	ИначеЕсли Тип = СтрукТипы.мТипСтрока Тогда
-		ИмяТипа = "Строка";
-		Если ОписаниеТипов.КвалификаторыСтроки.Длина <> 0 Тогда
-			ИмяТипа = ИмяТипа + "(" + ?(ОписаниеТипов.КвалификаторыСтроки.ДопустимаяДлина = ДопустимаяДлина.Переменная,
-				"П", "Ф") + ОписаниеТипов.КвалификаторыСтроки.Длина + ")";
-		КонецЕсли;
-	ИначеЕсли Тип = СтрукТипы.мТипДата Тогда
-		ИмяТипа = ?(ОписаниеТипов.КвалификаторыДаты.ЧастиДаты = ЧастиДаты.Время, "Время", ?(
-			ОписаниеТипов.КвалификаторыДаты.ЧастиДаты = ЧастиДаты.Дата, "Дата", "ДатаВремя"));
-	ИначеЕсли Тип = СтрукТипы.мТипБулево Тогда
-		ИмяТипа = "Булево";
-	ИначеЕсли Тип = СтрукТипы.мТипДвоичныеДанные Тогда
-		ИмяТипа = "ДвоичныеДанные";
-	ИначеЕсли Тип = СтрукТипы.мТипХранилищеЗначения Тогда
-		ИмяТипа = "ХранилищеЗначения";
-	ИначеЕсли Тип = СтрукТипы.мТипУникальныйИдентификатор Тогда
-		ИмяТипа = "УникальныйИдентификатор";
-	Иначе
-		ОбъектМД = Метаданные.НайтиПоТипу(Тип);
-		Если ОбъектМД <> Неопределено Тогда
-			ИмяТипа = ОбъектМД.ПолноеИмя();
-		Иначе
-			ИмяТипа = Строка(Тип);
-		КонецЕсли;
-	КонецЕсли;
-
-	Возврат ИмяТипа;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вСформироватьСтруктуруТипов()
-	Результат = Новый Структура;
-
-	Результат.Вставить("мТипСтрока", Тип("Строка"));
-	Результат.Вставить("мТипБулево", Тип("Булево"));
-	Результат.Вставить("мТипЧисло", Тип("Число"));
-	Результат.Вставить("мТипДата", Тип("Дата"));
-	Результат.Вставить("мТипСтруктура", Тип("Структура"));
-	Результат.Вставить("мТипХранилищеЗначения", Тип("ХранилищеЗначения"));
-	Результат.Вставить("мТипДвоичныеДанные", Тип("ДвоичныеДанные"));
-	Результат.Вставить("мТипДеревоЗначений", Тип("ДеревоЗначений"));
-	Результат.Вставить("мТипОбъектМетаданных", Тип("ОбъектМетаданных"));
-	Результат.Вставить("мТипУникальныйИдентификатор", Тип("УникальныйИдентификатор"));
-
-	Возврат Результат;
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вЭтоИерархияГруппИЭлементов(ОбъектМД)
-	Струк = Новый Структура("Иерархический, ВидИерархии");
-	ЗаполнитьЗначенияСвойств(Струк, ОбъектМД);
-	Возврат (Струк.Иерархический = Истина И Струк.ВидИерархии
-		= Метаданные.СвойстваОбъектов.ВидИерархии.ИерархияГруппИЭлементов);
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вОписаниеТиповСтрока(ДлинаСтроки, ПеременнаяДлина = Истина)
-	Возврат Новый ОписаниеТипов("Строка", , , , Новый КвалификаторыСтроки(ДлинаСтроки, ?(ПеременнаяДлина,
-		ДопустимаяДлина.Переменная, ДопустимаяДлина.Фиксированная)));
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вОписаниеТиповЧисло(ЧислоРазрядов, ЧислоРазрядовДробнойЧасти = 0)
-	Возврат Новый ОписаниеТипов("Число", , , Новый КвалификаторыЧисла(ЧислоРазрядов, ЧислоРазрядовДробнойЧасти));
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вОписаниеТиповКода(ТипКода, ДлинаКода, ДопустимаяДлинаКода)
-	Возврат ?(Строка(ТипКода) = "Число", вОписаниеТиповЧисло(ДлинаКода), вОписаниеТиповСтрока(ДлинаКода, ?(Строка(
-		ДопустимаяДлинаКода) = "Фиксированная", Ложь, Истина)));
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вОписаниеТиповНомера(ТипНомера, ДлинаНомера)
-	Возврат ?(Строка(ТипНомера) = "Число", вОписаниеТиповЧисло(ДлинаНомера), вОписаниеТиповСтрока(ДлинаНомера, Ложь));
-КонецФункции
-
-&НаСервереБезКонтекста
-Функция вОписаниеТиповВладельца(КоллекцияМД)
-	МассивТипов = Новый Массив;
-	Для Каждого Элем Из КоллекцияМД Цикл
-		ИмяТипа = Элем.ПолноеИмя();
-		ИмяТипа = СтрЗаменить(ИмяТипа, ".", "Ссылка.");
-		МассивТипов.Добавить(Тип(ИмяТипа));
-	КонецЦикла;
-
-	Возврат Новый ОписаниеТипов(МассивТипов);
-КонецФункции
-
-&НаСервере
-Процедура вЗаполнитьСтандартныеРеквизиты(ОбъектМД)
-	Перем НС;
-
-	ПереченьРеквизитов = "Код, Номер, Дата, Проведен, ПометкаУдаления, ЭтоГруппа, Наименование, Владелец, Родитель, БизнесПроцесс, Выполнена, Завершен, Стартован, НомерОтправленного, НомерПринятого, ЭтотУзел";
-	ПереченьСвойств = "ТипКода, ТипНомера, ДлинаКода, ДопустимаяДлинаКода, ДлинаНомера, ДлинаНаименования, Иерархический, ВидИерархии, Владельцы";
-
-	СтрукРеквизиты = Новый Структура(ПереченьРеквизитов);
-	СтрукСвойства = Новый Структура(ПереченьСвойств);
-
-	ЗаполнитьЗначенияСвойств(СтрукСвойства, ОбъектМД);
-	ЗаполнитьЗначенияСвойств(СтрукРеквизиты, mObjectRef);
-
-	Если Метаданные.ПланыОбмена.Содержит(ОбъектМД) Тогда
-		Если СтрукСвойства.ТипКода = Неопределено Тогда
-			СтрукСвойства.ТипКода = "Строка";
-		КонецЕсли;
-	КонецЕсли;
-
-	Если Метаданные.ПланыСчетов.Содержит(ОбъектМД) Тогда
-		Если СтрукСвойства.ТипКода = Неопределено Тогда
-			СтрукСвойства.ТипКода = "Строка";
-		КонецЕсли;
-	КонецЕсли;
-
-	Если СтрукСвойства.ТипНомера <> Неопределено И ЗначениеЗаполнено(СтрукСвойства.ДлинаНомера) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Номер";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = вОписаниеТиповНомера(СтрукСвойства.ТипНомера, СтрукСвойства.ДлинаНомера);
-		НС.Значение = СтрукРеквизиты.Номер;
-	КонецЕсли;
-
-	Если СтрукСвойства.ТипКода <> Неопределено И ЗначениеЗаполнено(СтрукСвойства.ДлинаКода) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Код";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = вОписаниеТиповКода(СтрукСвойства.ТипКода, СтрукСвойства.ДлинаКода,
-			СтрукСвойства.ДопустимаяДлинаКода);
-		НС.Значение = СтрукРеквизиты.Код;
-	КонецЕсли;
-
-	Если СтрукРеквизиты.Наименование <> Неопределено И ЗначениеЗаполнено(СтрукСвойства.ДлинаНаименования) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Наименование";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = вОписаниеТиповСтрока(СтрукСвойства.ДлинаНаименования);
-		НС.Значение = СтрукРеквизиты.Наименование;
-	КонецЕсли;
-
-	Если СтрукРеквизиты.Дата <> Неопределено Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Дата";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Дата", , , , , Новый КвалификаторыДаты(ЧастиДаты.ДатаВремя));
-		НС.Значение = СтрукРеквизиты.Дата;
-	КонецЕсли;
-
-	Если СтрукСвойства.Иерархический = Истина Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Родитель";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		Массив = Новый Массив;
-		Массив.Добавить(ТипЗнч(mObjectRef));
-		НС.ТипЗначения = Новый ОписаниеТипов(Массив);
-		НС.Значение = СтрукРеквизиты.Родитель;
-	КонецЕсли;
-
-	Если СтрукРеквизиты.ПометкаУдаления <> Неопределено Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "ПометкаУдаления";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.ПометкаУдаления;
-	КонецЕсли;
-
-	Если СтрукРеквизиты.ЭтоГруппа <> Неопределено И СтрукСвойства.Иерархический = Истина И СтрукСвойства.ВидИерархии
-		= Метаданные.СвойстваОбъектов.ВидИерархии.ИерархияГруппИЭлементов Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "ЭтоГруппа";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.ЭтоГруппа;
-	КонецЕсли;
-
-	Если СтрукСвойства.Владельцы <> Неопределено И СтрукСвойства.Владельцы.Количество() <> 0 Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Владелец";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = вОписаниеТиповВладельца(СтрукСвойства.Владельцы);
-		НС.Значение = СтрукРеквизиты.Владелец;
-	КонецЕсли;
-
-	Если Метаданные.Документы.Содержит(ОбъектМД) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Проведен";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.Проведен;
-	КонецЕсли;
-
-	Если Метаданные.Задачи.Содержит(ОбъектМД) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "БизнесПроцесс";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		Массив = Новый Массив;
-		Массив.Добавить(ТипЗнч(СтрукРеквизиты.БизнесПроцесс));
-		НС.ТипЗначения = Новый ОписаниеТипов(Массив);
-		НС.Значение = СтрукРеквизиты.БизнесПроцесс;
-
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Выполнена";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.Выполнена;
-	КонецЕсли;
-
-	Если Метаданные.БизнесПроцессы.Содержит(ОбъектМД) Тогда
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Стартован";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.Стартован;
-
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "Завершен";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.Завершен;
-	КонецЕсли;
-
-	Если Метаданные.ПланыОбмена.Содержит(ОбъектМД) Тогда
-		НС.Имя = "НомерОтправленного";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Число");
-		НС.Значение = СтрукРеквизиты.НомерОтправленного;
-
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "НомерПринятого";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Число");
-		НС.Значение = СтрукРеквизиты.НомерПринятого;
-
-		НС = РеквизитыОбъекта.Добавить();
-		НС.Имя = "ЭтотУзел";
-		НС.Представление = НС.Имя;
-		НС.Категория = 0;
-		НС.ТипЗначения = Новый ОписаниеТипов("Булево");
-		НС.Значение = СтрукРеквизиты.ЭтотУзел;
-	КонецЕсли;
-КонецПроцедуры
-&НаСервере
-Процедура вОбновитьДанныеОбъекта()
-	Если mObjectRef <> Неопределено Тогда
-		Массив = Новый Массив;
-		Массив.Добавить(ТипЗнч(mObjectRef));
-		Элементы.mObjectRef.ОграничениеТипа = Новый ОписаниеТипов(Массив);
-	КонецЕсли;
-
-	НадоСоздаватьРеквизиты = (ТипЗнч(mObjectRef) <> ТипЗнч(мОбъектСсылкаПредыдущий));
-
-	Если _КонфигурацияДопускаетДопДвижения И НадоСоздаватьРеквизиты И ЗначениеЗаполнено(mObjectRef) Тогда
-		пСтрук = вОпределитьДополнительныеРегистрыДокумента(mObjectRef);
-		Элементы._ОткрытьРедакторДвиженийДоп.Видимость = пСтрук.ЕстьДанные;
-	КонецЕсли;
-
-	вОчиститьДанныеОбъекта();
-	вЗаполнитьДанныеОбъекта(НадоСоздаватьРеквизиты);
-	мОбъектСсылкаПредыдущий = mObjectRef;
-	вОбновитьНаборЗаписей();
-КонецПроцедуры
-
-&НаКлиенте
-Процедура РеквизитыОбъектаПриАктивизацииСтроки(Элемент)
-	Возврат;
-	ТекДанные = Элементы.РеквизитыОбъекта.ТекущиеДанные;
-	Если ТекДанные <> Неопределено Тогда
-		Элементы.РеквизитыОбъектаЗначение.ОграничениеТипа = ТекДанные.ТипЗначения;
-		//Элементы.РеквизитыОбъектаЗначение.ДоступныеТипы = ТекДанные.ТипЗначения;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура РеквизитыОбъектаПередНачаломИзменения(Элемент, Отказ)
-	ТекДанные = Элемент.ТекущиеДанные;
-	Если ТекДанные <> Неопределено Тогда
-		Значение = ТекДанные["Значение"];
+			// 1С special tabular sections
+			vFillSpecialTabularSections(MDObject);
+
+			For Each TSItem Из MDObject.TabularSections Do
+				TabName = _PrefixForNewItems + TSItem.Name;
+				TabResult = mObjectRef[TSItem.Name].Unload();
+				ValueToFormAttribute(TabResult, TabName);
+			EndDo;
+		EndIf;
+	Else
+		_ObjectType = "";
+	EndIf;
+EndProcedure
+&AtServerNoContext
+Function vSpecialTabularSectionsList(ObjectType)
+	If ObjectType = "ChartOfAccounts" Then
+		Return "ExtDimensionTypes";
+	ElsIf ObjectType = "ChartOfCalculationTypes" Then
+		Return "BaseCalculationTypes, LeadingCalculationTypes, DisplacingCalculationTypes";
+	Else
+		Return "";
+	EndIf;
+EndFunction
+
+&AtServerNoContext
+Function vCheckObjectAttributeExistence(Ref, AttributeName, ValueForNonExistent = -1)
+	Struct = New Structure(AttributeName, ValueForNonExistent);
+	FillPropertyValues(Struct, Ref);
+
+	Return (Struct[AttributeName] <> ValueForNonExistent);
+EndFunction
+
+&AtServerNoContext
+Function vGenerateRecordsReport(Val DocRef, Val RegisterList, Val pConfigurationAllowsAdditionalRecords)
+	pQueryTableCount = 200;
+
+	If pConfigurationAllowsAdditionalRecords Then
+		pStruct = vFindAdditionalRegisters(DocRef);
+		If pStruct.DataExists Then
+			For Each Item In pStruct.AdditionalRegisters Do
+				RegisterList.Add("+" + Item.Key, Item.Value);
+			EndDo;
+		EndIf;
+	EndIf;
+
+	Query = New Query;
+	Query.SetParameter("Recorder", DocRef);
+
+	QueryBeginText = "SELECT 0 AS Ind, 100000000 AS FieldA WHERE False";
+	QueryText = QueryBeginText;
+
+	TabResult = Undefined;
+	Ind = -1;
+	Counter = 0;
+
+	For Each Item In RegisterList Do
+		Ind = Ind + 1;
+		Counter = Counter + 1;
+
+		If Counter > pQueryTableCount Then
+			Counter = 1;
+
+			Query.Text = QueryText;
+			TabData = Query.Execute().Unload();
+
+			If TabResult = Undefined Then
+				TabResult = TabData;
+			Else
+				For Each Str In TabData Do
+					FillPropertyValues(TabResult.Add(), Str);
+				EndDo;
+			EndIf;
+
+			QueryText = QueryBeginText;
+		EndIf;
+
+		If Left(Item.Value, 1) = "+" Then
+			QueryText = QueryText + "
+										  |UNION ALL
+										  |SELECT " + Ind + ", COUNT(*) FROM " + Mid(Item.Value, 2)
+				+ " AS t WHERE t.RecorderDocument = &Recorder HAVING COUNT(*) > 0";
+		Else
+			QueryText = QueryText + "
+										  |UNION ALL
+										  |SELECT " + Ind + ", COUNT(*) FROM " + Item.Value
+				+ " AS t WHERE t.Recorder = &Recorder HAVING COUNT(*) > 0";
+		EndIf;
+	EndDo;
+
+	Query.Text = QueryText;
+	TabData = Query.Execute().Unload();
+
+	If TabResult = Undefined Then
+		TabResult = TabData;
+	Else
+		For Each Str In TabData Do
+			FillPropertyValues(TabResult.Add(), Str);
+		EndDo;
+	EndIf;
+
+	Line1 = New Line(SpreadsheetDocumentCellLineType.Solid, 2);
+
+	SDoc = New SpreadsheetDocument;
+
+	SDoc.Area( , 1, , 1).ColumnWidth = 2;
+	SDoc.Area( , 2, , 2).ColumnWidth = 50;
+	SDoc.Area( , 3, , 3).ColumnWidth = 50;
+	SDoc.Area( , 4, , 4).ColumnWidth = 12;
+
+	SDoc.Area(2, 2).Text = String(DocRef);
+	SDoc.Area(2, 2, 2, 3).Outline( , , , Line1);
+
+	SDoc.Area(4, 2).Text = NStr("ru = 'Имя регистра'; en = 'Register name'");
+	SDoc.Area(4, 3).Text = NStr("ru = 'Представление'; en = 'Presentation'");
+	SDoc.Area(4, 4).Text = NStr("ru = 'Число записей'; en = 'Count of records'");
+	SDoc.Area(4, 2, 4, 4).BackColor = WebColors.LightGoldenRodYellow;
+	SDoc.Area(4, 2, 4, 4).Outline(Line1, Line1, Line1, Line1);
+
+	SN = 4;
+	For Each Str In TabResult Do
+		SN = SN + 1;
+		pRegisterName = RegisterList[Str.Ind].Value;
+		pIsAdditionalRecord = pConfigurationAllowsAdditionalRecords And (Left(pRegisterName, 1) = "+");
+
+		SDoc.Area(SN, 2).Text = ?(pIsAdditionalRecord, Mid(pRegisterName, 2), pRegisterName);
+		SDoc.Area(SN, 3).Text = RegisterList[Str.Ind].Presentation;
+		SDoc.Area(SN, 4).Text = Str.FieldA;
+
+		If pIsAdditionalRecord Then
+			SDoc.Area(SN, 2, SN, 4).TextColor = WebColors.Green;
+		EndIf;
+	EndDo;
+
+	SDoc.Area(4, 2, SN, 4).Outline(Line1, Line1, Line1, Line1);
+
+	Return SDoc;
+EndFunction
+
+&AtClientAtServerNoContext
+Function vGetURL(Ref)
+	// Some platforms occurs an error while getting an URL for some objects (for example, accounts).
+
+	Try
+		Return GetURL(Ref);
+	Except
+		Return "";
+	EndTry;
+EndFunction
+
+&AtServer
+Function vCheckFormAttributeExistence(AttributeName, ValueForNonExistent = -1)
+	Struct = New Structure(AttributeName, ValueForNonExistent);
+	FillPropertyValues(Struct, ThisForm);
+
+	Return (Struct[AttributeName] <> ValueForNonExistent);
+EndFunction
+
+&AtServer
+Procedure vCreateSpecialTabularSections(Val MDObject, Val ArrayToCreate)
+	FullName = MDObject.FullName();
+	ObjectType = Left(FullName, Find(FullName, ".") - 1);
+
+	TSList = vSpecialTabularSectionsList(ObjectType);
+	If Not IsBlankString(TSList) Then
+		Struct = New Structure(TSList);
+		For Each Item In Struct Do
+			TSName = Item.Key;
+			If vCheckObjectAttributeExistence(mObjectRef, TSName) Then
+				TabResult = mObjectRef[TSName].Unload();
+
+				TabName = _PrefixForNewItems + TSName;
+				ArrayToCreate.Add(New FormAttribute(TabName, New TypeDescription("ValueTable"), , TSName));
+				For Each Item In TabResult.Columns Do
+					If Item.Name <> "LineNumber" Then
+						ArrayToCreate.Add(New FormAttribute(Item.Name, Item.ValueType, TabName, Item.Name));
+					EndIf;
+				EndDo;
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure vCreateSpecialTabularSections_Items(Val MDObject)
+	FullName = MDObject.FullName();
+	ObjectType = Лев(FullName, Найти(FullName, ".") - 1);
+
+	TSList = vSpecialTabularSectionsList(ObjectType);
+	If Not IsBlankString(TSList) Then
+		Struct = New Structure(TSList);
+		For Each Item In Struct Do
+			TSName = Item.Key;
+			If vCheckObjectAttributeExistence(mObjectRef, TSName) Then
+				TabResult = mObjectRef[TSName].Unload();
+
+				TabName = _PrefixForNewItems + TSName;
+				NewPage = Items.Add("Str" + TabName, Type("FormGroup"), Items.PagesGroup);
+				NewPage.Type = FormGroupType.Page;
+				NewPage.Title = TSName;
+
+				NewTable = Items.Add(TabName, Type("FormTable"), NewPage);
+				NewTable.DataPath = TabName;
+
+				For Each Item In TabResult.Columns Do
+					If Item.Name <> "LineNumber" Then
+						NewColumn = Items.Add(TabName + Item.Name, Type("FormField"), NewTable);
+						NewColumn.Type = FormFieldType.InputField;
+						NewColumn.DataPath = TabName + "." + Item.Name;
+					EndIf;
+				EndDo;
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure vFillSpecialTabularSections(Val MDObject)
+	FullName = MDObject.FullName();
+	ObjectType = Left(FullName, Find(FullName, ".") - 1);
+
+	TSList = vSpecialTabularSectionsList(ObjectType);
+	If Not IsBlankString(TSList) Then
+		Struct = New Structure(TSList);
+		For Each Item In Struct Do
+			TSName = Item.Key;
+			TabName = _PrefixForNewItems + TSName;
+
+			If vCheckObjectAttributeExistence(mObjectRef, TSName) Then
+				TabResult = mObjectRef[TSName].Unload();
+				ValueToFormAttribute(TabResult, TabName);
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
+
+&AtServer
+Procedure vWriteSpecialTabularSections(MDObject, ObjectToWrite)
+	FullName = MDObject.FullName();
+	ObjectType = Left(FullName, Find(FullName, ".") - 1);
+
+	TSList = vSpecialTabularSectionsList(ObjectType);
+	If Not IsBlankString(TSList) Then
+		Struct = New Structure(TSList);
+		For Each Item In Struct Do
+			TSName = Item.Key;
+			TabName = _PrefixForNewItems + TSName;
+
+			If vCheckObjectAttributeExistence(ObjectToWrite, TSName) Then
+				TabSection = ObjectToWrite[TSName];
+				TabSection.Clear();
+
+				TabResult = FormAttributeToValue(TabName);
+				TabSection.Load(TabResult);
+			EndIf;
+		EndDo;
+	EndIf;
+EndProcedure
+&AtServerNoContext
+Function vTypeDescriptionToString(TypeDescription, StructTypes)
+	If TypeDescription = Undefined Then
+		Return "";
+	EndIf;
+
+	Value = "";
+	Types = TypeDescription.Types();
+	For Each Item In Types Do
+		TypeName = vStringTypeName(StructTypes, Item, TypeDescription);
+		If Not IsBlankString(TypeName) Then
+			Value = Value + "," + TypeName;
+		EndIf;
+	EndDo;
+
+	Return Mid(Value, 2);
+EndFunction
+
+&AtServerNoContext
+Function vStringTypeName(StructTypes, Type, TypeDescription)
+	TypeName = "";
+
+	If Type = StructTypes.mTypeNumber Then
+		TypeName = "Number";
+		If TypeDescription.NumberQualifiers.Digits <> 0 Then
+			TypeName = TypeName + "(" + TypeDescription.NumberQualifiers.Digits + "."
+				+ TypeDescription.NumberQualifiers.FractionDigits + ")";
+		EndIf;
+	ElsIf Type = StructTypes.mTypeString Then
+		TypeName = "String";
+		If TypeDescription.StringQualifiers.Length <> 0 Then
+			TypeName = TypeName + "(" + ?(TypeDescription.StringQualifiers.AllowedLength = AllowedLength.Variable,
+				"V", "F") + TypeDescription.StringQualifiers.Length + ")";
+		EndIf;
+	ElsIf Type = StructTypes.mTypeDate Then
+		TypeName = ?(TypeDescription.DateQualifiers.DateFractions = DateFractions.Time, "Time", ?(
+			TypeDescription.DateQualifiers.DateFractions = DateFractions.Date, "Date", "DateTime"));
+	ElsIf Type = StructTypes.mTypeBoolean Then
+		TypeName = "Boolean";
+	ElsIf Type = StructTypes.mTypeBinaryData Then
+		TypeName = "BinaryData";
+	ElsIf Type = StructTypes.mTypeValueStorage Then
+		TypeName = "ValueStorage";
+	ElsIf Type = StructTypes.mTypeUUID Then
+		TypeName = "UUID";
+	Else
+		MDObject = Metadata.FindByType(Type);
+		If MDObject <> Undefined Then
+			TypeName = MDObject.FullName();
+		Else
+			TypeName = String(Type);
+		EndIf;
+	EndIf;
+
+	Return TypeName;
+EndFunction
+
+&AtServerNoContext
+Function vGenerateTypesStructure()
+	Result = New Structure;
+
+	Result.Insert("mTypeString", Type("String"));
+	Result.Insert("mTypeBoolean", Type("Boolean"));
+	Result.Insert("mTypeNumber", Type("Number"));
+	Result.Insert("mTypeDate", Type("Date"));
+	Result.Insert("mTypeStructure", Type("Structure"));
+	Result.Insert("mTypeValueStorage", Type("ValueStorage"));
+	Result.Insert("mTypeBinaryData", Type("BinaryData"));
+	Result.Insert("mTypeValueTree", Type("ValueTree"));
+	Result.Insert("mTypeMetadataObject", Type("MetadataObject"));
+	Result.Insert("mTypeUUID", Type("UUID"));
+
+	Return Result;
+EndFunction
+
+&AtServerNoContext
+Function vIsHierarchyFoldersAndItems(MDObject)
+	Struct = New Structure("Hierarchical, HierarchyType");
+	FillPropertyValues(Struct, MDObject);
+	Return (Struct.Hierarchical = True And Struct.HierarchyType
+		= Metadata.ObjectProperties.HierarchyType.HierarchyFoldersAndItems);
+EndFunction
+
+&AtServerNoContext
+Function vStringTypeDescription(StringLength, VariableLength = True)
+	Return New TypeDescription("String", , , , New StringQualifiers(StringLength, ?(VariableLength,
+		AllowedLength.Variable, AllowedLength.Fixed)));
+EndFunction
+
+&AtServerNoContext
+Function vNumberTypeDescription(DigitsCount, FractionDigitsCount = 0)
+	Return New TypeDescription("Number", , , New NumberQualifiers(DigitsCount, FractionDigitsCount));
+EndFunction
+
+&AtServerNoContext
+Function vCodeTypeDescription(CodeType, CodeLength, CodeAllowedLength)
+	Return ?(String(CodeType) = "Number", vNumberTypeDescription(CodeLength), vStringTypeDescription(CodeLength, ?(String(
+		CodeAllowedLength) = "Fixed", False, True)));
+EndFunction
+
+&AtServerNoContext
+Function vObjectNumberTypeDescription(NumberType, NumberLength)
+	Return ?(String(NumberType) = "Number", vNumberTypeDescription(NumberLength), vStringTypeDescription(NumberLength, False));
+EndFunction
+
+&AtServerNoContext
+Function vOwnerTypeDescription(MDCollection)
+	TypeArray = New Array;
+	For Each Item In MDCollection Do
+		TypeName = Item.FullName();
+		TypeName = StrReplace(TypeName, ".", "Ref.");
+		TypeArray.Add(Type(TypeName));
+	EndDo;
+
+	Return New TypeDescription(TypeArray);
+EndFunction
+
+&AtServer
+Procedure vFillStandardAttributes(MDObject)
+	Var NR;
+
+	AttributeList = "Code, Number, Date, Posted, DeletionMark, IsFolder, Description, Owner, Parent, BusinessProcess, Executed, Completed, Started, SentNo, ReceivedNo, ThisNode";
+	PropertyList = "CodeType, NumberType, CodeLength, CodeAllowedLength, NumberLength, DescriptionLength, Hierarchical, HierarchyType, Owners";
+
+	StructAttributes = New Structure(AttributeList);
+	StructProperties = New Structure(PropertyList);
+
+	FillPropertyValues(StructProperties, MDObject);
+	FillPropertyValues(StructAttributes, mObjectRef);
+
+	If Metadata.ExchangePlans.Contains(MDObject) Then
+		If StructProperties.CodeType = Undefined Then
+			StructProperties.CodeType = "String";
+		EndIf;
+	EndIf;
+
+	If Metadata.ChartsOfAccounts.Contains(MDObject) Then
+		If StructProperties.CodeType = Undefined Then
+			StructProperties.CodeType = "String";
+		EndIf;
+	EndIf;
+
+	If StructProperties.NumberType <> Undefined And ValueIsFilled(StructProperties.NumberLength) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Number";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = vObjectNumberTypeDescription(StructProperties.NumberType, StructProperties.NumberLength);
+		NR.Value = StructAttributes.Number;
+	EndIf;
+
+	If StructProperties.CodeType <> Undefined And ValueIsFilled(StructProperties.CodeLength) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Code";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = vCodeTypeDescription(StructProperties.CodeType, StructProperties.CodeLength,
+			StructProperties.CodeAllowedLength);
+		NR.Value = StructAttributes.Code;
+	EndIf;
+
+	If StructAttributes.Description <> Undefined And ValueIsFilled(StructProperties.DescriptionLength) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Description";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = vStringTypeDescription(StructProperties.DescriptionLength);
+		NR.Value = StructAttributes.Description;
+	EndIf;
+
+	If StructAttributes.Date <> Undefined Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Date";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Date", , , , , New DateQualifiers(DateFractions.DateTime));
+		NR.Value = StructAttributes.Date;
+	EndIf;
+
+	If StructProperties.Hierarchical = True Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Parent";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		Array = New Array;
+		Array.Add(TypeOf(mObjectRef));
+		NR.ValueType = New TypeDescription(Array);
+		NR.Value = StructAttributes.Parent;
+	EndIf;
+
+	If StructAttributes.DeletionMark <> Undefined Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "DeletionMark";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.DeletionMark;
+	EndIf;
+
+	If StructAttributes.IsFolder <> Undefined And StructProperties.Hierarchical = True And StructProperties.HierarchyType
+		= Metadata.ObjectProperties.HierarchyType.HierarchyFoldersAndItems Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "IsFolder";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.IsFolder;
+	EndIf;
+
+	If StructProperties.Owners <> Undefined И StructProperties.Owners.Count() <> 0 Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Owner";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = vOwnerTypeDescription(StructProperties.Owners);
+		NR.Value = StructAttributes.Owner;
+	EndIf;
+
+	If Metadata.Documents.Contains(MDObject) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Posted";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.Posted;
+	EndIf;
+
+	If Metadata.Tasks.Contains(MDObject) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "BusinessProcess";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		Array = New Array;
+		Array.Add(TypeOf(StructAttributes.BusinessProcess));
+		NR.ValueType = New TypeDescription(Array);
+		NR.Value = StructAttributes.BusinessProcess;
+
+		NR = ObjectAttributes.Add();
+		NR.Name = "Executed";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.Executed;
+	EndIf;
+
+	If Metadata.BusinessProcesses.Contains(MDObject) Then
+		NR = ObjectAttributes.Add();
+		NR.Name = "Started";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.Started;
+
+		NR = ObjectAttributes.Add();
+		NR.Name = "Completed";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.Completed;
+	EndIf;
+
+	If Metadata.ExchangePlans.Contains(MDObject) Then
+		NR.Name = "SentNo";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Number");
+		NR.Value = StructAttributes.SentNo;
+
+		NR = ObjectAttributes.Add();
+		NR.Name = "ReceivedNo";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Number");
+		NR.Value = StructAttributes.ReceivedNo;
+
+		NR = ObjectAttributes.Add();
+		NR.Name = "ThisNode";
+		NR.Presentation = NR.Name;
+		NR.Category = 0;
+		NR.ValueType = New TypeDescription("Boolean");
+		NR.Value = StructAttributes.ThisNode;
+	EndIf;
+EndProcedure
+&AtServer
+Procedure vRefreshObjectData()
+	If mObjectRef <> Undefined Then
+		Array = New Array;
+		Array.Add(TypeOf(mObjectRef));
+		Items.mObjectRef.TypeRestriction = New TypeDescription(Array);
+	EndIf;
+
+	CreateAttributes = (TypeOf(mObjectRef) <> TypeOf(mPreviousObjectRef));
+
+	If _ConfigurationAllowsAdditionalRecords And CreateAttributes And ValueIsFilled(mObjectRef) Then
+		pStruct = vFindAdditionalRegisters(mObjectRef);
+		Items._OpenAdditionalRecordsEditor.Visible = pStruct.DataExists;
+	EndIf;
+
+	vClearObjectData();
+	vFillObjectData(CreateAttributes);
+	mPreviousObjectRef = mObjectRef;
+	vRefreshRecordSet();
+EndProcedure
+
+&AtClient
+Procedure ObjectAttributesOnActivateRow(Item)
+	Return;
+	CurrData = Items.ObjectAttributes.CurrentData;
+	If CurrData <> Undefined Then
+		Items.ObjectAttributesValue.TypeRestriction = CurrData.ValueType;
+		//Items.ObjectAttributesValue.AvailableTypes = CurrData.ValueType;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ObjectAttributesBeforeRowChange(Item, Cancel)
+	CurrData = Item.CurrentData;
+	If CurrData <> Undefined Then
+		Value = CurrData["Value"];
 		
-		//Если ТипЗнч(Значение) = мТипХЗ или ТипЗнч(Значение) = мТипUUID Тогда
-		Если ТипЗнч(Значение) = мТипХЗ Тогда
-			Отказ = Истина;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+		//If TypeOf(Value) = mTypeVS Or TypeOf(Value) = mTypeUUID Then
+		If TypeOf(Value) = mTypeVS Then
+			Cancel = True;
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура РеквизитыОбъектаВыбор(Элемент, ВыбраннаяСтрока, Поле, СтандартнаяОбработка)
-	Если Поле.Имя = "РеквизитыОбъектаЗначение" Тогда
-		ТекДанные = Элемент.ТекущиеДанные;
-		Если ТекДанные <> Неопределено Тогда
-			Значение = ТекДанные["Значение"];
+&AtClient
+Procedure ObjectAttributesSelection(Item, SelectedRow, Field, StandardProcessing)
+	If Field.Name = "ObjectAttributesValue" Then
+		CurrData = Item.CurrentData;
+		If CurrData <> Undefined Then
+			Value = CurrData["Value"];
 
-			Если ТипЗнч(Значение) = мТипХЗ Тогда
-				СтандартнаяОбработка = Ложь;
-				вПоказатьЗначениеХЗ(Значение);
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+			If TypeOf(Value) = mTypeVS Then
+				StandardProcessing = False;
+				vShowValueVS(Value);
+			EndIf;
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура ТабличнаяЧастьВыбор(Элемент, ВыбраннаяСтрока, Поле, СтандартнаяОбработка)
-	ТекДанные = Элемент.ТекущиеДанные;
-	Если ТекДанные <> Неопределено Тогда
-		ИмяКолонки = Сред(Поле.Имя, СтрДлина(Элемент.Имя) + 1);
-		Значение = ТекДанные[ИмяКолонки];
+&AtClient
+Procedure TabularSectionSelection(Item, SelectedRow, Field, StandardProcessing)
+	CurrData = Item.CurrentData;
+	If CurrData <> Undefined Then
+		ColumnName = Сред(Field.Name, StrLen(Item.Name) + 1);
+		Value = CurrData[ColumnName];
 
-		Если ТипЗнч(Значение) = мТипХЗ Тогда
-			СтандартнаяОбработка = Ложь;
-			вПоказатьЗначениеХЗ(Значение);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-&НаСервере
-Процедура ПередЗагрузкойДанныхИзНастроекНаСервере(Настройки)
-//	Если Настройки["_ДополнительныеСвойства"] = Неопределено Тогда
-//		_ДополнительныеСвойства.Очистить();
-//	КонецЕсли;
-КонецПроцедуры
+		If TypeOf(Value) = mTypeVS Then
+			StandardProcessing = False;
+			vShowValueVS(Value);
+		EndIf;
+	EndIf;
+EndProcedure
+&AtServer
+Procedure BeforeLoadDataFromSettingsAtServer(Settings)
+//	If Settings["_AdditionalProperties"] = Undefined Then
+//		AdditionalProperties.Clear();
+//	EndIf;
+EndProcedure
 
-&НаСервере
-Процедура ПриЗагрузкеДанныхИзНастроекНаСервере(Настройки)
-	//Если ЗначениеЗаполнено(mObjectRef) Тогда
-	Если mObjectRef <> Неопределено Тогда
-		вОбновитьДанныеОбъекта();
-	КонецЕсли;
-КонецПроцедуры
+&AtServer
+Procedure OnLoadDataFromSettingsAtServer(Settings)
+	//If ValueIsFilled(mObjectRef) Then
+	If mObjectRef <> Undefined Then
+		vRefreshObjectData();
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура _ОткрытьРедакторДвижений(Команда)
-	СтрукПарам = Новый Структура("ПутьКФормам, mObjectRef", ПутьКФормам, mObjectRef);
-	Попытка
-		ОткрытьФорму("Обработка.UT_ObjectsAttributesEditor.Форма.FormRecodsEditor", СтрукПарам, , mObjectRef);
-	Исключение
-		Сообщить(NSTR("ru = 'Не найдена форма ""FormRecodsEditor""!';en = 'Not found form ""FormRecodsEditor""!'"));
-	КонецПопытки;
-КонецПроцедуры
+&AtClient
+Procedure _OpenRecordsEditor(Command)
+	ParamStruct = New Structure("FormsPath, mObjectRef", FormsPath, mObjectRef);
+	Try
+		OpenForm("DataProcessor.UT_ObjectsAttributesEditor.Form.RecordsEditorForm", ParamStruct, , mObjectRef);
+	Except
+		Message(NSTR("ru = 'Не найдена форма ""RecordsEditorForm""!';en = 'RecordsEditorForm form not found.'"));
+	EndTry;
+EndProcedure
 
-&НаКлиенте
-Процедура _ОткрытьРедакторДвиженийДоп(Команда)
-	СтрукПарам = Новый Структура("ПутьКФормам, mObjectRef", ПутьКФормам, mObjectRef);
-	Попытка
-		ОткрытьФорму("Обработка.UT_ObjectsAttributesEditor.Форма.FormRecordsEditorAdditional", СтрукПарам, ,
+&AtClient
+Procedure _OpenAdditionalRecordsEditor(Command)
+	ParamStruct = New Structure("FormsPath, mObjectRef", FormsPath, mObjectRef);
+	Try
+		OpenForm("DataProcessor.UT_ObjectsAttributesEditor.Form.RecordsEditorAdditionalForm", ParamStruct, ,
 			mObjectRef);
-	Исключение
-		Сообщить(NSTR("ru = 'Не найдена форма ""FormRecodsEditor""!';en = 'Not found form ""FormRecodsEditor""!'"));
-	КонецПопытки;
-КонецПроцедуры
-&НаКлиенте
-Процедура _ЗаполнитьДанныеТекущейКолонки(Команда)
-	ТекСтраница = Элементы.ГруппаСтраницы.ТекущаяСтраница;
-	Если ТекСтраница.Имя = "СтрРеквизитыОбъекта" Или ТекСтраница.Имя = "СтрНастройки" Тогда
-		Возврат;
-	КонецЕсли;
+	Except
+		Message(NSTR("ru = 'Не найдена форма ""RecordsEditorAdditionalForm""!';en = 'RecordsEditorAdditionalForm form not found.'"));
+	EndTry;
+EndProcedure
+&AtClient
+Procedure _FillCurrentColumnData(Command)
+	CurrPage = Items.PagesGroup.CurrentPage;
+	If CurrPage.Name = "ObjectAttributesPage" Or CurrPage.Name = "SettingsPage" Then
+		Return;
+	EndIf;
 
-	ТекТаб = Неопределено;
-	Для Каждого Элем Из ТекСтраница.ПодчиненныеЭлементы Цикл
-		Если ТипЗнч(Элем) = Тип("ТаблицаФормы") Тогда
-			ТекТаб = Элем;
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+	CurrTab = Undefined;
+	For Each Item In CurrPage.ChildItems Do
+		If TypeOf(Item) = Type("FormTable") Then
+			CurrTab = Item;
+			Break;
+		EndIf;
+	EndDo;
 
-	пЗначение = _ЗначениеДляЗаполнения;
+	pValue = _ValueToFill;
 
-	Если ТекТаб <> Неопределено Тогда
-		СтрукДанные = вПолучитьСвойстваТабличногоПоля(ТекТаб.Имя);
-		Если Не СтрукДанные.Отказ Тогда
-			пТаблица = ЭтаФорма[СтрукДанные.Таблица];
-			пПоле = СтрукДанные.Поле;
+	If CurrTab <> Undefined Then
+		StructData = vGetTableFieldProperties(CurrTab.Name);
+		If Not StructData.Cancel Then
+			pTable = ThisForm[StructData.Table];
+			pField = StructData.Field;
 
-			Если пТаблица.Количество() <> 0 Тогда
+			If pTable.Count() <> 0 Then
 
-				Если _ПриЗаполненииОбрабатыватьТолькоВыделенныеСтроки Тогда
-					Для Каждого Элем Из ТекТаб.ВыделенныеСтроки Цикл
-						Стр = пТаблица.НайтиПоИдентификатору(Элем);
-						Стр[пПоле] = пЗначение;
-					КонецЦикла;
-				Иначе
-					Для Каждого Стр Из пТаблица Цикл
-						Стр[пПоле] = пЗначение;
-					КонецЦикла;
-				КонецЕсли;
+				If _ProcessOnlySelectedRows Then
+					For Each Item In CurrTab.SelectedRows Do
+						Str = pTable.FindByID(Item);
+						Str[pField] = pValue;
+					EndDo;
+				Else
+					For Each Str In pTable Do
+						Str[pField] = pValue;
+					EndDo;
+				EndIf;
 
-			КонецЕсли;
+			EndIf;
 
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура _ЗначениеДляЗаполненияНачалоВыбора(Элемент, ДанныеВыбора, СтандартнаяОбработка)
-	Если _ЗначениеДляЗаполнения = Неопределено Тогда
-		СтандартнаяОбработка = Ложь;
-		СтрукПарам = Новый Структура("CloseOnOwnerClose, TypesToFillValues", Истина, Истина);
-		ОткрытьФорму("ОбщаяФорма.UT_MetadataSelectionForm", СтрукПарам, Элемент, , , , ,
-			РежимОткрытияОкнаФормы.БлокироватьОкноВладельца);
-	ИначеЕсли ТипЗнч(_ЗначениеДляЗаполнения) = Тип("УникальныйИдентификатор") Тогда
-		СтандартнаяОбработка = Ложь;
-	Иначе
-		Массив = Новый Массив;
-		Массив.Добавить(ТипЗнч(_ЗначениеДляЗаполнения));
-		Элемент.ОграничениеТипа = Новый ОписаниеТипов(Массив);
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure _ValueToFillStartChoice(Item, ChoiceData, StandardProcessing)
+	If _ValueToFill = Undefined Then
+		StandardProcessing = False;
+		ParamStruct = New Structure("CloseOnOwnerClose, TypesToFillValues", True, True);
+		OpenForm("CommonForm.UT_MetadataSelectionForm", ParamStruct, Item, , , , ,
+			FormWindowOpeningMode.LockOwnerWindow);
+	ElsIf TypeOf(_ValueToFill) = Type("UUID") Then
+		StandardProcessing = False;
+	Else
+		Array = New Array;
+		Array.Add(TypeOf(_ValueToFill));
+		Item.TypeRestriction = New TypeDescription(Array);
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура _ЗначениеДляЗаполненияОчистка(Элемент, СтандартнаяОбработка)
-	Элемент.ОграничениеТипа = Новый ОписаниеТипов;
-КонецПроцедуры
-
-
-// для документов
-&НаКлиенте
-Процедура _ПровестиДокумент(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан документ для обработки';en = 'No document set for processing'"), 20);
-		Возврат;
-	КонецЕсли;
-
-	Если Не _ПроведениеРазрешено Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Проведение документов данного типа запрещено!';en = 'Posting documents of this type is prohibited!'"), 20);
-		Возврат;
-	КонецЕсли;
-
-	ПоказатьВопрос(Новый ОписаниеОповещения("вПровестиДокументДалее", ЭтаФорма),
-		NSTR("ru = 'Документ будет перепроведен. Продолжить?';en = 'Document will be reposted.Continue?'"), РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
-
-&НаКлиенте
-Процедура _РаспровестиДокумент(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан документ для обработки';en = 'No document set for processing'"), 20);
-		Возврат;
-	КонецЕсли;
-
-	Если Не _ПроведениеРазрешено Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Проведение документов данного типа запрещено!';en = 'Posting documents of this type is prohibited!'"), 20);
-		Возврат;
-	КонецЕсли;
-
-	ПоказатьВопрос(Новый ОписаниеОповещения("вРаспровестиДокументДалее", ЭтаФорма),
-		NSTR("ru = 'Для документа будет выполнена отмена проведения. Продолжить?';en = 'Undo posting will be performed for document. Continue?'"), РежимДиалогаВопрос.ДаНетОтмена, 20);
-КонецПроцедуры
-
-&НаКлиенте
-Процедура вПровестиДокументДалее(РезультатВопроса, ДопПараметры = Неопределено) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		пСтрук = Новый Структура;
-
-//		Если _ИспользоватьДополнительныеСвойстваПриЗаписи И _ДополнительныеСвойства.Количество() <> 0 Тогда
-//			пСтрук.ДополнительныеСвойства = Новый Структура;
-//			Попытка
-//				Для Каждого Стр Из _ДополнительныеСвойства Цикл
-//					пСтрук.ДополнительныеСвойства.Вставить(Стр.Ключ, Стр.Значение);
-//				КонецЦикла;
-//			Исключение
-//				Сообщить("Ошибка при установке ДополнительныхСвойств: неправильное значение ключа """ + Стр.Ключ + """");
-//				Возврат;
-//			КонецПопытки;
-//		КонецЕсли;
-
-//		Если _ИспользоватьПроцедуруПередЗаписью И Не ПустаяСтрока(_ПроцедураПередЗаписью) Тогда
-//			пСтрук.ПроцедураПередЗаписью = _ПроцедураПередЗаписью;
-//		КонецЕсли;
-
-		Если вПровестиРаспровестиДокумент(mObjectRef, Истина, пСтрук) Тогда
-			ОбновитьДанныеОбъекта(Неопределено);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура вРаспровестиДокументДалее(РезультатВопроса, ДопПараметры = Неопределено) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		Если вПровестиРаспровестиДокумент(mObjectRef, Ложь) Тогда
-			ОбновитьДанныеОбъекта(Неопределено);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаСервере
-Функция вПровестиРаспровестиДокумент(Ссылка, Провести = Истина, пСтрукПарам = Неопределено)
-	Режим = ?(Провести, РежимЗаписиДокумента.Проведение, РежимЗаписиДокумента.ОтменаПроведения);
-
-	ДокОбъект = Ссылка.ПолучитьОбъект();
-
-	Возврат UT_Common.WriteObjectToDB(ДокОбъект, UT_CommonClientServer.FormWriteSettings(ЭтотОбъект), , Режим);
-
-КонецФункции
+&AtClient
+Procedure _ValueToFillClearing(Item, StandardProcessing)
+	Item.TypeRestriction = New TypeDescription;
+EndProcedure
 
 
-// выгрузка / загрузка объекта через XML
-&НаКлиенте
-Функция вПолучитьДиалогВыбораФайлаXML(Открытие = Истина, ПутьКФайлу = "")
-	Диалог = Новый ДиалогВыбораФайла(?(Открытие, РежимДиалогаВыбораФайла.Открытие, РежимДиалогаВыбораФайла.Сохранение));
+// documents
+&AtClient
+Procedure _PostDocument(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан документ для обработки';en = 'No document set for processing.'"), 20);
+		Return;
+	EndIf;
 
-	Диалог.ПолноеИмяФайла = ПутьКФайлу;
-	Диалог.Заголовок  = NSTR("ru = 'Файл данных XML';en = 'XML data file'");
-	Диалог.Фильтр     = NSTR("ru = 'Файлы данных XML (*.xml)|*.xml|Все файлы (*.*)|*.*';en = 'XML data files (*.xml)|*.xml|All files (*.*)|*.*'");
-	Диалог.Расширение = "xml";
+	If Not _PostingIsAllowed Then
+		ShowMessageBox( , NSTR("ru = 'Проведение документов данного типа запрещено!';en = 'Posting of this type documents is prohibited.'"), 20);
+		Return;
+	EndIf;
 
-	Возврат Диалог;
-КонецФункции
+	ShowQueryBox(New NotifyDescription("vPostDocumentNext", ThisForm),
+		NSTR("ru = 'Документ будет перепроведен. Продолжить?';en = 'Document will be reposted. Do you want to continue?'"), QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
 
-&НаКлиенте
-Процедура _ВыгрузитьНаборЗаписей(Команда)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан объект для выгрузки движений';en = 'Object for records uploading is not set'"), 20);
-		Возврат;
-	КонецЕсли;
-	Если ПустаяСтрока(_ИмяНабораЗаписей) Тогда
-		ПоказатьПредупреждение( ,NSTR("ru = 'Не задан набор записей для выгрузки';en = 'Recordset for uploading is not specified'") , 20);
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure _UndoPosting(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан документ для обработки';en = 'No document set for processing.'"), 20);
+		Return;
+	EndIf;
 
-	вВыгрузитьОбъект(4);
-КонецПроцедуры
+	If Not _PostingIsAllowed Then
+		ShowMessageBox( , NSTR("ru = 'Проведение документов данного типа запрещено!';en = 'Posting of this type documents is prohibited.'"), 20);
+		Return;
+	EndIf;
 
-&НаКлиенте
-Процедура _ВыгрузитьОбъект(Команда)
-	вВыгрузитьОбъект(1);
-КонецПроцедуры
+	ShowQueryBox(New NotifyDescription("vUndoPostingNext", ThisForm),
+		NSTR("ru = 'Для документа будет выполнена отмена проведения. Продолжить?';en = 'Undo posting will be performed for document. Do you want to continue?'"), QuestionDialogMode.YesNoCancel, 20);
+EndProcedure
 
-&НаКлиенте
-Процедура _ВыгрузитьОбъектСДвижениями(Команда)
-	вВыгрузитьОбъект(2);
-КонецПроцедуры
+&AtClient
+Procedure vPostDocumentNext(QueryResult, AdditionalParameters = Undefined) Export
+	If QueryResult = DialogReturnCode.Yes Then
+		pStruct = New Structure;
 
-&НаКлиенте
-Процедура _ВыгрузитьДвиженияОбъекта(Команда)
-	вВыгрузитьОбъект(3);
-КонецПроцедуры
+//		If _UseAdditionalPropertiesOnWrite And _AdditionalProperties.Count() <> 0 Then
+//			pStruct.AdditionalProperties = New Structure;
+//			Try
+//				For Each Str In _AdditionalProperties Do
+//					pStruct.AdditionalProperties.Insert(Str.Key, Str.Value);
+//				EndDo;
+//			Except
+//				Message(NStr("ru = 'Ошибка при установке ДополнительныхСвойств: неправильное значение ключа ""'; en = 'AdditionalProperties setting error: wrong key value.'") + Str.Key + """");
+//				Return;
+//			EndTry;
+//		EndIf;
 
-&НаКлиенте
-Процедура _ЗагрузитьДанныеXML(Команда)
-	Диалог = вПолучитьДиалогВыбораФайлаXML(Истина);
-	Диалог.Показать(Новый ОписаниеОповещения("вЗагрузитьДанныеИзФайла", ЭтаФорма));
-КонецПроцедуры
+//		If _UseBeforeWriteProcedure And Not IsBlankString(_BeforeWriteProcedure) Then
+//			pStruct.BeforeWriteProcedure = _BeforeWriteProcedure;
+//		EndIf;
 
-&НаКлиенте
-Процедура вЗагрузитьДанныеИзФайла(ВыбранныеФайлы, ДопПарам = Неопределено) Экспорт
-	Если ВыбранныеФайлы <> Неопределено Тогда
-		пИмяФайла = ВыбранныеФайлы[0];
-		ТДок = Новый ТекстовыйДокумент;
-		ТДок.НачатьЧтение(Новый ОписаниеОповещения("вПослеОкончанияЧтенияФайла", ЭтаФорма, ТДок), пИмяФайла, "UTF-8");
-	КонецЕсли;
-КонецПроцедуры
+		If vPostUndoPostingDocument(mObjectRef, True, pStruct) Then
+			RefreshObjectData(Undefined);
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура вПослеОкончанияЧтенияФайла(ТДок) Экспорт
-	Если ТипЗнч(ТДок) = Тип("ТекстовыйДокумент") Тогда
-		СтрокаXML = ТДок.ПолучитьТекст();
-		Если Не ПустаяСтрока(СтрокаXML) Тогда
-			вЗагрузитьДанныеXML(СтрокаXML);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure vUndoPostingNext(РезультатВопроса, ДопПараметры = Undefined) Export
+	If РезультатВопроса = DialogReturnCode.Да Then
+		If vPostUndoPostingDocument(mObjectRef, False) Then
+			RefreshObjectData(Undefined);
+		EndIf;
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура вВыгрузитьОбъект(пРежим)
-	Если Не ЗначениеЗаполнено(mObjectRef) Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Не задан документ для выгрузки';en = 'Not specified  document for uploading'"), 20);
-		Возврат;
-	КонецЕсли;
+&AtServer
+Function vPostUndoPostingDocument(Ref, Post = True, pParamStruct = Undefined)
+	Mode = ?(Post, DocumentWriteMode.Posting, DocumentWriteMode.UndoPosting);
 
-	Диалог = вПолучитьДиалогВыбораФайлаXML(Ложь);
+	DocObject = Ref.GetObject();
 
-	Если пРежим = 1 Тогда
-		Диалог.ПолноеИмяФайла = NSTR("ru = 'Объект';en = 'Object'");
-	ИначеЕсли пРежим = 2 Тогда
-		Диалог.ПолноеИмяФайла =NSTR("ru = 'Объект (с движениями)';en = 'Object (with records)'") ;
-	ИначеЕсли пРежим = 3 Тогда
-		Диалог.ПолноеИмяФайла =NSTR("ru = 'Объект (движения)';en = 'Object (records)'") ;
-	ИначеЕсли пРежим = 4 Тогда
-		Диалог.ПолноеИмяФайла = _ИмяНабораЗаписей;
-	КонецЕсли;
+	Return UT_Common.WriteObjectToDB(DocObject, UT_CommonClientServer.FormWriteSettings(ThisObject), , Mode);
 
-	Диалог.Показать(Новый ОписаниеОповещения("вВыгрузитьОбъектВФайл", ЭтаФорма, пРежим));
-КонецПроцедуры
+EndFunction
 
-&НаКлиенте
-Процедура вВыгрузитьОбъектВФайл(ВыбранныеФайлы, пРежим = Неопределено) Экспорт
-	Если ВыбранныеФайлы <> Неопределено Тогда
-		СтрокаXML = вСформироватьВыгрузкуXML(mObjectRef, пРежим, _ИмяНабораЗаписей);
-		Если Не ПустаяСтрока(СтрокаXML) Тогда
-			пИмяФайла = ВыбранныеФайлы[0];
-			ТДок = Новый ТекстовыйДокумент;
-			ТДок.УстановитьТекст(СтрокаXML);
-			ТДок.НачатьЗапись(Новый ОписаниеОповещения("вПослеОкончанияЗаписиФайла", ЭтаФорма), пИмяФайла, "UTF-8");
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
 
-&НаКлиенте
-Процедура вПослеОкончанияЗаписиФайла(Результат, ДопПарам = Неопределено) Экспорт
-	Если Результат = Истина Тогда
-		ПоказатьПредупреждение( , NSTR("ru = 'Данные выгружены в файл';en = 'Data is uploaded to  file'"), 20);
-	КонецЕсли;
-КонецПроцедуры
-&НаСервереБезКонтекста
-Функция вСформироватьВыгрузкуXML(Знач пСсылка, Знач пРежим, Знач пИмяНабораЗаписей = "")
+// loading / unloading object via XML
+&AtClient
+Function vGetXMLFileDialog(Open = True, FilePath = "")
+	Dialog = New FileDialog(?(Open, FileDialogMode.Open, FileDialogMode.Save));
 
-	ЗаписьXML = Новый ЗаписьXML;
-	ЗаписьXML.УстановитьСтроку("UTF-8");
+	Dialog.FullFileName = FilePath;
+	Dialog.Title  = NSTR("ru = 'Файл данных XML';en = 'XML data file'");
+	Dialog.Filter     = NSTR("ru = 'Файлы данных XML (*.xml)|*.xml|Все файлы (*.*)|*.*';en = 'XML data files (*.xml)|*.xml|All files (*.*)|*.*'");
+	Dialog.Extension = "xml";
 
-	ЗаписьXML.ЗаписатьОбъявлениеXML();
-	ЗаписьXML.ЗаписатьНачалоЭлемента("_1CV8DtUD", "http://www.1c.ru/V8/1CV8DtUD/");
-	ЗаписьXML.ЗаписатьСоответствиеПространстваИмен("V8Exch", "http://www.1c.ru/V8/1CV8DtUD/");
-	ЗаписьXML.ЗаписатьСоответствиеПространстваИмен("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-	ЗаписьXML.ЗаписатьСоответствиеПространстваИмен("core", "http://v8.1c.ru/data");
+	Return Dialog;
+EndFunction
 
-	ЗаписьXML.ЗаписатьСоответствиеПространстваИмен("v8", "http://v8.1c.ru/8.1/data/enterprise/current-config");
-	ЗаписьXML.ЗаписатьСоответствиеПространстваИмен("xs", "http://www.w3.org/2001/XMLSchema");
+&AtClient
+Procedure _UnloadRecordSet(Command)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан объект для выгрузки движений';en = 'Object for records unloading is not set.'"), 20);
+		Return;
+	EndIf;
+	If IsBlankString(_RecordSetName) Then
+		ShowMessageBox( ,NSTR("ru = 'Не задан набор записей для выгрузки';en = 'Recordset for unloading is not specified.'") , 20);
+		Return;
+	EndIf;
 
-	ЗаписьXML.ЗаписатьНачалоЭлемента("V8Exch:Data");
-	Если пРежим = 4 Тогда
-		Менеджер = вСоздатьМенеджерНабораЗаписей(пИмяНабораЗаписей);
-		Если Менеджер <> Неопределено Тогда
-			Набор = Менеджер.СоздатьНаборЗаписей();
-			Набор.Отбор.Регистратор.Установить(пСсылка);
-			Набор.Прочитать();
+	vUnloadObject(4);
+EndProcedure
 
-			СериализаторXDTO.ЗаписатьXML(ЗаписьXML, Набор);
-		КонецЕсли;
-	Иначе
-		Попытка
-			пОбъект = пСсылка.ПолучитьОбъект();
-		Исключение
-			Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()), СтатусСообщения.Важное);
-			Сообщить(NSTR("ru = 'Выгрузка данных не выполнена!';en = 'Data upload failed!'"), СтатусСообщения.Важное);
-			Возврат "";
-		КонецПопытки;
+&AtClient
+Procedure _UnloadObject(Command)
+	vUnloadObject(1);
+EndProcedure
 
-		Если пРежим = 1 Или пРежим = 2 Тогда
-			СериализаторXDTO.ЗаписатьXML(ЗаписьXML, пОбъект, НазначениеТипаXML.Явное);
-		КонецЕсли;
+&AtClient
+Procedure _UnloadObjectWithRecords(Command)
+	vUnloadObject(2);
+EndProcedure
 
-		Если пРежим = 2 Или пРежим = 3 Тогда
-			пОбъектМД = пОбъект.Метаданные();
-			Если Метаданные.Документы.Содержит(пОбъектМД) Тогда
-				Для Каждого Движение Из пОбъект.Движения Цикл
-					Движение.Прочитать();
-					СериализаторXDTO.ЗаписатьXML(ЗаписьXML, Движение);
-				КонецЦикла;
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-	ЗаписьXML.ЗаписатьКонецЭлемента(); // V8Exc:Data
-	ЗаписьXML.ЗаписатьКонецЭлемента(); // V8Exc:_1CV8DtUD
+&AtClient
+Procedure _UnloadObjectRecords(Command)
+	vUnloadObject(3);
+EndProcedure
 
-	СтрокаXML = ЗаписьXML.Закрыть();
+&AtClient
+Procedure _LoadXMLData(Command)
+	Dialog = vGetXMLFileDialog(True);
+	Dialog.Show(New NotifyDescription("vLoadDataFromFile", ThisForm));
+EndProcedure
 
-	Возврат СтрокаXML;
-КонецФункции
+&AtClient
+Procedure vLoadDataFromFile(SelectedFiles, AddParam = Undefined) Export
+	If SelectedFiles <> Undefined Then
+		pFileName = SelectedFiles[0];
+		TDoc = New TextDocument;
+		TDoc.BeginReading(New NotifyDescription("pAfterFinishReadFile", ThisForm, TDoc), pFileName, "UTF-8");
+	EndIf;
+EndProcedure
 
-&НаСервереБезКонтекста
-Процедура вЗагрузитьДанныеXML(Знач СтрокаXML)
-	ЧтениеXML = Новый ЧтениеXML;
-	ЧтениеXML.УстановитьСтроку(СтрокаXML);
+&AtClient
+Procedure pAfterFinishReadFile(TDoc) Export
+	If TypeOf(TDoc) = Type("TextDocument") Then
+		XMLString = TDoc.GetText();
+		If Not IsBlankString(XMLString) Then
+			vLoadXMLData(XMLString);
+		EndIf;
+	EndIf;
+EndProcedure
 
-	Сообщить(NSTR("ru = 'Загрузка данных стартована';en = 'Data loading has started'"));
+&AtClient
+Procedure vUnloadObject(pMode)
+	If Not ValueIsFilled(mObjectRef) Then
+		ShowMessageBox( , NSTR("ru = 'Не задан документ для выгрузки';en = 'No document specified for unloading.'"), 20);
+		Return;
+	EndIf;
 
-	пОшибкаФормата = Ложь;
-	пСтрокаНеверныйФормат = НСтр("ru = 'Неверный формат файла выгрузки';en = 'Invalid upload file format'");
+	Dialog = vGetXMLFileDialog(False);
 
-	Попытка
-		// проверка формата
-		Если пОшибкаФормата Или Не ЧтениеXML.Прочитать() Или ЧтениеXML.ТипУзла <> ТипУзлаXML.НачалоЭлемента
-			Или ЧтениеXML.ЛокальноеИмя <> "_1CV8DtUD" Или ЧтениеXML.URIПространстваИмен
-			<> "http://www.1c.ru/V8/1CV8DtUD/" Тогда
+	If pMode = 1 Then
+		Dialog.FullFileName = NSTR("ru = 'Объект';en = 'Object'");
+	ElsIf pMode = 2 Then
+		Dialog.FullFileName =NSTR("ru = 'Объект (с движениями)';en = 'Object (with records)'") ;
+	ElsIf pMode = 3 Then
+		Dialog.FullFileName =NSTR("ru = 'Объект (движения)';en = 'Object (records)'") ;
+	ElsIf pMode = 4 Then
+		Dialog.FullFileName = _RecordSetName;
+	EndIf;
 
-			пОшибкаФормата = Истина;
-		КонецЕсли;
+	Dialog.Show(New NotifyDescription("vUnloadObjectToFile", ThisForm, pMode));
+EndProcedure
 
-		Если пОшибкаФормата Или Не ЧтениеXML.Прочитать() Или ЧтениеXML.ТипУзла <> ТипУзлаXML.НачалоЭлемента
-			Или ЧтениеXML.ЛокальноеИмя <> "Data" Тогда
+&AtClient
+Procedure vUnloadObjectToFile(SelectedFiles, pMode = Undefined) Export
+	If SelectedFiles <> Undefined Then
+		XMLString = vGenerateXMLUnloading(mObjectRef, pMode, _RecordSetName);
+		If Not IsBlankString(XMLString) Then
+			pFileName = SelectedFiles[0];
+			TDoc = New TextDocument;
+			TDoc.SetText(XMLString);
+			TDoc.BeginWriting(New NotifyDescription("vAfterFinishWriteFile", ThisForm), pFileName, "UTF-8");
+		EndIf;
+	EndIf;
+EndProcedure
 
-			пОшибкаФормата = Истина;
-		КонецЕсли;
+&AtClient
+Procedure vAfterFinishWriteFile(Result, AddParam = Undefined) Export
+	If Result = True Then
+		ShowMessageBox( , NSTR("ru = 'Данные выгружены в файл';en = 'Data is unloaded to file.'"), 20);
+	EndIf;
+EndProcedure
+&AtServerNoContext
+Function vGenerateXMLUnloading(Val pRef, Val pMode, Val pRecordSetName = "")
 
-		Если пОшибкаФормата Или Не ЧтениеXML.Прочитать() Тогда
+	XMLWriter = New XMLWriter;
+	XMLWriter.SetString("UTF-8");
 
-			пОшибкаФормата = Истина;
-		КонецЕсли;
+	XMLWriter.WriteXMLDeclaration();
+	XMLWriter.WriteStartElement("_1CV8DtUD", "http://www.1c.ru/V8/1CV8DtUD/");
+	XMLWriter.WriteNamespaceMapping("V8Exch", "http://www.1c.ru/V8/1CV8DtUD/");
+	XMLWriter.WriteNamespaceMapping("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+	XMLWriter.WriteNamespaceMapping("core", "http://v8.1c.ru/data");
 
-	Исключение
-		пОшибкаФормата = Истина;
-	КонецПопытки;
+	XMLWriter.WriteNamespaceMapping("v8", "http://v8.1c.ru/8.1/data/enterprise/current-config");
+	XMLWriter.WriteNamespaceMapping("xs", "http://www.w3.org/2001/XMLSchema");
 
-	Если пОшибкаФормата Тогда
-		Сообщить(пСтрокаНеверныйФормат, СтатусСообщения.Важное);
-		ЧтениеXML.Закрыть();
-		Возврат;
-	КонецЕсли;
+	XMLWriter.WriteStartElement("V8Exch:Data");
+	If pMode = 4 Then
+		Manager = vCreateRecordSetManager(pRecordSetName);
+		If Manager <> Undefined Then
+			Set = Manager.CreateRecordSet();
+			Set.Filter.Recorder.Set(pRef);
+			Set.Read();
+
+			XDTOSerializer.WriteXML(XMLWriter, Set);
+		EndIf;
+	Else
+		Try
+			pObject = pRef.GetObject();
+		Except
+			Message(BriefErrorDescription(ErrorInfo()), MessageStatus.Important);
+			Message(NSTR("ru = 'Выгрузка данных не выполнена!';en = 'Failed to unload data.'"), MessageStatus.Important);
+			Return "";
+		EndTry;
+
+		If pMode = 1 Or pMode = 2 Then
+			XDTOSerializer.WriteXML(XMLWriter, pObject, XMLTypeAssignment.Explicit);
+		EndIf;
+
+		If pMode = 2 Or pMode = 3 Then
+			pMDObject = pObject.Metadata();
+			If Metadata.Documents.Contains(pMDObject) Then
+				For Each Record In pObject.RegisterRecords Do
+					Record.Read();
+					XDTOSerializer.WriteXML(XMLWriter, Record);
+				EndDo;
+			EndIf;
+		EndIf;
+	EndIf;
+	XMLWriter.WriteEndElement(); // V8Exc:Data
+	XMLWriter.WriteEndElement(); // V8Exc:_1CV8DtUD
+
+	XMLString = XMLWriter.Close();
+
+	Return XMLString;
+EndFunction
+
+&AtServerNoContext
+Procedure vLoadXMLData(Val XMLString)
+	XMLReader = New XMLReader;
+	XMLReader.SetString(XMLString);
+
+	Message(NSTR("ru = 'Загрузка данных стартована';en = 'Data loading started.'"));
+
+	pFormatError = False;
+	pStringIncorrectFormat = NStr("ru = 'Неверный формат файла выгрузки';en = 'Incorrect unload file format.'");
+
+	Try
+		// format checking
+		If pFormatError Or Not XMLReader.Read() Or XMLReader.NodeType <> XMLNodeType.StartElement
+			Or XMLReader.LocalName <> "_1CV8DtUD" Or XMLReader.NamespaceURI
+			<> "http://www.1c.ru/V8/1CV8DtUD/" Then
+
+			pFormatError = True;
+		EndIf;
+
+		If pFormatError Or Not XMLReader.Read() Or XMLReader.NodeType <> XMLNodeType.StartElement
+			Or XMLReader.LocalName <> "Data" Then
+
+			pFormatError = True;
+		EndIf;
+
+		If pFormatError Or Not XMLReader.Read() Then
+
+			pFormatError = True;
+		EndIf;
+
+	Except
+		pFormatError = True;
+	EndTry;
+
+	If pFormatError Then
+		Message(pStringIncorrectFormat, MessageStatus.Important);
+		XMLReader.Close();
+		Return;
+	EndIf;
 	
 	
-	// чтение данных
-	НачатьТранзакцию();
+	// data reading
+	BeginTransaction();
 
-	Пока СериализаторXDTO.ВозможностьЧтенияXML(ЧтениеXML) Цикл
-		Попытка
-			пОбъект = СериализаторXDTO.ПрочитатьXML(ЧтениеXML);
-			пОбъект.ОбменДанными.Загрузка = Истина;
-			пОбъект.Записать();
-		Исключение
-			пОшибкаФормата = Истина;
-			Сообщить(КраткоеПредставлениеОшибки(ИнформацияОбОшибке()), СтатусСообщения.Важное);
-			Прервать;
-		КонецПопытки;
-	КонецЦикла;
+	While XDTOSerializer.CanReadXML(XMLReader) Do
+		Try
+			pObject = XDTOSerializer.ReadXML(XMLReader);
+			pObject.DataExchange.Load = True;
+			pObject.Write();
+		Except
+			pFormatError = True;
+			Message(BriefErrorDescription(ErrorInfo()), MessageStatus.Important);
+			Break;
+		EndTry;
+	EndDo;
 
-	Если пОшибкаФормата Тогда
-		ОтменитьТранзакцию();
+	If pFormatError Then
+		RollbackTransaction();
 
-		ЧтениеXML.Закрыть();
-		Сообщить(NSTR("ru = 'Загрузка данных прервана';en = 'Data loading aborted'"), СтатусСообщения.Важное);
-		Возврат;
-	Иначе
-		ЗафиксироватьТранзакцию();
-	КонецЕсли;
+		XMLReader.Close();
+		Message(NSTR("ru = 'Загрузка данных прервана';en = 'Data loading aborted.'"), MessageStatus.Important);
+		Return;
+	Else
+		CommitTransaction();
+	EndIf;
 	
 	
-	// проверка формата
-	Если пОшибкаФормата Или ЧтениеXML.ТипУзла <> ТипУзлаXML.КонецЭлемента Или ЧтениеXML.ЛокальноеИмя <> "Data" Тогда
+	// format checking
+	If pFormatError Or XMLReader.NodeType <> XMLNodeType.EndElement Or XMLReader.LocalName <> "Data" Then
 
-		пОшибкаФормата = Истина;
-	КонецЕсли;
+		pFormatError = True;
+	EndIf;
 
-	Если пОшибкаФормата Или Не ЧтениеXML.Прочитать() Или ЧтениеXML.ТипУзла <> ТипУзлаXML.КонецЭлемента
-		Или ЧтениеXML.ЛокальноеИмя <> "_1CV8DtUD" Или ЧтениеXML.URIПространстваИмен <> "http://www.1c.ru/V8/1CV8DtUD/" Тогда
+	If pFormatError Or Not XMLReader.Read() Or XMLReader.NodeType <> XMLNodeType.EndElement
+		Or XMLReader.LocalName <> "_1CV8DtUD" Or XMLReader.NamespaceURI <> "http://www.1c.ru/V8/1CV8DtUD/" Then
 
-		пОшибкаФормата = Истина;
-	КонецЕсли;
+		pFormatError = True;
+	EndIf;
 
-	Если пОшибкаФормата Тогда
-		Сообщить(пСтрокаНеверныйФормат, СтатусСообщения.Важное);
-		ЧтениеXML.Закрыть();
-		Сообщить(NSTR("ru = 'Загрузка данных завершена';en = 'Data loading completed'"));
-		Возврат;
-	КонецЕсли;
+	If pFormatError Then
+		Message(pStringIncorrectFormat, MessageStatus.Important);
+		XMLReader.Close();
+		Message(NSTR("ru = 'Загрузка данных завершена';en = 'Data loading completed.'"));
+		Return;
+	EndIf;
 
-	ЧтениеXML.Закрыть();
-	Сообщить(NSTR("ru = 'Загрузка данных завершена';en = 'Data loading completed'"));
-КонецПроцедуры
-&НаСервереБезКонтекста
-Функция вОпределитьДополнительныеРегистрыДокумента(Знач пПолноеИмяДокумента)
-	пСоотв = Новый Соответствие;
+	XMLReader.Close();
+	Message(NSTR("ru = 'Загрузка данных завершена';en = 'Data loading completed.'"));
+EndProcedure
+&AtServerNoContext
+Function vFindAdditionalRegisters(Val pDocumentFullName)
+	pMap = New Map;
 
-	пСтрук = Новый Структура;
-	пСтрук.Вставить("ЕстьДанные", Ложь);
-	пСтрук.Вставить("ДополнительныеРегистры", пСоотв);
+	pStruct = New Structure;
+	pStruct.Insert("DataExists", False);
+	pStruct.Insert("AdditionalRegisters", pMap);
 
-	пРегистраторМД = Метаданные.Документы.Найти("РегистраторРасчетов");
-	Если пРегистраторМД = Неопределено Тогда
-		Возврат пСтрук;
-	КонецЕсли;
+	pMDRecorder = Metadata.Documents.Find("CalculationRecorder");
+	If pMDRecorder = Undefined Then
+		Return pStruct;
+	EndIf;
 
-	Если ТипЗнч(пПолноеИмяДокумента) <> Тип("Строка") Тогда
-		пПолноеИмяДокумента = пПолноеИмяДокумента.Метаданные().ПолноеИмя();
-		Если СтрНайти(пПолноеИмяДокумента, "Документ.") <> 1 Тогда
-			Возврат пСтрук;
-		КонецЕсли;
-	КонецЕсли;
+	If TypeOf(pDocumentFullName) <> Type("String") Then
+		pDocumentFullName = pDocumentFullName.Metadata().FullName();
+		If StrFind(pDocumentFullName, "Document.") <> 1 Then
+			Return pStruct;
+		EndIf;
+	EndIf;
 
-	Для Каждого ЭлемМД Из пРегистраторМД.Движения Цикл
-		пРеквизитМД = ЭлемМД.Реквизиты.Найти("ДокументРегистратор");
-		Если пРеквизитМД <> Неопределено Тогда
-			пИмяРегистра = ЭлемМД.ПолноеИмя();
+	For Each MDItem In pMDRecorder.RegisterRecords Do
+		pMDAttribute = MDItem.Attributes.Find("DocumentRecorder");
+		If pMDAttribute <> Undefined Then
+			pRegisterName = MDItem.FullName();
 
-			Для Каждого пТип Из пРеквизитМД.Тип.Типы() Цикл
-				пДокМД = Метаданные.НайтиПоТипу(пТип);
+			For Each pType In pMDAttribute.Type.Types() Do
+				pMDDoc = Metadata.FindByType(pType);
 
-				Если пДокМД <> Неопределено Тогда
-					пИмяДокумента = пДокМД.ПолноеИмя();
+				If pMDDoc <> Undefined Then
+					pDocumentName = pMDDoc.FullName();
 
-					Если пИмяДокумента = пПолноеИмяДокумента И пИмяДокумента <> "Документ.РегистраторРасчетов" Тогда
-						пСоотв[пИмяРегистра] = ЭлемМД.Представление();
-						Прервать;
-					КонецЕсли;
-				КонецЕсли;
-			КонецЦикла;
-		КонецЕсли;
-	КонецЦикла;
+					If pDocumentName = pDocumentFullName And pDocumentName <> "Document.CalculationRecorder" Then
+						pMap[pRegisterName] = MDItem.Presentation();
+						Break;
+					EndIf;
+				EndIf;
+			EndDo;
+		EndIf;
+	EndDo;
 
-	пСтрук.ЕстьДанные = (пСоотв.Количество() <> 0);
+	pStruct.DataExists = (pMap.Count() <> 0);
 
-	Возврат пСтрук;
-КонецФункции
-&НаКлиенте
-Процедура _ВставитьУникальныйИдентификатор(Команда)
-	ТекТаблица = ЭтаФорма.ТекущийЭлемент;
+	Return pStruct;
+EndFunction
+&AtClient
+Procedure _InsertUUID(Command)
+	CurrTable = ThisForm.CurrentItem;
 
-	Если ТекТаблица.Имя = "_ЗначениеДляЗаполнения" Тогда
-		пСтрук = Новый Структура("Таблица", ТекТаблица.Имя);
-		ПоказатьВводСтроки(Новый ОписаниеОповещения("вОбработатьВвод_UUID", ЭтаФорма, пСтрук), мПоследнийUUID,
-			NStr("ru = 'Введите уникальный идентификатор';en = 'Enter a unique identifier (UUID)'"), , Ложь);
-		Возврат;
-	ИначеЕсли ТипЗнч(ТекТаблица) <> Тип("ТаблицаФормы") Тогда
-		Возврат;
-	КонецЕсли;
+	If CurrTable.Name = "_ValueToFill" Then
+		pStruct = New Structure("Table", CurrTable.Name);
+		ShowInputString(New NotifyDescription("vProcessInputUUID", ThisForm, pStruct), mLastUUID,
+			NStr("ru = 'Введите уникальный идентификатор'; en = 'Enter a unique identifier (UUID)'"), , False);
+		Return;
+	ElsIf TypeOf(CurrTable) <> Type("FormTable") Then
+		Return;
+	EndIf;
 
-	ТекКолонка = ТекТаблица.ТекущийЭлемент;
-	Если ТекКолонка = Неопределено Или ТекКолонка.ТолькоПросмотр Тогда
-		Возврат;
-	КонецЕсли;
+	CurrColumn = CurrTable.CurrentItem;
+	If CurrColumn = Undefined Or CurrColumn.ReadOnly Then
+		Return;
+	EndIf;
 
-	Попытка
-		пДоступныеТипы = ТекКолонка.ДоступныеТипы.Типы();
-		Если пДоступныеТипы.Количество() <> 0 И пДоступныеТипы.Найти(Тип("УникальныйИдентификатор")) <> 0 Тогда
-			Возврат;
-		КонецЕсли;
-	Исключение
-	КонецПопытки;
+	Try
+		pAvailableTypes = CurrColumn.AvailableTypes.Types();
+		If pAvailableTypes.Count() <> 0 And pAvailableTypes.Find(Type("UUID")) <> 0 Then
+			Return;
+		EndIf;
+	Except
+	EndTry;
 
-	ТекДанные = Элементы[ТекТаблица.Имя].ТекущиеДанные;
-	Если ТекДанные <> Неопределено Тогда
-		пСтрук = Новый Структура("Таблица", ТекТаблица.Имя);
+	CurrData = Items[CurrTable.Name].CurrentData;
+	If CurrData <> Undefined Then
+		pStruct = New Structure("Table", CurrTable.Name);
 
-		Если ТекТаблица.Имя = "РеквизитыОбъекта" Тогда
-			пСтрук.Вставить("Поле", "Значение");
-//		ИначеЕсли ТекТаблица.Имя = "_ДополнительныеСвойства" Тогда
-//			пСтрук.Вставить("Поле", "Значение");
-		Иначе
-			пСтрук.Вставить("Поле", Сред(ТекКолонка.Имя, СтрДлина(ТекТаблица.Имя) + 1));
-		КонецЕсли;
+		If CurrTable.Name = "ObjectAttributes" Then
+			pStruct.Insert("Field", "Value");
+//		ElsIf CurrTable.Name = "_AdditionalProperties" Then
+//			pStruct.Insert("Field", "Value");
+		Else
+			pStruct.Insert("Field", Mid(CurrColumn.Name, StrLen(CurrTable.Name) + 1));
+		EndIf;
 
-		ПоказатьВводСтроки(Новый ОписаниеОповещения("вОбработатьВвод_UUID", ЭтаФорма, пСтрук), мПоследнийUUID,
-			NStr("ru = 'Введите уникальный идентификатор';en = 'Enter a unique identifier (UUID)'"), , Ложь);
-	КонецЕсли;
-КонецПроцедуры
+		ShowInputString(New NotifyDescription("vProcessInputUUID", ThisForm, pStruct), mLastUUID,
+			NStr("ru = 'Введите уникальный идентификатор'; en = 'Enter a unique identifier (UUID)'"), , False);
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура вОбработатьВвод_UUID(Строка, пСтрук = Неопределено) Экспорт
-	Если Строка <> Неопределено И Не ПустаяСтрока(Строка) Тогда
-		Попытка
-			пЗначение = Новый УникальныйИдентификатор(Строка);
-			мПоследнийUUID = Строка;
-		Исключение
-			ПоказатьПредупреждение( , NSTR("ru = 'Значение не может быть преобразовано в Уникальный идентификатор!';en = 'The value cannot be converted to a Unique identifier! (UUID)'"), 20);
-			Возврат;
-		КонецПопытки;
+&AtClient
+Procedure vProcessInputUUID(String, pStruct = Undefined) Export
+	If String <> Undefined And Not IsBlankString(String) Then
+		Try
+			pValue = New UUID(String);
+			mLastUUID = String;
+		Except
+			ShowMessageBox( , NSTR("ru = 'Значение не может быть преобразовано в Уникальный идентификатор!'; en = 'The value cannot be converted to a Unique identifier (UUID).'"), 20);
+			Return;
+		EndTry;
 
-		Если пСтрук.Таблица = "_ЗначениеДляЗаполнения" Тогда
-			_ЗначениеДляЗаполнения = пЗначение;
-		Иначе
-			ТекДанные = Элементы[пСтрук.Таблица].ТекущиеДанные;
-			Если ТекДанные <> Неопределено Тогда
-				ТекДанные[пСтрук.Поле] = пЗначение;
-			КонецЕсли;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+		If pStruct.Table = "_ValueToFill" Then
+			_ValueToFill = pValue;
+		Else
+			CurrData = Items[pStruct.Table].CurrentData;
+			If CurrData <> Undefined Then
+				CurrData[pStruct.Field] = pValue;
+			EndIf;
+		EndIf;
+	EndIf;
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура Attachable_ExecuteToolsCommonCommand(Команда) 
-	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ЭтотОбъект, Команда);
-КонецПроцедуры
+&AtClient
+Procedure Attachable_ExecuteToolsCommonCommand(Command) 
+	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура Attachable_SetWriteSettings(Команда)
-	UT_CommonClient.EditWriteSettings(ЭтотОбъект);
-КонецПроцедуры
+&AtClient
+Procedure Attachable_SetWriteSettings(Command)
+	UT_CommonClient.EditWriteSettings(ThisObject);
+EndProcedure
