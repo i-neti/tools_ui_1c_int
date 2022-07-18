@@ -2082,17 +2082,17 @@ Procedure vFullInTotalControlPage(FullName)
 		Return;
 	EndTry;
 
-	If Not pStruct.ЕстьДанные Then
+	If Not pStruct.HasData Then
 		Return;
 	EndIf;
 
 	Items.ManagingTotalsPage.Visible = True;
 
-	_AggregateMode = pStruct.РежимАгрегатов;
-	_UseAggregates = pStruct.ИспользованиеАгрегатов;
-	_UseTotals = pStruct.ИспользованиеИтогов;
-	_UseCurrentTotals = pStruct.ИспользованиеТекущихИтогов;
-	_DividingTotalsMode = pStruct.РежимРазделенияИтогов;
+	_AggregateMode = pStruct.AggregatesMode;
+	_UseAggregates = pStruct.AggregatesUsing;
+	_UseTotals = pStruct.TotalsUsing;
+	_UseCurrentTotals = pStruct.PresentTotalsUsing;
+	_DividingTotalsMode = pStruct.TotalsSplittingMode;
 	_MinimumPeriodOfCalculatedTotals = pStruct.МинимальныйПериодРассчитанныхИтогов;
 	_MaximumPeriodOfCalculatedTotals = pStruct.МаксимальныйПериодРассчитанныхИтогов;
 
@@ -2114,14 +2114,14 @@ EndProcedure
 
 &AtServerNoContext
 Function vGetRegisterPropertiesToManageTotals(FullName)
-	pStruct = New Structure("ЕстьДанные, ЭтоРегистрБУ, ОборотныйРегистр", False, False, False);
+	pStruct = New Structure("HasData, ЭтоРегистрБУ, ОборотныйРегистр", False, False, False);
 
 	MDObject = Metadata.FindByFullName(FullName);
 	If MDObject = Undefined Then
 		Return pStruct;
 	EndIf;
 
-	pStruct.ЕстьДанные = True;
+	pStruct.HasData = True;
 	pStruct.Insert("Name", MDObject.Name);
 
 	пПустаяДата = '00010101';
@@ -2147,13 +2147,13 @@ Function vGetRegisterPropertiesToManageTotals(FullName)
 		pStruct.Insert("Дата2", пМенеджер.GetMaxTotalsPeriod());
 	EndIf;
 
-	pStruct.Insert("РежимАгрегатов", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesMode(), False));
-	pStruct.Insert("ИспользованиеАгрегатов", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesUsing(),
+	pStruct.Insert("AggregatesMode", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesMode(), False));
+	pStruct.Insert("AggregatesUsing", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesUsing(),
 		False));
-	pStruct.Insert("ИспользованиеТекущихИтогов", ?(pStruct.ЕстьТекущиеИтоги,
+	pStruct.Insert("PresentTotalsUsing", ?(pStruct.ЕстьТекущиеИтоги,
 		пМенеджер.GetPresentTotalsUsing(), False));
-	pStruct.Insert("ИспользованиеИтогов", пМенеджер.GetTotalsUsing());
-	pStruct.Insert("РежимРазделенияИтогов", пМенеджер.GetTotalsSplittingMode());
+	pStruct.Insert("TotalsUsing", пМенеджер.GetTotalsUsing());
+	pStruct.Insert("TotalsSplittingMode", пМенеджер.GetTotalsSplittingMode());
 	pStruct.Insert("МинимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
 		пМенеджер.GetMinTotalsPeriod()));
 	pStruct.Insert("МаксимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
@@ -2412,7 +2412,7 @@ Function вВыполнитКомандуУправленияИтогами(Val 
 EndFunction
 
 &AtServerNoContext
-Function вИзменитьСвойствоРегистра(Val FullName, Val PropertyName, Val пЗначение)
+Function вИзменитьСвойствоРегистра(Val FullName, Val PropertyName, Val pValue)
 	If Not vHaveAdministratorRights() Then
 		Message("None прав на выполнение операции!");
 		Return False;
@@ -2430,16 +2430,16 @@ Function вИзменитьСвойствоРегистра(Val FullName, Val Pr
 	EndIf;
 
 	Try
-		If PropertyName = "РежимАгрегатов" Then
-			пМенеджер.SetAggregatesMode(пЗначение);
-		ElsIf PropertyName = "ИспользованиеАгрегатов" Then
-			пМенеджер.SetAggregatesUsing(пЗначение);
-		ElsIf PropertyName = "ИспользованиеИтогов" Then
-			пМенеджер.SetTotalsUsing(пЗначение);
-		ElsIf PropertyName = "ИспользованиеТекущихИтогов" Then
-			пМенеджер.SetPresentTotalsUsing(пЗначение);
-		ElsIf PropertyName = "РежимРазделенияИтогов" Then
-			пМенеджер.SetTotalsSplittingMode(пЗначение);
+		If PropertyName = "AggregatesMode" Then
+			пМенеджер.SetAggregatesMode(pValue);
+		ElsIf PropertyName = "AggregatesUsing" Then
+			пМенеджер.SetAggregatesUsing(pValue);
+		ElsIf PropertyName = "TotalsUsing" Then
+			пМенеджер.SetTotalsUsing(pValue);
+		ElsIf PropertyName = "PresentTotalsUsing" Then
+			пМенеджер.SetPresentTotalsUsing(pValue);
+		ElsIf PropertyName = "TotalsSplittingMode" Then
+			пМенеджер.SetTotalsSplittingMode(pValue);
 		Else
 			Return False;
 		EndIf;
@@ -2474,7 +2474,7 @@ Procedure _FullInAccessRights(Command)
 
 		пСтрукРезультат = вПолучитьДоступныеОбъектыДляРоли(_FullName, _AccessRightToObject,
 			_AdditionalVars.DescriptionOfAccessRights);
-		If пСтрукРезультат.ЕстьДанные Then
+		If пСтрукРезультат.HasData Then
 			For Each Itm In пСтрукРезультат.AvailableObjects Do
 				FillPropertyValues(_AvailableObjects.Add(), Itm);
 			EndDo;
@@ -2494,7 +2494,7 @@ Procedure _FullInAccessRights(Command)
 		EndIf;
 
 		пСтрукРезультат = вПолучитьПраваДоступаКОбъекту(_AccessRightToObject, _FullName);
-		If пСтрукРезультат.ЕстьДанные Then
+		If пСтрукРезультат.HasData Then
 			For Each Itm In пСтрукРезультат.Roles Do
 				FillPropertyValues(RolesWithAccessTable.Add(), Itm);
 			EndDo;
@@ -2604,14 +2604,14 @@ EndFunction
 
 &AtServerNoContext
 Function вПолучитьДоступныеОбъектыДляРоли(Val пРоль, Val pRight, Val DescriptionOfAccessRights)
-	пРезультат = New Structure("ЕстьДанные, AvailableObjects, Users", False);
+	пРезультат = New Structure("HasData, AvailableObjects, Users", False);
 
 	пРольМД = Metadata.FindByFullName(пРоль);
 	If пРоль = Undefined Then
 		Return пРезультат;
 	EndIf;
 
-	пРезультат.ЕстьДанные = True;
+	пРезультат.HasData = True;
 	пРезультат.Insert("AvailableObjects", New Array);
 	пРезультат.Insert("Users", New Array);
 
@@ -2719,7 +2719,7 @@ EndFunction
 
 &AtServerNoContext
 Function вПолучитьПраваДоступаКОбъекту(Val ИмяПрава, Val FullName)
-	СтрукРезультат = New Structure("ЕстьДанные, Roles, Users", False);
+	СтрукРезультат = New Structure("HasData, Roles, Users", False);
 
 	If IsBlankString(ИмяПрава) Then
 		Return СтрукРезультат;
@@ -2797,7 +2797,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 		ТабПользователи.Sort("Name");
 	EndIf;
 
-	СтрукРезультат.ЕстьДанные = True;
+	СтрукРезультат.HasData = True;
 	СтрукРезультат.Roles = New Array;
 	СтрукРезультат.Users = New Array;
 
