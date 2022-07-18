@@ -1470,7 +1470,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>_РежимРаботы</name>
+    <name>_WorkMode</name>
     <title>
       <key>ru</key>
       <value>Режим работы</value>
