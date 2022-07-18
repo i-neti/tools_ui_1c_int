@@ -2093,28 +2093,28 @@ Procedure vFullInTotalControlPage(FullName)
 	_UseTotals = pStruct.TotalsUsing;
 	_UseCurrentTotals = pStruct.PresentTotalsUsing;
 	_DividingTotalsMode = pStruct.TotalsSplittingMode;
-	_MinimumPeriodOfCalculatedTotals = pStruct.МинимальныйПериодРассчитанныхИтогов;
-	_MaximumPeriodOfCalculatedTotals = pStruct.МаксимальныйПериодРассчитанныхИтогов;
+	_MinimumPeriodOfCalculatedTotals = pStruct.MinimumPeriodOfCalculatedTotals;
+	_MaximumPeriodOfCalculatedTotals = pStruct.MaximumPeriodOfCalculatedTotals;
 
-	Items._AggregateMode.Visible = Not pStruct.ЭтоРегистрБУ;
-	Items._AggregateMode.Enabled = pStruct.ЕстьРежимАгрегатов;
-	Items._UseAggregates.Visible = Not pStruct.ЭтоРегистрБУ;
-	Items._UseAggregates.Enabled = pStruct.ЕстьРежимАгрегатов And _AggregateMode;
+	Items._AggregateMode.Visible = Not pStruct.IsAccountingRegister;
+	Items._AggregateMode.Enabled = pStruct.HasAggregateMode;
+	Items._UseAggregates.Visible = Not pStruct.IsAccountingRegister;
+	Items._UseAggregates.Enabled = pStruct.HasAggregateMode And _AggregateMode;
 
 	Items._UseTotals.Enabled = Not _AggregateMode;
-	Items._UseCurrentTotals.Enabled = pStruct.ЕстьТекущиеИтоги And Not _AggregateMode;
+	Items._UseCurrentTotals.Enabled = pStruct.HasCurrentTotals And Not _AggregateMode;
 
 	Items._RecalculateTotals.Enabled = Not _AggregateMode;
-	Items._RecalculateCurrentTotals.Enabled = pStruct.ЕстьТекущиеИтоги And Not _AggregateMode;
+	Items._RecalculateCurrentTotals.Enabled = pStruct.HasCurrentTotals And Not _AggregateMode;
 
 	Items.RecalculateTotalsForPeriodGroup.Enabled = Not _AggregateMode;
-	Items.CalculatedTotalsGroup.Enabled = Not pStruct.ОборотныйРегистр And Not _AggregateMode;
+	Items.CalculatedTotalsGroup.Enabled = Not pStruct.TurnoversRegister And Not _AggregateMode;
 
 EndProcedure
 
 &AtServerNoContext
 Function vGetRegisterPropertiesToManageTotals(FullName)
-	pStruct = New Structure("HasData, ЭтоРегистрБУ, ОборотныйРегистр", False, False, False);
+	pStruct = New Structure("HasData, IsAccountingRegister, TurnoversRegister", False, False, False);
 
 	MDObject = Metadata.FindByFullName(FullName);
 	If MDObject = Undefined Then
@@ -2124,47 +2124,47 @@ Function vGetRegisterPropertiesToManageTotals(FullName)
 	pStruct.HasData = True;
 	pStruct.Insert("Name", MDObject.Name);
 
-	пПустаяДата = '00010101';
-	pStruct.Insert("Дата1", пПустаяДата);
-	pStruct.Insert("Дата2", пПустаяДата);
+	pEmptyDate = '00010101';
+	pStruct.Insert("Date1", pEmptyDate);
+	pStruct.Insert("Date2", pEmptyDate);
 
 	If Metadata.AccountingRegisters.Contains(MDObject) Then
-		pStruct.ЭтоРегистрБУ = True;
-		pStruct.Insert("ЕстьПериодИтогов", True);
-		pStruct.Insert("ЕстьРежимАгрегатов", False);
-		pStruct.Insert("ЕстьТекущиеИтоги", True);
-		пМенеджер = AccountingRegisters[pStruct.Name];
+		pStruct.IsAccountingRegister = True;
+		pStruct.Insert("HasTotalsPeriod", True);
+		pStruct.Insert("HasAggregateMode", False);
+		pStruct.Insert("HasCurrentTotals", True);
+		pManager = AccountingRegisters[pStruct.Name];
 	Else
-		pStruct.ОборотныйРегистр = (MDObject.RegisterType = Metadata.ObjectProperties.AccumulationRegisterType.Turnovers);
-		pStruct.Insert("ЕстьПериодИтогов", Not pStruct.ОборотныйРегистр);
-		pStruct.Insert("ЕстьРежимАгрегатов", pStruct.ОборотныйРегистр);
-		pStruct.Insert("ЕстьТекущиеИтоги", Not pStruct.ОборотныйРегистр);
-		пМенеджер = AccumulationRegisters[pStruct.Name];
+		pStruct.TurnoversRegister = (MDObject.RegisterType = Metadata.ObjectProperties.AccumulationRegisterType.Turnovers);
+		pStruct.Insert("HasTotalsPeriod", Not pStruct.TurnoversRegister);
+		pStruct.Insert("HasAggregateMode", pStruct.TurnoversRegister);
+		pStruct.Insert("HasCurrentTotals", Not pStruct.TurnoversRegister);
+		pManager = AccumulationRegisters[pStruct.Name];
 	EndIf;
 
-	If pStruct.ЕстьПериодИтогов Then
-		pStruct.Insert("Дата1", пМенеджер.GetMinTotalsPeriod());
-		pStruct.Insert("Дата2", пМенеджер.GetMaxTotalsPeriod());
+	If pStruct.HasTotalsPeriod Then
+		pStruct.Insert("Date1", pManager.GetMinTotalsPeriod());
+		pStruct.Insert("Date2", pManager.GetMaxTotalsPeriod());
 	EndIf;
 
-	pStruct.Insert("AggregatesMode", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesMode(), False));
-	pStruct.Insert("AggregatesUsing", ?(pStruct.ЕстьРежимАгрегатов, пМенеджер.GetAggregatesUsing(),
+	pStruct.Insert("AggregatesMode", ?(pStruct.HasAggregateMode, pManager.GetAggregatesMode(), False));
+	pStruct.Insert("AggregatesUsing", ?(pStruct.HasAggregateMode, pManager.GetAggregatesUsing(),
 		False));
-	pStruct.Insert("PresentTotalsUsing", ?(pStruct.ЕстьТекущиеИтоги,
-		пМенеджер.GetPresentTotalsUsing(), False));
-	pStruct.Insert("TotalsUsing", пМенеджер.GetTotalsUsing());
-	pStruct.Insert("TotalsSplittingMode", пМенеджер.GetTotalsSplittingMode());
-	pStruct.Insert("МинимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
-		пМенеджер.GetMinTotalsPeriod()));
-	pStruct.Insert("МаксимальныйПериодРассчитанныхИтогов", ?(pStruct.ОборотныйРегистр, пПустаяДата,
-		пМенеджер.GetMaxTotalsPeriod()));
+	pStruct.Insert("PresentTotalsUsing", ?(pStruct.HasCurrentTotals,
+		pManager.GetPresentTotalsUsing(), False));
+	pStruct.Insert("TotalsUsing", pManager.GetTotalsUsing());
+	pStruct.Insert("TotalsSplittingMode", pManager.GetTotalsSplittingMode());
+	pStruct.Insert("MinimumPeriodOfCalculatedTotals", ?(pStruct.TurnoversRegister, pEmptyDate,
+		pManager.GetMinTotalsPeriod()));
+	pStruct.Insert("MaximumPeriodOfCalculatedTotals", ?(pStruct.TurnoversRegister, pEmptyDate,
+		pManager.GetMaxTotalsPeriod()));
 
 	Return pStruct;
 EndFunction
 
 
 
-// структура хранения
+// storage structure
 
 &AtClient
 Procedure _ShowStorageStructureIn1CTermsOnChange(Item)
@@ -2191,12 +2191,12 @@ Procedure vFullInSectionOfStorage(Val SXData = Undefined)
 		EndIf;
 	EndIf;
 
-	НомерХ = 0;
-	НомерХХ = 0;
+	NumberX = 0;
+	NumberXX = 0;
 
 	For Each Row In SXData Do
-		НомерХ = НомерХ + 1;
-		TableNumber = "(" + НомерХ + ")";
+		NumberX = NumberX + 1;
+		TableNumber = "(" + NumberX + ")";
 
 		NewLine = _SXTable.Add();
 		FillPropertyValues(NewLine, Row);
@@ -2205,25 +2205,25 @@ Procedure vFullInSectionOfStorage(Val SXData = Undefined)
 			NewLine.TableName = _FullName + "(" + Row.Purpose + ")";
 		EndIf;
 
-		For Each СтрХ In Row.Fields Do
+		For Each LineX In Row.Fields Do
 			NewLine = _SXFielsd.Add();
-			FillPropertyValues(NewLine, СтрХ);
+			FillPropertyValues(NewLine, LineX);
 			NewLine.StorageTableName = Row.StorageTableName;
 			NewLine.TableNumber = TableNumber;
 		EndDo;
-		For Each СтрХ In Row.Indexes Do
-			НомерХХ = НомерХХ + 1;
-			IndexNumber = "(" + НомерХХ + ")";
+		For Each LineX In Row.Indexes Do
+			NumberXX = NumberXX + 1;
+			IndexNumber = "(" + NumberXX + ")";
 
 			NewLine = _SXIndexes.Add();
-			FillPropertyValues(NewLine, СтрХ);
+			FillPropertyValues(NewLine, LineX);
 			NewLine.StorageTableName = Row.StorageTableName;
 			NewLine.TableNumber = TableNumber;
 			NewLine.IndexNumber = IndexNumber;
 
-			For Each СтрХХ In СтрХ.Fields Do
+			For Each LineXX In LineX.Fields Do
 				NewLine = _SXIndexFields.Add();
-				FillPropertyValues(NewLine, СтрХХ);
+				FillPropertyValues(NewLine, LineXX);
 				NewLine.IndexNumber = IndexNumber;
 			EndDo;
 		EndDo;
@@ -2251,25 +2251,28 @@ EndProcedure
 &AtClient
 Procedure _UpdateNumberOfObjects(Command)
 	If Not vHaveAdministratorRights() Then
-		ShowMessageBox( , "None прав на выполнение операции!", 20);
+		TextMassage = Nstr("ru = 'Нет прав на выполнение операции!';en = 'No rights to perform the operation!'");
+		ShowMessageBox( , TextMassage, 20);
 		Return;
 	EndIf;
 
-	пТекст = ?(_FullName = "Configuration", "Нумерация всех объектов будет обновлена. Continue?",
-		"Нумерация обекта будет обновлена. Continue?");
-	ShowQueryBox(New NotifyDescription("вОбновитьНумерациюОбъектовОтвет", ThisForm), пТекст,
+	pText = ?(_FullName = "Configuration", 
+		Nstr("ru = 'Нумерация всех объектов будет обновлена. Продолжить?';en = 'The numbering of all objects will be updated. Continue?'"),
+		Nstr("ru = 'Нумерация обекта будет обновлена. Продолжить?';en = 'The numbering of object will be updated. Continue?'"));
+
+	ShowQueryBox(New NotifyDescription("vUpdateNumberOfObjectsResponse", ThisForm), pText,
 		QuestionDialogMode.YesNoCancel, 20);
 EndProcedure
 
 &AtClient
-Procedure вОбновитьНумерациюОбъектовОтвет(РезультатВопроса, ДопПарам = Undefined) Export
-	If РезультатВопроса = DialogReturnCode.Yes Then
-		вОбновитьНумерациюОбъектов(_FullName);
+Procedure vUpdateNumberOfObjectsResponse(QuestionResult, AdditionalParams = Undefined) Export
+	If QuestionResult = DialogReturnCode.Yes Then
+		vUpdateNumberingOfObjects(_FullName);
 	EndIf;
 EndProcedure
 
 &AtServerNoContext
-Function вОбновитьНумерациюОбъектов(Val FullName)
+Function vUpdateNumberingOfObjects(Val FullName)
 	If FullName = "Configuration" Then
 		Try
 			RefreshObjectsNumbering();
@@ -2293,7 +2296,7 @@ Function вОбновитьНумерациюОбъектов(Val FullName)
 EndFunction
 
 
-// управление итогами
+// managing  totals
 &AtClient
 Procedure _UpdateTotalsManagement(Command)
 	vFullInTotalControlPage(_FullName);
@@ -2301,67 +2304,67 @@ EndProcedure
 
 &AtClient
 Procedure _RecalculateTotals(Command)
-	vShowQuestion("вОбработатьКомандуУправленияИтогами", "Будет выполнен полный пересчет итогов. Continue?",
+	vShowQuestion("vProcessTotalsManagementCommand", Nstr("ru = 'Будет выполнен полный пересчет итогов. Продолжить?';en = 'A complete recalculation of the totals will be performed. Continue?'"),
 		"RecalcTotals");
 EndProcedure
 
 &AtClient
 Procedure _RecalculateCurrentTotals(Command)
-	vShowQuestion("вОбработатьКомандуУправленияИтогами", "Текущие итоги будут пересчитаны. Continue?",
+	vShowQuestion("vProcessTotalsManagementCommand", Nstr("ru = 'Текущие итоги будут пересчитаны. Продолжить?';en = 'The current totals will be recalculated. Continue?'"),
 		"RecalcPresentTotals");
 EndProcedure
 
 &AtClient
 Procedure _RecalculateTotalsForThePeriod(Command)
-	vShowQuestion("вОбработатьКомандуУправленияИтогами", "Будут пересчитаны итоги за заданный период. Continue?",
+	vShowQuestion("vProcessTotalsManagementCommand", Nstr("ru = 'Будут пересчитаны итоги за заданный период. Продолжить?';en = 'The totals for the specified period will be recalculated. Continue?'"),
 		"RecalcTotalsForPeriod");
 EndProcedure
 
 &AtClient
 Procedure _InstallPriodOfCalculatedTotals(Command)
-	пИмя = ThisForm.CurrentItem.Name;
-	If Right(пИмя, 1) = "1" Then
-		vShowQuestion("вОбработатьКомандуУправленияИтогами",
-			"Будет изменен минимальный период рассчитанных итогов. Continue?",
+	pName = ThisForm.CurrentItem.Name;
+	If Right(pName, 1) = "1" Then
+		vShowQuestion("vProcessTotalsManagementCommand",
+			Nstr("ru = 'Будет изменен минимальный период рассчитанных итогов. Продолжить?';en = 'The minimum period of calculated totals will be changed. Continue?'"),
 			"SetMinTotalsPeriod");
-	ElsIf Right(пИмя, 1) = "2" Then
-		vShowQuestion("вОбработатьКомандуУправленияИтогами",
-			"Будет изменен максимальный период рассчитанных итогов. Continue?",
+	ElsIf Right(pName, 1) = "2" Then
+		vShowQuestion("vProcessTotalsManagementCommand",
+			Nstr("ru = 'Будет изменен максимальный период рассчитанных итогов. Продолжить?';en = 'The maximum period of calculated totals will be changed. Continue?'"),
 			"SetMaxTotalsPeriod");
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure вОбработатьКомандуУправленияИтогами(РезультатВопроса, CommandName) Export
-	If РезультатВопроса = DialogReturnCode.Yes Then
-		pStruct = вПолучитьНовыеНастройкиУправленияИтогами();
+Procedure vProcessTotalsManagementCommand(QuestionResult, CommandName) Export
+	If QuestionResult = DialogReturnCode.Yes Then
+		pStruct = vGetNewTotalsManagementSettings();
 		pStruct.Insert("CommandName", CommandName);
 
-		пРезультат = вВыполнитКомандуУправленияИтогами(_FullName, CommandName, pStruct);
+		pResult = vRunTotalsManagementCommand(_FullName, CommandName, pStruct);
 		_UpdateTotalsManagement(Undefined);
 	EndIf;
 EndProcedure
 
 &AtClient
-Function вПолучитьНовыеНастройкиУправленияИтогами()
+Function vGetNewTotalsManagementSettings()
 	pStruct = New Structure;
-	pStruct.Insert("ПериодПересчетаИтогов", _PeriodRecalculationTotals);
-	pStruct.Insert("МинимальныйПериодРассчитанныхИтогов", _MinimumPeriodOfCalculatedTotals);
-	pStruct.Insert("МаксимальныйПериодРассчитанныхИтогов", _MaximumPeriodOfCalculatedTotals);
+	pStruct.Insert("PeriodRecalculationTotals", _PeriodRecalculationTotals);
+	pStruct.Insert("MinimumPeriodOfCalculatedTotals", _MinimumPeriodOfCalculatedTotals);
+	pStruct.Insert("MaximumPeriodOfCalculatedTotals", _MaximumPeriodOfCalculatedTotals);
 
 	Return pStruct;
 EndFunction
 
 &AtClient
 Procedure _RegistryPropertyOnChange(Item)
-	vShowQuestion("вОбработатьИзменениеСвойстваРегистра", "Property регистра будет изменено. Continue?",
+	vShowQuestion("vProcessRegisterPropertyChange", NStr("ru = 'Свойство регистра будет изменено. Продолжить?';en = 'The register property will be changed. Continue?'"),
 		Item.Name);
 EndProcedure
 
 &AtClient
-Procedure вОбработатьИзменениеСвойстваРегистра(РезультатВопроса, PropertyName) Export
-	If РезультатВопроса = DialogReturnCode.Yes Then
-		вИзменитьСвойствоРегистра(_FullName, Mid(PropertyName, 2), ThisForm[PropertyName]);
+Procedure vProcessRegisterPropertyChange(QuestionResult, PropertyName) Export
+	If QuestionResult = DialogReturnCode.Yes Then
+		vChangeRegisterProperty(_FullName, Mid(PropertyName, 2), ThisForm[PropertyName]);
 		_UpdateTotalsManagement(Undefined);
 	Else
 		ThisForm[PropertyName] = Not ThisForm[PropertyName];
@@ -2369,9 +2372,9 @@ Procedure вОбработатьИзменениеСвойстваРегистр
 EndProcedure
 
 &AtServerNoContext
-Function вВыполнитКомандуУправленияИтогами(Val FullName, Val CommandName, Val пСтрукНастройки)
+Function vRunTotalsManagementCommand(Val FullName, Val CommandName, Val pSettingsStructure)
 	If Not vHaveAdministratorRights() Then
-		Message("None прав на выполнение операции!");
+		Message(NStr("ru = 'Нет прав на выполнение операции!';en = 'No rights to perform the operation!'"));
 		Return False;
 	EndIf;
 
@@ -2381,25 +2384,25 @@ Function вВыполнитКомандуУправленияИтогами(Val 
 	EndIf;
 
 	If Metadata.AccountingRegisters.Contains(MDObject) Then
-		пМенеджер = AccountingRegisters[MDObject.Name];
+		pManager = AccountingRegisters[MDObject.Name];
 	Else
-		пМенеджер = AccumulationRegisters[MDObject.Name];
+		pManager = AccumulationRegisters[MDObject.Name];
 	EndIf;
 
 	Try
 		If CommandName = "RecalcTotals" Then
-			пМенеджер.RecalcTotals();
+			pManager.RecalcTotals();
 		ElsIf CommandName = "RecalcPresentTotals" Then
-			пМенеджер.RecalcPresentTotals();
+			pManager.RecalcPresentTotals();
 		ElsIf CommandName = "RecalcTotalsForPeriod" Then
-			Дата1 = пСтрукНастройки.ПериодПересчетаИтогов.ValidFrom;
-			Дата2 = пСтрукНастройки.ПериодПересчетаИтогов.ValidTo;
-			пМенеджер.RecalcTotalsForPeriod(Дата1, Дата2);
+			Date1 = pSettingsStructure.PeriodRecalculationTotals.ValidFrom;
+			Date2 = pSettingsStructure.PeriodRecalculationTotals.ValidTo;
+			pManager.RecalcTotalsForPeriod(Date1, Date2);
 		ElsIf CommandName = "SetMinTotalsPeriod" Then
-			пМенеджер.SetMinTotalsPeriod(пСтрукНастройки.МинимальныйПериодРассчитанныхИтогов);
+			pManager.SetMinTotalsPeriod(pSettingsStructure.MinimumPeriodOfCalculatedTotals);
 		ElsIf CommandName = "SetMaxTotalsPeriod" Then
-			пМенеджер.SetMaxTotalsPeriod(
-				пСтрукНастройки.МаксимальныйПериодРассчитанныхИтогов);
+			pManager.SetMaxTotalsPeriod(
+				pSettingsStructure.MaximumPeriodOfCalculatedTotals);
 		Else
 			Return False;
 		EndIf;
@@ -2412,9 +2415,9 @@ Function вВыполнитКомандуУправленияИтогами(Val 
 EndFunction
 
 &AtServerNoContext
-Function вИзменитьСвойствоРегистра(Val FullName, Val PropertyName, Val pValue)
+Function vChangeRegisterProperty(Val FullName, Val PropertyName, Val pValue)
 	If Not vHaveAdministratorRights() Then
-		Message("None прав на выполнение операции!");
+		Message(NStr("ru = 'Нет прав на выполнение операции!';en = 'No rights to perform the operation!'"));
 		Return False;
 	EndIf;
 
@@ -2424,22 +2427,22 @@ Function вИзменитьСвойствоРегистра(Val FullName, Val Pr
 	EndIf;
 
 	If Metadata.AccountingRegisters.Contains(MDObject) Then
-		пМенеджер = AccountingRegisters[MDObject.Name];
+		pManager = AccountingRegisters[MDObject.Name];
 	Else
-		пМенеджер = AccumulationRegisters[MDObject.Name];
+		pManager = AccumulationRegisters[MDObject.Name];
 	EndIf;
 
 	Try
 		If PropertyName = "AggregatesMode" Then
-			пМенеджер.SetAggregatesMode(pValue);
+			pManager.SetAggregatesMode(pValue);
 		ElsIf PropertyName = "AggregatesUsing" Then
-			пМенеджер.SetAggregatesUsing(pValue);
+			pManager.SetAggregatesUsing(pValue);
 		ElsIf PropertyName = "TotalsUsing" Then
-			пМенеджер.SetTotalsUsing(pValue);
+			pManager.SetTotalsUsing(pValue);
 		ElsIf PropertyName = "PresentTotalsUsing" Then
-			пМенеджер.SetPresentTotalsUsing(pValue);
+			pManager.SetPresentTotalsUsing(pValue);
 		ElsIf PropertyName = "TotalsSplittingMode" Then
-			пМенеджер.SetTotalsSplittingMode(pValue);
+			pManager.SetTotalsSplittingMode(pValue);
 		Else
 			Return False;
 		EndIf;
@@ -2452,7 +2455,7 @@ Function вИзменитьСвойствоРегистра(Val FullName, Val Pr
 EndFunction
 
 
-// права доступа
+// access rights
 &AtClient
 Procedure _AvailableObjectsSelection(Item, SelectedRow, Field, StandardProcessing)
 	StandardProcessing = False;
@@ -2461,26 +2464,26 @@ EndProcedure
 
 &AtClient
 Procedure _FullInAccessRights(Command)
-	пЭтоРоль = (StrFind(_FullName, "Role.") = 1);
+	pIsRole = (StrFind(_FullName, "Role.") = 1);
 
 	UsersWithAccessTable.Clear();
 
-	If пЭтоРоль Then
+	If pIsRole Then
 		_AvailableObjects.Clear();
 
 		If IsBlankString(_AccessRightToObject) Then
 			Return;
 		EndIf;
 
-		пСтрукРезультат = вПолучитьДоступныеОбъектыДляРоли(_FullName, _AccessRightToObject,
+		pResultStructure = vGetAvailableObjectsForRole(_FullName, _AccessRightToObject,
 			_AdditionalVars.DescriptionOfAccessRights);
-		If пСтрукРезультат.HasData Then
-			For Each Itm In пСтрукРезультат.AvailableObjects Do
+		If pResultStructure.HasData Then
+			For Each Itm In pResultStructure.AvailableObjects Do
 				FillPropertyValues(_AvailableObjects.Add(), Itm);
 			EndDo;
 			_AvailableObjects.Sort("Kind, FullName");
 
-			For Each Itm In пСтрукРезультат.Users Do
+			For Each Itm In pResultStructure.Users Do
 				FillPropertyValues(UsersWithAccessTable.Add(), Itm);
 			EndDo;
 			UsersWithAccessTable.Sort("Name");
@@ -2493,13 +2496,13 @@ Procedure _FullInAccessRights(Command)
 			Return;
 		EndIf;
 
-		пСтрукРезультат = вПолучитьПраваДоступаКОбъекту(_AccessRightToObject, _FullName);
-		If пСтрукРезультат.HasData Then
-			For Each Itm In пСтрукРезультат.Roles Do
+		pResultStructure = vGetAccessRightsToObject(_AccessRightToObject, _FullName);
+		If pResultStructure.HasData Then
+			For Each Itm In pResultStructure.Roles Do
 				FillPropertyValues(RolesWithAccessTable.Add(), Itm);
 			EndDo;
 
-			For Each Itm In пСтрукРезультат.Users Do
+			For Each Itm In pResultStructure.Users Do
 				FillPropertyValues(UsersWithAccessTable.Add(), Itm);
 			EndDo;
 		EndIf;
@@ -2525,27 +2528,27 @@ EndProcedure
 
 &AtClient
 Procedure _OpenAccessRightsObject(Command)
-	пИмяСтраницы = Items.AccessRightToObject.CurrentPage.Name;
+	pPageName = Items.AccessRightToObject.CurrentPage.Name;
 
-	If пИмяСтраницы = "AccessRightToObject_Role" Then
+	If pPageName = "AccessRightToObject_Role" Then
 		CurData = Items.RolesWithAccessTable.CurrentData;
 		If CurData <> Undefined Then
 			vShowObjectProperties("Role." + CurData.Name);
 		EndIf;
 
-	ElsIf пИмяСтраницы = "AccessRightToObject_Users" Then
+	ElsIf pPageName = "AccessRightToObject_Users" Then
 		CurData = Items.UsersWithAccessTable.CurrentData;
 		If CurData <> Undefined Then
-			пИдентификаторПользователя = вПолучитьИдентификаторПользователя(CurData.Name);
+			pUserId = vGetUserID(CurData.Name);
 
-			If Not IsBlankString(пИдентификаторПользователя) Then
-				pStruct = New Structure("РежимРаботы, ИдентификаторПользователяИБ", 0, пИдентификаторПользователя);
+			If Not IsBlankString(pUserId) Then
+				pStruct = New Structure("WorkMode, DBUserID", 0, pUserId);
 				OpenForm(PathToForms + "UserForm", pStruct, , , , , ,
 					FormWindowOpeningMode.LockOwnerWindow);
 			EndIf;
 		EndIf;
 
-	ElsIf пИмяСтраницы = "_AccessRightForRole" Then
+	ElsIf pPageName = "_AccessRightForRole" Then
 		CurData = Items._AvailableObjects.CurrentData;
 		If CurData <> Undefined And Not IsBlankString(CurData.FullName) Then
 			vShowObjectProperties(CurData.FullName);
@@ -2554,73 +2557,73 @@ Procedure _OpenAccessRightsObject(Command)
 	EndIf;
 EndProcedure
 &AtServerNoContext
-Function вПолучитьИдентификаторПользователя(Val Name)
-	пПользователь = InfoBaseUsers.FindByName(Name);
+Function vGetUserID(Val Name)
+	pUser = InfoBaseUsers.FindByName(Name);
 
-	Return ?(пПользователь = Undefined, "", String(пПользователь.UUID));
+	Return ?(pUser = Undefined, "", String(pUser.UUID));
 EndFunction
 
 &AtServerNoContext
-Function вПолучитьОписаниеОграниченийДляПараметровДоступа()
-	пОбъектыСОгрничением = New Map;
-	пОбъектыСОгрничением.Insert("ExchangePlan", "Ref");
-	пОбъектыСОгрничением.Insert("Catalog", "Ref");
-	пОбъектыСОгрничением.Insert("Document", "Ref");
-	пОбъектыСОгрничением.Insert("DocumentJournal", "Ref");
-	пОбъектыСОгрничением.Insert("ChartOfCharacteristicTypes", "Ref");
-	пОбъектыСОгрничением.Insert("ChartOfAccounts", "Ref");
-	пОбъектыСОгрничением.Insert("ChartOfCalculationTypes", "Ref");
-	пОбъектыСОгрничением.Insert("InformationRegister", Undefined);
-	пОбъектыСОгрничением.Insert("AccumulationRegister", "Recorder");
-	пОбъектыСОгрничением.Insert("AccountingRegister", "Recorder");
-	пОбъектыСОгрничением.Insert("CalculationRegister", "Recorder");
-	пОбъектыСОгрничением.Insert("BusinessProcess", "Ref");
-	пОбъектыСОгрничением.Insert("Task", "Ref");
+Function vGetDescriptionOfRestrictionsForAccessParameters()
+	vRestrictedObjects = New Map;
+	vRestrictedObjects.Insert("ExchangePlan", "Ref");
+	vRestrictedObjects.Insert("Catalog", "Ref");
+	vRestrictedObjects.Insert("Document", "Ref");
+	vRestrictedObjects.Insert("DocumentJournal", "Ref");
+	vRestrictedObjects.Insert("ChartOfCharacteristicTypes", "Ref");
+	vRestrictedObjects.Insert("ChartOfAccounts", "Ref");
+	vRestrictedObjects.Insert("ChartOfCalculationTypes", "Ref");
+	vRestrictedObjects.Insert("InformationRegister", Undefined);
+	vRestrictedObjects.Insert("AccumulationRegister", "Recorder");
+	vRestrictedObjects.Insert("AccountingRegister", "Recorder");
+	vRestrictedObjects.Insert("CalculationRegister", "Recorder");
+	vRestrictedObjects.Insert("BusinessProcess", "Ref");
+	vRestrictedObjects.Insert("Task", "Ref");
 
-	Return пОбъектыСОгрничением;
+	Return vRestrictedObjects;
 EndFunction
 
 &AtServerNoContext
 Function вПолучитьТаблицуРолиИПользователи()
 	__ТабРолиИПользователи = New ValueTable;
-	__ТабРолиИПользователи.Columns.Add("ИмяР", New TypeDescription("String"));
-	__ТабРолиИПользователи.Columns.Add("ИмяП", New TypeDescription("String"));
-	__ТабРолиИПользователи.Columns.Add("ПолноеИмяП", New TypeDescription("String"));
+	__ТабРолиИПользователи.Columns.Add("NameR", New TypeDescription("String"));
+	__ТабРолиИПользователи.Columns.Add("NameP", New TypeDescription("String"));
+	__ТабРолиИПользователи.Columns.Add("FullNameP", New TypeDescription("String"));
 
 	For Each П In InfoBaseUsers.GetUsers() Do
 		For Each Р In П.Roles Do
 			NewLine = __ТабРолиИПользователи.Add();
-			NewLine.ИмяР = Р.Name;
-			NewLine.ИмяП = П.Name;
-			NewLine.ПолноеИмяП = П.FullName;
+			NewLine.NameR = Р.Name;
+			NewLine.NameP = П.Name;
+			NewLine.FullNameP = П.FullName;
 		EndDo;
 	EndDo;
 
-	__ТабРолиИПользователи.Indexes.Add("ИмяР");
-	__ТабРолиИПользователи.Indexes.Add("ИмяП");
+	__ТабРолиИПользователи.Indexes.Add("NameR");
+	__ТабРолиИПользователи.Indexes.Add("NameP");
 
 	Return __ТабРолиИПользователи;
 EndFunction
 
 &AtServerNoContext
-Function вПолучитьДоступныеОбъектыДляРоли(Val пРоль, Val pRight, Val DescriptionOfAccessRights)
-	пРезультат = New Structure("HasData, AvailableObjects, Users", False);
+Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val DescriptionOfAccessRights)
+	pResult = New Structure("HasData, AvailableObjects, Users", False);
 
 	пРольМД = Metadata.FindByFullName(пРоль);
 	If пРоль = Undefined Then
-		Return пРезультат;
+		Return pResult;
 	EndIf;
 
-	пРезультат.HasData = True;
-	пРезультат.Insert("AvailableObjects", New Array);
-	пРезультат.Insert("Users", New Array);
+	pResult.HasData = True;
+	pResult.Insert("AvailableObjects", New Array);
+	pResult.Insert("Users", New Array);
 
 	For Each П In InfoBaseUsers.GetUsers() Do
 		For Each Р In П.Roles Do
 			If Р.Name = пРольМД.Name Then
 				pStruct = New Structure("Name, FullName");
 				FillPropertyValues(pStruct, П);
-				пРезультат.Users.Add(pStruct);
+				pResult.Users.Add(pStruct);
 			EndIf;
 		EndDo;
 	EndDo;
@@ -2629,7 +2632,7 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 	пСтрукОбъектыСОгрничением.Insert("Catalog");
 	пСтрукОбъектыСОгрничением.Insert("Document");
 
-	пОбъектыСОгрничением = вПолучитьОписаниеОграниченийДляПараметровДоступа();
+	vRestrictedObjects = vGetDescriptionOfRestrictionsForAccessParameters();
 
 	пПоляРезультата = "RestrictionByCondition, Kind, Name, Presentation, FullName";
 
@@ -2702,7 +2705,7 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 			pStruct.FullName = пПолноеИмя;
 			pStruct.Presentation = Row.MDObject.Presentation();
 
-			пПоле = пОбъектыСОгрничением[pStruct.Kind];
+			пПоле = vRestrictedObjects[pStruct.Kind];
 			If пПоле <> Undefined Then
 				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
 			ElsIf pStruct.Kind = "InformationRegister" And Row.MDObject.Dimensions.Count() <> 0 Then
@@ -2710,22 +2713,22 @@ Function вПолучитьДоступныеОбъектыДляРоли(Val п
 				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
 			EndIf;
 
-			пРезультат.AvailableObjects.Add(pStruct);
+			pResult.AvailableObjects.Add(pStruct);
 		EndIf;
 	EndDo;
 
-	Return пРезультат;
+	Return pResult;
 EndFunction
 
 &AtServerNoContext
-Function вПолучитьПраваДоступаКОбъекту(Val ИмяПрава, Val FullName)
+Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 	СтрукРезультат = New Structure("HasData, Roles, Users", False);
 
 	If IsBlankString(ИмяПрава) Then
 		Return СтрукРезультат;
 	EndIf;
 
-	пОбъектыСОгрничением = вПолучитьОписаниеОграниченийДляПараметровДоступа();
+	vRestrictedObjects = vGetDescriptionOfRestrictionsForAccessParameters();
 
 	ТабРоли = New ValueTable;
 	ТабРоли.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
@@ -2752,7 +2755,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 
 	If ТипМД = "InformationRegister" And MDObject.Dimensions.Count() <> 0 Then
 		пПоле = MDObject.Dimensions[0].Name;
-		пОбъектыСОгрничением[ТипМД] = пПоле;
+		vRestrictedObjects[ТипМД] = пПоле;
 	EndIf;
 
 	ЭтоОбычныйРежим = True;
@@ -2766,7 +2769,7 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 				NewLine = ТабРоли.Add();
 				FillPropertyValues(NewLine, Itm);
 
-				пПоле = пОбъектыСОгрничением[ТипМД];
+				пПоле = vRestrictedObjects[ТипМД];
 				If пПоле <> Undefined Then
 					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, пПоле, Itm).RestrictionByCondition;
 				EndIf;
@@ -2779,17 +2782,17 @@ Function вПолучитьПраваДоступаКОбъекту(Val ИмяП
 	__ТабРолиИПользователи = вПолучитьТаблицуРолиИПользователи();
 
 	If ЭтоОбычныйРежим Then
-		СтрукР = New Structure("ИмяР");
-		СтрукП = New Structure("Name");
+		StructureR = New Structure("NameR");
+		StructureP = New Structure("Name");
 
 		For Each Row In ТабРоли Do
-			СтрукР.ИмяР = Row.Name;
-			For Each СтрХ In __ТабРолиИПользователи.FindRows(СтрукР) Do
-				СтрукП.Name = СтрХ.ИмяП;
-				If ТабПользователи.FindRows(СтрукП).Count() = 0 Then
+			StructureR.NameR = Row.Name;
+			For Each LineX In __ТабРолиИПользователи.FindRows(StructureR) Do
+				StructureP.Name = LineX.NameP;
+				If ТабПользователи.FindRows(StructureP).Count() = 0 Then
 					NewLine = ТабПользователи.Add();
-					NewLine.Name = СтрХ.ИмяП;
-					NewLine.FullName = СтрХ.ПолноеИмяП;
+					NewLine.Name = LineX.NameP;
+					NewLine.FullName = LineX.FullNameP;
 				EndIf;
 			EndDo;
 		EndDo;
@@ -3065,15 +3068,15 @@ Procedure _OpenSubordinateObject(Command)
 EndProcedure
 &AtClient
 Procedure _ReadConstant(Command)
-	пРезультат = vGetConstant(_FullName);
-	If Not пРезультат.Cancel Then
-		_ConstantValue = пРезультат.Value;
-		_TypeOfConstantValue = пРезультат.ValueType;
+	pResult = vGetConstant(_FullName);
+	If Not pResult.Cancel Then
+		_ConstantValue = pResult.Value;
+		_TypeOfConstantValue = pResult.ValueType;
 
-		If TypeOf(пРезультат.Value) = Type("String") Then
-			_TextConstantValue = пРезультат.Value;
+		If TypeOf(pResult.Value) = Type("String") Then
+			_TextConstantValue = pResult.Value;
 		Else
-			_TextConstantValue = пРезультат.Text;
+			_TextConstantValue = pResult.Text;
 		EndIf;
 	EndIf;
 EndProcedure
@@ -3142,15 +3145,15 @@ EndFunction
 Function vGetConstant(Val FullName)
 	SetPrivilegedMode(True);
 
-	пРезультат = New Structure("Cancel, ReasonForRefusal, ReadOnly, Text, Value, ValueType", False, "", False,
+	pResult = New Structure("Cancel, ReasonForRefusal, ReadOnly, Text, Value, ValueType", False, "", False,
 		"");
 
 	пОбъектМД = Metadata.FindByFullName(FullName);
 	If пОбъектМД = Undefined Then
-		пРезультат.Cancel = True;
-		пРезультат.ReadOnly = True;
-		пРезультат.ReasonForRefusal = "Not удалость найти объект метаданных!";
-		Return пРезультат;
+		pResult.Cancel = True;
+		pResult.ReadOnly = True;
+		pResult.ReasonForRefusal = "Not удалость найти объект метаданных!";
+		Return pResult;
 	EndIf;
 
 	пВидОбъекта = Left(FullName, StrFind(FullName, ".") - 1);
@@ -3165,31 +3168,31 @@ Function vGetConstant(Val FullName)
 		Try
 			Выборка = Query.Execute().StartChoosing();
 
-			пРезультат.Value = ?(Выборка.Next(), Выборка.Value, Undefined);
-			пРезультат.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(пРезультат.Value),
+			pResult.Value = ?(Выборка.Next(), Выборка.Value, Undefined);
+			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
 				пОбъектМД.Type);
 		Except
 			Message(BriefErrorDescription(ErrorInfo()));
-			пРезультат.Cancel = True;
-			пРезультат.ReasonForRefusal = ErrorDescription();
-			Return пРезультат;
+			pResult.Cancel = True;
+			pResult.ReasonForRefusal = ErrorDescription();
+			Return pResult;
 		EndTry;
 
 	ElsIf пВидОбъекта = "SessionParameter" Then
 		Try
-			пРезультат.Value = SessionParameters[пОбъектМД.Name];
-			пРезультат.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(пРезультат.Value),
+			pResult.Value = SessionParameters[пОбъектМД.Name];
+			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
 				пОбъектМД.Type);
 		Except
-			пРезультат.Cancel = True;
-			пРезультат.ReasonForRefusal = "значение не установлено!";
+			pResult.Cancel = True;
+			pResult.ReasonForRefusal = "значение не установлено!";
 		EndTry;
 
 	Else
-		пРезультат.Cancel = True;
-		пРезультат.ReadOnly = True;
-		пРезультат.ReasonForRefusal = пВидОбъекта + " не поддерживается!";
-		Return пРезультат;
+		pResult.Cancel = True;
+		pResult.ReadOnly = True;
+		pResult.ReasonForRefusal = пВидОбъекта + " не поддерживается!";
+		Return pResult;
 	EndIf;
 
 	пНеПоддерживаемыеТипы = New Array;
@@ -3202,19 +3205,19 @@ Function vGetConstant(Val FullName)
 
 	For Each Itm In пНеПоддерживаемыеТипы Do
 		If пОбъектМД.Type.ContainsType(Itm) Then
-			пРезультат.ReadOnly = True;
+			pResult.ReadOnly = True;
 			Break;
 		EndIf;
 	EndDo;
 
 	If False Then
-		пТипЗначения = TypeOf(пРезультат.Value);
+		пТипЗначения = TypeOf(pResult.Value);
 		If пТипЗначения = Type("FixedArray") Then
-			For Сч = 0 To пРезультат.Value.UBound() Do
-				пРезультат.Text = пРезультат.Text + Chars.LF + String(пРезультат.Value[Сч]);
+			For Сч = 0 To pResult.Value.UBound() Do
+				pResult.Text = pResult.Text + Chars.LF + String(pResult.Value[Сч]);
 			EndDo;
 		EndIf;
 	EndIf;
 
-	Return пРезультат;
+	Return pResult;
 EndFunction
