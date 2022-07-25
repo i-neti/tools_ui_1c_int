@@ -1,5 +1,3 @@
-// Copyright (c) 2019, 1C-Soft LLC
-// All Rights reserved. This application and supporting materials are provided under the terms of 
 // Attribution 4.0 International license (CC BY 4.0)
 // The license text is available at:
 // https://creativecommons.org/licenses/by/4.0/legalcode
@@ -13275,575 +13273,570 @@ EndProcedure
 
 #EndRegion
 
-#Область УстановкаЗначенийРеквизитовИМодальныхПеременныхОбработки
+#Region SetAttributesValuesAndDataProcessorModalVariables
 
-// Процедура установки значения глобальной переменной "ФлагОшибки".
+// Sets the ErrorFlag global variable value.
 //
-// Параметры:
-//  Значение - Булево, новое значение переменной "ФлагОшибки".
+// Parameters:
+//  Value - Boolean. A new value of the ErrorFlag variable.
 //  
-Процедура УстановитьФлагОшибки(Значение)
-
-	ErrorFlag = Значение;
-
-	Если ErrorFlag Тогда
-
-		ДеструкторВнешнейОбработкиОбработчиковСобытий(DebugModeFlag);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Возвращает текущее значение версии обработки.
-//
-// Параметры:
-//  Нет.
-// 
-// Возвращаемое значение:
-//  Текущее значение версии обработки.
-//
-Функция ВерсияОбъектаСтрокой() Экспорт
-
-	Возврат "2.1.8";
-
-КонецФункции
-
-#КонецОбласти
-
-#Область ИнициализацияТаблицПравилОбмена
-
-Процедура ДобавитьНедостающиеКолонки(Колонки, Имя, Типы = Неопределено)
-
-	Если Колонки.Найти(Имя) <> Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	Колонки.Добавить(Имя, Типы);
-
-КонецПроцедуры
-
-// Инициализирует колонки таблицы правил конвертации объектов.
-//
-// Параметры:
-//  Нет.
-// 
-Процедура ИнициализацияТаблицыПравилКонвертации()
-
-	Колонки = ConversionRulesTable.Колонки;
-
-	ДобавитьНедостающиеКолонки(Колонки, "Имя");
-	ДобавитьНедостающиеКолонки(Колонки, "Наименование");
-	ДобавитьНедостающиеКолонки(Колонки, "Порядок");
-
-	ДобавитьНедостающиеКолонки(Колонки, "СинхронизироватьПоИдентификатору");
-	ДобавитьНедостающиеКолонки(Колонки, "НеСоздаватьЕслиНеНайден", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "НеВыгружатьОбъектыСвойствПоСсылкам", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ПродолжитьПоискПоПолямПоискаЕслиПоИдентификаторуНеНашли", одОписаниеТипа(
-		"Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ПриПереносеОбъектаПоСсылкеУстанавливатьТолькоGIUD", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ИспользоватьБыстрыйПоискПриЗагрузке", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ГенерироватьНовыйНомерИлиКодЕслиНеУказан", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "МаленькоеКоличествоОбъектов", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "КоличествоОбращенийДляВыгрузкиСсылки", одОписаниеТипа("Число"));
-	ДобавитьНедостающиеКолонки(Колонки, "КоличествоЭлементовВИБ", одОписаниеТипа("Число"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "СпособВыгрузки");
-
-	ДобавитьНедостающиеКолонки(Колонки, "Источник");
-	ДобавитьНедостающиеКолонки(Колонки, "Приемник");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ТипИсточника", одОписаниеТипа("Строка"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПередВыгрузкой");
-	ДобавитьНедостающиеКолонки(Колонки, "ПриВыгрузке");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеВыгрузки");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеВыгрузкиВФайл");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПередВыгрузкой", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПриВыгрузке", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПослеВыгрузки", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПослеВыгрузкиВФайл", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПередЗагрузкой");
-	ДобавитьНедостающиеКолонки(Колонки, "ПриЗагрузке");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеЗагрузки");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПоследовательностьПолейПоиска");
-	ДобавитьНедостающиеКолонки(Колонки, "ПоискПоТабличнымЧастям");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПередЗагрузкой", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПриЗагрузке", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПослеЗагрузки", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "ЕстьОбработчикПоследовательностьПолейПоиска", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "СвойстваПоиска", одОписаниеТипа("ТаблицаЗначений"));
-	ДобавитьНедостающиеКолонки(Колонки, "Свойства", одОписаниеТипа("ТаблицаЗначений"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "Значения", одОписаниеТипа("Соответствие"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "Выгруженные", одОписаниеТипа("Соответствие"));
-	ДобавитьНедостающиеКолонки(Колонки, "ВыгруженныеТолькоСсылки", одОписаниеТипа("Соответствие"));
-	ДобавитьНедостающиеКолонки(Колонки, "ВыгружатьПредставлениеИсточника", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "НеЗамещать", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "ЗапоминатьВыгруженные", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ВсеОбъектыВыгружены", одОписаниеТипа("Булево"));
-
-КонецПроцедуры
-
-// Инициализирует колонки таблицы правил выгрузки данных.
-//
-// Параметры:
-//  Нет
-// 
-Процедура ИнициализацияТаблицыПравилВыгрузки()
-
-	Колонки = ExportRulesTable.Колонки;
-
-	ДобавитьНедостающиеКолонки(Колонки, "Включить", одОписаниеТипа("Число"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЭтоГруппа", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "Имя");
-	ДобавитьНедостающиеКолонки(Колонки, "Наименование");
-	ДобавитьНедостающиеКолонки(Колонки, "Порядок");
-
-	ДобавитьНедостающиеКолонки(Колонки, "СпособОтбораДанных");
-	ДобавитьНедостающиеКолонки(Колонки, "ОбъектВыборки");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПравилоКонвертации");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПередОбработкой");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеОбработки");
-
-	ДобавитьНедостающиеКолонки(Колонки, "ПередВыгрузкой");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеВыгрузки");
+Procedure SetErrorFlag(Value)
 	
-	// Колонки для поддержки отбора с помощью построителя.
-	ДобавитьНедостающиеКолонки(Колонки, "ИспользоватьОтбор", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "НастройкиПостроителя");
-	ДобавитьНедостающиеКолонки(Колонки, "ИмяОбъектаДляЗапроса");
-	ДобавитьНедостающиеКолонки(Колонки, "ИмяОбъектаДляЗапросаРегистра");
+	ErrorFlag = Value;
+	
+	If ErrorFlag Then
+		
+		EventHandlerExternalDataProcessorDestructor(DebugModeFlag);
+		
+	EndIf;
+	
+EndProcedure
 
-	ДобавитьНедостающиеКолонки(Колонки, "ВыбиратьДанныеДляВыгрузкиОднимЗапросом", одОписаниеТипа("Булево"));
-
-	ДобавитьНедостающиеКолонки(Колонки, "СсылкаНаУзелОбмена");
-
-	//УИ
-	ДобавитьНедостающиеКолонки(Колонки, "ИмяМетаданных");
-	ДобавитьНедостающиеКолонки(Колонки, "Отбор");
-
-КонецПроцедуры
-
-// Инициализирует колонки таблицы правил очистки данных.
+// Returns the current value of the data processor version.
 //
-// Параметры:
-//  Нет.
+// Parameters:
+//  No.
 // 
-Процедура ИнициализацияТаблицыПравилОчистки()
+// Returns:
+//  Current value of the data processor version.
+//
+Function ObjectVersionAsString() Export
+	
+	Return "2.1.8";
+	
+EndFunction
 
-	Колонки = CleanupRulesTable.Колонки;
+#EndRegion
 
-	ДобавитьНедостающиеКолонки(Колонки, "Включить", одОписаниеТипа("Булево"));
-	ДобавитьНедостающиеКолонки(Колонки, "ЭтоГруппа", одОписаниеТипа("Булево"));
+#Region InitializingExchangeRulesTables
 
-	ДобавитьНедостающиеКолонки(Колонки, "Имя");
-	ДобавитьНедостающиеКолонки(Колонки, "Наименование");
-	ДобавитьНедостающиеКолонки(Колонки, "Порядок", одОписаниеТипа("Число"));
+Procedure AddMissingColumns(Columns, Name, Types = Undefined)
+	
+	If Columns.Find(Name) <> Undefined Then
+		Return;
+	EndIf;
+	
+	Columns.Add(Name, Types);	
+	
+EndProcedure
 
-	ДобавитьНедостающиеКолонки(Колонки, "СпособОтбораДанных");
-	ДобавитьНедостающиеКолонки(Колонки, "ОбъектВыборки");
+// Initializes table columns of object conversion rules.
+//
+// Parameters:
+//  No.
+// 
+Procedure InitConversionRulesTable()
 
-	ДобавитьНедостающиеКолонки(Колонки, "УдалятьЗаПериод");
-	ДобавитьНедостающиеКолонки(Колонки, "Непосредственно", одОписаниеТипа("Булево"));
+	Columns = ConversionRulesTable.Columns;
+	
+	AddMissingColumns(Columns, "Name");
+	AddMissingColumns(Columns, "Description");
+	AddMissingColumns(Columns, "Order");
 
-	ДобавитьНедостающиеКолонки(Колонки, "ПередОбработкой");
-	ДобавитьНедостающиеКолонки(Колонки, "ПослеОбработки");
-	ДобавитьНедостающиеКолонки(Колонки, "ПередУдалением");
+	AddMissingColumns(Columns, "SynchronizeByID");
+	AddMissingColumns(Columns, "DoNotCreateIfNotFound", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "DoNotExportPropertyObjectsByRefs", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "SearchBySearchFieldsIfNotFoundByID", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "OnMoveObjectByRefSetGIUDOnly", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "UseQuickSearchOnImport", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "GenerateNewNumberOrCodeIfNotSet", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "TinyObjectCount", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "RefExportReferenceCount", deTypeDescription("Number"));
+	AddMissingColumns(Columns, "IBItemsCount", deTypeDescription("Number"));
+	
+	AddMissingColumns(Columns, "ExportMethod");
 
-КонецПроцедуры
+	AddMissingColumns(Columns, "Source");
+	AddMissingColumns(Columns, "Destination");
+	
+	AddMissingColumns(Columns, "SourceType",  deTypeDescription("String"));
+
+	AddMissingColumns(Columns, "BeforeExport");
+	AddMissingColumns(Columns, "OnExport");
+	AddMissingColumns(Columns, "AfterExport");
+	AddMissingColumns(Columns, "AfterExportToFile");
+	
+	AddMissingColumns(Columns, "HasBeforeExportHandler",	    deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "HasOnExportHandler",		deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "HasAfterExportHandler",		deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "HasAfterExportToFileHandler",	deTypeDescription("Boolean"));
+
+	AddMissingColumns(Columns, "BeforeImport");
+	AddMissingColumns(Columns, "OnImport");
+	AddMissingColumns(Columns, "AfterImport");
+	
+	AddMissingColumns(Columns, "SearchFieldSequence");
+	AddMissingColumns(Columns, "SearchInTabularSections");
+	
+	AddMissingColumns(Columns, "HasBeforeImportHandler", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "HasOnImportHandler",    deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "HasAfterImportHandler",  deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "HasSearchFieldSequenceHandler",  deTypeDescription("Boolean"));
+
+	AddMissingColumns(Columns, "SearchProperties",	deTypeDescription("ValueTable"));
+	AddMissingColumns(Columns, "Properties",		deTypeDescription("ValueTable"));
+	
+	AddMissingColumns(Columns, "Values",		deTypeDescription("Map"));
+
+	AddMissingColumns(Columns, "Exported",							deTypeDescription("Map"));
+	AddMissingColumns(Columns, "OnlyRefsExported",				deTypeDescription("Map"));
+	AddMissingColumns(Columns, "ExportSourcePresentation",		deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "DoNotReplace",					deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "RememberExported",       deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "AllObjectsExported",         deTypeDescription("Boolean"));
+	
+EndProcedure
+
+// Initializes table columns of data export rules.
+//
+// Parameters:
+//  No
+// 
+Procedure InitExportRulesTable()
+
+	Columns = ExportRulesTable.Columns;
+
+	AddMissingColumns(Columns, "Enable",		deTypeDescription("Number"));
+	AddMissingColumns(Columns, "IsFolder",		deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "Name");
+	AddMissingColumns(Columns, "Description");
+	AddMissingColumns(Columns, "Order");
+
+	AddMissingColumns(Columns, "DataFilterMethod");
+	AddMissingColumns(Columns, "SelectionObject");
+	
+	AddMissingColumns(Columns, "ConversionRule");
+
+	AddMissingColumns(Columns, "BeforeProcess");
+	AddMissingColumns(Columns, "AfterProcess");
+
+	AddMissingColumns(Columns, "BeforeExport");
+	AddMissingColumns(Columns, "AfterExport");
+	
+	// Columns for filtering using the query builder.
+	AddMissingColumns(Columns, "UseFilter", deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "BuilderSettings");
+	AddMissingColumns(Columns, "ObjectForQueryName");
+	AddMissingColumns(Columns, "ObjectNameForRegisterQuery");
+	
+	AddMissingColumns(Columns, "SelectExportDataInSingleQuery", deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "ExchangeNodeRef");
+
+	//UT
+	AddMissingColumns(Columns, "MetadataName");
+	AddMissingColumns(Columns, "Filter");
+
+EndProcedure
+
+// Initializes table columns of data cleanup rules.
+//
+// Parameters:
+//  No.
+// 
+Procedure InitCleanupRulesTable()
+
+	Columns = CleanupRulesTable.Columns;
+
+	AddMissingColumns(Columns, "Enable",		deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "IsFolder",		deTypeDescription("Boolean"));
+	
+	AddMissingColumns(Columns, "Name");
+	AddMissingColumns(Columns, "Description");
+	AddMissingColumns(Columns, "Order",	deTypeDescription("Number"));
+
+	AddMissingColumns(Columns, "DataFilterMethod");
+	AddMissingColumns(Columns, "SelectionObject");
+	
+	AddMissingColumns(Columns, "DeleteForPeriod");
+	AddMissingColumns(Columns, "Directly",	deTypeDescription("Boolean"));
+
+	AddMissingColumns(Columns, "BeforeProcess");
+	AddMissingColumns(Columns, "AfterProcess");
+	AddMissingColumns(Columns, "BeforeDelete");
+	
+EndProcedure
 
 // Инициализирует колонки таблицы настройки параметров.
 //
 // Параметры:
 //  Нет.
 // 
-Процедура ИнициализацияТаблицыНастройкиПараметров()
+Procedure InitParametersSettingsTable()
 
-	Колонки = ParametersSettingsTable.Колонки;
+	Columns = ParametersSettingsTable.Columns;
 
-	ДобавитьНедостающиеКолонки(Колонки, "Имя");
-	ДобавитьНедостающиеКолонки(Колонки, "Наименование");
-	ДобавитьНедостающиеКолонки(Колонки, "Значение");
-	ДобавитьНедостающиеКолонки(Колонки, "ПередаватьПараметрПриВыгрузке");
-	ДобавитьНедостающиеКолонки(Колонки, "ПравилоКонвертации");
+	AddMissingColumns(Columns, "Name");
+	AddMissingColumns(Columns, "Description");
+	AddMissingColumns(Columns, "Value");
+	AddMissingColumns(Columns, "PassParameterOnExport");
+	AddMissingColumns(Columns, "ConversionRule");
 
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ИнициализацияРеквизитовИМодульныхПеременных
+#Region InitAttributesAndModuleVariables
 
-Процедура ИнициализироватьКомментарииПриВыгрузкеИЗагрузкеДанных()
-
+Procedure InitializeCommentsOnDataExportAndImport()
+	
 	CommentOnDataExport = "";
 	CommentOnDataImport = "";
+	
+EndProcedure
 
-КонецПроцедуры
-
-// Инициализирует переменную одСообщения, содержащую соответствия кодов сообщений их описаниям.
-//
-// Параметры:
-//  Нет.
-// 
-Процедура ИнициализацияСообщений()
-
-	одСообщения = Новый Соответствие;
-
-	одСообщения.Вставить(2, НСтр("ru = 'Ошибка распаковки файла обмена. Файл заблокирован'"));
-	одСообщения.Вставить(3, НСтр("ru = 'Указанный файл правил обмена не существует'"));
-	одСообщения.Вставить(4, НСтр("ru = 'Ошибка при создании COM-объекта Msxml2.DOMDocument'"));
-	одСообщения.Вставить(5, НСтр("ru = 'Ошибка открытия файла обмена'"));
-	одСообщения.Вставить(6, НСтр("ru = 'Ошибка при загрузке правил обмена'"));
-	одСообщения.Вставить(7, НСтр("ru = 'Ошибка формата правил обмена'"));
-	одСообщения.Вставить(8, НСтр("ru = 'Некорректно указано имя файла для выгрузки данных'"));
-	одСообщения.Вставить(9, НСтр("ru = 'Ошибка формата файла обмена'"));
-	одСообщения.Вставить(10, НСтр("ru = 'Не указано имя файла для выгрузки данных (Имя файла данных)'"));
-	одСообщения.Вставить(11, НСтр("ru = 'Ссылка на несуществующий объект метаданных в правилах обмена'"));
-	одСообщения.Вставить(12, НСтр("ru = 'Не указано имя файла с правилами обмена (Имя файла правил)'"));
-
-	одСообщения.Вставить(13, НСтр("ru = 'Ошибка получения значения свойства объекта (по имени свойства источника)'"));
-	одСообщения.Вставить(14, НСтр("ru = 'Ошибка получения значения свойства объекта (по имени свойства приемника)'"));
-
-	одСообщения.Вставить(15, НСтр("ru = 'Не указано имя файла для загрузки данных (Имя файла для загрузки)'"));
-
-	одСообщения.Вставить(16, НСтр(
-		"ru = 'Ошибка получения значения свойства подчиненного объекта (по имени свойства источника)'"));
-	одСообщения.Вставить(17, НСтр(
-		"ru = 'Ошибка получения значения свойства подчиненного объекта (по имени свойства приемника)'"));
-
-	одСообщения.Вставить(19, НСтр("ru = 'Ошибка в обработчике события ПередЗагрузкойОбъекта'"));
-	одСообщения.Вставить(20, НСтр("ru = 'Ошибка в обработчике события ПриЗагрузкеОбъекта'"));
-	одСообщения.Вставить(21, НСтр("ru = 'Ошибка в обработчике события ПослеЗагрузкиОбъекта'"));
-	одСообщения.Вставить(22, НСтр("ru = 'Ошибка в обработчике события ПередЗагрузкойДанных (конвертация)'"));
-	одСообщения.Вставить(23, НСтр("ru = 'Ошибка в обработчике события ПослеЗагрузкиДанных (конвертация)'"));
-	одСообщения.Вставить(24, НСтр("ru = 'Ошибка при удалении объекта'"));
-	одСообщения.Вставить(25, НСтр("ru = 'Ошибка при записи документа'"));
-	одСообщения.Вставить(26, НСтр("ru = 'Ошибка записи объекта'"));
-	одСообщения.Вставить(27, НСтр("ru = 'Ошибка в обработчике события ПередОбработкойПравилаОчистки'"));
-	одСообщения.Вставить(28, НСтр("ru = 'Ошибка в обработчике события ПослеОбработкиПравилаОчистки'"));
-	одСообщения.Вставить(29, НСтр("ru = 'Ошибка в обработчике события ПередУдалениемОбъекта'"));
-
-	одСообщения.Вставить(31, НСтр("ru = 'Ошибка в обработчике события ПередОбработкойПравилаВыгрузки'"));
-	одСообщения.Вставить(32, НСтр("ru = 'Ошибка в обработчике события ПослеОбработкиПравилаВыгрузки'"));
-	одСообщения.Вставить(33, НСтр("ru = 'Ошибка в обработчике события ПередВыгрузкойОбъекта'"));
-	одСообщения.Вставить(34, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъекта'"));
-
-	одСообщения.Вставить(39, НСтр("ru = 'Ошибка при выполнении алгоритма, содержащегося в файле обмена'"));
-
-	одСообщения.Вставить(41, НСтр("ru = 'Ошибка в обработчике события ПередВыгрузкойОбъекта'"));
-	одСообщения.Вставить(42, НСтр("ru = 'Ошибка в обработчике события ПриВыгрузкеОбъекта'"));
-	одСообщения.Вставить(43, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъекта'"));
-
-	одСообщения.Вставить(45, НСтр("ru = 'Не найдено правило конвертации объектов'"));
-
-	одСообщения.Вставить(48, НСтр("ru = 'Ошибка в обработчике события ПередОбработкойВыгрузки группы свойств'"));
-	одСообщения.Вставить(49, НСтр("ru = 'Ошибка в обработчике события ПослеОбработкиВыгрузки группы свойств'"));
-	одСообщения.Вставить(50, НСтр("ru = 'Ошибка в обработчике события ПередВыгрузкой (объекта коллекции)'"));
-	одСообщения.Вставить(51, НСтр("ru = 'Ошибка в обработчике события ПриВыгрузке (объекта коллекции)'"));
-	одСообщения.Вставить(52, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузки (объекта коллекции)'"));
-	одСообщения.Вставить(53, НСтр("ru = 'Ошибка в глобальном обработчике события ПередЗагрузкойОбъекта (конвертация)'"));
-	одСообщения.Вставить(54, НСтр("ru = 'Ошибка в глобальном обработчике события ПослеЗагрузкиОбъекта (конвертация)'"));
-	одСообщения.Вставить(55, НСтр("ru = 'Ошибка в обработчике события ПередВыгрузкой (свойства)'"));
-	одСообщения.Вставить(56, НСтр("ru = 'Ошибка в обработчике события ПриВыгрузке (свойства)'"));
-	одСообщения.Вставить(57, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузки (свойства)'"));
-
-	одСообщения.Вставить(62, НСтр("ru = 'Ошибка в обработчике события ПередВыгрузкойДанных (конвертация)'"));
-	одСообщения.Вставить(63, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузкиДанных (конвертация)'"));
-	одСообщения.Вставить(64, НСтр(
-		"ru = 'Ошибка в глобальном обработчике события ПередКонвертациейОбъекта (конвертация)'"));
-	одСообщения.Вставить(65, НСтр("ru = 'Ошибка в глобальном обработчике события ПередВыгрузкойОбъекта (конвертация)'"));
-	одСообщения.Вставить(66, НСтр("ru = 'Ошибка получения коллекции подчиненных объектов из входящих данных'"));
-	одСообщения.Вставить(67, НСтр("ru = 'Ошибка получения свойства подчиненного объекта из входящих данных'"));
-	одСообщения.Вставить(68, НСтр("ru = 'Ошибка получения свойства объекта из входящих данных'"));
-
-	одСообщения.Вставить(69, НСтр("ru = 'Ошибка в глобальном обработчике события ПослеВыгрузкиОбъекта (конвертация)'"));
-
-	одСообщения.Вставить(71, НСтр("ru = 'Не найдено соответствие для значения Источника'"));
-
-	одСообщения.Вставить(72, НСтр("ru = 'Ошибка при выгрузке данных для узла плана обмена'"));
-
-	одСообщения.Вставить(73, НСтр("ru = 'Ошибка в обработчике события ПоследовательностьПолейПоиска'"));
-
-	одСообщения.Вставить(74, НСтр("ru = 'Необходимо перезагрузить правила обмена для выгрузки данных'"));
-
-	одСообщения.Вставить(75, НСтр("ru = 'Ошибка при выполнении алгоритма после загрузки значений параметров'"));
-
-	одСообщения.Вставить(76, НСтр("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъектаВФайл'"));
-
-	одСообщения.Вставить(77, НСтр(
-		"ru = 'Не указан файл внешней обработки с подключаемыми процедурами обработчиков событий'"));
-
-	одСообщения.Вставить(78, НСтр(
-		"ru = 'Ошибка создания внешней обработки из файла с процедурами обработчиков событий'"));
-
-	одСообщения.Вставить(79, НСтр("ru = 'Код алгоритмов не может быть интегрирован в обработчик из-за обнаруженного рекурсивного вызова алгоритмов. 
-								  |Если в процессе отладки нет необходимости отлаживать код алгоритмов, то укажите режим ""не отлаживать алгоритмы""
-								  |Если необходимо выполнять отладку алгоритмов с рекурсивным вызовом, то укажите режим  ""алгоритмы отлаживать как процедуры"" 
-								  |и повторите выгрузку.'"));
-
-	одСообщения.Вставить(80, НСтр("ru = 'Обмен данными можно проводить только под полными правами'"));
-
-	одСообщения.Вставить(1000, НСтр("ru = 'Ошибка при создании временного файла выгрузки данных'"));
-
-КонецПроцедуры
-
-Процедура ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, ИмяТипа, Менеджер,
-	ПрефиксИмениТипа, ВозможенПоискПоПредопределенным = Ложь)
-
-	Имя              = ОбъектМД.Имя;
-	ТипСсылкиСтрокой = ПрефиксИмениТипа + "." + Имя;
-	СтрокаПоиска     = "ВЫБРАТЬ Ссылка ИЗ " + ИмяТипа + "." + Имя + " ГДЕ ";
-	ТипСсылки        = Тип(ТипСсылкиСтрокой);
-	Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-	Структура.Вставить("ВозможенПоискПоПредопределенным", ВозможенПоискПоПредопределенным);
-	Структура.Вставить("СтрокаПоиска", СтрокаПоиска);
-	Менеджеры.Вставить(ТипСсылки, Структура);
-	СтруктураДляПланаОбмена = СтруктураПараметровПланаОбмена(Имя, ТипСсылки, Истина, Ложь);
-	МенеджерыДляПлановОбмена.Вставить(ОбъектМД, СтруктураДляПланаОбмена);
-
-КонецПроцедуры
-
-Процедура ДополнитьМассивМенеджеровТипомРегистра(Менеджеры, ОбъектМД, ИмяТипа, Менеджер, ПрефиксИмениТипаЗапись,
-	ПрефиксИмениТипаВыборка)
-
-	Периодический = Неопределено;
-
-	Имя					= ОбъектМД.Имя;
-	ТипСсылкиСтрокой	= ПрефиксИмениТипаЗапись + "." + Имя;
-	ТипСсылки			= Тип(ТипСсылкиСтрокой);
-	Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-
-	Если ИмяТипа = "РегистрСведений" Тогда
-
-		Периодический = (ОбъектМД.ПериодичностьРегистраСведений
-			<> Метаданные.СвойстваОбъектов.ПериодичностьРегистраСведений.Непериодический);
-		ПодчиненныйРегистратору = (ОбъектМД.РежимЗаписи
-			= Метаданные.СвойстваОбъектов.РежимЗаписиРегистра.ПодчинениеРегистратору);
-
-		Структура.Вставить("Периодический", Периодический);
-		Структура.Вставить("ПодчиненныйРегистратору", ПодчиненныйРегистратору);
-
-	КонецЕсли;
-
-	Менеджеры.Вставить(ТипСсылки, Структура);
-	СтруктураДляПланаОбмена = СтруктураПараметровПланаОбмена(Имя, ТипСсылки, Ложь, Истина);
-
-	МенеджерыДляПлановОбмена.Вставить(ОбъектМД, СтруктураДляПланаОбмена);
-	ТипСсылкиСтрокой	= ПрефиксИмениТипаВыборка + "." + Имя;
-	ТипСсылки			= Тип(ТипСсылкиСтрокой);
-	Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-
-	Если Периодический <> Неопределено Тогда
-
-		Структура.Вставить("Периодический", Периодический);
-		Структура.Вставить("ПодчиненныйРегистратору", ПодчиненныйРегистратору);
-
-	КонецЕсли;
-
-	Менеджеры.Вставить(ТипСсылки, Структура);
-
-КонецПроцедуры
-
-// Инициализирует переменную Менеджеры, содержащую соответствия типов объектов их свойствам.
+// Initializes the deMessages variable that contains mapping of message codes and their description.
 //
 // Parameters:
-//  Нет.
+//  No.
 // 
-Процедура ИнициализацияМенеджеров()
+Procedure InitMessages()
 
-	Менеджеры = Новый Соответствие;
+	deMessages = New Map;
+	
+	deMessages.Insert(2,  NStr("ru = 'Ошибка распаковки файла обмена. Файл заблокирован'; en = 'An error occurred when unpacking an exchange file. The file is locked'"));
+	deMessages.Insert(3,  NStr("ru = 'Указанный файл правил обмена не существует'; en = 'The specified exchange rule file does not exist'"));
+	deMessages.Insert(4,  NStr("ru = 'Ошибка при создании COM-объекта Msxml2.DOMDocument'; en = 'Error creating Msxml2.DOMDocument COM object.'"));
+	deMessages.Insert(5,  NStr("ru = 'Ошибка открытия файла обмена'; en = 'Error opening exchange file'"));
+	deMessages.Insert(6,  NStr("ru = 'Ошибка при загрузке правил обмена'; en = 'Error importing exchange rules'"));
+	deMessages.Insert(7,  NStr("ru = 'Ошибка формата правил обмена'; en = 'Exchange rule format error'"));
+	deMessages.Insert(8,  NStr("ru = 'Некорректно указано имя файла для выгрузки данных'; en = 'File name for data export is specified incorrectly'"));
+	deMessages.Insert(9,  NStr("ru = 'Ошибка формата файла обмена'; en = 'Exchange file format error'"));
+	deMessages.Insert(10, NStr("ru = 'Не указано имя файла для выгрузки данных (Имя файла данных)'; en = 'Data export file name is not specified.'"));
+	deMessages.Insert(11, NStr("ru = 'Ссылка на несуществующий объект метаданных в правилах обмена'; en = 'Exchange rules contain a reference to a nonexistent metadata object'"));
+	deMessages.Insert(12, NStr("ru = 'Не указано имя файла с правилами обмена (Имя файла правил)'; en = 'Exchange rule file name is not specified.'"));
+	
+	deMessages.Insert(13, NStr("ru = 'Ошибка получения значения свойства объекта (по имени свойства источника)'; en = 'Error retrieving object property value (by source property name).'"));
+	deMessages.Insert(14, NStr("ru = 'Ошибка получения значения свойства объекта (по имени свойства приемника)'; en = 'Error retrieving object property value (by destination property name).'"));
+	
+	deMessages.Insert(15, NStr("ru = 'Не указано имя файла для загрузки данных (Имя файла для загрузки)'; en = 'Import file name is not specified.'"));
+	
+	deMessages.Insert(16, NStr("ru = 'Ошибка получения значения свойства подчиненного объекта (по имени свойства источника)'; en = 'Error retrieving subordinate object property value (by source property name).'"));
+	deMessages.Insert(17, NStr("ru = 'Ошибка получения значения свойства подчиненного объекта (по имени свойства приемника)'; en = 'Error retrieving subordinate object property value (by destination property name).'"));
+	
+	deMessages.Insert(19, NStr("ru = 'Ошибка в обработчике события ПередЗагрузкойОбъекта'; en = 'BeforeImportObject event handler error'"));
+	deMessages.Insert(20, NStr("ru = 'Ошибка в обработчике события ПриЗагрузкеОбъекта'; en = 'OnImportObject event handler error'"));
+	deMessages.Insert(21, NStr("ru = 'Ошибка в обработчике события ПослеЗагрузкиОбъекта'; en = 'AfterImportObject event handler error'"));
+	deMessages.Insert(22, NStr("ru = 'Ошибка в обработчике события ПередЗагрузкойДанных (конвертация)'; en = 'BeforeDataImport event handler error (data conversion).'"));
+	deMessages.Insert(23, NStr("ru = 'Ошибка в обработчике события ПослеЗагрузкиДанных (конвертация)'; en = 'AfterDataImport event handler error (data conversion).'"));
+	deMessages.Insert(24, NStr("ru = 'Ошибка при удалении объекта'; en = 'Error deleting object'"));
+	deMessages.Insert(25, NStr("ru = 'Ошибка при записи документа'; en = 'Error writing document'"));
+	deMessages.Insert(26, NStr("ru = 'Ошибка записи объекта'; en = 'Error writing object'"));
+	deMessages.Insert(27, NStr("ru = 'Ошибка в обработчике события ПередОбработкойПравилаОчистки'; en = 'BeforeProcessClearingRule event handler error'"));
+	deMessages.Insert(28, NStr("ru = 'Ошибка в обработчике события ПослеОбработкиПравилаОчистки'; en = 'AfterProcessClearingRule event handler error'"));
+	deMessages.Insert(29, NStr("ru = 'Ошибка в обработчике события ПередУдалениемОбъекта'; en = 'BeforeDeleteObject event handler error'"));
+	
+	deMessages.Insert(31, NStr("ru = 'Ошибка в обработчике события ПередОбработкойПравилаВыгрузки'; en = 'BeforeProcessExportRule event handler error'"));
+	deMessages.Insert(32, NStr("ru = 'Ошибка в обработчике события ПослеОбработкиПравилаВыгрузки'; en = 'AfterProcessExportRule event handler error'"));
+	deMessages.Insert(33, NStr("ru = 'Ошибка в обработчике события ПередВыгрузкойОбъекта'; en = 'BeforeExportObject event handler error'"));
+	deMessages.Insert(34, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъекта'; en = 'AfterExportObject event handler error'"));
+	
+	deMessages.Insert(39, NStr("ru = 'Ошибка при выполнении алгоритма, содержащегося в файле обмена'; en = 'Error executing algorithm from exchange file.'"));
+	
+	deMessages.Insert(41, NStr("ru = 'Ошибка в обработчике события ПередВыгрузкойОбъекта'; en = 'BeforeExportObject event handler error'"));
+	deMessages.Insert(42, NStr("ru = 'Ошибка в обработчике события ПриВыгрузкеОбъекта'; en = 'OnExportObject event handler error'"));
+	deMessages.Insert(43, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъекта'; en = 'AfterExportObject event handler error'"));
+	
+	deMessages.Insert(45, NStr("ru = 'Не найдено правило конвертации объектов'; en = 'No conversion rule is found'"));
+	
+	deMessages.Insert(48, NStr("ru = 'Ошибка в обработчике события ПередОбработкойВыгрузки группы свойств'; en = 'BeforeProcessExport property group event handler error'"));
+	deMessages.Insert(49, NStr("ru = 'Ошибка в обработчике события ПослеОбработкиВыгрузки группы свойств'; en = 'AfterProcessExport property group event handler error'"));
+	deMessages.Insert(50, NStr("ru = 'Ошибка в обработчике события ПередВыгрузкой (объекта коллекции)'; en = 'BeforeExport event handler error (collection object).'"));
+	deMessages.Insert(51, NStr("ru = 'Ошибка в обработчике события ПриВыгрузке (объекта коллекции)'; en = 'OnExport event handler error (collection object).'"));
+	deMessages.Insert(52, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузки (объекта коллекции)'; en = 'AfterExport event handler error (collection object).'"));
+	deMessages.Insert(53, NStr("ru = 'Ошибка в глобальном обработчике события ПередЗагрузкойОбъекта (конвертация)'; en = 'BeforeImportObject global event handler error (data conversion).'"));
+	deMessages.Insert(54, NStr("ru = 'Ошибка в глобальном обработчике события ПослеЗагрузкиОбъекта (конвертация)'; en = 'AfterImportObject global event handler error (data conversion).'"));
+	deMessages.Insert(55, NStr("ru = 'Ошибка в обработчике события ПередВыгрузкой (свойства)'; en = 'BeforeExport event handler error (property).'"));
+	deMessages.Insert(56, NStr("ru = 'Ошибка в обработчике события ПриВыгрузке (свойства)'; en = 'OnExport event handler error (property).'"));
+	deMessages.Insert(57, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузки (свойства)'; en = 'AfterExport event handler error (property).'"));
+	
+	deMessages.Insert(62, NStr("ru = 'Ошибка в обработчике события ПередВыгрузкойДанных (конвертация)'; en = 'BeforeExportData event handler error (data conversion).'"));
+	deMessages.Insert(63, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузкиДанных (конвертация)'; en = 'AfterExportData event handler error (data conversion).'"));
+	deMessages.Insert(64, NStr("ru = 'Ошибка в глобальном обработчике события ПередКонвертациейОбъекта (конвертация)'; en = 'BeforeObjectConversion global event handler error (data conversion).'"));
+	deMessages.Insert(65, NStr("ru = 'Ошибка в глобальном обработчике события ПередВыгрузкойОбъекта (конвертация)'; en = 'BeforeExportObject global event handler error (data conversion).'"));
+	deMessages.Insert(66, NStr("ru = 'Ошибка получения коллекции подчиненных объектов из входящих данных'; en = 'Error retrieving subordinate object collection from incoming data'"));
+	deMessages.Insert(67, NStr("ru = 'Ошибка получения свойства подчиненного объекта из входящих данных'; en = 'Error retrieving subordinate object properties from incoming data'"));
+	deMessages.Insert(68, NStr("ru = 'Ошибка получения свойства объекта из входящих данных'; en = 'Error retrieving object properties from incoming data'"));
+	
+	deMessages.Insert(69, NStr("ru = 'Ошибка в глобальном обработчике события ПослеВыгрузкиОбъекта (конвертация)'; en = 'AfterExportObject global event handler error (data conversion).'"));
+	
+	deMessages.Insert(71, NStr("ru = 'Не найдено соответствие для значения Источника'; en = 'The map of the Source value is not found'"));
+	
+	deMessages.Insert(72, NStr("ru = 'Ошибка при выгрузке данных для узла плана обмена'; en = 'Error exporting data for exchange plan node'"));
+	
+	deMessages.Insert(73, NStr("ru = 'Ошибка в обработчике события ПоследовательностьПолейПоиска'; en = 'SearchFieldSequence event handler error'"));
+	
+	deMessages.Insert(74, NStr("ru = 'Необходимо перезагрузить правила обмена для выгрузки данных'; en = 'Exchange rules for data export must be reread'"));
+	
+	deMessages.Insert(75, NStr("ru = 'Ошибка при выполнении алгоритма после загрузки значений параметров'; en = 'Error executing algorithm after parameter value import'"));
+	
+	deMessages.Insert(76, NStr("ru = 'Ошибка в обработчике события ПослеВыгрузкиОбъектаВФайл'; en = 'AfterExportObjectToFile event handler error'"));
+	
+	deMessages.Insert(77, NStr("ru = 'Не указан файл внешней обработки с подключаемыми процедурами обработчиков событий'; en = 'The external data processor file with pluggable event handler procedures is not specified'"));
+	
+	deMessages.Insert(78, NStr("ru = 'Ошибка создания внешней обработки из файла с процедурами обработчиков событий'; en = 'Error creating external data processor from file with event handler procedures'"));
+	
+	deMessages.Insert(79, NStr("ru = 'Код алгоритмов не может быть интегрирован в обработчик из-за обнаруженного рекурсивного вызова алгоритмов. 
+	                         |Если в процессе отладки нет необходимости отлаживать код алгоритмов, то укажите режим ""не отлаживать алгоритмы""
+	                         |Если необходимо выполнять отладку алгоритмов с рекурсивным вызовом, то укажите режим  ""алгоритмы отлаживать как процедуры"" 
+	                         |и повторите выгрузку.'; 
+	                         |en = 'Algorithm code cannot be integrated into the handler due to detected recursive algorithm call.
+	                         |If algorithm code debugging is not required in the debug process, specify the ""without algorithm debugging"" mode.
+	                         |If it is required to debug algorithms with recursive call, specify the ""debug algorithms as procedures"" mode 
+	                         |and try again.'"));
+	
+	deMessages.Insert(80, NStr("ru = 'Обмен данными можно проводить только под полными правами'; en = 'You must have the full rights to execute the data exchange'"));
+	
+	deMessages.Insert(1000, NStr("ru = 'Ошибка при создании временного файла выгрузки данных'; en = 'Error creating temporary data export file'"));
 
-	МенеджерыДляПлановОбмена = Новый Соответствие;
+EndProcedure
+
+Procedure SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, TypeName, Manager,
+	TypeNamePrefix, SearchByPredefinedItemsPossible = False)
+
+	Name              = MDObject.Name;
+	RefTypeString = TypeNamePrefix + "." + Name;
+	SearchString     = "SELECT Ref FROM " + TypeName + "." + Name + " WHERE ";
+	RefType        = Type(RefTypeString);
+	Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+	Structure.Insert("SearchByPredefinedItemsPossible", SearchByPredefinedItemsPossible);
+	Structure.Insert("SearchString", SearchString);
+	Managers.Insert(RefType, Structure);
+	StructureForExchangePlan = ExchangePlanParametersStructure(Name, RefType, True, False);
+	ManagersForExchangePlans.Insert(MDObject, StructureForExchangePlan);
+	
+EndProcedure
+
+Procedure SupplementManagerArrayWithRegisterType(Managers, MDObject, TypeName, Manager, RecordTypeNamePrefix, SelectionTypeNamePrefix)
+
+	Periodic = Undefined;
+	
+	Name					= MDObject.Name;
+	RefTypeString	= RecordTypeNamePrefix + "." + Name;
+	RefType			= Type(RefTypeString);
+	Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+	
+	If TypeName = "InformationRegister" Then
+		
+		Periodic = (MDObject.InformationRegisterPeriodicity <> Metadata.ObjectProperties.InformationRegisterPeriodicity.Nonperiodical);
+		SubordinatedToRecorder = (MDObject.WriteMode = Metadata.ObjectProperties.RegisterWriteMode.RecorderSubordinate);
+		
+		Structure.Insert("Periodic", Periodic);
+		Structure.Insert("SubordinateToRecorder", SubordinatedToRecorder);
+		
+	EndIf;	
+	
+	Managers.Insert(RefType, Structure);
+	StructureForExchangePlan = ExchangePlanParametersStructure(Name, RefType, False, True);
+
+	ManagersForExchangePlans.Insert(MDObject, StructureForExchangePlan);
+	RefTypeString	= SelectionTypeNamePrefix + "." + Name;
+	RefType			= Type(RefTypeString);
+	Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+
+	If Periodic <> Undefined Then
+		
+		Structure.Insert("Periodic", Periodic);
+		Structure.Insert("SubordinateToRecorder", SubordinatedToRecorder);	
+		
+	EndIf;
+	
+	Managers.Insert(RefType, Structure);	
+		
+EndProcedure
+
+// Initializes the Managers variable that contains mapping of object types and their properties.
+//
+// Parameters:
+//  No.
+// 
+Procedure ManagersInitialization()
+
+	Managers = New Map;
+	
+	ManagersForExchangePlans = New Map;
     	
-	// ССЫЛКИ
-
-	Для Каждого ОбъектМД Из Метаданные.Справочники Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "Справочник",
-			Справочники[ОбъектМД.Имя], "СправочникСсылка", Истина);
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.Документы Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "Документ",
-			Документы[ОбъектМД.Имя], "ДокументСсылка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.ПланыВидовХарактеристик Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД,
-			"ПланВидовХарактеристик", ПланыВидовХарактеристик[ОбъектМД.Имя], "ПланВидовХарактеристикСсылка", Истина);
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.ПланыСчетов Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "ПланСчетов",
-			ПланыСчетов[ОбъектМД.Имя], "ПланСчетовСсылка", Истина);
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.ПланыВидовРасчета Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "ПланВидовРасчета",
-			ПланыВидовРасчета[ОбъектМД.Имя], "ПланВидовРасчетаСсылка", Истина);
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.ПланыОбмена Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "ПланОбмена",
-			ПланыОбмена[ОбъектМД.Имя], "ПланОбменаСсылка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.Задачи Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "Задача",
-			Задачи[ОбъектМД.Имя], "ЗадачаСсылка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.БизнесПроцессы Цикл
-
-		ДополнитьМассивМенеджеровСсылочнымТипом(Менеджеры, МенеджерыДляПлановОбмена, ОбъектМД, "БизнесПроцесс",
-			БизнесПроцессы[ОбъектМД.Имя], "БизнесПроцессСсылка");
-
-		ИмяТипа = "ТочкаМаршрутаБизнесПроцесса";
-		// ссылка на точки маршрута
-		Имя              = ОбъектМД.Имя;
-		Менеджер         = БизнесПроцессы[Имя].ТочкиМаршрута;
-		СтрокаПоиска     = "";
-		ТипСсылкиСтрокой = "ТочкаМаршрутаБизнесПроцессаСсылка." + Имя;
-		ТипСсылки        = Тип(ТипСсылкиСтрокой);
-		Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-		Структура.Вставить("ПустаяСсылка", Неопределено);
-		Структура.Вставить("СтрокаПоиска", СтрокаПоиска);
-		Менеджеры.Вставить(ТипСсылки, Структура);
-
-	КонецЦикла;
+	// REFERENCES
 	
-	// РЕГИСТРЫ
+	For Each MDObject In Metadata.Catalogs Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "Catalog",
+			Catalogs[MDObject.Name], "CatalogRef", True);
+					
+	EndDo;
 
-	Для Каждого ОбъектМД Из Метаданные.РегистрыСведений Цикл
+	For Each MDObject In Metadata.Documents Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "Document",
+			Documents[MDObject.Name], "DocumentRef");
+				
+	EndDo;
 
-		ДополнитьМассивМенеджеровТипомРегистра(Менеджеры, ОбъектМД, "РегистрСведений", РегистрыСведений[ОбъектМД.Имя],
-			"РегистрСведенийЗапись", "РегистрСведенийВыборка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.РегистрыБухгалтерии Цикл
-
-		ДополнитьМассивМенеджеровТипомРегистра(Менеджеры, ОбъектМД, "РегистрБухгалтерии",
-			РегистрыБухгалтерии[ОбъектМД.Имя], "РегистрБухгалтерииЗапись", "РегистрБухгалтерииВыборка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.РегистрыНакопления Цикл
-
-		ДополнитьМассивМенеджеровТипомРегистра(Менеджеры, ОбъектМД, "РегистрНакопления",
-			РегистрыНакопления[ОбъектМД.Имя], "РегистрНакопленияЗапись", "РегистрНакопленияВыборка");
-
-	КонецЦикла;
-
-	Для Каждого ОбъектМД Из Метаданные.РегистрыРасчета Цикл
-
-		ДополнитьМассивМенеджеровТипомРегистра(Менеджеры, ОбъектМД, "РегистрРасчета", РегистрыРасчета[ОбъектМД.Имя],
-			"РегистрРасчетаЗапись", "РегистрРасчетаВыборка");
-
-	КонецЦикла;
-
-	ИмяТипа = "Перечисление";
-
-	Для Каждого ОбъектМД Из Метаданные.Перечисления Цикл
-
-		Имя              = ОбъектМД.Имя;
-		Менеджер         = Перечисления[Имя];
-		ТипСсылкиСтрокой = "ПеречислениеСсылка." + Имя;
-		ТипСсылки        = Тип(ТипСсылкиСтрокой);
-		Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-		Структура.Вставить("ПустаяСсылка", Перечисления[Имя].ПустаяСсылка());
-
-		Менеджеры.Вставить(ТипСсылки, Структура);
-
-	КонецЦикла;	
+	For Each MDObject In Metadata.ChartsOfCharacteristicTypes Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "ChartOfCharacteristicTypes",
+			ChartsOfCharacteristicTypes[MDObject.Name], "ChartOfCharacteristicTypesRef", True);
+				
+	EndDo;
 	
-	// Константы
-	ИмяТипа             = "Константы";
-	ОбъектМД            = Метаданные.Константы;
-	Имя					= "Константы";
-	Менеджер			= Константы;
-	ТипСсылкиСтрокой	= "КонстантыНабор";
-	ТипСсылки			= Тип(ТипСсылкиСтрокой);
-	Структура = СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД);
-	Менеджеры.Вставить(ТипСсылки, Структура);
+	For Each MDObject In Metadata.ChartsOfAccounts Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "ChartOfAccounts",
+			ChartsOfAccounts[MDObject.Name], "ChartOfAccountsRef", True);
+						
+	EndDo;
+	
+	For Each MDObject In Metadata.ChartsOfCalculationTypes Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "ChartOfCalculationTypes",
+			ChartsOfCalculationTypes[MDObject.Name], "ChartOfCalculationTypesRef", True);
+				
+	EndDo;
+	
+	For Each MDObject In Metadata.ExchangePlans Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "ExchangePlan",
+			ExchangePlans[MDObject.Name], "ExchangePlanRef");
+				
+	EndDo;
+	
+	For Each MDObject In Metadata.Tasks Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "Task",
+			Tasks[MDObject.Name], "TaskRef");
+				
+	EndDo;
+	
+	For Each MDObject In Metadata.BusinessProcesses Do
+		
+		SupplementManagerArrayWithReferenceType(Managers, ManagersForExchangePlans, MDObject, "BusinessProcess",
+			BusinessProcesses[MDObject.Name], "BusinessProcessRef");
+		
+		TypeName = "BusinessProcessRoutePoint";
+		// Route point references
+		Name              = MDObject.Name;
+		Manager         = BusinessProcesses[Name].RoutePoints;
+		SearchString     = "";
+		RefTypeString = "BusinessProcessRoutePointRef." + Name;
+		RefType        = Type(RefTypeString);
+		Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+		Structure.Insert("EmptyRef", Undefined);
+		Structure.Insert("SearchString", SearchString);
+		Managers.Insert(RefType, Structure);
+				
+	EndDo;
+	
+	// REGISTERS
 
-КонецПроцедуры
+	For Each MDObject In Metadata.InformationRegisters Do
+		
+		SupplementManagerArrayWithRegisterType(Managers, MDObject, "InformationRegister",
+			InformationRegisters[MDObject.Name], "InformationRegisterRecord", "InformationRegisterSelection");
+						
+	EndDo;
 
-// Выполняет инициализация менеджеров объектов и всех сообщений протокола обмена данными.
+	For Each MDObject In Metadata.AccountingRegisters Do
+		
+		SupplementManagerArrayWithRegisterType(Managers, MDObject, "AccountingRegister",
+			AccountingRegisters[MDObject.Name], "AccountingRegisterRecord", "AccountingRegisterSelection");
+				
+	EndDo;
+	
+	For Each MDObject In Metadata.AccumulationRegisters Do
+		
+		SupplementManagerArrayWithRegisterType(Managers, MDObject, "AccumulationRegister",
+			AccumulationRegisters[MDObject.Name], "AccumulationRegisterRecord", "AccumulationRegisterSelection");
+						
+	EndDo;
+	
+	For Each MDObject In Metadata.CalculationRegisters Do
+		
+		SupplementManagerArrayWithRegisterType(Managers, MDObject, "CalculationRegister",
+			CalculationRegisters[MDObject.Name], "CalculationRegisterRecord", "CalculationRegisterSelection");
+						
+	EndDo;
+	
+	TypeName = "Enum";
+	
+	For Each MDObject In Metadata.Enums Do
+		
+		Name              = MDObject.Name;
+		Manager         = Enums[Name];
+		RefTypeString = "EnumRef." + Name;
+		RefType        = Type(RefTypeString);
+		Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+		Structure.Insert("EmptyRef", Enums[Name].EmptyRef());
+
+		Managers.Insert(RefType, Structure);
+		
+	EndDo;	
+	
+	// Constants
+	TypeName             = "Constants";
+	MDObject            = Metadata.Constants;
+	Name					= "Constants";
+	Manager			= Constants;
+	RefTypeString	= "ConstantsSet";
+	RefType			= Type(RefTypeString);
+	Structure = ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject);
+	Managers.Insert(RefType, Structure);
+	
+EndProcedure
+
+// Initializes object managers and all messages of the data exchange log.
 //
 // Parameters:
-//  Нет.
+//  No.
 // 
-Процедура ИнициализироватьМенеджерыИСообщения() Экспорт
+Procedure InitManagersAndMessages() Export
+	
+	If Managers = Undefined Then
+		ManagersInitialization();
+	EndIf; 
 
-	Если Менеджеры = Неопределено Тогда
-		ИнициализацияМенеджеров();
-	КонецЕсли;
+	If deMessages = Undefined Then
+		InitMessages();
+	EndIf;
+	
+EndProcedure
 
-	Если одСообщения = Неопределено Тогда
-		ИнициализацияСообщений();
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Возвращаемое значение:
-//   Структура - поля:
-//     * ВерсияФормата - Строка -
-//     * Ид - Строка -
-//     * Наименование - Строка -
-//     * ДатаВремяСоздания - Дата -
-//     * ВерсияПлатформыИсточника - Строка -
-//     * СинонимКонфигурацииИсточника - Строка -
-//     * ВерсияКонфигурацииИсточника - Строка -
-//     * Источник - Строка -
-//     * ВерсияПлатформыПриемника - Строка -
-//     * СинонимКонфигурацииПриемника - Строка -
-//     * ВерсияКонфигурацииПриемника - Строка -
-//     * Приемник - Строка -
-//     * ПослеЗагрузкиПравилОбмена - Строка -
-//     * ПередВыгрузкойДанных - Строка -
-//     * ПередПолучениемИзмененныхОбъектов - Строка -
-//     * ПослеПолученияИнформацииОбУзлахОбмена - Строка -
-//     * ПослеВыгрузкиДанных - Строка -
-//     * ПередОтправкойИнформацииОбУдалении - Строка -
-//     * ПередВыгрузкойОбъекта - Строка -
-//     * ПослеВыгрузкиОбъекта - Строка -
-//     * ПередЗагрузкойОбъекта - Строка -
-//     * ПослеЗагрузкиОбъекта - Строка -
-//     * ПередКонвертациейОбъекта - Строка -
-//     * ПередЗагрузкойДанных - Строка -
-//     * ПослеЗагрузкиДанных - Строка -
-//     * ПослеЗагрузкиПараметров - Строка -
-//     * ПриПолученииИнформацииОбУдалении - Строка -
+// Returns:
+//   Structure:
+//     * FormatVersion - String -
+//     * ID - String -
+//     * Description - String -
+//     * CreationDateTime - Date -
+//     * SourcePlatformVersion - String -
+//     * SourceConfigurationSynonym - String -
+//     * SourceConfigurationVersion - String -
+//     * Source - String -
+//     * DestinationPlatformVersion - String -
+//     * DestinationConfigurationSynonym - String -
+//     * DestinationConfigurationVersion - String -
+//     * Destination - String -
+//     * AfterImportExchangeRules - String -
+//     * BeforeExportData - String -
+//     * ПередПолучениемИзмененныхОбъектов - String -
+//     * ПослеПолученияИнформацииОбУзлахОбмена - String -
+//     * ПослеВыгрузкиДанных - String -
+//     * ПередОтправкойИнформацииОбУдалении - String -
+//     * ПередВыгрузкойОбъекта - String -
+//     * ПослеВыгрузкиОбъекта - String -
+//     * ПередЗагрузкойОбъекта - String -
+//     * ПослеЗагрузкиОбъекта - String -
+//     * ПередКонвертациейОбъекта - String -
+//     * ПередЗагрузкойДанных - String -
+//     * ПослеЗагрузкиДанных - String -
+//     * ПослеЗагрузкиПараметров - String -
+//     * ПриПолученииИнформацииОбУдалении - String -
 //
-Функция Конвертация()
-	Возврат Конвертация;
-КонецФункции
+Function Conversion()
+	Return Conversion;
+EndFunction
 
 // Возвращаемое значение:
 //   Структура - содержит поля:
