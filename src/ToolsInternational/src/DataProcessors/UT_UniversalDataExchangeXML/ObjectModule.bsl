@@ -13820,260 +13820,258 @@ EndProcedure
 //     * Destination - String -
 //     * AfterImportExchangeRules - String -
 //     * BeforeExportData - String -
-//     * ПередПолучениемИзмененныхОбъектов - String -
-//     * ПослеПолученияИнформацииОбУзлахОбмена - String -
-//     * ПослеВыгрузкиДанных - String -
-//     * ПередОтправкойИнформацииОбУдалении - String -
-//     * ПередВыгрузкойОбъекта - String -
-//     * ПослеВыгрузкиОбъекта - String -
-//     * ПередЗагрузкойОбъекта - String -
-//     * ПослеЗагрузкиОбъекта - String -
-//     * ПередКонвертациейОбъекта - String -
-//     * ПередЗагрузкойДанных - String -
-//     * ПослеЗагрузкиДанных - String -
-//     * ПослеЗагрузкиПараметров - String -
-//     * ПриПолученииИнформацииОбУдалении - String -
+//     * BeforeGetChangedObjects - String -
+//     * AfterGetExchangeNodesInformation - String -
+//     * AfterExportData - String -
+//     * BeforeSendDeletionInfo - String -
+//     * BeforeExportObject - String -
+//     * AfterExportObject - String -
+//     * BeforeImportObject - String -
+//     * AfterImportObject - String -
+//     * BeforeConvertObject - String -
+//     * BeforeImportData - String -
+//     * AfterImportData - String -
+//     * AfterImportParameters - String -
+//     * OnGetDeletionInfo - String -
 //
 Function Conversion()
 	Return Conversion;
 EndFunction
 
-// Возвращаемое значение:
-//   Структура - содержит поля:
-//     * Имя - Строка -
-//     * ИмяТипа - Строка -
-//     * ТипСсылкиСтрокой - Строка -
-//     * Менеджер - СправочникМенеджер, ДокументМенеджер, РегистрСведенийМенеджер, и т.п. -
-//     * ОбъектМД - ОбъектМетаданныхСправочник, ОбъектМетаданныхДокумент, ОбъектМетаданныхРегистрСведений, и т.п. -
-//     * ПКО - см. НайтиПравило
+// Returns:
+//   Structure:
+//     * Name - String -
+//     * TypeName - String -
+//     * RefTypeString - String -
+//     * Manager - CatalogManager, DocumentManager, InformationRegisterManager, etc. -
+//     * MDObject - MetadataObject: Catalog, MetadataObject: Document, MetadataObject: InformationRegister, etc. -
+//     * OCR - see FindRule
 //
-Функция Менеджеры(Тип)
-	Возврат Менеджеры[Тип];
-КонецФункции
+Function Managers(Type)
+	Return Managers[Type];
+EndFunction
 
-Процедура СоздатьСтруктуруКонвертации()
+Procedure CreateConversionStructure()
+	
+	Conversion  = New Structure("BeforeExportData, AfterExportData, BeforeExportObject, AfterExportObject, BeforeConvertObject, BeforeImportObject, AfterImportObject, BeforeImportData, AfterImportData");
+	
+EndProcedure
 
-	Конвертация  = Новый Структура("ПередВыгрузкойДанных, ПослеВыгрузкиДанных, ПередВыгрузкойОбъекта, ПослеВыгрузкиОбъекта, ПередКонвертациейОбъекта, ПередЗагрузкойОбъекта, ПослеЗагрузкиОбъекта, ПередЗагрузкойДанных, ПослеЗагрузкиДанных");
-
-КонецПроцедуры
-
-// Инициализирует реквизиты обработки и модульные переменные.
+// Initializes data processor attributes and module variables.
 //
 // Parameters:
-//  Нет.
+//  No.
 // 
-Процедура ИнициализацияРеквизитовИМодульныхПеременных()
+Procedure InitAttributesAndModuleVariables()
 
 	ProcessedObjectsCountToUpdateStatus = 100;
-
-	ЗапоминатьЗагруженныеОбъекты     = Истина;
-	ЧислоХранимыхЗагруженныхОбъектов = 5000;
-
-	ПараметрыИнициализированы        = Ложь;
-
-	XMLWriterAdvancedMonitoring = Ложь;
-	DirectReadFromDestinationIB = Ложь;
-	DoNotShowInfoMessagesToUser = Ложь;
-
-	Менеджеры    = Неопределено;
-	одСообщения  = Неопределено;
-
-	ErrorFlag   = Ложь;
-
-	СоздатьСтруктуруКонвертации();
-
-	Правила      = Новый Структура;
-	Алгоритмы    = Новый Структура;
-	ДопОбработки = Новый Структура;
-	Запросы      = Новый Структура;
-
-	Parameters    = Новый Структура;
-	СобытияПослеЗагрузкиПараметров = Новый Структура;
-
-	ПараметрыДопОбработок = Новый Структура;
 	
-	// Типы
-	одТипСтрока                  = Тип("Строка");
-	одТипБулево                  = Тип("Булево");
-	одТипЧисло                   = Тип("Число");
-	одТипДата                    = Тип("Дата");
-	одТипХранилищеЗначения       = Тип("ХранилищеЗначения");
-	одТипУникальныйИдентификатор = Тип("УникальныйИдентификатор");
-	одТипДвоичныеДанные          = Тип("ДвоичныеДанные");
-	одТипВидДвиженияНакопления   = Тип("ВидДвиженияНакопления");
-	одТипУдалениеОбъекта         = Тип("УдалениеОбъекта");
-	одТипВидСчета			     = Тип("ВидСчета");
-	одТипТип                     = Тип("Тип");
-	одТипСоответствие            = Тип("Соответствие");
-
-	ЗначениеПустаяДата		   = Дата('00010101');
-
-	mXMLRules  = Неопределено;
+	RememberImportedObjects     = True;
+	ImportedObjectToStoreCount = 5000;
 	
-	// Типы узлов xml
+	ParametersInitialized        = False;
 
-	одТипУзлаXML_КонецЭлемента  = ТипУзлаXML.КонецЭлемента;
-	одТипУзлаXML_НачалоЭлемента = ТипУзлаXML.НачалоЭлемента;
-	одТипУзлаXML_Текст          = ТипУзлаXML.Текст;
-	мСписокМакетовПравилОбмена  = Новый СписокЗначений;
+	XMLWriterAdvancedMonitoring = False;
+	DirectReadFromDestinationIB = False;
+	DoNotShowInfoMessagesToUser = False;
 
-	Для Каждого Макет Из Метаданные().Макеты Цикл
-		мСписокМакетовПравилОбмена.Добавить(Макет.Синоним);
-	КонецЦикла;
+	Managers    = Undefined;
+	deMessages  = Undefined;
+	
+	ErrorFlag   = False;
+	
+	CreateConversionStructure();
+	
+	Rules      = New Structure;
+	Algorithms    = New Structure;
+	AdditionalDataProcessors = New Structure;
+	Queries      = New Structure;
 
-	мФайлПротоколаДанных = Неопределено;
+	Parameters    = New Structure;
+	EventsAfterParametersImport = New Structure;
+	
+	AdditionalDataProcessorParameters = New Structure;
+	
+	// Types
+	deStringType                  = Type("String");
+	deBooleanType                  = Type("Boolean");
+	deNumberType                   = Type("Number");
+	deDateType                    = Type("Date");
+	deValueStorageType       = Type("ValueStorage");
+	deUUIDType = Type("UUID");
+	deBinaryDataType          = Type("BinaryData");
+	deAccumulationRecordTypeType   = Type("AccumulationRecordType");
+	deObjectDeletionType         = Type("ObjectDeletion");
+	deAccountTypeType			     = Type("AccountType");
+	deTypeType                     = Type("Type");
+	deMapType            = Type("Map");
 
-	ConnectedInfobaseType = Истина;
-	InfobaseConnectionWindowsAuthentification = Ложь;
+	BlankDateValue		   = Date('00010101');
+	
+	mXMLRules  = Undefined;
+	
+	// XML node types
+	
+	deXMLNodeType_EndElement  = XMLNodeType.EndElement;
+	deXMLNodeType_StartElement = XMLNodeType.StartElement;
+	deXMLNodeType_Text          = XMLNodeType.Text;
+	mExchangeRuleTemplateList  = New ValueList;
+
+	For each Template In Metadata().Templates Do
+		mExchangeRuleTemplateList.Add(Template.Synonym);
+	EndDo;
+
+	mDataLogFile = Undefined;
+
+	ConnectedInfobaseType = True;
+	InfobaseConnectionWindowsAuthentification = False;
 	PlatformVersionForInfobaseConnection = "V8";
-	OpenExchangeLogAfterExecutingOperations = Ложь;
-	ImportDataInExchangeMode = Истина;
-	WriteToInfobaseOnlyChangedObjects = Истина;
-	WriteRegistersAsRecordSets = Истина;
-	OptimizedObjectsWriting = Истина;
-	ExportAllowedObjectsOnly = Истина;
-	ImportReferencedObjectsWithoutDeletionMark = Истина;
-	UseFilterByDateForAllObjects = Истина;
+	OpenExchangeLogAfterExecutingOperations = False;
+	ImportDataInExchangeMode = True;
+	WriteToInfobaseOnlyChangedObjects = True;
+	WriteRegistersAsRecordSets = True;
+	OptimizedObjectsWriting = True;
+	ExportAllowedObjectsOnly = True;
+	ImportReferencedObjectsWithoutDeletionMark = True;
+	UseFilterByDateForAllObjects = True;
 
-	мСоответствиеПустыхЗначенийТипов = Новый Соответствие;
-	мСоответствиеОписаниеТипов = Новый Соответствие;
-
-	мБылиПрочитаныПравилаОбменаПриЗагрузке = Ложь;
-
-	ReadEventHandlersFromExchangeRulesFile = Истина;
-
-	мРежимыОбработкиДанных = Новый Структура;
-	мРежимыОбработкиДанных.Вставить("Выгрузка", 0);
-	мРежимыОбработкиДанных.Вставить("Загрузка", 1);
-	мРежимыОбработкиДанных.Вставить("ЗагрузкаПравилОбмена", 2);
-	мРежимыОбработкиДанных.Вставить("ЭкспортОбработчиковСобытий", 3);
-
-	РежимОбработкиДанных = мРежимыОбработкиДанных.Выгрузка;
-
-	мРежимыОтладкиАлгоритмов = Новый Структура;
-	мРежимыОтладкиАлгоритмов.Вставить("НеИспользовать", 0);
-	мРежимыОтладкиАлгоритмов.Вставить("ПроцедурныйВызов", 1);
-	мРежимыОтладкиАлгоритмов.Вставить("ИнтеграцияКода", 2);
-
-	AlgorithmDebugMode = мРежимыОтладкиАлгоритмов.НеИспользовать;
+	mEmptyTypeValueMap = New Map;
+	mTypeDescriptionMap = New Map;
 	
-	// Модули стандартных подсистем.
-	Попытка
-		// Вызов ВычислитьВБезопасномРежиме не требуется, т.к. для вычисления передается строковый литерал.
-		МодульДатыЗапретаИзменения = Вычислить("ДатыЗапретаИзменения");
-	Исключение
-		МодульДатыЗапретаИзменения = Неопределено;
-	КонецПопытки;
+	mExchangeRulesReadOnImport = False;
 
-	РазделителиКонфигурации = Новый Массив;
-	Для Каждого ОбщийРеквизит Из Метаданные.ОбщиеРеквизиты Цикл
-		Если ОбщийРеквизит.РазделениеДанных = Метаданные.СвойстваОбъектов.РазделениеДанныхОбщегоРеквизита.Разделять Тогда
-			РазделителиКонфигурации.Добавить(ОбщийРеквизит.Имя);
-		КонецЕсли;
-	КонецЦикла;
-	РазделителиКонфигурации = Новый ФиксированныйМассив(РазделителиКонфигурации);
+	ReadEventHandlersFromExchangeRulesFile = True;
 
-	FilesTempDirectory = ПолучитьИмяВременногоФайла();
-	УдалитьФайлы(FilesTempDirectory);
+	mDataProcessingModes = New Structure;
+	mDataProcessingModes.Insert("Export",                   0);
+	mDataProcessingModes.Insert("Import",                   1);
+	mDataProcessingModes.Insert("ExchangeRulesImport",       2);
+	mDataProcessingModes.Insert("EventHandlersExport", 3);
 
-КонецПроцедуры
-
-Функция ОпределитьДостаточностьПараметровДляПодключенияКИнформационнойБазе(СтруктураПодключения,
-	СтрокаПодключения = "", СтрокаСообщенияОбОшибке = "")
-
-	НаличиеОшибок = Ложь;
-
-	Если СтруктураПодключения.ФайловыйРежим Тогда
-
-		Если ПустаяСтрока(СтруктураПодключения.КаталогИБ) Тогда
-
-			СтрокаСообщенияОбОшибке = НСтр("ru = 'Не задан каталог информационной базы-приемника'");
-
-			СообщитьПользователю(СтрокаСообщенияОбОшибке);
-
-			НаличиеОшибок = Истина;
-
-		КонецЕсли;
-
-		СтрокаПодключения = "File=""" + СтруктураПодключения.КаталогИБ + """";
-	Иначе
-
-		Если ПустаяСтрока(СтруктураПодключения.ИмяСервера) Тогда
-
-			СтрокаСообщенияОбОшибке = НСтр("ru = 'Не задано имя сервера 1С:Предприятия информационной базы-приемника'");
-
-			СообщитьПользователю(СтрокаСообщенияОбОшибке);
-
-			НаличиеОшибок = Истина;
-
-		КонецЕсли;
-
-		Если ПустаяСтрока(СтруктураПодключения.ИмяИБНаСервере) Тогда
-
-			СтрокаСообщенияОбОшибке = НСтр(
-				"ru = 'Не задано имя информационной базы-приемника на сервере 1С:Предприятия'");
-
-			СообщитьПользователю(СтрокаСообщенияОбОшибке);
-
-			НаличиеОшибок = Истина;
-
-		КонецЕсли;
-
-		СтрокаПодключения = "Srvr = """ + СтруктураПодключения.ИмяСервера + """; Ref = """
-			+ СтруктураПодключения.ИмяИБНаСервере + """";
-
-	КонецЕсли;
-
-	Возврат Не НаличиеОшибок;
-
-КонецФункции
-
-Функция ПодключитсяКИнформационнойБазе(СтруктураПодключения, СтрокаСообщенияОбОшибке = "")
-
-	Перем СтрокаПодключения;
-
-	ПараметровДостаточно = ОпределитьДостаточностьПараметровДляПодключенияКИнформационнойБазе(СтруктураПодключения,
-		СтрокаПодключения, СтрокаСообщенияОбОшибке);
-
-	Если Не ПараметровДостаточно Тогда
-		Возврат Неопределено;
-	КонецЕсли;
-
-	Если Не СтруктураПодключения.АутентификацияWindows Тогда
-		Если Не ПустаяСтрока(СтруктураПодключения.Пользователь) Тогда
-			СтрокаПодключения = СтрокаПодключения + ";Usr = """ + СтруктураПодключения.Пользователь + """";
-		КонецЕсли;
-		Если Не ПустаяСтрока(СтруктураПодключения.Пароль) Тогда
-			СтрокаПодключения = СтрокаПодключения + ";Pwd = """ + СтруктураПодключения.Пароль + """";
-		КонецЕсли;
-	КонецЕсли;
+	DataProcessingMode = mDataProcessingModes.DataExported;
 	
-	// "V82" или "V83"
-	ОбъектПодключения = СтруктураПодключения.ВерсияПлатформы;
+	mAlgorithmDebugModes = New Structure;
+	mAlgorithmDebugModes.Insert("DontUse",   0);
+	mAlgorithmDebugModes.Insert("ProceduralCall", 1);
+	mAlgorithmDebugModes.Insert("CodeIntegration",   2);
+	
+	AlgorithmDebugMode = mAlgorithmDebugModes.DontUse;
+	
+	// Standard subsystem modules.
+	Try
+		// Calling CalculateInSafeMode is not required as a string literal is being passed for calculation.
+		ModulePeriodClosingDates = Eval("PeriodClosingDates");
+	Except
+		ModulePeriodClosingDates = Undefined;
+	EndTry;
+	
+	ConfigurationSeparators = New Array;
+	For Each CommonAttribute In Metadata.CommonAttributes Do
+		If CommonAttribute.DataSeparation = Metadata.ObjectProperties.CommonAttributeDataSeparation.Separate Then
+			ConfigurationSeparators.Add(CommonAttribute.Name);
+		EndIf;
+	EndDo;
+	ConfigurationSeparators = New FixedArray(ConfigurationSeparators);
 
-	СтрокаПодключения = СтрокаПодключения + ";";
+	FilesTempDirectory = GetTempFileName();
+	DeleteFiles(FilesTempDirectory);
 
-	Попытка
+EndProcedure
 
-		ОбъектПодключения = ОбъектПодключения + ".COMConnector";
-		ТекCOMПодключение = Новый COMОбъект(ОбъектПодключения);
-		ТекCOMОбъект = ТекCOMПодключение.Connect(СтрокаПодключения);
+Function DetermineIfEnoughInfobaseConnectionParameters(ConnectionStructure, StringForConnection = "", ErrorMessageString = "")
+	
+	ErrorsExist = False;
+	
+	If ConnectionStructure.FileMode  Then
+		
+		If IsBlankString(ConnectionStructure.IBDirectory) Then
+			
+			ErrorMessageString = NStr("ru='Не задан каталог информационной базы-приемника'; en = 'The destination infobase directory is not specified.'");
+			
+			MessageToUser(ErrorMessageString);
+			
+			ErrorsExist = True;
+			
+		EndIf;
+		
+		StringForConnection = "File=""" + ConnectionStructure.IBDirectory + """";
+	Else
+		
+		If IsBlankString(ConnectionStructure.ServerName) Then
+			
+			ErrorMessageString = NStr("ru='Не задано имя сервера 1С:Предприятия информационной базы-приемника'; en = 'The destination infobase platform server name is not specified.'");
+			
+			MessageToUser(ErrorMessageString);
+			
+			ErrorsExist = True;
+			
+		EndIf;
+		
+		If IsBlankString(ConnectionStructure.IBNameAtServer) Then
+			
+			ErrorMessageString = NStr("ru='Не задано имя информационной базы-приемника на сервере 1С:Предприятия'; en = 'The destination infobase name on the platform server is not specified.'");
+			
+			MessageToUser(ErrorMessageString);
+			
+			ErrorsExist = True;
+			
+		EndIf;		
+		
+		StringForConnection = "Srvr = """ + ConnectionStructure.ServerName + """; Ref = """ + ConnectionStructure.IBNameAtServer + """";		
+		
+	EndIf;
+	
+	Return Not ErrorsExist;	
+	
+EndFunction
 
-	Исключение
-
-		СтрокаСообщенияОбОшибке = НСтр("ru = 'При попытке соединения с COM-сервером произошла следующая ошибка:
-									   |%1'");
-		СтрокаСообщенияОбОшибке = ПодставитьПараметрыВСтроку(СтрокаСообщенияОбОшибке, ОписаниеОшибки());
-
-		СообщитьПользователю(СтрокаСообщенияОбОшибке);
-
-		Возврат Неопределено;
-
-	КонецПопытки;
-
-	Возврат ТекCOMОбъект;
-
-КонецФункции
+Function ConnectToInfobase(ConnectionStructure, ErrorMessageString = "")
+	
+	Var ConnectionString;
+	
+	EnoughParameters = DetermineIfEnoughInfobaseConnectionParameters(ConnectionStructure, ConnectionString, ErrorMessageString);
+	
+	If Not EnoughParameters Then
+		Return Undefined;
+	EndIf;
+	
+	If Not ConnectionStructure.WindowsAuthentication Then
+		If NOT IsBlankString(ConnectionStructure.User) Then
+			ConnectionString = ConnectionString + ";Usr = """ + ConnectionStructure.User + """";
+		EndIf;
+		If NOT IsBlankString(ConnectionStructure.Password) Then
+			ConnectionString = ConnectionString + ";Pwd = """ + ConnectionStructure.Password + """";
+		EndIf;
+	EndIf;
+	
+	// "V82" or "V83"
+	ConnectionObject = ConnectionStructure.PlatformVersion;
+	
+	ConnectionString = ConnectionString + ";";
+	
+	Try
+		
+		ConnectionObject = ConnectionObject +".COMConnector";
+		CurrentCOMConnection = New COMObject(ConnectionObject);
+		CurCOMObject = CurrentCOMConnection.Connect(ConnectionString);
+		
+	Except
+		
+		ErrorMessageString = NStr("ru = 'При попытке соединения с COM-сервером произошла следующая ошибка:
+			|%1'; 
+			|en = 'When trying to connect to the COM server, the following error occurred:
+			|%1'");
+		ErrorMessageString = SubstituteParametersToString(ErrorMessageString, ErrorDescription());
+		
+		MessageToUser(ErrorMessageString);
+		
+		Return Undefined;
+		
+	EndTry;
+	
+	Return CurCOMObject;
+	
+EndFunction
 
 // Функция возвращает часть строки после последнего встреченного символа в строке.
 Функция ПолучитьСтрокуОтделеннойСимволом(Знач ИсходнаяСтрока, Знач СимволПоиска)
