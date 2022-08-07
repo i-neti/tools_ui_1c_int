@@ -106,7 +106,7 @@ Var mSnCounter Export;   // Number - an sequence number counter.
 Var mPropertyConversionRulesTable;      // ValueTable - a template for restoring the table structure by copying.
                                              //                   
 Var mXMLRules;                           // XML string that contains exchange rule description.
-Var mTypesForDestinationRow;
+Var mTypeStringForDestination;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -124,7 +124,7 @@ Var ImportedObjectToStoreCount Export;  // Number of stored imported objects. If
                                           // 
 Var RememberImportedObjects Export;
 
-Var mExtendedSearchParameterMap;
+Var mExtendedSearchParametersMap;
 Var mConversionRulesMap; // Map to define an object conversion rule by this object type.
 
 Var mDataImportDataProcessor Export;
@@ -679,7 +679,7 @@ Function FindObjectByProperty(Manager, Property, Value, FoundByUUIDObject,
 			
 		EndIf;
 		
-		ObjectRef = FindItemUsingRequest(CommonPropertyStructure, CommonSearchProperties, , Manager);
+		ObjectRef = FindItemUsingQuery(CommonPropertyStructure, CommonSearchProperties, , Manager);
 		Return ObjectRef;
 		
 	EndIf;
@@ -783,7 +783,7 @@ EndFunction
 // Returns:
 //  String - an XML presentation of the passed TypeDescription object.
 //
-Function deGetTypesDescriptionXMLPresentation(TypeDescription) Export
+Function deGetTypeDescriptionXMLPresentation(TypeDescription) Export
 	
 	TypesNode = CreateNode("Types");
 	
@@ -795,7 +795,7 @@ Function deGetTypesDescriptionXMLPresentation(TypeDescription) Export
 		SetAttribute(TypesNode, "AllowedLength",         TrimAll(TypeDescription.AllowedLength));
 		SetAttribute(TypesNode, "DateComposition",              TrimAll(TypeDescription.DateFractions));
 		
-		For each StrType In TypeDescription.Types Do
+		For Each StrType In TypeDescription.Types Do
 			NodeOfType = CreateNode("Type");
 			NodeOfType.WriteText(TrimAll(StrType));
 			AddSubordinateNode(TypesNode, NodeOfType);
@@ -812,7 +812,7 @@ Function deGetTypesDescriptionXMLPresentation(TypeDescription) Export
 		SetAttribute(TypesNode, "AllowedLength",         TrimAll(StringQualifiers.AllowedLength));
 		SetAttribute(TypesNode, "DateComposition",              TrimAll(DateQualifiers.DateFractions));
 		
-		For each Type In TypeDescription.Types() Do
+		For Each Type In TypeDescription.Types() Do
 			NodeOfType = CreateNode("Type");
 			NodeOfType.WriteText(deValueTypeAsString(Type));
 			AddSubordinateNode(TypesNode, NodeOfType);
@@ -1167,7 +1167,7 @@ EndProcedure
 // Returns:
 //  Structure - all possible fields of the execution log.
 //
-Function GetProtocolRecordStructure(MessageCode = "", ErrorString = "") Export
+Function GetLogRecordStructure(MessageCode = "", ErrorString = "") Export
 
 	ErrorStructure = New Structure("OCRName,DPRName,Sn,Gsn,Source,ObjectType,Property,Value,ValueType,OCR,PCR,PGCR,DER,DCR,Object,DestinationProperty,ConvertedValue,Handler,ErrorDescription,ModulePosition,Text,MessageCode,ExchangePlanNode");
 	
@@ -1205,9 +1205,9 @@ EndFunction
 // Returns:
 //  String - an error string.
 //
-Function WriteErrorInfoToProtocol(MessageCode, ErrorString, Object, ObjectType = Undefined) Export
+Function WriteErrorInfoToLog(MessageCode, ErrorString, Object, ObjectType = Undefined) Export
 	
-	WP         = GetProtocolRecordStructure(MessageCode, ErrorString);
+	WP         = GetLogRecordStructure(MessageCode, ErrorString);
 	WP.Object  = Object;
 	
 	If ObjectType <> Undefined Then
@@ -1909,7 +1909,7 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 		SetAttribute(Destination, "Type", 			OCR.Destination);
 		SetAttribute(Destination, "RuleName",	OCR.Name);
 		
-		If DontReplaceObjectOnImport Then
+		If DoNotReplaceObjectOnImport Then
 			SetAttribute(Destination, "DoNotReplace",	"true");
 		EndIf;
 		
@@ -2498,7 +2498,7 @@ EndProcedure
 //   InitialParameterValue    - Arbitrary - a parameter value.
 //   ConversionRule           - String - a conversion rule name for reference types.
 // 
-Procedure SendOneParameterToDestination(Name, InitialParameterValue, ConversionRule = "") Export
+Procedure SendSingleParameterToDestination(Name, InitialParameterValue, ConversionRule = "") Export
 	
 	If IsBlankString(ConversionRule) Then
 		
@@ -2685,7 +2685,7 @@ Procedure InitEventHandlerExternalDataProcessor(ExecutionPossible, OwnerObject) 
 			EventHandlerExternalDataProcessorDestructor();
 			
 			MessageToUser(BriefErrorDescription(ErrorInfo()));
-			WriteToExecutionProtocol(78);
+			WriteToExecutionLog(78);
 			
 			ExecutionPossible               = False;
 			HandlersDebugModeFlag = False;
@@ -2936,7 +2936,7 @@ Procedure InitializeKeepExchangeLog() Export
 
 EndProcedure
 
-Procedure InitializeKeepExchangeProtocolForHandlersExport()
+Procedure InitializeKeepExchangeLogForHandlersExport()
 
 	ExchangeLogTempFileName = GetNewUniqueTempFileName(ExchangeLogTempFileName);
 
@@ -2994,7 +2994,7 @@ EndProcedure
 //  RecordStructure - Structure. Log record structure.
 //  SetErrorFlag - if True, then it is an error message. Sets ErrorFlag.
 //  Level - Number. A message hierarchy level in the log.
-//  Align - Number. A resulting length to written string, see odSupplementString() function.
+//  Align - Number. A resulting length to written string, see deSupplementString() function.
 //  UnconditionalWriteToExchangeLog - Boolean. If True, DisplayInfoMessagesIntoMessageWindow flag is ignored.
 // 
 Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=True, 
@@ -3023,14 +3023,14 @@ Function WriteToExecutionLog(Code="", RecordStructure=Undefined, SetErrorFlag=Tr
 	
 	If RecordStructure <> Undefined Then
 		
-		For each Field In RecordStructure Do
+		For Each Field In RecordStructure Do
 			
 			Value = Field.Value;
 			If Value = Undefined Then
 				Continue;
 			EndIf; 
-			Key = Field.Key;
-			Str  = Str + Chars.LF + Indent + Chars.Tab + odSupplementString(Key, Align) + " =  " + String(Value);
+			Key_ = Field.Key;
+			Str  = Str + Chars.LF + Indent + Chars.Tab + deSupplementString(Key_, Align) + " =  " + String(Value);
 			
 		EndDo;
 		
@@ -3624,7 +3624,7 @@ Procedure ImportVCR(ExchangeRules, Values, SourceType)
 		
 	EndDo;
 	
-	If ExchangeMode <> "Load" Then
+	If ExchangeMode <> "Import" Then
 		Values[deGetValueByString(Source, SourceType)] = Destination;
 	EndIf;
 	
@@ -3763,7 +3763,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 			Value = deElementValue(ExchangeRules, deStringType);
 			deWriteElement(XMLWriter, NodeName, Value);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				NewRow.Source	= Value;
 				
@@ -3812,7 +3812,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 		
 		ElsIf NodeName = "Values" Then
 		
-			LoadValues(ExchangeRules, NewRow.Values, NewRow.Source);
+			ImportValues(ExchangeRules, NewRow.Values, NewRow.Source);
 			
 		// Event handlers
 		
@@ -3841,7 +3841,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 		ElsIf NodeName = "BeforeImport" Then
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
- 			If ExchangeMode = "Load" Then
+ 			If ExchangeMode = "Import" Then
 				
 				NewRow.BeforeImport               = Value;
 				NewRow.HasBeforeImportHandler = Not IsBlankString(Value);
@@ -3856,7 +3856,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				NewRow.OnImport               = Value;
 				NewRow.HasOnImportHandler = Not IsBlankString(Value);
@@ -3871,7 +3871,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				NewRow.AfterImport               = Value;
 				NewRow.HasAfterImportHandler = Not IsBlankString(Value);
@@ -3888,7 +3888,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 			
 			NewRow.HasSearchFieldSequenceHandler = Not IsBlankString(Value);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				NewRow.SearchFieldSequence = Value;
 				
@@ -3928,7 +3928,7 @@ Procedure ImportConversionRule(ExchangeRules, XMLWriter)
 	// Sending details of tabular section search fields to the destination.
 	For Each PropertyString In NewRow.Properties Do
 		
-		If Not PropertyString.IsFolder Or IsBlankString(PropertyString.SourceKind)
+		If Not PropertyString.IsGroup Or IsBlankString(PropertyString.SourceKind)
 			Or IsBlankString(PropertyString.Destination) Then
 			
 			Continue;
@@ -4005,7 +4005,7 @@ EndProcedure
 // 
 Procedure ImportDCRGroup(ExchangeRules, NewRow)
 
-	NewRow.IsFolder = True;
+	NewRow.IsGroup = True;
 	NewRow.Enable  = Number(Not deAttribute(ExchangeRules, deBooleanType, "Disable"));
 	
 	While ExchangeRules.Read() Do
@@ -4130,7 +4130,7 @@ Procedure ImportClearingRules(ExchangeRules, XMLWriter)
 		
 		If NodeType = deXMLNodeType_StartElement Then
 			NodeName = ExchangeRules.LocalName;
-			If ExchangeMode <> "Load" Then
+			If ExchangeMode <> "Import" Then
 				XMLWriter.WriteStartElement(ExchangeRules.Name);
 				While ExchangeRules.ReadAttribute() Do
 					XMLWriter.WriteAttribute(ExchangeRules.Name, ExchangeRules.Value);
@@ -4149,12 +4149,12 @@ Procedure ImportClearingRules(ExchangeRules, XMLWriter)
 			If NodeName = "DataClearingRules" Then
 				Break;
 			Else
-				If ExchangeMode <> "Load" Then
+				If ExchangeMode <> "Import" Then
 					XMLWriter.WriteEndElement();
 				EndIf;
 			EndIf;
 		ElsIf NodeType = deXMLNodeType_Text Then
-			If ExchangeMode <> "Load" Then
+			If ExchangeMode <> "Import" Then
 				XMLWriter.WriteText(ExchangeRules.Value);
 			EndIf;
 		EndIf; 
@@ -4191,7 +4191,7 @@ Procedure ImportAlgorithm(ExchangeRules, XMLWriter)
 		
 	EndDo;
 	If UsedOnImport Then
-		If ExchangeMode = "Load" Then
+		If ExchangeMode = "Import" Then
 			Algorithms.Insert(Name, Text);
 		Else
 			XMLWriter.WriteStartElement("Algorithm");
@@ -4201,7 +4201,7 @@ Procedure ImportAlgorithm(ExchangeRules, XMLWriter)
 			XMLWriter.WriteEndElement();
 		EndIf;
 	Else
-		If ExchangeMode <> "Load" Then
+		If ExchangeMode <> "Import" Then
 			Algorithms.Insert(Name, Text);
 		EndIf;
 	EndIf;
@@ -4261,7 +4261,7 @@ Procedure ImportQuery(ExchangeRules, XMLWriter)
 	EndDo;
 
 	If UsedOnImport Then
-		If ExchangeMode = "Load" Then
+		If ExchangeMode = "Import" Then
 			Query	= New Query(Text);
 			Queries.Insert(Name, Query);
 		Else
@@ -4272,7 +4272,7 @@ Procedure ImportQuery(ExchangeRules, XMLWriter)
 			XMLWriter.WriteEndElement();
 		EndIf;
 	Else
-		If ExchangeMode <> "Load" Then
+		If ExchangeMode <> "Import" Then
 			Query	= New Query(Text);
 			Queries.Insert(Name, Query);
 		EndIf;
@@ -4344,7 +4344,7 @@ Procedure ImportParameters(ExchangeRules, XMLWriter)
 				
 			EndIf;
 			
-			If ExchangeMode = "Load" AND NOT UsedOnImport Then
+			If ExchangeMode = "Import" And Not UsedOnImport Then
 				Continue;
 			EndIf;
 			
@@ -4383,7 +4383,7 @@ Procedure ImportParameters(ExchangeRules, XMLWriter)
 				
 			EndIf;
 
-			If UsedOnImport And ExchangeMode = "DataExported" Then
+			If UsedOnImport And ExchangeMode = "Export" Then
 				
 				XMLWriter.WriteStartElement("Parameter");
 				SetAttribute(XMLWriter, "Name",   Name);
@@ -4436,7 +4436,7 @@ Procedure ImportDataProcessor(ExchangeRules, XMLWriter)
 
 	AdditionalDataProcessorParameters.Insert(Name, ArrayFromString(ParametersString));
 	If UsedOnImport Then
-		If ExchangeMode = "Load" Then
+		If ExchangeMode = "Import" Then
 			
 		Else
 			XMLWriter.WriteStartElement("DataProcessor");
@@ -4450,10 +4450,10 @@ Procedure ImportDataProcessor(ExchangeRules, XMLWriter)
 	EndIf;
 	
 	If IsSetupDataProcessor Then
-		If (ExchangeMode = "Load") And UsedOnImport Then
+		If (ExchangeMode = "Import") And UsedOnImport Then
 			ImportSettingsDataProcessors.Add(Name, Description, , );
 			
-		ElsIf (ExchangeMode = "DataExported") And UsedOnExport Then
+		ElsIf (ExchangeMode = "Export") And UsedOnExport Then
 			ExportSettingsDataProcessors.Add(Name, Description, , );
 			
 		EndIf; 
@@ -4802,7 +4802,7 @@ Procedure ImportExchangeRulesForHandlerExport()
 		
 	Else // Data file
 		
-		ExchangeMode = "Load"; 
+		ExchangeMode = "Import"; 
 		
 		If IsBlankString(ExchangeFileName) Then
 			WriteToExecutionLog(15);
@@ -5681,7 +5681,7 @@ Procedure SupplementDataExportRulesWithHandlerInterfaces(DERTable, TreeRows)
 	
 	For Each Rule In TreeRows Do
 		
-		If Rule.IsFolder Then
+		If Rule.IsGroup Then
 			
 			SupplementDataExportRulesWithHandlerInterfaces(DERTable, Rule.Rows); 
 			
@@ -5748,7 +5748,7 @@ Procedure SupplementWithPCRHandlersInterfaces(OCR, ObjectPropertyConversionRules
 	
 	For Each PCR In ObjectPropertyConversionRules Do
 		
-		If PCR.IsFolder Then // PGCR
+		If PCR.IsGroup Then // PGCR
 			
 			For Each Item In HandlersNames.PGCR Do
 				
@@ -5893,7 +5893,7 @@ Procedure RestoreRulesFromInternalFormat() Export
 	Rules.Clear();
 	ClearManagersOCR();
 	
-	If ExchangeMode = "DataExported" Then
+	If ExchangeMode = "Export" Then
 	
 		For Each TableRow In ConversionRulesCollection() Do
 			Rules.Insert(TableRow.Name, TableRow);
@@ -6655,7 +6655,7 @@ Procedure ReadSearchPropertiesFromFile(SearchProperties, SearchPropertiesDontRep
 			
 			PropertyValue = ReadProperty(PropertyType, OCRName);
 			
-			If (Name = "IsFolder") AND (PropertyValue <> True) Then
+			If (Name = "IsFolder") And (PropertyValue <> True) Then
 				
 				PropertyValue = False;
 												
@@ -6735,7 +6735,7 @@ Function IsUnlimitedLengthParameter(TypeManager, ParameterValue, ParameterName)
 	
 EndFunction
 
-Function FindItemUsingRequest(PropertyStructure, SearchProperties, ObjectType = Undefined, 
+Function FindItemUsingQuery(PropertyStructure, SearchProperties, ObjectType = Undefined, 
 	TypeManager = Undefined, RealSearchPropertiesCount = Undefined)
 	
 	SearchPropertiesCount = ?(RealSearchPropertiesCount = Undefined, SearchProperties.Count(), RealSearchPropertiesCount);
@@ -6819,7 +6819,7 @@ EndFunction
 
 Function GetAdditionalSearchBySearchFieldsUsageByObjectType(RefTypeString)
 	
-	MapValue = mExtendedSearchParameterMap.Get(RefTypeString);
+	MapValue = mExtendedSearchParametersMap.Get(RefTypeString);
 	
 	If MapValue <> Undefined Then
 		Return MapValue;
@@ -6834,7 +6834,7 @@ Function GetAdditionalSearchBySearchFieldsUsageByObjectType(RefTypeString)
 				If Item.Value.SynchronizeByID = True Then
 					
 					ContinueSearch = (Item.Value.SearchBySearchFieldsIfNotFoundByID = True);
-					mExtendedSearchParameterMap.Insert(RefTypeString, ContinueSearch);
+					mExtendedSearchParametersMap.Insert(RefTypeString, ContinueSearch);
 					
 					Return ContinueSearch;
 					
@@ -6844,12 +6844,12 @@ Function GetAdditionalSearchBySearchFieldsUsageByObjectType(RefTypeString)
 			
 		EndDo;
 		
-		mExtendedSearchParameterMap.Insert(RefTypeString, False);
+		mExtendedSearchParametersMap.Insert(RefTypeString, False);
 		Return False;
 	
 	Except
 		
-		mExtendedSearchParameterMap.Insert(RefTypeString, False);
+		mExtendedSearchParametersMap.Insert(RefTypeString, False);
 		Return False;
 	
     EndTry;
@@ -7148,7 +7148,7 @@ Function FindBusinessProcessRef(SearchProperties, PropertyStructure, RealSearchP
 	
 EndFunction
 
-Procedure AddRefToImportedObjectList(GSNRef, SNRef, ObjectRef, DummyRef = False)
+Procedure AddRefToImportedObjectsList(GSNRef, SNRef, ObjectRef, DummyRef = False)
 	
 	// Remembering the object reference.
 	If Not RememberImportedObjects Or ObjectRef = Undefined Then
@@ -7250,7 +7250,7 @@ Function FindItemBySearchProperties(ObjectType, ObjectTypeName, SearchProperties
 		
 	If SearchWithQuery Then
 			
-		ObjectRef = FindItemUsingRequest(PropertyStructure, TemporarySearchProperties, ObjectType, , RealSearchPropertiesCount);
+		ObjectRef = FindItemUsingQuery(PropertyStructure, TemporarySearchProperties, ObjectType, , RealSearchPropertiesCount);
 				
 	EndIf;
 	
@@ -7448,7 +7448,7 @@ Function FindObjectByRef(ObjectType,
 	EndIf;
 
 	DontCreateObjectIfNotFound = deAttribute(ExchangeFile, deBooleanType, "DoNotCreateIfNotFound");
-	OnExchangeObjectByRefSetGIUDOnly = Not MainObjectSearchMode 
+	OnMoveObjectByRefSetGIUDOnly = Not MainObjectSearchMode 
 		And deAttribute(ExchangeFile, deBooleanType, "OnMoveObjectByRefSetGIUDOnly");
 	
 	// Creating object search properties.
@@ -7459,7 +7459,7 @@ Function FindObjectByRef(ObjectType,
 	If Not ObjectFound Then
 		
 		ObjectRef = CreateNewObject(ObjectType, SearchProperties, CreatedObject, , , , RefSN, GlobalRefSn);
-		AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef);
+		AddRefToImportedObjectsList(GlobalRefSn, RefSN, ObjectRef);
 		Return ObjectRef;
 		
 	EndIf;
@@ -7470,14 +7470,14 @@ Function FindObjectByRef(ObjectType,
 	UUIDProperty = SearchProperties["{UUID}"];
 	PredefinedNameProperty = SearchProperties["{PredefinedItemName}"];
 	
-	OnExchangeObjectByRefSetGIUDOnly = OnExchangeObjectByRefSetGIUDOnly
+	OnMoveObjectByRefSetGIUDOnly = OnMoveObjectByRefSetGIUDOnly
 		AND UUIDProperty <> Undefined;
 		
 	// Searching by name if the item is predefined.
 	If PredefinedNameProperty <> Undefined Then
 		
 		CreateNewObjectAutomatically = Not DontCreateObjectIfNotFound
-			And Not OnExchangeObjectByRefSetGIUDOnly;
+			And Not OnMoveObjectByRefSetGIUDOnly;
 		
 		ObjectRef = FindCreateObjectByProperty(PropertyStructure, ObjectType, SearchProperties, SearchPropertiesDontReplace,
 			ObjectTypeName, "{PredefinedItemName}", PredefinedNameProperty, ObjectFound, 
@@ -7491,7 +7491,7 @@ Function FindObjectByRef(ObjectType,
 
 		CreateNewObjectAutomatically = (Not DontCreateObjectIfNotFound
 			And Not ContinueSearchIfItemNotFoundByGUID)
-			And Not OnExchangeObjectByRefSetGIUDOnly;
+			And Not OnMoveObjectByRefSetGIUDOnly;
 
 		ObjectRef = FindCreateObjectByProperty(PropertyStructure, ObjectType, SearchProperties, SearchPropertiesDontReplace,
 			ObjectTypeName, "{UUID}", UUIDProperty, ObjectFound, 
@@ -7502,7 +7502,7 @@ Function FindObjectByRef(ObjectType,
 		If Not ContinueSearchIfItemNotFoundByGUID Then
 
 			If Not ValueIsFilled(ObjectRef)
-				And OnExchangeObjectByRefSetGIUDOnly Then
+				And OnMoveObjectByRefSetGIUDOnly Then
 				
 				ObjectRef = PropertyStructure.Manager.GetRef(New UUID(UUIDProperty));
 				ObjectFound = False;
@@ -7520,7 +7520,7 @@ Function FindObjectByRef(ObjectType,
 			If ObjectRef <> Undefined
 				Or CreatedObject <> Undefined Then
 
-				AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
+				AddRefToImportedObjectsList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
 				
 			EndIf;
 			
@@ -7539,7 +7539,7 @@ Function FindObjectByRef(ObjectType,
 	// ObjectRef is not found yet.
 	If ObjectRef <> Undefined Or CreatedObject <> Undefined Then
 		
-		AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef);
+		AddRefToImportedObjectsList(GlobalRefSn, RefSN, ObjectRef);
 		Return ObjectRef;
 		
 	EndIf;
@@ -7609,10 +7609,10 @@ Function FindObjectByRef(ObjectType,
 
 		If DontSearch Then
 			
-			If MainObjectSearchMode AND SetAllObjectSearchProperties = True Then
+			If MainObjectSearchMode And SetAllObjectSearchProperties = True Then
 				
-				ProcessObjectSearchPropertySetting(SetAllObjectSearchProperties, ObjectType, SearchProperties, SearchPropertiesDontReplace,
-					ObjectRef, CreatedObject, NOT MainObjectSearchMode, ObjectPropertiesModified);
+				ProcessObjectSearchPropertiesSetup(SetAllObjectSearchProperties, ObjectType, SearchProperties, SearchPropertiesDontReplace,
+					ObjectRef, CreatedObject, Not MainObjectSearchMode, ObjectPropertiesModified);
 				
 			EndIf;
 			
@@ -7657,7 +7657,7 @@ Function FindObjectByRef(ObjectType,
 	// Creating a new object is not always necessary.
 	If Not ValueIsFilled(ObjectRef) And CreatedObject = Undefined Then 
 		
-		If OnExchangeObjectByRefSetGIUDOnly Then
+		If OnMoveObjectByRefSetGIUDOnly Then
 			
 			ObjectRef = PropertyStructure.Manager.GetRef(New UUID(UUIDProperty));	
 			DummyObjectRef = True;
@@ -7685,7 +7685,7 @@ Function FindObjectByRef(ObjectType,
 		
 	EndIf;
 	
-	AddRefToImportedObjectList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
+	AddRefToImportedObjectsList(GlobalRefSn, RefSN, ObjectRef, DummyObjectRef);
 		
 	Return ObjectRef;
 	
@@ -8288,7 +8288,7 @@ Procedure DeleteFromNotWrittenObjectsStack(SN, GSN)
 	
 EndProcedure
 
-Procedure ExecuteWriteNotWrittenObjects()
+Procedure WriteNotWrittenObjects()
 	
 	If mNotWrittenObjectGlobalStack = Undefined Then
 		Return;
@@ -8302,7 +8302,7 @@ Procedure ExecuteWriteNotWrittenObjects()
 		
 		WriteObjectToIB(Object, DataRow.Value.ObjectType);
 		
-		AddRefToImportedObjectList(0, RefSN, Object.Ref);
+		AddRefToImportedObjectsList(0, RefSN, Object.Ref);
 		
 	EndDo;
 	
@@ -8824,7 +8824,7 @@ Function ReadObject()
 			
 			If Cancel Then
 				
-				AddRefToImportedObjectList(GlobalRefSn, RefSN, Undefined);
+				AddRefToImportedObjectsList(GlobalRefSn, RefSN, Undefined);
 				DeleteFromNotWrittenObjectsStack(SN, GSN);
 				Return Undefined;
 				
@@ -8894,7 +8894,7 @@ Function ReadObject()
 						
 				EndTry;
 
-				AddRefToImportedObjectList(GlobalRefSn, RefSN, Object.Ref);
+				AddRefToImportedObjectsList(GlobalRefSn, RefSN, Object.Ref);
 									
 				DeleteFromNotWrittenObjectsStack(SN, GSN);
 
@@ -9027,7 +9027,7 @@ Function ReadObject()
 				
 				If IsReferenceObjectType Then
 					
-					AddRefToImportedObjectList(GlobalRefSn, RefSN, Object.Ref);
+					AddRefToImportedObjectsList(GlobalRefSn, RefSN, Object.Ref);
 					
 				EndIf;
 				
@@ -10326,7 +10326,7 @@ Procedure ExportProperties(Source, Destination, IncomingData, OutgoingData, OCR,
 			PropertyCollectionNode.WriteEndElement();
 			Continue;
 			
-		ElsIf PCR.IsFolder Then
+		ElsIf PCR.IsGroup Then
 			
 			ExportPropertyGroup(Source, Destination, IncomingData, OutgoingData, OCR, PCR, PropertyCollectionNode, ExportRefOnly, TempFileList);
 			Continue;
@@ -10675,7 +10675,7 @@ Procedure ExportSelectionObject(Object, Rule, Properties=Undefined, IncomingData
 			EndIf;
 			
 		Except
-			WriteErrorInfoDERHandlers(65, ErrorDescription(), Rule.Name, "BeforeExportSelectionObject (global)"), Object);
+			WriteErrorInfoDERHandlers(65, ErrorDescription(), Rule.Name, "BeforeExportSelectionObject (global)", Object);
 		EndTry;
 			
 		If Cancel Then
@@ -10729,7 +10729,7 @@ Procedure ExportSelectionObject(Object, Rule, Properties=Undefined, IncomingData
 			EndIf;
 			
 		Except
-			WriteErrorInfoDERHandlers(69, ErrorDescription(), Rule.Name, "AfterExportSelectionObject (global)"), Object);
+			WriteErrorInfoDERHandlers(69, ErrorDescription(), Rule.Name, "AfterExportSelectionObject (global)", Object);
 		EndTry;
 		
 	EndIf;
@@ -10791,7 +10791,7 @@ Function GetSelectionForExportWithRestrictions(Rule, SelectionForSubstitutionToO
 		|	NULL AS Recorder,
 		|	NULL AS LineNumber", "");
 
-		SelectionFieldSupplementionStringPeriodicity = ?(Nonperiodical, ", NULL AS Period", "");
+		SelectionFieldSupplementionStringPeriodicity = ?(Nonperiodic, ", NULL AS Period", "");
 		
 		ResultingRestrictionByDate = GetRestrictionByDateStringForQuery(Properties, Properties.TypeName, 
 			Rule.ObjectNameForRegisterQuery, False);
@@ -10926,7 +10926,7 @@ Function GetConstantSetStringForExport(ConstantDataTableForExport)
 	
 EndFunction
 
-Procedure ExportConstantsSet(Rule, Properties, OutgoingData)
+Procedure ExportConstantSet(Rule, Properties, OutgoingData)
 	
 	If Properties.OCR <> Undefined Then
 	
@@ -11046,7 +11046,7 @@ Procedure ExportDataByRule(Rule)
 		
 		If TypeName = "Constants" Then
 			
-			ExportConstantsSet(Rule, Properties, OutgoingData);
+			ExportConstantSet(Rule, Properties, OutgoingData);
 			
 		Else
 			
@@ -11174,7 +11174,7 @@ Procedure ProcessExportRules(Rows, ExchangePlanNodesAndExportRowsMap)
 			
 		EndIf;
 
-		If ExportRule.IsFolder Then
+		If ExportRule.IsGroup Then
 			
 			ProcessExportRules(ExportRule.Rows, ExchangePlanNodesAndExportRowsMap);
 			Continue;
@@ -11348,7 +11348,7 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 	LastExportRuleRow = Undefined; // see FindExportRulesTreeRowByExportType
 
 	CurrentMetadataObject = Undefined;
-	CurrentExportRuleRow = Undefined; // see FindExportRulesTreeRowByExportType
+	ExportRuleCurrentRow = Undefined; // see FindExportRulesTreeRowByExportType
 
 	OutgoingData = Undefined;
 	
@@ -11394,7 +11394,7 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 				Continue;
 			EndIf;
 
-			ТекущийОбъектМетаданных = Данные.Метаданные();
+			CurrentMetadataObject = Data.Metadata();
 			
 			// Processing data received from the exchange node. Determining the conversion rule and the exporting data.
 
@@ -11402,7 +11402,7 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 			ExportingConstants = False;
 			
 			GetExportRulesRowByExchangeObject(Data, LastMetadataObject, CurrentMetadataObject,
-				LastExportRuleRow, CurrentExportRuleRow, TempConversionRulesArray, ObjectForExportRules,
+				LastExportRuleRow, ExportRuleCurrentRow, TempConversionRulesArray, ObjectForExportRules,
 				ExportingRegister, ExportingConstants, ConstantsWereExported);
 
 			If LastMetadataObject <> CurrentMetadataObject Then
@@ -11435,12 +11435,12 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 				EndIf;
 				
 				// before processing
-				If CurrentExportRuleRow <> Undefined Then
+				If ExportRuleCurrentRow <> Undefined Then
 					
 					If CommentObjectProcessingFlag Then
 						
 						MessageString = SubstituteParametersToString(NStr("ru = 'Правило выгрузки данных: %1 (%2)'; en = 'Data export rule: %1 (%2)'"),
-							TrimAll(CurrentExportRuleRow.Name), TrimAll(CurrentExportRuleRow.Description));
+							TrimAll(ExportRuleCurrentRow.Name), TrimAll(ExportRuleCurrentRow.Description));
 						WriteToExecutionLog(MessageString, , False, , 4);
 						
 					EndIf;
@@ -11450,23 +11450,23 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 					OutgoingData	= Undefined;
 					DataSelection	= Undefined;
 					
-					If Not IsBlankString(CurrentExportRuleRow.BeforeProcess) Then
+					If Not IsBlankString(ExportRuleCurrentRow.BeforeProcess) Then
 					
 						Try
 							
 							If HandlersDebugModeFlag Then
 								
-								Execute(GetHandlerCallString(CurrentExportRuleRow, "BeforeProcess"));
+								Execute(GetHandlerCallString(ExportRuleCurrentRow, "BeforeProcess"));
 								
 							Else
 								
-								Execute(CurrentExportRuleRow.BeforeProcess);
+								Execute(ExportRuleCurrentRow.BeforeProcess);
 								
 							EndIf;
 							
 						Except
 							
-							WriteErrorInfoDERHandlers(31, ErrorDescription(), CurrentExportRuleRow.Name, "BeforeProcessDataExport");
+							WriteErrorInfoDERHandlers(31, ErrorDescription(), ExportRuleCurrentRow.Name, "BeforeProcessDataExport");
 							
 						EndTry;
 						
@@ -11475,8 +11475,8 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 					If Cancel Then
 						
 						// Deleting the rule from rules array.
-						CurrentExportRuleRow = Undefined;
-						DeleteExportByExportTypeRulesTreeRowFromArray(TempConversionRulesArray, CurrentExportRuleRow);
+						ExportRuleCurrentRow = Undefined;
+						DeleteExportByExportTypeRulesTreeRowFromArray(TempConversionRulesArray, ExportRuleCurrentRow);
 						ObjectForExportRules = Undefined;
 						
 					EndIf;
@@ -11485,29 +11485,29 @@ Function ExecuteExchangeNodeChangedDataExport(ExchangeNode, ConversionRulesArray
 				
 			EndIf;
 			
-			If CurrentExportRuleRow <> Undefined Then
+			If ExportRuleCurrentRow <> Undefined Then
 				
 				If ExportingRegister Then
 					
 					For Each RegisterLine In ObjectForExportRules Do
-						ExportSelectionObject(RegisterLine, CurrentExportRuleRow, , OutgoingData);
+						ExportSelectionObject(RegisterLine, ExportRuleCurrentRow, , OutgoingData);
 					EndDo;
 					
 				ElsIf ExportingConstants Then
 					
-					Properties	= Managers[CurrentExportRuleRow.SelectionObject];
-					ExportConstantsSet(CurrentExportRuleRow, Properties, OutgoingData);
+					Properties	= Managers[ExportRuleCurrentRow.SelectionObject];
+					ExportConstantSet(ExportRuleCurrentRow, Properties, OutgoingData);
 					
 				Else
 				
-					ExportSelectionObject(ObjectForExportRules, CurrentExportRuleRow, , OutgoingData);
+					ExportSelectionObject(ObjectForExportRules, ExportRuleCurrentRow, , OutgoingData);
 				
 				EndIf;
 				
 			EndIf;
 
-			ПоследнийОбъектМетаданных = ТекущийОбъектМетаданных;
-			ПоследняяСтрокаПравилаВыгрузки = ТекущаяСтрокаПравилаВыгрузки;
+			LastMetadataObject = CurrentMetadataObject;
+			LastExportRuleRow = ExportRuleCurrentRow;
 
 			If ProcessedObjectsCountToUpdateStatus > 0 
 				And FoundObjectsToWriteCount % ProcessedObjectsCountToUpdateStatus = 0 Then
@@ -11629,7 +11629,7 @@ Procedure ProcessExchangeNodeRecordChangeEditing(NodeAndExportRuleMap)
 		ElsIf ChangesRegistrationDeletionTypeForExportedExchangeNodes = 1 Then
 			
 			// Deleting the registration of all changes in the exchange plan.
-			ПланыОбмена.УдалитьРегистрациюИзменений(Элемент.Ключ, Элемент.Значение.НомерСообщения);
+			ExchangePlans.DeleteChangeRecords(Item.Key, Item.Value.MessageNo);
 
 		ИначеЕсли ChangesRegistrationDeletionTypeForExportedExchangeNodes = 2 Тогда	
 			
@@ -11800,7 +11800,7 @@ Procedure FillPropertiesForSearch(DataStructure, PCR)
 	
 	For Each FieldsRow In PCR Do
 		
-		If FieldsRow.IsFolder Then
+		If FieldsRow.IsGroup Then
 						
 			If FieldsRow.DestinationKind = "TabularSection" Or StrFind(FieldsRow.DestinationKind, "RecordSet") > 0 Then
 
@@ -11906,7 +11906,7 @@ Procedure CreateStringWithPropertyTypes(XMLWriter, PropertyTypes)
 	
 EndProcedure
 
-Function CreateTypesStringForDestination(DataStructure)
+Function CreateTypeStringForDestination(DataStructure)
 	
 	XMLWriter = New XMLWriter;
 	XMLWriter.SetString();
@@ -12203,7 +12203,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 		ElsIf NodeName = "" Then
 			
 		ElsIf NodeName = "AfterImportExchangeRules" Then
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				ExchangeRules.Skip();
 			Else
 				Conversion.Insert("AfterImportExchangeRules", GetHandlerValueFromText(ExchangeRules));
@@ -12226,7 +12226,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.Insert("BeforeImportObject", Value);
 				HasBeforeImportObjectGlobalHandler = Not IsBlankString(Value);
@@ -12241,10 +12241,10 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.Insert("AfterImportObject", Value);
-				HasAfterObjectImportGlobalHandler = Not IsBlankString(Value);
+				HasAfterImportObjectGlobalHandler = Not IsBlankString(Value);
 				
 			Else
 				
@@ -12260,7 +12260,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.BeforeImportData = Value;
 				
@@ -12274,7 +12274,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.AfterImportData = Value;
 				
@@ -12297,7 +12297,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.Insert("OnGetDeletionInfo", Value);
 				
@@ -12311,7 +12311,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 			
 			Value = GetHandlerValueFromText(ExchangeRules);
 			
-			If ExchangeMode = "Load" Then
+			If ExchangeMode = "Import" Then
 				
 				Conversion.Insert("AfterGetExchangeNodesInformation", Value);
 				
@@ -12325,7 +12325,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 		
 		ElsIf NodeName = "DataExportRules" Then
 		
- 			If ExchangeMode = "Load" Then
+ 			If ExchangeMode = "Import" Then
 				deSkip(ExchangeRules);
 			Else
 				ImportExportRules(ExchangeRules);
@@ -12354,7 +12354,7 @@ Procedure ImportExchangeRules(Source="", SourceType="XMLFile") Export
 		// Exit
 		ElsIf (NodeName = "ExchangeRules") And (ExchangeRules.NodeType = deXMLNodeType_EndElement) Then
 		
-			If ExchangeMode <> "Load" Then
+			If ExchangeMode <> "Import" Then
 				ExchangeRules.Close();
 			EndIf;
 			Break;
@@ -12454,7 +12454,7 @@ Procedure ProcessNewItemReadEnd(LastImportObject)
 	
 	If mImportedObjectCounter % 100 = 0 And mNotWrittenObjectGlobalStack.Count() > 100 Then
 		
-		ExecuteWriteNotWrittenObjects();
+		WriteNotWrittenObjects();
 		
 	EndIf;
 	
@@ -12661,7 +12661,7 @@ Function ExecuteActionsBeforeReadData(DataString = "") Export
 	// Initializing the external data processor with export handlers.
 	InitEventHandlerExternalDataProcessor(ImportIsPossible, ThisObject);
 
-	If Not ImportPossible Then
+	If Not ImportIsPossible Then
 		Return False;
 	EndIf;
 
@@ -12999,7 +12999,7 @@ Procedure ExecuteExport() Export
 	
 	InitializeKeepExchangeLog();
 	
-	InitializeCommentsOnDataExportAndImport();
+	InitializeCommentsOnDataExportImport();
 	
 	ExportIsPossible = True;
 	CurrentNestingLevelExportByRule = 0;
@@ -13108,7 +13108,7 @@ Procedure ExecuteExport() Export
 		// Writing the exchange rules to the file.
 		ExchangeFile.WriteLine(mXMLRules);
 		
-		Cancel = Not SendExchangeStartedInformationToDestination(CurrentRowForWrite);
+		Cancel = Not SendExchangeStartedInformationToDestination(CurrentLineToWrite);
 		
 		If Not Cancel Then
 			
@@ -13400,7 +13400,7 @@ Procedure InitExportRulesTable()
 	Columns = ExportRulesTable.Columns;
 
 	AddMissingColumns(Columns, "Enable",		deTypeDescription("Number"));
-	AddMissingColumns(Columns, "IsFolder",		deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "IsGroup",		deTypeDescription("Boolean"));
 	
 	AddMissingColumns(Columns, "Name");
 	AddMissingColumns(Columns, "Description");
@@ -13420,7 +13420,7 @@ Procedure InitExportRulesTable()
 	// Columns for filtering using the query builder.
 	AddMissingColumns(Columns, "UseFilter", deTypeDescription("Boolean"));
 	AddMissingColumns(Columns, "BuilderSettings");
-	AddMissingColumns(Columns, "ObjectForQueryName");
+	AddMissingColumns(Columns, "ObjectNameForQuery");
 	AddMissingColumns(Columns, "ObjectNameForRegisterQuery");
 	
 	AddMissingColumns(Columns, "SelectExportDataInSingleQuery", deTypeDescription("Boolean"));
@@ -13443,7 +13443,7 @@ Procedure InitCleanupRulesTable()
 	Columns = CleanupRulesTable.Columns;
 
 	AddMissingColumns(Columns, "Enable",		deTypeDescription("Boolean"));
-	AddMissingColumns(Columns, "IsFolder",		deTypeDescription("Boolean"));
+	AddMissingColumns(Columns, "IsGroup",		deTypeDescription("Boolean"));
 	
 	AddMissingColumns(Columns, "Name");
 	AddMissingColumns(Columns, "Description");
@@ -13482,7 +13482,7 @@ EndProcedure
 
 #Region InitAttributesAndModuleVariables
 
-Procedure InitializeCommentsOnDataExportAndImport()
+Procedure InitializeCommentsOnDataExportImport()
 	
 	CommentOnDataExport = "";
 	CommentOnDataImport = "";
@@ -14036,10 +14036,10 @@ Function ConnectToInfobase(ConnectionStructure, ErrorMessageString = "")
 	EndIf;
 	
 	If Not ConnectionStructure.WindowsAuthentication Then
-		If NOT IsBlankString(ConnectionStructure.User) Then
+		If Not IsBlankString(ConnectionStructure.User) Then
 			ConnectionString = ConnectionString + ";Usr = """ + ConnectionStructure.User + """";
 		EndIf;
-		If NOT IsBlankString(ConnectionStructure.Password) Then
+		If Not IsBlankString(ConnectionStructure.Password) Then
 			ConnectionString = ConnectionString + ";Pwd = """ + ConnectionStructure.Password + """";
 		EndIf;
 	EndIf;
@@ -14073,589 +14073,592 @@ Function ConnectToInfobase(ConnectionStructure, ErrorMessageString = "")
 	
 EndFunction
 
-// Функция возвращает часть строки после последнего встреченного символа в строке.
-Функция ПолучитьСтрокуОтделеннойСимволом(Знач ИсходнаяСтрока, Знач СимволПоиска)
+// Returns the string part that follows the last specified character.
+Function GetStringAfterCharacter(Val SourceString, Val SearchChar)
+	
+	CharPosition = StrLen(SourceString);
+	While CharPosition >= 1 Do
+		
+		If Mid(SourceString, CharPosition, 1) = SearchChar Then
+						
+			Return Mid(SourceString, CharPosition + 1); 
+			
+		EndIf;
+		
+		CharPosition = CharPosition - 1;	
+	EndDo;
 
-	ПозицияСимвола = СтрДлина(ИсходнаяСтрока);
-	Пока ПозицияСимвола >= 1 Цикл
+	Return "";
+  	
+EndFunction
 
-		Если Сред(ИсходнаяСтрока, ПозицияСимвола, 1) = СимволПоиска Тогда
-
-			Возврат Сред(ИсходнаяСтрока, ПозицияСимвола + 1);
-
-		КонецЕсли;
-
-		ПозицияСимвола = ПозицияСимвола - 1;
-	КонецЦикла;
-
-	Возврат "";
-
-КонецФункции
-
-// Выделяет из имени файла его расширение (набор символов после последней точки).
+// Returns the file extension.
 //
-// Параметры:
-//  ИмяФайла     - Строка, содержащая имя файла, неважно с именем каталога или без.
+// Parameters:
+//  FileName     - a string containing the file name (with or without the directory name).
 //
-// Возвращаемое значение:
-//   Строка - расширение файла.
+// Returns:
+//   String - the file extension.
 //
-Функция ПолучитьРасширениеИмениФайла(Знач ИмяФайла) Экспорт
+Function GetFileNameExtension(Val FileName) Export
+	
+	Extension = GetStringAfterCharacter(FileName, ".");
+	Return Extension;
+	
+EndFunction
 
-	Расширение = ПолучитьСтрокуОтделеннойСимволом(ИмяФайла, ".");
-	Возврат Расширение;
+Function GetLogNameForCOMConnectionSecondInfobase() Export
+	
+	If Not IsBlankString(ImportExchangeLogFileName) Then
+			
+		Return ImportExchangeLogFileName;	
+		
+	ElsIf Not IsBlankString(ExchangeLogFileName) Then
+		
+		LogFileExtension = GetFileNameExtension(ExchangeLogFileName);
+		
+		If Not IsBlankString(LogFileExtension) Then
+							
+			ExportLogFileName = StrReplace(ExchangeLogFileName, "." + LogFileExtension, "");
+			
+		EndIf;
+		
+		ExportLogFileName = ExportLogFileName + "_Import";
+		
+		If Not IsBlankString(LogFileExtension) Then
+			
+			ExportLogFileName = ExportLogFileName + "." + LogFileExtension;	
+			
+		EndIf;
+		
+		Return ExportLogFileName;
+		
+	EndIf;
+	
+	Return "";
+	
+EndFunction
 
-КонецФункции
-
-Функция ПолучитьИмяПротоколаДляВторойИнформационнойБазыComСоединения() Экспорт
-
-	Если Не ПустаяСтрока(ImportExchangeLogFileName) Тогда
-
-		Возврат ImportExchangeLogFileName;
-
-	ИначеЕсли Не ПустаяСтрока(ExchangeLogFileName) Тогда
-
-		РасширениеФайлаПротокола = ПолучитьРасширениеИмениФайла(ExchangeLogFileName);
-
-		Если Не ПустаяСтрока(РасширениеФайлаПротокола) Тогда
-
-			ИмяФайлаПротоколаВыгрузки = СтрЗаменить(ExchangeLogFileName, "." + РасширениеФайлаПротокола, "");
-
-		КонецЕсли;
-
-		ИмяФайлаПротоколаВыгрузки = ИмяФайлаПротоколаВыгрузки + "_Загрузка";
-
-		Если Не ПустаяСтрока(РасширениеФайлаПротокола) Тогда
-
-			ИмяФайлаПротоколаВыгрузки = ИмяФайлаПротоколаВыгрузки + "." + РасширениеФайлаПротокола;
-
-		КонецЕсли;
-
-		Возврат ИмяФайлаПротоколаВыгрузки;
-
-	КонецЕсли;
-
-	Возврат "";
-
-КонецФункции
-
-// Выполняет подключение к базе-приемнику по заданным параметрам.
-// Возвращает проинициализированную обработку УниверсальныйОбменДаннымиXML базы-приемника,
-// которая будет использоваться для загрузки данных в базу-приемник.
+// Establishing the connection to the destination infobase by the specified parameters.
+// Returns the initialized UniversalDataExchangeXML destination infobase data processor, which is 
+// used for importing data into the destination infobase.
 //
-// Параметры:
-//  Нет.
+// Parameters:
+//  No.
 // 
-//  Возвращаемое значение:
-//    ОбработкаОбъект - УниверсальныйОбменДаннымиXML - обработка базы-приемника для загрузки данных в базу-приемник.
+//  Returns:
+//    DataProcessorObject - UniversalDataExchangeXML - processing receiver base to import data there.
 //
-Функция ВыполнитьПодключениеКИБПриемнику() Экспорт
+Function EstablishConnectionWithDestinationIB() Export
+	
+	ConnectionResult = Undefined;
+	
+	ConnectionStructure = New Structure();
+	ConnectionStructure.Insert("FileMode", ConnectedInfobaseType);
+	ConnectionStructure.Insert("WindowsAuthentication", InfobaseConnectionWindowsAuthentification);
+	ConnectionStructure.Insert("IBDirectory", InfobaseConnectionDirectory);
+	ConnectionStructure.Insert("ServerName", InfobaseConnectionServerName);
+	ConnectionStructure.Insert("IBNameAtServer", InfobaseConnectionNameAtServer);
+	ConnectionStructure.Insert("User", InfobaseConnectionUsername);
+	ConnectionStructure.Insert("Password", InfobaseConnectionPassword);
+	ConnectionStructure.Insert("PlatformVersion", PlatformVersionForInfobaseConnection);
 
-	РезультатПодключения = Неопределено;
+	ConnectionObject = ConnectToInfobase(ConnectionStructure);
+	
+	If ConnectionObject = Undefined Then
+		Return Undefined;
+	EndIf;
+	
+	Try
+		ConnectionResult = ConnectionObject.DataProcessors.UniversalDataExchangeXML.Create();
+	Except
+		
+		Text = NStr("ru='При попытке создания обработки УниверсальныйОбменДаннымиXML произошла ошибка: %1'; en = 'Creating the UniversalDataExchangeXML data processor failed with the following error: %1'");
+		Text = SubstituteParametersToString(Text, BriefErrorDescription(ErrorInfo()));
+		MessageToUser(Text);
+		ConnectionResult = Undefined;
+	EndTry;
+	
+	If ConnectionResult <> Undefined Then
 
-	СтруктураПодключения = Новый Структура;
-	СтруктураПодключения.Вставить("ФайловыйРежим", ConnectedInfobaseType);
-	СтруктураПодключения.Вставить("АутентификацияWindows", InfobaseConnectionWindowsAuthentification);
-	СтруктураПодключения.Вставить("КаталогИБ", InfobaseConnectionDirectory);
-	СтруктураПодключения.Вставить("ИмяСервера", InfobaseConnectionServerName);
-	СтруктураПодключения.Вставить("ИмяИБНаСервере", InfobaseConnectionNameAtServer);
-	СтруктураПодключения.Вставить("Пользователь", InfobaseConnectionUsername);
-	СтруктураПодключения.Вставить("Пароль", InfobaseConnectionPassword);
-	СтруктураПодключения.Вставить("ВерсияПлатформы", PlatformVersionForInfobaseConnection);
+		ConnectionResult.UseTransactions = UseTransactions;
+		ConnectionResult.ObjectsPerTransaction = ObjectsPerTransaction;
 
-	ОбъектПодключения = ПодключитсяКИнформационнойБазе(СтруктураПодключения);
+		ConnectionResult.DebugModeFlag = DebugModeFlag;
 
-	Если ОбъектПодключения = Неопределено Тогда
-		Возврат Неопределено;
-	КонецЕсли;
+		ConnectionResult.ExchangeLogFileName = GetLogNameForCOMConnectionSecondInfobase();
 
-	Попытка
-		РезультатПодключения = ОбъектПодключения.Обработки.УниверсальныйОбменДаннымиXML.Создать();
-	Исключение
+		ConnectionResult.AppendDataToExchangeLog = AppendDataToExchangeLog;
+		ConnectionResult.WriteInfoMessagesToLog = WriteInfoMessagesToLog;
 
-		Текст = НСтр("ru = 'При попытке создания обработки УниверсальныйОбменДаннымиXML произошла ошибка: %1'");
-		Текст = ПодставитьПараметрыВСтроку(Текст, КраткоеПредставлениеОшибки(ИнформацияОбОшибке()));
-		СообщитьПользователю(Текст);
-		РезультатПодключения = Неопределено;
-	КонецПопытки;
+		ConnectionResult.ExchangeMode = "Import";
 
-	Если РезультатПодключения <> Неопределено Тогда
+	EndIf;
+	
+	Return ConnectionResult;
+	
+EndFunction
 
-		РезультатПодключения.UseTransactions = UseTransactions;
-		РезультатПодключения.ObjectsPerTransaction = ObjectsPerTransaction;
-
-		РезультатПодключения.DebugModeFlag = DebugModeFlag;
-
-		РезультатПодключения.ИмяФайлаПротоколаОбмена = ПолучитьИмяПротоколаДляВторойИнформационнойБазыComСоединения();
-
-		РезультатПодключения.AppendDataToExchangeLog = AppendDataToExchangeLog;
-		РезультатПодключения.WriteInfoMessagesToLog = WriteInfoMessagesToLog;
-
-		РезультатПодключения.РежимОбмена = "Загрузка";
-
-	КонецЕсли;
-
-	Возврат РезультатПодключения;
-
-КонецФункции
-
-// Выполняет удаление объектов заданного типа по правилам очистки данных
-// (физическое удаление или пометка на удаление).
+// Deletes objects of the specified type according to the data clearing rules (deletes physically or 
+// marks for deletion.)
 //
-// Параметры:
-//  ИмяТипаДляУдаления - Строка - имя типа в строковом представлении.
+// Parameters:
+//  TypeNameToRemove - String - a string type name.
 // 
-Процедура УдалитьОбъектыТипа(ИмяТипаДляУдаления) Экспорт
-
-	ТипДанныхДляУдаления = Тип(ИмяТипаДляУдаления);
-
-	Менеджер = Менеджеры[ТипДанныхДляУдаления];
-	ИмяТипа  = Менеджер.ИмяТипа;
-	Свойства = Менеджеры[ТипДанныхДляУдаления];
-
-	Правило = Новый Структура("Имя,Непосредственно,ПередУдалением", "УдалениеОбъекта", Истина, "");
-
-	Выборка = ПолучитьВыборкуДляВыгрузкиОчисткиДанных(Свойства, ИмяТипа, Истина, Истина, Ложь);
-
-	Пока Выборка.Следующий() Цикл
-
-		Если ИмяТипа = "РегистрСведений" Тогда
-
-			МенеджерЗаписи = Свойства.Менеджер.СоздатьМенеджерЗаписи();
-			ЗаполнитьЗначенияСвойств(МенеджерЗаписи, Выборка);
-
-			УдалениеОбъектаВыборки(МенеджерЗаписи, Правило, Свойства, Неопределено);
-
-		Иначе
-
-			УдалениеОбъектаВыборки(Выборка.Ссылка.ПолучитьОбъект(), Правило, Свойства, Неопределено);
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-Процедура ДополнитьСлужебныеТаблицыКолонками()
-
-	ИнициализацияТаблицыПравилКонвертации();
-	ИнициализацияТаблицыПравилВыгрузки();
-	ИнициализацияТаблицыПравилОчистки();
-	ИнициализацияТаблицыНастройкиПараметров();
-
-КонецПроцедуры
-
-Функция ПолучитьНовоеУникальноеИмяВременногоФайла(СтароеИмяВременногоФайла, Расширение = "txt")
-
-	УдалитьВременныеФайлы(СтароеИмяВременногоФайла);
-
-	Возврат ПолучитьИмяВременногоФайла(Расширение);
-
-КонецФункции
-
-Процедура ИнициализацияСтруктурыИменОбработчиков()
+Procedure DeleteObjectsOfType(TypeNameToDelete) Export
 	
-	// Обработчики Конвертации.
-	ИменаОбработчиковКонвертации = Новый Структура;
-	ИменаОбработчиковКонвертации.Вставить("ПередВыгрузкойДанных");
-	ИменаОбработчиковКонвертации.Вставить("ПослеВыгрузкиДанных");
-	ИменаОбработчиковКонвертации.Вставить("ПередВыгрузкойОбъекта");
-	ИменаОбработчиковКонвертации.Вставить("ПослеВыгрузкиОбъекта");
-	ИменаОбработчиковКонвертации.Вставить("ПередКонвертациейОбъекта");
-	ИменаОбработчиковКонвертации.Вставить("ПередОтправкойИнформацииОбУдалении");
-	ИменаОбработчиковКонвертации.Вставить("ПередПолучениемИзмененныхОбъектов");
-
-	ИменаОбработчиковКонвертации.Вставить("ПередЗагрузкойОбъекта");
-	ИменаОбработчиковКонвертации.Вставить("ПослеЗагрузкиОбъекта");
-	ИменаОбработчиковКонвертации.Вставить("ПередЗагрузкойДанных");
-	ИменаОбработчиковКонвертации.Вставить("ПослеЗагрузкиДанных");
-	ИменаОбработчиковКонвертации.Вставить("ПриПолученииИнформацииОбУдалении");
-	ИменаОбработчиковКонвертации.Вставить("ПослеПолученияИнформацииОбУзлахОбмена");
-
-	ИменаОбработчиковКонвертации.Вставить("ПослеЗагрузкиПравилОбмена");
-	ИменаОбработчиковКонвертации.Вставить("ПослеЗагрузкиПараметров");
+	DataToDeleteType = Type(TypeNameToDelete);
 	
-	// Обработчики ПКО.
-	ИменаОбработчиковПКО = Новый Структура;
-	ИменаОбработчиковПКО.Вставить("ПередВыгрузкой");
-	ИменаОбработчиковПКО.Вставить("ПриВыгрузке");
-	ИменаОбработчиковПКО.Вставить("ПослеВыгрузки");
-	ИменаОбработчиковПКО.Вставить("ПослеВыгрузкиВФайл");
-
-	ИменаОбработчиковПКО.Вставить("ПередЗагрузкой");
-	ИменаОбработчиковПКО.Вставить("ПриЗагрузке");
-	ИменаОбработчиковПКО.Вставить("ПослеЗагрузки");
-
-	ИменаОбработчиковПКО.Вставить("ПоследовательностьПолейПоиска");
+	Manager = Managers[DataToDeleteType];
+	TypeName  = Manager.TypeName;
+	Properties = Managers[DataToDeleteType];
 	
-	// Обработчики ПКС.
-	ИменаОбработчиковПКС = Новый Структура;
-	ИменаОбработчиковПКС.Вставить("ПередВыгрузкой");
-	ИменаОбработчиковПКС.Вставить("ПриВыгрузке");
-	ИменаОбработчиковПКС.Вставить("ПослеВыгрузки");
-
-	// Обработчики ПКГС.
-	ИменаОбработчиковПКГС = Новый Структура;
-	ИменаОбработчиковПКГС.Вставить("ПередВыгрузкой");
-	ИменаОбработчиковПКГС.Вставить("ПриВыгрузке");
-	ИменаОбработчиковПКГС.Вставить("ПослеВыгрузки");
-
-	ИменаОбработчиковПКГС.Вставить("ПередОбработкойВыгрузки");
-	ИменаОбработчиковПКГС.Вставить("ПослеОбработкиВыгрузки");
+	Rule = New Structure("Name,Directly,BeforeDelete", "ObjectDeletion", True, "");
+					
+	Selection = GetSelectionForDataClearingExport(Properties, TypeName, True, True, False);
 	
-	// Обработчики ПВД.
-	ИменаОбработчиковПВД = Новый Структура;
-	ИменаОбработчиковПВД.Вставить("ПередОбработкой");
-	ИменаОбработчиковПВД.Вставить("ПослеОбработки");
-	ИменаОбработчиковПВД.Вставить("ПередВыгрузкой");
-	ИменаОбработчиковПВД.Вставить("ПослеВыгрузки");
+	While Selection.Next() Do
+		
+		If TypeName =  "InformationRegister" Then
+			
+			RecordManager = Properties.Manager.CreateRecordManager(); 
+			FillPropertyValues(RecordManager, Selection);
+								
+			SelectionObjectDeletion(RecordManager, Rule, Properties, Undefined);
+				
+		Else
+				
+			SelectionObjectDeletion(Selection.Ref.GetObject(), Rule, Properties, Undefined);
+				
+		EndIf;
+			
+	EndDo;	
 	
-	// Обработчики ПОД.
-	ИменаОбработчиковПОД = Новый Структура;
-	ИменаОбработчиковПОД.Вставить("ПередОбработкой");
-	ИменаОбработчиковПОД.Вставить("ПослеОбработки");
-	ИменаОбработчиковПОД.Вставить("ПередУдалением");
+EndProcedure
+
+Procedure SupplementInternalTablesWithColumns()
 	
-	// Глобальная структура с именами обработчиков.
-	ИменаОбработчиков = Новый Структура;
-	ИменаОбработчиков.Вставить("Конвертация", ИменаОбработчиковКонвертации);
-	ИменаОбработчиков.Вставить("ПКО", ИменаОбработчиковПКО);
-	ИменаОбработчиков.Вставить("ПКС", ИменаОбработчиковПКС);
-	ИменаОбработчиков.Вставить("ПКГС", ИменаОбработчиковПКГС);
-	ИменаОбработчиков.Вставить("ПВД", ИменаОбработчиковПВД);
-	ИменаОбработчиков.Вставить("ПОД", ИменаОбработчиковПОД);
+	InitConversionRulesTable();
+	InitExportRulesTable();
+	InitCleanupRulesTable();
+	InitParametersSettingsTable();	
+	
+EndProcedure
 
-КонецПроцедуры  
+Function GetNewUniqueTempFileName(OldTempFileName, Extension = "txt")
+	
+	DeleteTempFiles(OldTempFileName);
+	
+	Return GetTempFileName(Extension);
+	
+EndFunction 
 
-// Возвращаемое значение:
-//   Структура - описание менеджера типа значения:
-//     * Имя - Строка -
-//     * ИмяТипа - Строка -
-//     * ТипСсылкиСтрокой - Строка -
-//     * Менеджер - Произвольный -
-//     * ОбъектМД - ОбъектМетаданных -
-//     * ВозможенПоискПоПредопределенным - Булево -
-//     * ПКО - Произвольный -
+Procedure InitHandlersNamesStructure()
+	
+	// Conversion handlers.
+	ConversionHandlersNames = New Structure;
+	ConversionHandlersNames.Insert("BeforeExportData");
+	ConversionHandlersNames.Insert("AfterExportData");
+	ConversionHandlersNames.Insert("BeforeExportObject");
+	ConversionHandlersNames.Insert("AfterExportObject");
+	ConversionHandlersNames.Insert("BeforeConvertObject");
+	ConversionHandlersNames.Insert("BeforeSendDeletionInfo");
+	ConversionHandlersNames.Insert("BeforeGetChangedObjects");
+	
+	ConversionHandlersNames.Insert("BeforeImportObject");
+	ConversionHandlersNames.Insert("AfterImportObject");
+	ConversionHandlersNames.Insert("BeforeImportData");
+	ConversionHandlersNames.Insert("AfterImportData");
+	ConversionHandlersNames.Insert("OnGetDeletionInfo");
+	ConversionHandlersNames.Insert("AfterGetExchangeNodesInformation");
+	
+	ConversionHandlersNames.Insert("AfterImportExchangeRules");
+	ConversionHandlersNames.Insert("AfterImportParameters");
+	
+	// OCR handlers.
+	OCRHandlersNames = New Structure;
+	OCRHandlersNames.Insert("BeforeExport");
+	OCRHandlersNames.Insert("OnExport");
+	OCRHandlersNames.Insert("AfterExport");
+	OCRHandlersNames.Insert("AfterExportToFile");
+	
+	OCRHandlersNames.Insert("BeforeImport");
+	OCRHandlersNames.Insert("OnImport");
+	OCRHandlersNames.Insert("AfterImport");
+	
+	OCRHandlersNames.Insert("SearchFieldSequence");
+	
+	// PCR handlers.
+	PCRHandlersNames = New Structure;
+	PCRHandlersNames.Insert("BeforeExport");
+	PCRHandlersNames.Insert("OnExport");
+	PCRHandlersNames.Insert("AfterExport");
+
+	// PGCR handlers.
+	PGCRHandlersNames = New Structure;
+	PGCRHandlersNames.Insert("BeforeExport");
+	PGCRHandlersNames.Insert("OnExport");
+	PGCRHandlersNames.Insert("AfterExport");
+	
+	PGCRHandlersNames.Insert("BeforeProcessExport");
+	PGCRHandlersNames.Insert("AfterProcessExport");
+	
+	// DER handlers.
+	DERHandlersNames = New Structure;
+	DERHandlersNames.Insert("BeforeProcess");
+	DERHandlersNames.Insert("AfterProcess");
+	DERHandlersNames.Insert("BeforeExport");
+	DERHandlersNames.Insert("AfterExport");
+	
+	// DCR handlers.
+	DCRHandlersNames = New Structure;
+	DCRHandlersNames.Insert("BeforeProcess");
+	DCRHandlersNames.Insert("AfterProcess");
+	DCRHandlersNames.Insert("BeforeDelete");
+	
+	// Global structure with handler names.
+	HandlersNames = New Structure;
+	HandlersNames.Insert("Conversion", ConversionHandlersNames); 
+	HandlersNames.Insert("OCR",         OCRHandlersNames); 
+	HandlersNames.Insert("PCR",         PCRHandlersNames); 
+	HandlersNames.Insert("PGCR",        PGCRHandlersNames); 
+	HandlersNames.Insert("DER",         DERHandlersNames); 
+	HandlersNames.Insert("DPR",         DCRHandlersNames); 
+	
+EndProcedure  
+
+// Returns:
+//   Structure - a value type manager description:
+//     * Name - String -
+//     * TypeName - String -
+//     * RefTypeString - String -
+//     * Manager - Arbitrary -
+//     * MDObject - MetadataObject -
+//     * SearchByPredefinedItemsPossible - Boolean -
+//     * OCR - Arbitrary -
 //
-Функция СтруктураПараметровМенеджера(Имя, ИмяТипа, ТипСсылкиСтрокой, Менеджер, ОбъектМД)
-	Структура = Новый Структура;
-	Структура.Вставить("Имя", Имя);
-	Структура.Вставить("ИмяТипа", ИмяТипа);
-	Структура.Вставить("ТипСсылкиСтрокой", ТипСсылкиСтрокой);
-	Структура.Вставить("Менеджер", Менеджер);
-	Структура.Вставить("ОбъектМД", ОбъектМД);
-	Структура.Вставить("ВозможенПоискПоПредопределенным", Ложь);
-	Структура.Вставить("ПКО");
-	Возврат Структура;
-КонецФункции
+Function ManagerParametersStructure(Name, TypeName, RefTypeString, Manager, MDObject)
+	Structure = New Structure;
+	Structure.Insert("Name", Name);
+	Structure.Insert("TypeName", TypeName);
+	Structure.Insert("RefTypeString", RefTypeString);
+	Structure.Insert("Manager", Manager);
+	Structure.Insert("MDObject", MDObject);
+	Structure.Insert("SearchByPredefinedItemsPossible", False);
+	Structure.Insert("OCR");
+	Return Structure;
+EndFunction
 
-Функция СтруктураПараметровПланаОбмена(Имя, ТипСсылки, ЭтоСсылочныйТип, ЭтоРегистр)
-	Структура = Новый Структура;
-	Структура.Вставить("Имя", Имя);
-	Структура.Вставить("ТипСсылки", ТипСсылки);
-	Структура.Вставить("ЭтоСсылочныйТип", ЭтоСсылочныйТип);
-	Структура.Вставить("ЭтоРегистр", ЭтоРегистр);
-	Возврат Структура;
-КонецФункции
+Function ExchangePlanParametersStructure(Name, RefType, IsReferenceObjectType, IsRegister)
+	Structure = New Structure;
+	Structure.Insert("Name", Name);
+	Structure.Insert("RefType", RefType);
+	Structure.Insert("IsReferenceObjectType", IsReferenceObjectType);
+	Structure.Insert("IsRegister", IsRegister);
+	Return Structure;
+EndFunction
 
 ////////////////////////////////////////////////////////////////////////////////
-// Процедуры и функции из базовой функциональности для обеспечения автономности.
+// Procedures and functions to ensure autonomy.
 
-Функция ПодсистемаСуществует(ПолноеИмяПодсистемы) Экспорт
+Function SubsystemExists(SubSystemFullName) Export
 
-	ИменаПодсистем = ИменаПодсистем();
-	Возврат ИменаПодсистем.Получить(ПолноеИмяПодсистемы) <> Неопределено;
+	SubsystemsNames = SubsystemsNames();
+	Return SubsystemsNames.Get(SubSystemFullName) <> Undefined;
 
-КонецФункции
+EndFunction
 
-Функция ИменаПодсистем() Экспорт
+Function SubsystemsNames() Export
 
-	Возврат Новый ФиксированноеСоответствие(ИменаПодчиненныхПодсистем(Метаданные));
+	Return New FixedMap(ChildSubsystemsNames(Metadata));
 
-КонецФункции
+EndFunction
 
-Функция ИменаПодчиненныхПодсистем(РодительскаяПодсистема)
+Function ChildSubsystemsNames(ParentSubsystem)
 
-	Имена = Новый Соответствие;
+	Names = New Map;
 
-	Для Каждого ТекущаяПодсистема Из РодительскаяПодсистема.Подсистемы Цикл
+	For Each CurrentSubsystem In ParentSubsystem.Subsystems Do
 
-		Имена.Вставить(ТекущаяПодсистема.Имя, Истина);
-		ИменаПодчиненных = ИменаПодчиненныхПодсистем(ТекущаяПодсистема);
+		Names.Insert(CurrentSubsystem.Name, True);
+		ChildNames = ChildSubsystemsNames(CurrentSubsystem);
 
-		Для Каждого ИмяПодчиненной Из ИменаПодчиненных Цикл
-			Имена.Вставить(ТекущаяПодсистема.Имя + "." + ИмяПодчиненной.Ключ, Истина);
-		КонецЦикла;
-	КонецЦикла;
+		For Each ChildName In ChildNames Do
+			Names.Insert(CurrentSubsystem.Name + "." + ChildName.Key, True);
+		EndDo;
+	EndDo;
 
-	Возврат Имена;
+	Return Names;
 
-КонецФункции
+EndFunction
 
-Функция ОбщийМодуль(Имя) Экспорт
+Function CommonModule(Name) Export
 
-	Если Метаданные.ОбщиеМодули.Найти(Имя) <> Неопределено Тогда
-		Модуль = Вычислить(Имя);
-	Иначе
-		Модуль = Неопределено;
-	КонецЕсли;
+	If Metadata.CommonModules.Find(Name) <> Undefined Then
+		Module = Eval(Name);
+	Else
+		Module = Undefined;
+	EndIf;
 
-	Если ТипЗнч(Модуль) <> Тип("ОбщийМодуль") Тогда
-		ВызватьИсключение ПодставитьПараметрыВСтроку(НСтр("ru = 'Общий модуль ""%1"" не найден.'"), Имя);
-	КонецЕсли;
+	If TypeOf(Module) <> Type("CommonModule") Then
+		Raise SubstituteParametersToString(NStr("ru = 'Общий модуль ""%1"" не найден.'; en = '%1 module is not found.'"), Name);
+	EndIf;
 
-	Возврат Модуль;
+	Return Module;
 
-КонецФункции
+EndFunction
 
-Процедура СообщитьПользователю(ТекстСообщенияПользователю) Экспорт
+Procedure MessageToUser(MessageToUserText) Export
+	
+	Message = New UserMessage;
+	Message.Text = MessageToUserText;
+	Message.Message();
+	
+EndProcedure
 
-	Сообщение = Новый СообщениеПользователю;
-	Сообщение.Текст = ТекстСообщенияПользователю;
-	Сообщение.Сообщить();
+Function SubstituteParametersToString(Val SubstitutionString,
+	Val Parameter1, Val Parameter2 = Undefined, Val Parameter3 = Undefined)
+	
+	SubstitutionString = StrReplace(SubstitutionString, "%1", Parameter1);
+	SubstitutionString = StrReplace(SubstitutionString, "%2", Parameter2);
+	SubstitutionString = StrReplace(SubstitutionString, "%3", Parameter3);
+	
+	Return SubstitutionString;
+	
+EndFunction
 
-КонецПроцедуры
+Function IsExternalDataProcessor()
+	
+	Return ?(StrFind(EventHandlerExternalDataProcessorFileName, ".") <> 0, True, False);
+	
+EndFunction
 
-Функция ПодставитьПараметрыВСтроку(Знач СтрокаПодстановки, Знач Параметр1, Знач Параметр2 = Неопределено,
-	Знач Параметр3 = Неопределено)
+Function PredefinedItemName(Ref)
+	
+	Query = New Query;
+	Query.SetParameter("Ref", Ref);
+	Query.Text =
+	"SELECT
+	| PredefinedDataName AS PredefinedDataName
+	|FROM
+	|	" + Ref.Metadata().FullName() + " AS SpecifiedTableAlias
+	|WHERE
+	|	SpecifiedTableAlias.Ref = &Ref
+	|";
+	Selection = Query.Execute().Select();
+	Selection.Next();
+	
+	Return Selection.PredefinedDataName;
+	
+EndFunction
 
-	СтрокаПодстановки = СтрЗаменить(СтрокаПодстановки, "%1", Параметр1);
-	СтрокаПодстановки = СтрЗаменить(СтрокаПодстановки, "%2", Параметр2);
-	СтрокаПодстановки = СтрЗаменить(СтрокаПодстановки, "%3", Параметр3);
+Function RefTypeValue(Value)
+	
+	Type = TypeOf(Value);
+	
+	Return Type <> Type("Undefined") 
+		And (Catalogs.AllRefsType().ContainsType(Type)
+		Or Documents.AllRefsType().ContainsType(Type)
+		Or Enums.AllRefsType().ContainsType(Type)
+		Or ChartsOfCharacteristicTypes.AllRefsType().ContainsType(Type)
+		Or ChartsOfAccounts.AllRefsType().ContainsType(Type)
+		Or ChartsOfCalculationTypes.AllRefsType().ContainsType(Type)
+		Or BusinessProcesses.AllRefsType().ContainsType(Type)
+		Or BusinessProcesses.RoutePointsAllRefsType().ContainsType(Type)
+		Or Tasks.AllRefsType().ContainsType(Type)
+		Or ExchangePlans.AllRefsType().ContainsType(Type));
+	
+EndFunction
 
-	Возврат СтрокаПодстановки;
-
-КонецФункции
-
-Функция ЭтоВнешняяОбработка()
-
-	Возврат ?(СтрНайти(EventHandlerExternalDataProcessorFileName, ".") <> 0, Истина, Ложь);
-
-КонецФункции
-
-Функция ИмяПредопределенного(Ссылка)
-
-	Запрос = Новый Запрос;
-	Запрос.УстановитьПараметр("Ссылка", Ссылка);
-	Запрос.Текст = "ВЫБРАТЬ
-				   | ИмяПредопределенныхДанных КАК ИмяПредопределенныхДанных
-				   |ИЗ
-				   |	" + Ссылка.Метаданные().ПолноеИмя() + " КАК ПсевдонимЗаданнойТаблицы
-															  |ГДЕ
-															  |	ПсевдонимЗаданнойТаблицы.Ссылка = &Ссылка
-															  |";
-	Выборка = Запрос.Выполнить().Выбрать();
-	Выборка.Следующий();
-
-	Возврат Выборка.ИмяПредопределенныхДанных;
-
-КонецФункции
-
-Функция ЗначениеСсылочногоТипа(Значение)
-
-	Тип = ТипЗнч(Значение);
-
-	Возврат Тип <> Тип("Неопределено") И (Справочники.ТипВсеСсылки().СодержитТип(Тип)
-		Или Документы.ТипВсеСсылки().СодержитТип(Тип) Или Перечисления.ТипВсеСсылки().СодержитТип(Тип)
-		Или ПланыВидовХарактеристик.ТипВсеСсылки().СодержитТип(Тип) Или ПланыСчетов.ТипВсеСсылки().СодержитТип(Тип)
-		Или ПланыВидовРасчета.ТипВсеСсылки().СодержитТип(Тип) Или БизнесПроцессы.ТипВсеСсылки().СодержитТип(Тип)
-		Или БизнесПроцессы.ТипВсеСсылкиТочекМаршрутаБизнесПроцессов().СодержитТип(Тип)
-		Или Задачи.ТипВсеСсылки().СодержитТип(Тип) Или ПланыОбмена.ТипВсеСсылки().СодержитТип(Тип));
-
-КонецФункции
-
-Функция КодОсновногоЯзыка()
-	Возврат UT_CommonClientServer.DefaultLanguageCode();
-//	Если ПодсистемаСуществует("СтандартныеПодсистемы.БазоваяФункциональность") Тогда
-//		МодульОбщегоНазначения = ОбщийМодуль("ОбщегоНазначения");
-//		Возврат МодульОбщегоНазначения.КодОсновногоЯзыка();
-//	КонецЕсли;
-//	Возврат Метаданные.ОсновнойЯзык.КодЯзыка;
-КонецФункции
-
-#КонецОбласти
+Function DefaultLanguageCode()
+	Return UT_CommonClientServer.DefaultLanguageCode();
+//	If SubsystemExists("StandardSubsystems.BaseFunctionality") Then
+//		CommonModule = CommonModule("Common");
+//		Return CommonModule.DefaultLanguageCode();
+//	EndIf;
+//	Return Metadata.DefaultLanguage.LanguageCode;
+EndFunction
 
 #EndRegion
 
-#Область УИ
+#Region UT
 
-// Для внутреннего использования
+// Internal
 //
-Функция GetRowQueryText(СтрокаДереваМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки = "") Экспорт
+Function GetRowQueryText(MetadataTreeRow, HasAddlFilters, FieldStringForSelection = "") Export
 
-	ОбъектМетаданных = Метаданные.НайтиПоПолномуИмени(СтрокаДереваМетаданных.ИмяМетаданных);
+	MetadataObject = Metadata.FindByFullName(MetadataTreeRow.MetadataName);
 
-	ИмяМетаданных     = СтрокаДереваМетаданных.ИмяМетаданных;
+	MetadataName     = MetadataTreeRow.MetadataName;
 
-	Если Метаданные.РегистрыСведений.Содержит(ОбъектМетаданных) Тогда
+	If Metadata.InformationRegisters.Contains(MetadataObject) Then
 
-		ТекстЗапроса = ПолучитьТекстЗапросаДляРегистраСведений(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы,
-			СтрокаПолейДляВыборки);
-		Возврат ТекстЗапроса;
+		QueryText = GetQueryTextForInformationRegister(MetadataName, MetadataObject, HasAddlFilters,
+			FieldStringForSelection);
+		Return QueryText;
 
-	ИначеЕсли Метаданные.РегистрыНакопления.Содержит(ОбъектМетаданных) Или Метаданные.РегистрыБухгалтерии.Содержит(
-		ОбъектМетаданных) Тогда
+	ElsIf Metadata.AccumulationRegisters.Contains(MetadataObject) Or Metadata.AccountingRegisters.Contains(
+		MetadataObject) Then
 
-		ТекстЗапроса = ПолучитьТекстЗапросаДляРегистра(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы,
-			СтрокаПолейДляВыборки);
-		Возврат ТекстЗапроса;
+		QueryText = GetQueryTextForRegister(MetadataName, MetadataObject, HasAddlFilters,
+			FieldStringForSelection);
+		Return QueryText;
 
-	КонецЕсли;
+	EndIf;
 
-	ЕстьОграничениеПоДатам = ЗначениеЗаполнено(StartDate) Или ЗначениеЗаполнено(EndDate);
+	RestrictByDate = ValueIsFilled(StartDate) Or ValueIsFilled(EndDate);
 
-	Если Не ЗначениеЗаполнено(СтрокаПолейДляВыборки) Тогда
-		СтрокаПолейДляВыборки = "_.*";
-	КонецЕсли;
+	If Not ValueIsFilled(FieldStringForSelection) Then
+		FieldStringForSelection = "_.*";
+	EndIf;
 
-	ТекстЗапроса = "ВЫБРАТЬ Разрешенные " + СтрокаПолейДляВыборки + " ИЗ " + ИмяМетаданных + " КАК _ ";
+	QueryText = "SELECT Allowed " + FieldStringForSelection + " FROM " + MetadataName + " AS _ ";
 	
-	// возможно нужно ограничение по датам установить
-	Если ЕстьОграничениеПоДатам Тогда
+	If RestrictByDate Then
 
-		Если ЕстьДопОтборы И Не UseFilterByDateForAllObjects Тогда
+		If HasAddlFilters And Not UseFilterByDateForAllObjects Then
 
-			Возврат ТекстЗапроса;
+			Return QueryText;
 
-		КонецЕсли;
+		EndIf;
 
-		ДопОграничениеПоДате = "";
+		AddlRestrictionByDate = "";
 		
-		// можно ли для данного объекта МД строить ограничения по датам
-		Если Метаданные.Документы.Содержит(ОбъектМетаданных) Тогда
+		If Metadata.Documents.Contains(MetadataObject) Then
 
-			ДопОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(ОбъектМетаданных, "Документ");
+			AddlRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "Document");
 
-		ИначеЕсли Метаданные.РегистрыБухгалтерии.Содержит(ОбъектМетаданных) Или Метаданные.РегистрыНакопления.Содержит(
-			ОбъектМетаданных) Тогда
+		ElsIf Metadata.AccountingRegisters.Contains(MetadataObject) Or Metadata.AccumulationRegisters.Contains(
+			MetadataObject) Then
 
-			ДопОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(ОбъектМетаданных, "Регистр");
+			AddlRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "Register");
 
-		КонецЕсли;
+		EndIf;
 
-		ТекстЗапроса = ТекстЗапроса + Символы.ПС + ДопОграничениеПоДате;
+		QueryText = QueryText + Chars.LF + AddlRestrictionByDate;
 
-	КонецЕсли;
+	EndIf;
 
-	Возврат ТекстЗапроса;
+	Return QueryText;
 
-КонецФункции
+EndFunction
 
-Функция ПолучитьТекстЗапросаДляРегистраСведений(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы,
-	СтрокаПолейДляВыборки = "")
+Function GetQueryTextForInformationRegister(MetadataName, MetadataObject, HasAddlFilters,
+	FieldStringForSelection = "")
 
-	ЕстьОграничениеПоДатам = ЗначениеЗаполнено(StartDate) Или ЗначениеЗаполнено(EndDate);
+	RestrictByDate = ValueIsFilled(StartDate) Or ValueIsFilled(EndDate);
 
-	Если Не ЗначениеЗаполнено(СтрокаПолейДляВыборки) Тогда
-		СтрокаПолейДляВыборки = "_.*";
-	Иначе
-		СтрокаПолейДляВыборки = " Различные " + СтрокаПолейДляВыборки;
-	КонецЕсли;
+	If Not ValueIsFilled(FieldStringForSelection) Then
+		FieldStringForSelection = "_.*";
+	Else
+		FieldStringForSelection = " Distinct " + FieldStringForSelection;
+	EndIf;
 
-	ТекстЗапроса = "ВЫБРАТЬ Разрешенные " + СтрокаПолейДляВыборки + " ИЗ " + ИмяМетаданных + " КАК _ ";
+	QueryText = "SELECT Allowed " + FieldStringForSelection + " FROM " + MetadataName + " AS _ ";
 
-	Если ОбъектМетаданных.ПериодичностьРегистраСведений
-		= Метаданные.СвойстваОбъектов.ПериодичностьРегистраСведений.Непериодический Тогда
-		Возврат ТекстЗапроса;
-	КонецЕсли;
+	If MetadataObject.InformationRegisterPeriodicity
+		= Metadata.ObjectProperties.InformationRegisterPeriodicity.Nonperiodical Then
+		Return QueryText;
+	EndIf;
 	
-	// 0 - отбор за период
-	// 1 - срез последних на дату окончания
-	// 2 - срез первых на дату начала
-	// 3 - срез последних на дату начала + отбор за период
-	Если ЕстьДопОтборы И Не UseFilterByDateForAllObjects Тогда
+	// 0 - filter by period
+	// 1 - slice last on an end date
+	// 2 - slice first on a begin date
+	// 3 - slice first on a begin date + filter by period
+	If HasAddlFilters And Not UseFilterByDateForAllObjects Then
 
-		Возврат ТекстЗапроса;
+		Return QueryText;
 
-	КонецЕсли;
+	EndIf;
 
-	ДопОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(ОбъектМетаданных, "РегистрСведений");
+	AddlRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "InformationRegister");
 
-	ТекстЗапроса = ТекстЗапроса + Символы.ПС + ДопОграничениеПоДате;
-	Возврат ТекстЗапроса;
+	QueryText = QueryText + Chars.LF + AddlRestrictionByDate;
+	Return QueryText;
 
-КонецФункции
+EndFunction
 
-Функция ПолучитьТекстЗапросаДляРегистра(ИмяМетаданных, ОбъектМетаданных, ЕстьДопОтборы, СтрокаПолейДляВыборки = "")
+Function GetQueryTextForRegister(MetadataName, MetadataObject, HasAddlFilters, FieldStringForSelection = "")
 
-	ЕстьОграничениеПоДатам = ЗначениеЗаполнено(StartDate) Или ЗначениеЗаполнено(EndDate);
+	RestrictByDate = ValueIsFilled(StartDate) Or ValueIsFilled(EndDate);
 
-	Если Не ЗначениеЗаполнено(СтрокаПолейДляВыборки) Тогда
-		СтрокаПолейДляВыборки = "_.*";
-	Иначе
-		СтрокаПолейДляВыборки = " РАЗЛИЧНЫЕ " + СтрокаПолейДляВыборки;
-	КонецЕсли;
+	If Not ValueIsFilled(FieldStringForSelection) Then
+		FieldStringForSelection = "_.*";
+	Else
+		FieldStringForSelection = " DISTINCT " + FieldStringForSelection;
+	EndIf;
 
-	ТекстЗапроса = "ВЫБРАТЬ Разрешенные " + СтрокаПолейДляВыборки + " ИЗ " + ИмяМетаданных + " КАК _ ";
+	QueryText = "SELECT Allowed " + FieldStringForSelection + " FROM " + MetadataName + " AS _ ";
 	
-	// возможно нужно ограничение по датам установить
-	Если ЕстьОграничениеПоДатам Тогда
+	If RestrictByDate Then
 
-		Если ЕстьДопОтборы И Не UseFilterByDateForAllObjects Тогда
+		If HasAddlFilters And Not UseFilterByDateForAllObjects Then
 
-			Возврат ТекстЗапроса;
+			Return QueryText;
 
-		КонецЕсли;
+		EndIf;
 
-		ДопОграничениеПоДате = ПолучитьСтрокуОграниченияПоДатеДляЗапроса(ОбъектМетаданных, "Регистр");
+		AddlRestrictionByDate = GetRestrictionByDateStringForQuery(MetadataObject, "Register");
 
-		ТекстЗапроса = ТекстЗапроса + Символы.ПС + ДопОграничениеПоДате;
+		QueryText = QueryText + Chars.LF + AddlRestrictionByDate;
 
-	КонецЕсли;
+	EndIf;
 
-	Возврат ТекстЗапроса;
+	Return QueryText;
 
-КонецФункции
-Функция СхемаКомпоновкиДанных(ТекстЗапроса) Экспорт
+EndFunction
+Function DataCompositionSchema(QueryText) Export
 
-	СхемаКомпоновкиДанных = Новый СхемаКомпоновкиДанных;
+	DataCompositionSchema = New DataCompositionSchema;
 
-	ИсточникДанных = СхемаКомпоновкиДанных.ИсточникиДанных.Добавить();
-	ИсточникДанных.Имя = "ИсточникДанных1";
-	ИсточникДанных.ТипИсточникаДанных = "local";
+	DataSource = DataCompositionSchema.DataSources.Add();
+	DataSource.Name = "DataSource1";
+	DataSource.DataSourceType = "local";
 
-	НаборДанных = СхемаКомпоновкиДанных.НаборыДанных.Добавить(Тип("НаборДанныхЗапросСхемыКомпоновкиДанных"));
-	НаборДанных.ИсточникДанных = "ИсточникДанных1";
-	НаборДанных.АвтоЗаполнениеДоступныхПолей = Истина;
-	НаборДанных.Запрос = ТекстЗапроса;
-	НаборДанных.Имя = "НаборДанных1";
+	DataSet = DataCompositionSchema.DataSets.Add(Type("DataCompositionSchemaDataSetQuery"));
+	DataSet.DataSource = "DataSource1";
+	DataSet.AutoFillAvailableFields = True;
+	DataSet.Query = QueryText;
+	DataSet.Name = "DataSet1";
 
-	Возврат СхемаКомпоновкиДанных;
+	Return DataCompositionSchema;
 
-КонецФункции
+EndFunction
 
-Процедура SetResultOutputStructureSettings(Настройки, ВыводВТабличныйДокумент = Ложь) Экспорт
+Procedure SetResultOutputStructureSettings(Settings, PutToSpreadsheetDocument = False) Export
 
-	ГруппировкаКомпоновкиДанных = Настройки.Структура.Добавить(Тип("ГруппировкаКомпоновкиДанных"));
+	DataCompositionGroup = Settings.Structure.Add(Type("DataCompositionGroup"));
 
-	ПолеГруппировки = ГруппировкаКомпоновкиДанных.ПоляГруппировки.Элементы.Добавить(Тип(
-		"ПолеГруппировкиКомпоновкиДанных"));
-	ПолеГруппировки.Использование = Истина;
+	GroupField = DataCompositionGroup.GroupFields.Items.Add(Type(
+		"DataCompositionGroupField"));
+	GroupField.Use = True;
 
-	Если ВыводВТабличныйДокумент И Настройки.Выбор.ДоступныеПоляВыбора.НайтиПоле(Новый ПолеКомпоновкиДанных("Ссылка"))
-		<> Неопределено Тогда
-		ПолеВыбора = ГруппировкаКомпоновкиДанных.Выбор.Элементы.Добавить(Тип("ВыбранноеПолеКомпоновкиДанных"));
-		ПолеВыбора.Поле = Новый ПолеКомпоновкиДанных("Ссылка");
-		ПолеВыбора.Использование = Истина;
-	Иначе
-		Для Каждого ДоступноеПолеВыбора Из Настройки.Выбор.ДоступныеПоляВыбора.Элементы Цикл
-			Если ДоступноеПолеВыбора.Поле = Новый ПолеКомпоновкиДанных("СистемныеПоля") Или ДоступноеПолеВыбора.Поле
-				= Новый ПолеКомпоновкиДанных("ПараметрыДанных") Тогда
-				Продолжить;
-			КонецЕсли;
-			ПолеВыбора = ГруппировкаКомпоновкиДанных.Выбор.Элементы.Добавить(Тип("ВыбранноеПолеКомпоновкиДанных"));
-			ПолеВыбора.Поле = ДоступноеПолеВыбора.Поле;
-			ПолеВыбора.Использование = Истина;
-		КонецЦикла;
-	КонецЕсли;
+	If PutToSpreadsheetDocument And Settings.Selection.SelectionAvailableFields.FindField(New DataCompositionField("Ref"))
+		<> Undefined Then
+		SelectionField = DataCompositionGroup.Selection.Items.Add(Type("DataCompositionSelectedField"));
+		SelectionField.Field = New DataCompositionField("Ref");
+		SelectionField.Use = True;
+	Else
+		For Each SelectionAvailableField In Settings.Selection.SelectionAvailableFields.Items Do
+			If SelectionAvailableField.Field = New DataCompositionField("SystemFields") Or SelectionAvailableField.Field
+				= New DataCompositionField("DataParameters") Then
+				Continue;
+			EndIf;
+			SelectionField = DataCompositionGroup.Selection.Items.Add(Type("DataCompositionSelectedField"));
+			SelectionField.Field = SelectionAvailableField.Field;
+			SelectionField.Use = True;
+		EndDo;
+	EndIf;
 
-КонецПроцедуры
-#КонецОбласти
+EndProcedure
+#EndRegion
 
-#Область Инициализация
+#EndRegion
 
-ИнициализацияРеквизитовИМодульныхПеременных();
-ДополнитьСлужебныеТаблицыКолонками();
-ИнициализацияСтруктурыИменОбработчиков();
+#Region Initializing
 
-#КонецОбласти
+InitAttributesAndModuleVariables();
+SupplementInternalTablesWithColumns();
+InitHandlersNamesStructure();
+
+#EndRegion
