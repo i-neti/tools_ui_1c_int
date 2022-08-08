@@ -10,8 +10,12 @@
         <name>ГруппаФайлаПравил</name>
         <id>200</id>
         <items xsi:type="form:FormField">
-          <name>ИмяФайлаПравил</name>
+          <name>RulesFileName</name>
           <id>8</id>
+          <title>
+            <key>en</key>
+            <value>Rules file name at server</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Имя файла правил на сервере</value>
@@ -23,15 +27,15 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ИмяФайлаПравил</segments>
+              <segments>RulesFileName</segments>
             </paths>
           </dataPath>
           <handlers>
             <event>OnChange</event>
-            <name>ИмяФайлаПравилПриИзменении</name>
+            <name>RulesFileNameOnChange</name>
           </handlers>
           <extendedTooltip>
-            <name>ИмяФайлаПравилExtendedTooltip</name>
+            <name>RulesFileNameExtendedTooltip</name>
             <id>242</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -46,7 +50,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ИмяФайлаПравилКонтекстноеМеню</name>
+            <name>RulesFileNameContextMenu</name>
             <id>9</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -63,11 +67,11 @@
           <extInfo xsi:type="form:InputFieldExtInfo">
             <handlers>
               <event>StartChoice</event>
-              <name>ИмяФайлаПравилОбменаНачалоВыбора</name>
+              <name>RulesFileNameStartChoice</name>
             </handlers>
             <handlers>
               <event>Opening</event>
-              <name>ИмяФайлаПравилОбменаОткрытие</name>
+              <name>RulesFileNameOpening</name>
             </handlers>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -148,7 +152,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПрямаяВыгрузка</name>
+        <name>DirectExport</name>
         <id>14</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -157,16 +161,16 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПрямаяВыгрузка</segments>
+            <segments>DirectExport</segments>
           </paths>
         </dataPath>
         <titleLocation>None</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>ПрямаяВыгрузкаПриИзменении</name>
+          <name>DirectExportOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>ПрямаяВыгрузкаExtendedTooltip</name>
+          <name>DirectExportExtendedTooltip</name>
           <id>244</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -181,7 +185,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПрямаяВыгрузкаКонтекстноеМеню</name>
+          <name>DirectExportContextMenu</name>
           <id>15</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -198,6 +202,10 @@
         <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
           <choiceList>
             <presentation>
+              <key>en</key>
+              <value>Export to exchange file</value>
+            </presentation>
+            <presentation>
               <key>ru</key>
               <value>Выгрузка в файл обмена</value>
             </presentation>
@@ -207,6 +215,10 @@
           </choiceList>
           <choiceList>
             <presentation>
+              <key>en</key>
+              <value>Connect and export data to destination infobase</value>
+            </presentation>
+            <presentation>
               <key>ru</key>
               <value>Подключение и выгрузка данных в ИБ приемник</value>
             </presentation>
@@ -215,6 +227,10 @@
             </value>
           </choiceList>
           <choiceList>
+            <presentation>
+              <key>en</key>
+              <value>Export to file and import in the destination infobase via web-service</value>
+            </presentation>
             <presentation>
               <key>ru</key>
               <value>Выгрузка в файл и загрузка в приемник через вебсервис</value>
@@ -232,8 +248,12 @@
           <name>ВыгрузкаВФайл</name>
           <id>6</id>
           <items xsi:type="form:FormField">
-            <name>ИмяФайлаДанных</name>
+            <name>DataFileName</name>
             <id>16</id>
+            <title>
+              <key>en</key>
+              <value>Data file name at server</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Имя файла данных на сервере</value>
@@ -245,15 +265,15 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>ИмяФайлаДанных</segments>
+                <segments>DataFileName</segments>
               </paths>
             </dataPath>
             <handlers>
               <event>OnChange</event>
-              <name>ИмяФайлаДанныхПриИзменении</name>
+              <name>DataFileNameOnChange</name>
             </handlers>
             <extendedTooltip>
-              <name>ИмяФайлаДанныхExtendedTooltip</name>
+              <name>DataFileNameExtendedTooltip</name>
               <id>247</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -268,7 +288,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ИмяФайлаДанныхКонтекстноеМеню</name>
+              <name>DataFileNameContextMenu</name>
               <id>17</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -285,11 +305,11 @@
             <extInfo xsi:type="form:InputFieldExtInfo">
               <handlers>
                 <event>StartChoice</event>
-                <name>ИмяФайлаДанныхНачалоВыбора</name>
+                <name>DataFileNameStartChoice</name>
               </handlers>
               <handlers>
                 <event>Opening</event>
-                <name>ИмяФайлаДанныхОткрытие</name>
+                <name>DataFileNameOpening</name>
               </handlers>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -315,7 +335,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.ArchiveFile</segments>
+                <segments>Object.ArchiveFile</segments>
               </paths>
             </dataPath>
             <titleLocation>Right</titleLocation>
@@ -365,7 +385,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.ExchangeFileCompressionPassword</segments>
+                <segments>Object.ExchangeFileCompressionPassword</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -466,7 +486,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.ConnectedInfobaseType</segments>
+                      <segments>Object.ConnectedInfobaseType</segments>
                     </paths>
                   </dataPath>
                   <handlers>
@@ -547,7 +567,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.PlatformVersionForInfobaseConnection</segments>
+                      <segments>Object.PlatformVersionForInfobaseConnection</segments>
                     </paths>
                   </dataPath>
                   <handlers>
@@ -661,7 +681,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.InfobaseConnectionDirectory</segments>
+                        <segments>Object.InfobaseConnectionDirectory</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -760,7 +780,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.InfobaseConnectionServerName</segments>
+                        <segments>Object.InfobaseConnectionServerName</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -816,7 +836,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Объект.InfobaseConnectionNameAtServer</segments>
+                        <segments>Object.InfobaseConnectionNameAtServer</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -934,7 +954,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.InfobaseConnectionWindowsAuthentification</segments>
+                      <segments>Object.InfobaseConnectionWindowsAuthentification</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>Right</titleLocation>
@@ -1055,7 +1075,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.InfobaseConnectionUsername</segments>
+                      <segments>Object.InfobaseConnectionUsername</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1112,7 +1132,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Объект.InfobaseConnectionPassword</segments>
+                      <segments>Object.InfobaseConnectionPassword</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1371,7 +1391,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>Объект.UT_DestinationPublicationAddress</segments>
+              <segments>Object.UT_DestinationPublicationAddress</segments>
             </dataPath>
             <extendedTooltip>
               <name>АдресПубликацииПриемникаРасширеннаяПодсказка</name>
@@ -1429,7 +1449,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.InfobaseConnectionUsername</segments>
+                  <segments>Object.InfobaseConnectionUsername</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -1486,7 +1506,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.InfobaseConnectionPassword</segments>
+                  <segments>Object.InfobaseConnectionPassword</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -1782,7 +1802,7 @@
             <name>ГруппаПериодаВыгрузки</name>
             <id>211</id>
             <items xsi:type="form:FormField">
-              <name>ПериодВыгрузки</name>
+              <name>ExportPeriod</name>
               <id>212</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1791,15 +1811,15 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ПериодВыгрузки</segments>
+                  <segments>ExportPeriod</segments>
                 </paths>
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>ПериодВыгрузкиПриИзменении</name>
+                <name>ExportPeriodOnChange</name>
               </handlers>
               <extendedTooltip>
-                <name>ПериодВыгрузкиExtendedTooltip</name>
+                <name>ExportPeriodExtendedTooltip</name>
                 <id>272</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1814,7 +1834,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ПериодВыгрузкиКонтекстноеМеню</name>
+                <name>ExportPeriodContextMenu</name>
                 <id>213</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1883,7 +1903,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>Объект.ExportRulesTable</segments>
+              <segments>Object.ExportRulesTable</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormGroup">
@@ -1899,7 +1919,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ExportRulesTable.Включить</segments>
+                    <segments>Object.ExportRulesTable.Включить</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
@@ -1945,7 +1965,7 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Объект.ExportRulesTable.Наименование</segments>
+                    <segments>Object.ExportRulesTable.Наименование</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
@@ -2032,7 +2052,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ExportRulesTable.СсылкаНаУзелОбмена</segments>
+                  <segments>Object.ExportRulesTable.СсылкаНаУзелОбмена</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2084,7 +2104,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ExportRulesTable.ЭтоГруппа</segments>
+                  <segments>Object.ExportRulesTable.ЭтоГруппа</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2132,7 +2152,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>Объект.ExportRulesTable.ИспользоватьОтбор</segments>
+                <segments>Object.ExportRulesTable.ИспользоватьОтбор</segments>
               </dataPath>
               <extendedTooltip>
                 <name>ТаблицаПравилВыгрузкиИспользоватьОтборРасширеннаяПодсказка</name>
@@ -2179,7 +2199,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>Объект.ExportRulesTable.Отбор</segments>
+                <segments>Object.ExportRulesTable.Отбор</segments>
               </dataPath>
               <handlers>
                 <event>OnChange</event>
@@ -2607,7 +2627,7 @@
               <common>true</common>
             </userVisible>
             <dataPath xsi:type="form:DataPath">
-              <segments>Объект.ParametersSettingsTable</segments>
+              <segments>Object.ParametersSettingsTable</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormField">
@@ -2620,7 +2640,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ParametersSettingsTable.Наименование</segments>
+                  <segments>Object.ParametersSettingsTable.Наименование</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2672,7 +2692,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.ParametersSettingsTable.Значение</segments>
+                  <segments>Object.ParametersSettingsTable.Значение</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2986,7 +3006,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.Comment</segments>
+                <segments>Object.Comment</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
@@ -3147,7 +3167,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Объект.HandlersDebugModeFlag</segments>
+                  <segments>Object.HandlersDebugModeFlag</segments>
                 </paths>
               </dataPath>
               <titleLocation>Right</titleLocation>
@@ -3507,8 +3527,12 @@
         <representationInContextMenu>Auto</representationInContextMenu>
       </items>
       <items xsi:type="form:FormField">
-        <name>ИмяФайлаОбмена</name>
+        <name>ExchangeFileName</name>
         <id>68</id>
+        <title>
+          <key>en</key>
+          <value>Exchange file name at server</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Имя файла для загрузки на сервере</value>
@@ -3520,15 +3544,15 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ИмяФайлаОбмена</segments>
+            <segments>ExchangeFileName</segments>
           </paths>
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>ИмяФайлаОбменаПриИзменении</name>
+          <name>ExchangeFileNameOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>ИмяФайлаОбменаExtendedTooltip</name>
+          <name>ExchangeFileNameExtendedTooltip</name>
           <id>302</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3543,7 +3567,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ИмяФайлаОбменаКонтекстноеМеню</name>
+          <name>ExchangeFileNameContextMenu</name>
           <id>69</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3560,11 +3584,11 @@
         <extInfo xsi:type="form:InputFieldExtInfo">
           <handlers>
             <event>StartChoice</event>
-            <name>ИмяФайлаОбменаНачалоВыбора</name>
+            <name>ExchangeFileNameStartChoice</name>
           </handlers>
           <handlers>
             <event>Opening</event>
-            <name>ИмяФайлаОбменаОткрытие</name>
+            <name>ExchangeFileNameOpening</name>
           </handlers>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -3590,7 +3614,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ExchangeFileUnpackPassword</segments>
+            <segments>Object.ExchangeFileUnpackPassword</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
@@ -3645,7 +3669,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.SafeImport</segments>
+            <segments>Object.SafeImport</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -3730,7 +3754,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ИмяФайлаПравилЗагрузки</name>
+          <name>ImportRulesFileName</name>
           <id>398</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3739,11 +3763,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ИмяФайлаПравилЗагрузки</segments>
+              <segments>ImportRulesFileName</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ИмяФайлаПравилЗагрузкиРасширеннаяПодсказка</name>
+            <name>ImportRulesFileNameExtendedTooltip</name>
             <id>400</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3758,7 +3782,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ИмяФайлаПравилЗагрузкиКонтекстноеМеню</name>
+            <name>ImportRulesFileNameContextMenu</name>
             <id>399</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3775,7 +3799,7 @@
           <extInfo xsi:type="form:InputFieldExtInfo">
             <handlers>
               <event>StartChoice</event>
-              <name>ИмяФайлаПравилЗагрузкиНачалоВыбора</name>
+              <name>ImportRulesFileNameStartChoice</name>
             </handlers>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -3829,7 +3853,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.UseTransactions</segments>
+            <segments>Object.UseTransactions</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -3883,7 +3907,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ObjectsPerTransaction</segments>
+            <segments>Object.ObjectsPerTransaction</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
@@ -3935,7 +3959,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ImportDataInExchangeMode</segments>
+            <segments>Object.ImportDataInExchangeMode</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -3981,7 +4005,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.WriteToInfobaseOnlyChangedObjects</segments>
+            <segments>Object.WriteToInfobaseOnlyChangedObjects</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4027,7 +4051,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ImportReferencedObjectsWithoutDeletionMark</segments>
+            <segments>Object.ImportReferencedObjectsWithoutDeletionMark</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4073,7 +4097,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.OptimizedObjectsWriting</segments>
+            <segments>Object.OptimizedObjectsWriting</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4119,7 +4143,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.WriteRegistersAsRecordSets</segments>
+            <segments>Object.WriteRegistersAsRecordSets</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4165,7 +4189,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.RemoveTrailingSpaces</segments>
+            <segments>Object.RemoveTrailingSpaces</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -4215,7 +4239,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.AutomaticDataImportSettings</segments>
+            <segments>Object.AutomaticDataImportSettings</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
@@ -4294,7 +4318,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.ExchangeRulesVersion</segments>
+                <segments>Object.ExchangeRulesVersion</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
@@ -4410,7 +4434,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.DataExportDate</segments>
+              <segments>Object.DataExportDate</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -4449,8 +4473,12 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ПериодВыгрузкиДанных</name>
+          <name>ExportPeriodPresentation</name>
           <id>164</id>
+          <title>
+            <key>en</key>
+            <value>Export period presentation</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Период выгрузки данных</value>
@@ -4462,11 +4490,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ПредставлениеПериодаВыгрузки</segments>
+              <segments>ExportPeriodPresentation</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ПериодВыгрузкиДанныхExtendedTooltip</name>
+            <name>ExportPeriodPresentationExtendedTooltip</name>
             <id>318</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4481,7 +4509,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ПериодВыгрузкиДанныхКонтекстноеМеню</name>
+            <name>ExportPeriodPresentationContextMenu</name>
             <id>165</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4511,7 +4539,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.Comment</segments>
+              <segments>Object.Comment</segments>
             </paths>
           </dataPath>
           <titleLocation>Left</titleLocation>
@@ -4610,7 +4638,7 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>Объект.HandlersDebugModeFlag</segments>
+                <segments>Object.HandlersDebugModeFlag</segments>
               </paths>
             </dataPath>
             <titleLocation>Right</titleLocation>
@@ -4953,7 +4981,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.DebugModeFlag</segments>
+            <segments>Object.DebugModeFlag</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -5003,7 +5031,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.DisplayInfoMessagesIntoMessageWindow</segments>
+            <segments>Object.DisplayInfoMessagesIntoMessageWindow</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -5049,7 +5077,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ProcessedObjectsCountToUpdateStatus</segments>
+            <segments>Object.ProcessedObjectsCountToUpdateStatus</segments>
           </paths>
         </dataPath>
         <handlers>
@@ -5112,7 +5140,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ExecuteDataExchangeInOptimizedFormat</segments>
+              <segments>Object.ExecuteDataExchangeInOptimizedFormat</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5158,7 +5186,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.UseTransactionsOnExportForExchangePlans</segments>
+              <segments>Object.UseTransactionsOnExportForExchangePlans</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5208,7 +5236,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.TransactionItemsCountOnExportForExchangePlans</segments>
+              <segments>Object.TransactionItemsCountOnExportForExchangePlans</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -5264,7 +5292,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ExportAllowedObjectsOnly</segments>
+              <segments>Object.ExportAllowedObjectsOnly</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5314,7 +5342,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.XMLWriterAdvancedMonitoring</segments>
+              <segments>Object.XMLWriterAdvancedMonitoring</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5351,8 +5379,12 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузки</name>
+          <name>ChangesRegistrationDeletionTypeForExportedExchangeNodes</name>
           <id>186</id>
+          <title>
+            <key>en</key>
+            <value>Registration changes for exchange nodes after export</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Изменения регистрации для узлов обмена после выгрузки</value>
@@ -5364,15 +5396,15 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузки</segments>
+              <segments>ChangesRegistrationDeletionTypeForExportedExchangeNodes</segments>
             </paths>
           </dataPath>
           <handlers>
             <event>OnChange</event>
-            <name>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузкиПриИзменении</name>
+            <name>ChangesRegistrationDeletionTypeForExportedExchangeNodes</name>
           </handlers>
           <extendedTooltip>
-            <name>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузкиExtendedTooltip</name>
+            <name>ChangesRegistrationDeletionTypeForExportedExchangeNodesExtendedTooltip</name>
             <id>337</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5387,7 +5419,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузкиКонтекстноеМеню</name>
+            <name>ChangesRegistrationDeletionTypeForExportedExchangeNodesContextMenu</name>
             <id>187</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5489,7 +5521,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ExchangeLogFileName</segments>
+              <segments>Object.ExchangeLogFileName</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -5556,7 +5588,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ImportExchangeLogFileName</segments>
+              <segments>Object.ImportExchangeLogFileName</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -5618,7 +5650,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.ExchangeLogFileEncoding</segments>
+              <segments>Object.ExchangeLogFileEncoding</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
@@ -5716,7 +5748,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.AppendDataToExchangeLog</segments>
+              <segments>Object.AppendDataToExchangeLog</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5762,7 +5794,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.WriteInfoMessagesToLog</segments>
+              <segments>Object.WriteInfoMessagesToLog</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5808,7 +5840,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>Объект.OpenExchangeLogAfterExecutingOperations</segments>
+              <segments>Object.OpenExchangeLogAfterExecutingOperations</segments>
             </paths>
           </dataPath>
           <titleLocation>Right</titleLocation>
@@ -5970,7 +6002,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Объект.ExportAllowedObjectsOnly</segments>
+            <segments>Object.ExportAllowedObjectsOnly</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
@@ -6007,8 +6039,12 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПериодУдаления</name>
+        <name>DeletionPeriod</name>
         <id>214</id>
+        <title>
+          <key>en</key>
+          <value>Deletion period</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Период удаления</value>
@@ -6020,15 +6056,15 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПериодВыгрузки</segments>
+            <segments>ExportPeriod</segments>
           </paths>
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>ПериодУдаленияПриИзменении</name>
+          <name>DeletionPeriodOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>ПериодУдаленияExtendedTooltip</name>
+          <name>DeletionPeriodExtendedTooltip</name>
           <id>347</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6043,7 +6079,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПериодУдаленияКонтекстноеМеню</name>
+          <name>DeletionPeriodContextMenu</name>
           <id>215</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6067,8 +6103,12 @@
         </extInfo>
       </items>
       <items xsi:type="form:Table">
-        <name>УдаляемыеДанные</name>
+        <name>DataToDelete</name>
         <id>201</id>
+        <title>
+          <key>en</key>
+          <value>Data to delete</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Удаляемые данные</value>
@@ -6079,14 +6119,14 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>УдаляемыеДанные</segments>
+          <segments>DataToDelete</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormGroup">
           <name>ГруппаМетаданных</name>
           <id>208</id>
           <items xsi:type="form:FormField">
-            <name>МетаданныеДляУдаленияПометка</name>
+            <name>MetadataToDeleteCheck</name>
             <id>206</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6095,12 +6135,12 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>УдаляемыеДанные.Пометка</segments>
+                <segments>DataToDelete.Check</segments>
               </paths>
             </dataPath>
             <titleLocation>None</titleLocation>
             <extendedTooltip>
-              <name>МетаданныеДляУдаленияПометкаExtendedTooltip</name>
+              <name>MetadataToDeleteCheckExtendedTooltip</name>
               <id>353</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6115,7 +6155,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>МетаданныеДляУдаленияПометкаКонтекстноеМеню</name>
+              <name>MetadataToDeleteCheckContextMenu</name>
               <id>207</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6132,8 +6172,12 @@
             <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <items xsi:type="form:FormField">
-            <name>МетаданныеДляУдаленияПредставление</name>
+            <name>MetadataToDeletePresentation</name>
             <id>209</id>
+            <title>
+              <key>en</key>
+              <value>Metadata</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Метаданные</value>
@@ -6145,11 +6189,11 @@
             </userVisible>
             <dataPath xsi:type="form:MultiLanguageDataPath">
               <paths xsi:type="form:DataPath">
-                <segments>УдаляемыеДанные.Представление</segments>
+                <segments>DataToDelete.Presentation</segments>
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>МетаданныеДляУдаленияПредставлениеExtendedTooltip</name>
+              <name>MetadataToDeletePresentationExtendedTooltip</name>
               <id>354</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6164,7 +6208,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>МетаданныеДляУдаленияПредставлениеКонтекстноеМеню</name>
+              <name>MetadataToDeletePresentationContextMenu</name>
               <id>210</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6219,7 +6263,7 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>УдаляемыеДанныеКоманднаяПанель</name>
+          <name>DataToDeleteCommandBar</name>
           <id>203</id>
           <items xsi:type="form:Button">
             <name>УдаляемыеДанныеУдалениеОтметитьВсе</name>
@@ -6320,7 +6364,7 @@
         </autoCommandBar>
         <handlers>
           <event>OnChange</event>
-          <name>УдаляемыеДанныеПриИзменении</name>
+          <name>DataToDeleteOnChange</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -6328,10 +6372,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>УдаляемыеДанныеСтрокаПоиска</name>
+          <name>DataToDeleteSearchString</name>
           <id>384</id>
           <extendedTooltip>
-            <name>УдаляемыеДанныеСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>DataToDeleteSearchStringExtendedTooltip</name>
             <id>386</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6346,7 +6390,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>УдаляемыеДанныеСтрокаПоискаКонтекстноеМеню</name>
+            <name>DataToDeleteSearchStringContextMenu</name>
             <id>385</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6365,10 +6409,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>УдаляемыеДанныеСостояниеПросмотра</name>
+          <name>DataToDeleteViewStatus</name>
           <id>387</id>
           <extendedTooltip>
-            <name>УдаляемыеДанныеСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>DataToDeleteViewStatusExtendedTooltip</name>
             <id>389</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6383,7 +6427,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>УдаляемыеДанныеСостояниеПросмотраКонтекстноеМеню</name>
+            <name>DataToDeleteViewStatusContextMenu</name>
             <id>388</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6404,10 +6448,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>УдаляемыеДанныеУправлениеПоиском</name>
+          <name>DataToDeleteSearchControl</name>
           <id>390</id>
           <extendedTooltip>
-            <name>УдаляемыеДанныеУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>DataToDeleteSearchControlExtendedTooltip</name>
             <id>392</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6422,7 +6466,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>УдаляемыеДанныеУправлениеПоискомКонтекстноеМеню</name>
+            <name>DataToDeleteSearchControlContextMenu</name>
             <id>391</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6437,7 +6481,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>УдаляемыеДанныеExtendedTooltip</name>
+          <name>DataToDeleteExtendedTooltip</name>
           <id>351</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6452,7 +6496,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>УдаляемыеДанныеКонтекстноеМеню</name>
+          <name>DataToDeleteContextMenu</name>
           <id>202</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6758,7 +6802,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_UniversalDataExchangeXML</types>
@@ -6770,192 +6814,192 @@
       <common>true</common>
     </edit>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.Data</segments>
+      <segments>Object.Data</segments>
     </notDefaultUseAlwaysAttributes>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.ParametersSettingsTable</segments>
+      <segments>Object.ParametersSettingsTable</segments>
     </notDefaultUseAlwaysAttributes>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.ExportRulesTable</segments>
+      <segments>Object.ExportRulesTable</segments>
     </notDefaultUseAlwaysAttributes>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.ConversionRulesTable</segments>
+      <segments>Object.ConversionRulesTable</segments>
     </notDefaultUseAlwaysAttributes>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.CleanupRulesTable</segments>
+      <segments>Object.CleanupRulesTable</segments>
     </notDefaultUseAlwaysAttributes>
     <notDefaultUseAlwaysAttributes xsi:type="form:DataPath">
-      <segments>Объект.HandlersDebugModeFlag</segments>
+      <segments>Object.HandlersDebugModeFlag</segments>
     </notDefaultUseAlwaysAttributes>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ArchiveFile</segments>
+      <segments>Object.ArchiveFile</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionWindowsAuthentification</segments>
+      <segments>Object.InfobaseConnectionWindowsAuthentification</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.PlatformVersionForInfobaseConnection</segments>
+      <segments>Object.PlatformVersionForInfobaseConnection</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.XMLWriterAdvancedMonitoring</segments>
+      <segments>Object.XMLWriterAdvancedMonitoring</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DisplayInfoMessagesIntoMessageWindow</segments>
+      <segments>Object.DisplayInfoMessagesIntoMessageWindow</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.WriteInfoMessagesToLog</segments>
+      <segments>Object.WriteInfoMessagesToLog</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.WriteErrorMessagesToLog</segments>
+      <segments>Object.WriteErrorMessagesToLog</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExportAllowedObjectsOnly</segments>
+      <segments>Object.ExportAllowedObjectsOnly</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExecuteDataExchangeInOptimizedFormat</segments>
+      <segments>Object.ExecuteDataExchangeInOptimizedFormat</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.StartDate</segments>
+      <segments>Object.StartDate</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.EndDate</segments>
+      <segments>Object.EndDate</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.AppendDataToExchangeLog</segments>
+      <segments>Object.AppendDataToExchangeLog</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ImportDataInExchangeMode</segments>
+      <segments>Object.ImportDataInExchangeMode</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.RequestDataImportConfirmationOnOpenDataProcessor</segments>
+      <segments>Object.RequestDataImportConfirmationOnOpenDataProcessor</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.WriteToInfobaseOnlyChangedObjects</segments>
+      <segments>Object.WriteToInfobaseOnlyChangedObjects</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.WriteRegistersAsRecordSets</segments>
+      <segments>Object.WriteRegistersAsRecordSets</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionNameAtServer</segments>
+      <segments>Object.InfobaseConnectionNameAtServer</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionServerName</segments>
+      <segments>Object.InfobaseConnectionServerName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.EventHandlerExternalDataProcessorFileName</segments>
+      <segments>Object.EventHandlerExternalDataProcessorFileName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExchangeFileName</segments>
+      <segments>Object.ExchangeFileName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.EventHandlersFileName</segments>
+      <segments>Object.EventHandlersFileName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExchangeLogFileName</segments>
+      <segments>Object.ExchangeLogFileName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ImportExchangeLogFileName</segments>
+      <segments>Object.ImportExchangeLogFileName</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.UseFilterByDateForAllObjects</segments>
+      <segments>Object.UseFilterByDateForAllObjects</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.UseTransactions</segments>
+      <segments>Object.UseTransactions</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.UseTransactionsOnExportForExchangePlans</segments>
+      <segments>Object.UseTransactionsOnExportForExchangePlans</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionDirectory</segments>
+      <segments>Object.InfobaseConnectionDirectory</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ProcessedObjectsCountToUpdateStatus</segments>
+      <segments>Object.ProcessedObjectsCountToUpdateStatus</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ObjectsPerTransaction</segments>
+      <segments>Object.ObjectsPerTransaction</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.TransactionItemsCountOnExportForExchangePlans</segments>
+      <segments>Object.TransactionItemsCountOnExportForExchangePlans</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.Comment</segments>
+      <segments>Object.Comment</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.CommentOnDataExport</segments>
+      <segments>Object.CommentOnDataExport</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.CommentOnDataImport</segments>
+      <segments>Object.CommentOnDataImport</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.AutomaticDataImportSettings</segments>
+      <segments>Object.AutomaticDataImportSettings</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DoNotShowInfoMessagesToUser</segments>
+      <segments>Object.DoNotShowInfoMessagesToUser</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DoNotRequestDataImportConfirmationOnOpenDataProcessor</segments>
+      <segments>Object.DoNotRequestDataImportConfirmationOnOpenDataProcessor</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DirectReadFromDestinationIB</segments>
+      <segments>Object.DirectReadFromDestinationIB</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExportSettingsDataProcessors</segments>
+      <segments>Object.ExportSettingsDataProcessors</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ImportSettingsDataProcessors</segments>
+      <segments>Object.ImportSettingsDataProcessors</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ReadEventHandlersFromExchangeRulesFile</segments>
+      <segments>Object.ReadEventHandlersFromExchangeRulesFile</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.RemoveTrailingSpaces</segments>
+      <segments>Object.RemoveTrailingSpaces</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ImportReferencedObjectsWithoutDeletionMark</segments>
+      <segments>Object.ImportReferencedObjectsWithoutDeletionMark</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.OptimizedObjectsWriting</segments>
+      <segments>Object.OptimizedObjectsWriting</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.OpenExchangeLogAfterExecutingOperations</segments>
+      <segments>Object.OpenExchangeLogAfterExecutingOperations</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.Parameters</segments>
+      <segments>Object.Parameters</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExchangeFileUnpackPassword</segments>
+      <segments>Object.ExchangeFileUnpackPassword</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExchangeFileCompressionPassword</segments>
+      <segments>Object.ExchangeFileCompressionPassword</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionPassword</segments>
+      <segments>Object.InfobaseConnectionPassword</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.InfobaseConnectionUsername</segments>
+      <segments>Object.InfobaseConnectionUsername</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ExchangeMode</segments>
+      <segments>Object.ExchangeMode</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.AlgorithmDebugMode</segments>
+      <segments>Object.AlgorithmDebugMode</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.SavedSettings</segments>
+      <segments>Object.SavedSettings</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.ConnectedInfobaseType</segments>
+      <segments>Object.ConnectedInfobaseType</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.DebugModeFlag</segments>
+      <segments>Object.DebugModeFlag</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Объект.HandlersDebugModeFlag</segments>
+      <segments>Object.HandlersDebugModeFlag</segments>
     </settingsSavedData>
     <main>true</main>
     <additionalColumns>
       <tablePath xsi:type="form:DataPath">
-        <segments>Объект.ParametersSettingsTable</segments>
+        <segments>Object.ParametersSettingsTable</segments>
       </tablePath>
       <columns>
         <name>Наименование</name>
@@ -7002,7 +7046,7 @@
     </additionalColumns>
     <additionalColumns>
       <tablePath xsi:type="form:DataPath">
-        <segments>Объект.ExportRulesTable</segments>
+        <segments>Object.ExportRulesTable</segments>
       </tablePath>
       <columns>
         <name>Наименование</name>
@@ -7132,12 +7176,16 @@
     </additionalColumns>
     <additionalColumns>
       <tablePath xsi:type="form:DataPath">
-        <segments>Объект.ConversionRulesTable</segments>
+        <segments>Object.ConversionRulesTable</segments>
       </tablePath>
     </additionalColumns>
   </attributes>
   <attributes>
-    <name>ПрямаяВыгрузка</name>
+    <name>DirectExport</name>
+    <title>
+      <key>en</key>
+      <value>Direct export</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Прямая выгрузка</value>
@@ -7156,11 +7204,15 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ПрямаяВыгрузка</segments>
+      <segments>DirectExport</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ПредставлениеПериодаВыгрузки</name>
+    <name>ExportPeriodPresentation</name>
+    <title>
+      <key>en</key>
+      <value>Export period presentation</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Представление периода выгрузки</value>
@@ -7175,7 +7227,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ЗагрузкаДанныхИхФайла</name>
+    <name>DataImportFromFile</name>
+    <title>
+      <key>ru</key>
+      <value>Data import from file</value>
+    </title>
     <id>5</id>
     <valueType>
       <types>ValueList</types>
@@ -7187,7 +7243,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ЗагрузкаДанныхИхФайла</segments>
+      <segments>DataImportFromFile</segments>
     </settingsSavedData>
     <savedData>true</savedData>
     <extInfo xsi:type="form:ValueListExtInfo">
@@ -7195,7 +7251,7 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ПравилаОбмена</name>
+    <name>ExchangeRules</name>
     <id>6</id>
     <valueType>
       <types>ValueList</types>
@@ -7207,7 +7263,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ПравилаОбмена</segments>
+      <segments>ExchangeRules</segments>
     </settingsSavedData>
     <savedData>true</savedData>
     <extInfo xsi:type="form:ValueListExtInfo">
@@ -7215,7 +7271,11 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ВыгрузкаДанныхВФайл</name>
+    <name>DataExportToFile</name>
+    <title>
+      <key>ru</key>
+      <value>Data export to file</value>
+    </title>
     <id>7</id>
     <valueType>
       <types>ValueList</types>
@@ -7227,7 +7287,7 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ВыгрузкаДанныхВФайл</segments>
+      <segments>DataExportToFile</segments>
     </settingsSavedData>
     <savedData>true</savedData>
     <extInfo xsi:type="form:ValueListExtInfo">
@@ -7235,7 +7295,11 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузки</name>
+    <name>ChangesRegistrationDeletionTypeForExportedExchangeNodes</name>
+    <title>
+      <key>en</key>
+      <value>Changes registration deletion type for exported exchange nodes</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Тип удаления регистрации изменений для узлов обмена после выгрузки</value>
@@ -7252,12 +7316,16 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ТипУдаленияРегистрацииИзмененийДляУзловОбменаПослеВыгрузки</segments>
+      <segments>ChangesRegistrationDeletionTypeForExportedExchangeNodes</segments>
     </settingsSavedData>
     <savedData>true</savedData>
   </attributes>
   <attributes>
-    <name>ЭтоКлиент</name>
+    <name>IsClient</name>
+    <title>
+      <key>ru</key>
+      <value>Is client</value>
+    </title>
     <id>9</id>
     <valueType>
       <types>Boolean</types>
@@ -7269,12 +7337,16 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ЭтоКлиент</segments>
+      <segments>IsClient</segments>
     </settingsSavedData>
     <savedData>true</savedData>
   </attributes>
   <attributes>
-    <name>ИмяФайлаОбмена</name>
+    <name>ExchangeFileName</name>
+    <title>
+      <key>en</key>
+      <value>Exchange file name</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Имя файла обмена</value>
@@ -7291,11 +7363,15 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ИмяФайлаОбмена</segments>
+      <segments>ExchangeFileName</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ИмяФайлаДанных</name>
+    <name>DataFileName</name>
+    <title>
+      <key>en</key>
+      <value>Data file name</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Имя файла данных</value>
@@ -7312,11 +7388,15 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ИмяФайлаДанных</segments>
+      <segments>DataFileName</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ИмяФайлаПравил</name>
+    <name>RulesFileName</name>
+    <title>
+      <key>en</key>
+      <value>Rules file name</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Имя файла правил</value>
@@ -7333,11 +7413,11 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ИмяФайлаПравил</segments>
+      <segments>RulesFileName</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ПравилаЗагружены</name>
+    <name>RulesAreImported</name>
     <id>13</id>
     <valueType>
       <types>Boolean</types>
@@ -7350,7 +7430,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>УдаляемыеДанные</name>
+    <name>DataToDelete</name>
+    <title>
+      <key>en</key>
+      <value>Data to delete</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Удаляемые данные</value>
@@ -7366,7 +7450,7 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Метаданные</name>
+      <name>Metadata</name>
       <id>1</id>
       <valueType>
         <types>String</types>
@@ -7380,7 +7464,11 @@
       </edit>
     </columns>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
+      <title>
+        <key>en</key>
+        <value>Check</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Пометка</value>
@@ -7401,7 +7489,11 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Представление</value>
@@ -7420,7 +7512,11 @@
     </columns>
   </attributes>
   <attributes>
-    <name>АдресФайлаПравилВХранилище</name>
+    <name>RulesFileAddressInStorage</name>
+    <title>
+      <key>ru</key>
+      <value>Rules file address in storage</value>
+    </title>
     <id>3</id>
     <valueType>
       <types>String</types>
@@ -7434,7 +7530,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПериодВыгрузки</name>
+    <name>ExportPeriod</name>
+    <title>
+      <key>en</key>
+      <value>Export period</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Период выгрузки</value>
@@ -7450,11 +7550,11 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ПериодВыгрузки</segments>
+      <segments>ExportPeriod</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ИмяФайлаПравилЗагрузки</name>
+    <name>ImportRulesFileName</name>
     <title>
       <key>ru</key>
       <value>Имя файла правил</value>
@@ -7471,11 +7571,11 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ИмяФайлаПравилЗагрузки</segments>
+      <segments>ImportRulesFileName</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>АдресФайлаПравилЗагрузкиВХранилище</name>
+    <name>ImportRulesFileAddressInStorage</name>
     <id>17</id>
     <valueType>
       <types>String</types>
