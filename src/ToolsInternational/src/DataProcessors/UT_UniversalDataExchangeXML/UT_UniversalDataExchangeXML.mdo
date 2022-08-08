@@ -14,7 +14,7 @@
     <value>Универсальный обмен данными в формате XML(с фильтрами и выгрузкой на HTTP сервис) [УИ]</value>
   </synonym>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_UniversalDataExchangeXML.Form.УправляемаяФорма</defaultForm>
+  <defaultForm>DataProcessor.UT_UniversalDataExchangeXML.Form.ManagedForm</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -1854,7 +1854,11 @@
     </type>
   </attributes>
   <forms uuid="6192831e-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>УправляемаяФорма</name>
+    <name>ManagedForm</name>
+    <synonym>
+      <key>en</key>
+      <value>Managed form</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Управляемая форма</value>
