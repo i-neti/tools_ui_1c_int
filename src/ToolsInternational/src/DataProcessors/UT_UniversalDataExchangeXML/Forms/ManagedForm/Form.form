@@ -322,8 +322,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormField">
-            <name>АрхивироватьФайл</name>
+            <name>ArchiveFile</name>
             <id>18</id>
+            <title>
+              <key>en</key>
+              <value>Compress outgoing data exchange file</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Сжимать исходящий файл обмена данными</value>
@@ -341,10 +345,10 @@
             <titleLocation>Right</titleLocation>
             <handlers>
               <event>OnChange</event>
-              <name>АрхивироватьФайлПриИзменении</name>
+              <name>ArchiveFileOnChange</name>
             </handlers>
             <extendedTooltip>
-              <name>АрхивироватьФайлExtendedTooltip</name>
+              <name>ArchiveFileExtendedTooltip</name>
               <id>248</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -359,7 +363,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>АрхивироватьФайлКонтекстноеМеню</name>
+              <name>ArchiveFileContextMenu</name>
               <id>19</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -376,7 +380,7 @@
             <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <items xsi:type="form:FormField">
-            <name>ПарольДляСжатияФайлаОбмена</name>
+            <name>ExchangeFileCompressionPassword</name>
             <id>20</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -389,7 +393,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>ПарольДляСжатияФайлаОбменаExtendedTooltip</name>
+              <name>ExchangeFileCompressionPasswordExtendedTooltip</name>
               <id>249</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -404,7 +408,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ПарольДляСжатияФайлаОбменаКонтекстноеМеню</name>
+              <name>ExchangeFileCompressionPasswordContextMenu</name>
               <id>21</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -473,8 +477,12 @@
                 <name>ТипПлатформа</name>
                 <id>26</id>
                 <items xsi:type="form:FormField">
-                  <name>ТипИнформационнойБазыДляПодключения</name>
+                  <name>ConnectedInfobaseType</name>
                   <id>22</id>
+                  <title>
+                    <key>en</key>
+                    <value>Infobase type</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>Тип информационной базы</value>
@@ -491,10 +499,10 @@
                   </dataPath>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ТипИнформационнойБазыДляПодключенияПриИзменении</name>
+                    <name>ConnectedInfobaseTypeOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>ТипИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                    <name>ConnectedInfobaseTypeExtendedTooltip</name>
                     <id>252</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -509,7 +517,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ТипИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                    <name>ConnectedInfobaseTypeContextMenu</name>
                     <id>23</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -529,13 +537,21 @@
                     <autoMaxHeight>true</autoMaxHeight>
                     <wrap>true</wrap>
                     <editFormat>
+                      <key>en</key>
+                      <value>BF='At 1C:Enterprise server'; BT='At this computer or LAN computer'</value>
+                    </editFormat>
+                    <editFormat>
                       <key>ru</key>
-                      <value>БЛ='На сервере 1С:Предприятия'; БИ='На данном компьютере или на компьютере в локальной сети'</value>
+                      <value>BF='На сервере 1С:Предприятия'; BT='На данном компьютере или на компьютере в локальной сети'</value>
                     </editFormat>
                     <listChoiceMode>true</listChoiceMode>
                     <chooseType>true</chooseType>
                     <typeDomainEnabled>true</typeDomainEnabled>
                     <choiceList>
+                      <presentation>
+                        <key>en</key>
+                        <value>At 1C:Enterprise server</value>
+                      </presentation>
                       <presentation>
                         <key>ru</key>
                         <value>На сервере 1С:Предприятия</value>
@@ -543,6 +559,10 @@
                       <value xsi:type="core:BooleanValue"/>
                     </choiceList>
                     <choiceList>
+                      <presentation>
+                        <key>en</key>
+                        <value>At this computer or LAN computer</value>
+                      </presentation>
                       <presentation>
                         <key>ru</key>
                         <value>На данном компьютере или на компьютере в локальной сети</value>
@@ -554,8 +574,12 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormField">
-                  <name>ВерсияПлатформыИнформационнойБазыДляПодключения</name>
+                  <name>PlatformVersionForInfobaseConnection</name>
                   <id>24</id>
+                  <title>
+                    <key>en</key>
+                    <value>Platform</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>Платформа</value>
@@ -572,10 +596,10 @@
                   </dataPath>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ВерсияПлатформыИнформационнойБазыДляПодключенияПриИзменении</name>
+                    <name>PlatformVersionForInfobaseConnectionOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>ВерсияПлатформыИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                    <name>PlatformVersionForInfobaseConnectionExtendedTooltip</name>
                     <id>253</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -590,7 +614,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ВерсияПлатформыИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                    <name>PlatformVersionForInfobaseConnectionContextMenu</name>
                     <id>25</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -613,6 +637,10 @@
                     <typeDomainEnabled>true</typeDomainEnabled>
                     <choiceList>
                       <presentation>
+                        <key>en</key>
+                        <value>8.2</value>
+                      </presentation>
+                      <presentation>
                         <key>ru</key>
                         <value>8.2</value>
                       </presentation>
@@ -621,6 +649,10 @@
                       </value>
                     </choiceList>
                     <choiceList>
+                      <presentation>
+                        <key>en</key>
+                        <value>8.3</value>
+                      </presentation>
                       <presentation>
                         <key>ru</key>
                         <value>8.3</value>
@@ -672,7 +704,7 @@
                   <name>ФайловаяБаза</name>
                   <id>38</id>
                   <items xsi:type="form:FormField">
-                    <name>КаталогИнформационнойБазыДляПодключения</name>
+                    <name>InfobaseConnectionDirectory</name>
                     <id>27</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -685,7 +717,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>КаталогИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                      <name>InfobaseConnectionDirectoryExtendedTooltip</name>
                       <id>256</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -700,7 +732,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>КаталогИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                      <name>InfobaseConnectionDirectoryContextMenu</name>
                       <id>28</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -717,11 +749,11 @@
                     <extInfo xsi:type="form:InputFieldExtInfo">
                       <handlers>
                         <event>StartChoice</event>
-                        <name>КаталогИнформационнойБазыДляПодключенияНачалоВыбора</name>
+                        <name>InfobaseConnectionDirectoryStartChoice</name>
                       </handlers>
                       <handlers>
                         <event>Opening</event>
-                        <name>КаталогИнформационнойБазыДляПодключенияОткрытие</name>
+                        <name>InfobaseConnectionDirectoryOpening</name>
                       </handlers>
                       <autoMaxWidth>true</autoMaxWidth>
                       <autoMaxHeight>true</autoMaxHeight>
@@ -767,8 +799,12 @@
                   <name>БазаНаСервере</name>
                   <id>39</id>
                   <items xsi:type="form:FormField">
-                    <name>ИмяСервераИнформационнойБазыДляПодключения</name>
+                    <name>InfobaseConnectionServerName</name>
                     <id>40</id>
+                    <title>
+                      <key>en</key>
+                      <value>1C:Enterprise server name</value>
+                    </title>
                     <title>
                       <key>ru</key>
                       <value>Имя сервера 1С:Предприятия</value>
@@ -784,7 +820,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяСервераИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                      <name>InfobaseConnectionServerNameExtendedTooltip</name>
                       <id>258</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -799,7 +835,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяСервераИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                      <name>InfobaseConnectionServerNameContextMenu</name>
                       <id>41</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -823,8 +859,12 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ИмяИнформационнойБазыНаСервереДляПодключения</name>
+                    <name>InfobaseConnectionNameAtServer</name>
                     <id>42</id>
+                    <title>
+                      <key>en</key>
+                      <value>Infobase</value>
+                    </title>
                     <title>
                       <key>ru</key>
                       <value>Информационная база</value>
@@ -840,7 +880,7 @@
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ИмяИнформационнойБазыНаСервереДляПодключенияExtendedTooltip</name>
+                      <name>InfobaseConnectionNameAtServerExtendedTooltip</name>
                       <id>259</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -855,7 +895,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ИмяИнформационнойБазыНаСервереДляПодключенияКонтекстноеМеню</name>
+                      <name>InfobaseConnectionNameAtServerContextMenu</name>
                       <id>43</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -941,8 +981,12 @@
                 <name>АутентификацияТест</name>
                 <id>31</id>
                 <items xsi:type="form:FormField">
-                  <name>АутентификацияWindowsИнформационнойБазыДляПодключения</name>
+                  <name>InfobaseConnectionWindowsAuthentification</name>
                   <id>29</id>
+                  <title>
+                    <key>en</key>
+                    <value>Windows authentification</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>Аутентификация Windows</value>
@@ -960,10 +1004,10 @@
                   <titleLocation>Right</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>АутентификацияWindowsИнформационнойБазыДляПодключенияПриИзменении</name>
+                    <name>InfobaseConnectionWindowsAuthentificationOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>АутентификацияWindowsИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                    <name>InfobaseConnectionWindowsAuthentificationExtendedTooltip</name>
                     <id>261</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -978,7 +1022,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>АутентификацияWindowsИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                    <name>InfobaseConnectionWindowsAuthentificationContextMenu</name>
                     <id>30</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1062,8 +1106,12 @@
                 <name>ПользовательПароль</name>
                 <id>33</id>
                 <items xsi:type="form:FormField">
-                  <name>ПользовательИнформационнойБазыДляПодключения</name>
+                  <name>InfobaseConnectionUsername</name>
                   <id>34</id>
+                  <title>
+                    <key>en</key>
+                    <value>Username</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>Пользователь</value>
@@ -1079,7 +1127,7 @@
                     </paths>
                   </dataPath>
                   <extendedTooltip>
-                    <name>ПользовательИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                    <name>InfobaseConnectionUsernameExtendedTooltip</name>
                     <id>264</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1094,7 +1142,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ПользовательИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                    <name>InfobaseConnectionUsernameContextMenu</name>
                     <id>35</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1119,8 +1167,12 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormField">
-                  <name>ПарольИнформационнойБазыДляПодключения</name>
+                  <name>InfobaseConnectionPassword</name>
                   <id>36</id>
+                  <title>
+                    <key>en</key>
+                    <value>Password</value>
+                  </title>
                   <title>
                     <key>ru</key>
                     <value>Пароль</value>
@@ -1136,7 +1188,7 @@
                     </paths>
                   </dataPath>
                   <extendedTooltip>
-                    <name>ПарольИнформационнойБазыДляПодключенияExtendedTooltip</name>
+                    <name>InfobaseConnectionPasswordExtendedTooltip</name>
                     <id>265</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1151,7 +1203,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>ПарольИнформационнойБазыДляПодключенияКонтекстноеМеню</name>
+                    <name>InfobaseConnectionPasswordContextMenu</name>
                     <id>37</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1383,7 +1435,7 @@
           <name>УИ_ГруппаВыгрузкаЧерезВебСервис</name>
           <id>416</id>
           <items xsi:type="form:FormField">
-            <name>АдресПубликацииПриемника</name>
+            <name>DestinationPublicationAddress</name>
             <id>418</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1394,7 +1446,7 @@
               <segments>Object.UT_DestinationPublicationAddress</segments>
             </dataPath>
             <extendedTooltip>
-              <name>АдресПубликацииПриемникаРасширеннаяПодсказка</name>
+              <name>DestinationPublicationAddressExtendedTooltip</name>
               <id>420</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1409,7 +1461,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>АдресПубликацииПриемникаКонтекстноеМеню</name>
+              <name>DestinationPublicationAddressContextMenu</name>
               <id>419</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1436,8 +1488,12 @@
             <name>УИ_ПользовательПарольВебСервиса</name>
             <id>423</id>
             <items xsi:type="form:FormField">
-              <name>УИ_ПользовательИнформационнойБазыДляПодключенияКВебСервису</name>
+              <name>UT_InfobaseWebServiceConnectionUsername</name>
               <id>425</id>
+              <title>
+                <key>en</key>
+                <value>Username</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Пользователь</value>
@@ -1453,7 +1509,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УИ_ПользовательИнформационнойБазыДляПодключенияКВебСервисуРасширеннаяПодсказка</name>
+                <name>UT_InfobaseWebServiceConnectionUsernameExtendedTooltip</name>
                 <id>427</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1468,7 +1524,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УИ_ПользовательИнформационнойБазыДляПодключенияКВебСервисуКонтекстноеМеню</name>
+                <name>UT_InfobaseWebServiceConnectionUsernameContextMenu</name>
                 <id>426</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1493,8 +1549,12 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>УИ_ПарольИнформационнойБазыДляПодключенияКВебСервису</name>
+              <name>UT_InfobaseWebServiceConnectionPassword</name>
               <id>428</id>
+              <title>
+                <key>en</key>
+                <value>Password</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Пароль</value>
@@ -1510,7 +1570,7 @@
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>УИ_ПарольИнформационнойБазыДляПодключенияКВебСервисуРасширеннаяПодсказка</name>
+                <name>UT_InfobaseWebServiceConnectionPasswordExtendedTooltip</name>
                 <id>430</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1525,7 +1585,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>УИ_ПарольИнформационнойБазыДляПодключенияКВебСервисуКонтекстноеМеню</name>
+                <name>UT_InfobaseWebServiceConnectionPasswordContextMenu</name>
                 <id>429</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1891,8 +1951,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Table">
-            <name>ТаблицаПравилВыгрузки</name>
+            <name>ExportRulesTable</name>
             <id>133</id>
+            <title>
+              <key>en</key>
+              <value>Export rules table</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Таблица правил выгрузки</value>
@@ -1910,7 +1974,7 @@
               <name>ГруппаПометки</name>
               <id>142</id>
               <items xsi:type="form:FormField">
-                <name>Пометка</name>
+                <name>Check</name>
                 <id>140</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1919,12 +1983,12 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Object.ExportRulesTable.Включить</segments>
+                    <segments>Object.ExportRulesTable.Enable</segments>
                   </paths>
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <extendedTooltip>
-                  <name>ПометкаExtendedTooltip</name>
+                  <name>CheckExtendedTooltip</name>
                   <id>280</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1939,7 +2003,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ПометкаКонтекстноеМеню</name>
+                  <name>CheckContextMenu</name>
                   <id>141</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1956,7 +2020,7 @@
                 <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
               </items>
               <items xsi:type="form:FormField">
-                <name>ПВД</name>
+                <name>DER</name>
                 <id>136</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1965,11 +2029,11 @@
                 </userVisible>
                 <dataPath xsi:type="form:MultiLanguageDataPath">
                   <paths xsi:type="form:DataPath">
-                    <segments>Object.ExportRulesTable.Наименование</segments>
+                    <segments>Object.ExportRulesTable.Description</segments>
                   </paths>
                 </dataPath>
                 <extendedTooltip>
-                  <name>ПВДExtendedTooltip</name>
+                  <name>DERExtendedTooltip</name>
                   <id>281</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1984,7 +2048,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ПВДКонтекстноеМеню</name>
+                  <name>DERContextMenu</name>
                   <id>137</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2039,8 +2103,12 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>СсылкаНаУзелОбмена</name>
+              <name>ExchangeNodeRef</name>
               <id>138</id>
+              <title>
+                <key>en</key>
+                <value>Exchange node</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Узел обмена</value>
@@ -2052,11 +2120,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Object.ExportRulesTable.СсылкаНаУзелОбмена</segments>
+                  <segments>Object.ExportRulesTable.ExchangeNodeRef</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>СсылкаНаУзелОбменаExtendedTooltip</name>
+                <name>ExchangeNodeRefExtendedTooltip</name>
                 <id>282</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2071,7 +2139,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>СсылкаНаУзелОбменаКонтекстноеМеню</name>
+                <name>ExchangeNodeRefContextMenu</name>
                 <id>139</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2096,7 +2164,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТаблицаПравилВыгрузкиЭтоГруппа</name>
+              <name>ExportRulesTableIsFolder</name>
               <id>147</id>
               <enabled>true</enabled>
               <userVisible>
@@ -2104,11 +2172,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Object.ExportRulesTable.ЭтоГруппа</segments>
+                  <segments>Object.ExportRulesTable.IsFolder</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиЭтоГруппаExtendedTooltip</name>
+                <name>ExportRulesTableIsFolderExtendedTooltip</name>
                 <id>283</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2123,7 +2191,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиЭтоГруппаКонтекстноеМеню</name>
+                <name>ExportRulesTableIsFolderContextMenu</name>
                 <id>148</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2140,8 +2208,12 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТаблицаПравилВыгрузкиИспользоватьОтбор</name>
+              <name>ExportRulesTableUseFilter</name>
               <id>410</id>
+              <title>
+                <key>en</key>
+                <value>Filter</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Отбор</value>
@@ -2152,10 +2224,10 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>Object.ExportRulesTable.ИспользоватьОтбор</segments>
+                <segments>Object.ExportRulesTable.UseFilter</segments>
               </dataPath>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиИспользоватьОтборРасширеннаяПодсказка</name>
+                <name>ExportRulesTableUseFilterExtendedTooltip</name>
                 <id>412</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2170,7 +2242,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиИспользоватьОтборКонтекстноеМеню</name>
+                <name>ExportRulesTableUseFilterContextMenu</name>
                 <id>411</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2187,8 +2259,12 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТаблицаПравилВыгрузкиОтбор</name>
+              <name>ExportRulesTableFilter</name>
               <id>413</id>
+              <title>
+                <key>en</key>
+                <value>Condition</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Условие</value>
@@ -2199,14 +2275,14 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>Object.ExportRulesTable.Отбор</segments>
+                <segments>Object.ExportRulesTable.Filter</segments>
               </dataPath>
               <handlers>
                 <event>OnChange</event>
-                <name>ТаблицаПравилВыгрузкиОтборПриИзменении</name>
+                <name>ExportRulesTableFilterOnChange</name>
               </handlers>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиОтборРасширеннаяПодсказка</name>
+                <name>ExportRulesTableFilterExtendedTooltip</name>
                 <id>415</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2221,7 +2297,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиОтборКонтекстноеМеню</name>
+                <name>ExportRulesTableFilterContextMenu</name>
                 <id>414</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2238,11 +2314,11 @@
               <extInfo xsi:type="form:InputFieldExtInfo">
                 <handlers>
                   <event>StartChoice</event>
-                  <name>ТаблицаПравилВыгрузкиОтборНачалоВыбора</name>
+                  <name>ExportRulesTableFilterStartChoice</name>
                 </handlers>
                 <handlers>
                   <event>Clearing</event>
-                  <name>ТаблицаПравилВыгрузкиОтборОчистка</name>
+                  <name>ExportRulesTableFilterClearing</name>
                 </handlers>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2253,7 +2329,7 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>ТаблицаПравилВыгрузкиКоманднаяПанель</name>
+              <name>ExportRulesTableCommandBar</name>
               <id>135</id>
               <items xsi:type="form:Button">
                 <name>ТаблицаПравилВыгрузкиВыгрузкаОтметитьВсе</name>
@@ -2416,11 +2492,11 @@
             </autoCommandBar>
             <handlers>
               <event>BeforeRowChange</event>
-              <name>ТаблицаПравилВыгрузкиПередНачаломИзменения</name>
+              <name>ExportRulesTableBeforeRowChange</name>
             </handlers>
             <handlers>
               <event>OnChange</event>
-              <name>ТаблицаПравилВыгрузкиПриИзменении</name>
+              <name>ExportRulesTableOnChange</name>
             </handlers>
             <searchStringAddition>
               <visible>true</visible>
@@ -2428,10 +2504,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаПравилВыгрузкиСтрокаПоиска</name>
+              <name>ExportRulesTableSearchString</name>
               <id>366</id>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>ExportRulesTableSearchStringExtendedTooltip</name>
                 <id>368</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2446,7 +2522,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиСтрокаПоискаКонтекстноеМеню</name>
+                <name>ExportRulesTableSearchStringContextMenu</name>
                 <id>367</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2465,10 +2541,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаПравилВыгрузкиСостояниеПросмотра</name>
+              <name>ExportRulesTableViewStatus</name>
               <id>369</id>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>ExportRulesTableViewStatusExtendedTooltip</name>
                 <id>371</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2483,7 +2559,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиСостояниеПросмотраКонтекстноеМеню</name>
+                <name>ExportRulesTableViewStatusContextMenu</name>
                 <id>370</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2504,10 +2580,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаПравилВыгрузкиУправлениеПоиском</name>
+              <name>ExportRulesTableSearchControl</name>
               <id>372</id>
               <extendedTooltip>
-                <name>ТаблицаПравилВыгрузкиУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>ExportRulesTableSearchControlExtendedTooltip</name>
                 <id>374</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2522,7 +2598,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаПравилВыгрузкиУправлениеПоискомКонтекстноеМеню</name>
+                <name>ExportRulesTableSearchControlContextMenu</name>
                 <id>373</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2537,7 +2613,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>ТаблицаПравилВыгрузкиExtendedTooltip</name>
+              <name>ExportRulesTableExtendedTooltip</name>
               <id>278</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2552,7 +2628,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ТаблицаПравилВыгрузкиКонтекстноеМеню</name>
+              <name>ExportRulesTableContextMenu</name>
               <id>134</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2615,8 +2691,12 @@
           <name>Параметры</name>
           <id>47</id>
           <items xsi:type="form:Table">
-            <name>ТаблицаНастройкиПараметров</name>
+            <name>ParametersSettingsTable</name>
             <id>58</id>
+            <title>
+              <key>en</key>
+              <value>Parameters settings table</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Таблица настройки параметров</value>
@@ -2631,7 +2711,7 @@
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormField">
-              <name>ТаблицаНастройкиПараметровНаименование</name>
+              <name>ParametersSettingsTableDescription</name>
               <id>143</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2640,11 +2720,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Object.ParametersSettingsTable.Наименование</segments>
+                  <segments>Object.ParametersSettingsTable.Description</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТаблицаНастройкиПараметровНаименованиеExtendedTooltip</name>
+                <name>ParametersSettingsTableDescriptionExtendedTooltip</name>
                 <id>288</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2659,7 +2739,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаНастройкиПараметровНаименованиеКонтекстноеМеню</name>
+                <name>ParametersSettingsTableDescriptionContextMenu</name>
                 <id>144</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2683,7 +2763,7 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormField">
-              <name>ТаблицаНастройкиПараметровЗначение</name>
+              <name>ParametersSettingsTableValue</name>
               <id>145</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2692,11 +2772,11 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>Object.ParametersSettingsTable.Значение</segments>
+                  <segments>Object.ParametersSettingsTable.Value</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
-                <name>ТаблицаНастройкиПараметровЗначениеExtendedTooltip</name>
+                <name>ParametersSettingsTableValueExtendedTooltip</name>
                 <id>289</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2711,7 +2791,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаНастройкиПараметровЗначениеКонтекстноеМеню</name>
+                <name>ParametersSettingsTableValueContextMenu</name>
                 <id>146</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2734,10 +2814,10 @@
               </extInfo>
             </items>
             <autoCommandBar>
-              <name>ТаблицаНастройкиПараметровКоманднаяПанель</name>
+              <name>ParametersSettingsTableCommandBar</name>
               <id>60</id>
               <items xsi:type="form:Button">
-                <name>ТаблицаНастройкиПараметровВосстановитьПараметры</name>
+                <name>ParametersSettingsTableRestoreParameters</name>
                 <id>61</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2745,7 +2825,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТаблицаНастройкиПараметровВосстановитьПараметрыExtendedTooltip</name>
+                  <name>ParametersSettingsTableRestoreParametersExtendedTooltip</name>
                   <id>285</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2759,7 +2839,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ВосстановитьПараметры</commandName>
+                <commandName>Form.Command.RestoreParameters</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2809,10 +2889,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаНастройкиПараметровСтрокаПоиска</name>
+              <name>ParametersSettingsTableSearchString</name>
               <id>375</id>
               <extendedTooltip>
-                <name>ТаблицаНастройкиПараметровСтрокаПоискаРасширеннаяПодсказка</name>
+                <name>ParametersSettingsTableSearchStringExtendedTooltip</name>
                 <id>377</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2827,7 +2907,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаНастройкиПараметровСтрокаПоискаКонтекстноеМеню</name>
+                <name>ParametersSettingsTableSearchStringContextMenu</name>
                 <id>376</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2846,10 +2926,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаНастройкиПараметровСостояниеПросмотра</name>
+              <name>ParametersSettingsTableViewStatus</name>
               <id>378</id>
               <extendedTooltip>
-                <name>ТаблицаНастройкиПараметровСостояниеПросмотраРасширеннаяПодсказка</name>
+                <name>ParametersSettingsTableViewStatusExtendedTooltip</name>
                 <id>380</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2864,7 +2944,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаНастройкиПараметровСостояниеПросмотраКонтекстноеМеню</name>
+                <name>ParametersSettingsTableViewStatusContextMenu</name>
                 <id>379</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2885,10 +2965,10 @@
               <userVisible>
                 <common>true</common>
               </userVisible>
-              <name>ТаблицаНастройкиПараметровУправлениеПоиском</name>
+              <name>ParametersSettingsTableSearchControl</name>
               <id>381</id>
               <extendedTooltip>
-                <name>ТаблицаНастройкиПараметровУправлениеПоискомРасширеннаяПодсказка</name>
+                <name>ParametersSettingsTableSearchControlExtendedTooltip</name>
                 <id>383</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2903,7 +2983,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ТаблицаНастройкиПараметровУправлениеПоискомКонтекстноеМеню</name>
+                <name>ParametersSettingsTableSearchControlContextMenu</name>
                 <id>382</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2918,7 +2998,7 @@
               </extInfo>
             </searchControlAddition>
             <extendedTooltip>
-              <name>ТаблицаНастройкиПараметровExtendedTooltip</name>
+              <name>ParametersSettingsTableExtendedTooltip</name>
               <id>287</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2933,7 +3013,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ТаблицаНастройкиПараметровКонтекстноеМеню</name>
+              <name>ParametersSettingsTableContextMenu</name>
               <id>59</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -2997,7 +3077,7 @@
           <name>ЗакладкаКомментарий</name>
           <id>48</id>
           <items xsi:type="form:FormField">
-            <name>Комментарий</name>
+            <name>Comment</name>
             <id>49</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3011,7 +3091,7 @@
             </dataPath>
             <titleLocation>None</titleLocation>
             <extendedTooltip>
-              <name>КомментарийExtendedTooltip</name>
+              <name>CommentExtendedTooltip</name>
               <id>291</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3026,7 +3106,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>КомментарийКонтекстноеМеню</name>
+              <name>CommentContextMenu</name>
               <id>50</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3154,8 +3234,12 @@
             <name>ГруппаОтладкиВыгрузки</name>
             <id>364</id>
             <items xsi:type="form:FormField">
-              <name>ФлагРежимОтладкиОбработчиковВыгрузки</name>
+              <name>ExportHandlersDebugModeFlag</name>
               <id>54</id>
+              <title>
+                <key>en</key>
+                <value>Export handlers debug mode</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Режим отладки обработчиков выгрузки</value>
@@ -3173,10 +3257,10 @@
               <titleLocation>Right</titleLocation>
               <handlers>
                 <event>OnChange</event>
-                <name>ФлагРежимОтладкиОбработчиковВыгрузкиПриИзменении</name>
+                <name>ExportHandlersDebugModeFlagOnChange</name>
               </handlers>
               <extendedTooltip>
-                <name>ФлагРежимОтладкиОбработчиковВыгрузкиExtendedTooltip</name>
+                <name>ExportHandlersDebugModeFlagExtendedTooltip</name>
                 <id>295</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3191,7 +3275,7 @@
                 </extInfo>
               </extendedTooltip>
               <contextMenu>
-                <name>ФлагРежимОтладкиОбработчиковВыгрузкиКонтекстноеМеню</name>
+                <name>ExportHandlersDebugModeFlagContextMenu</name>
                 <id>55</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3601,8 +3685,12 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПарольДляРаспаковкиФайлаОбмена</name>
+        <name>ExchangeFileUnpackPassword</name>
         <id>70</id>
+        <title>
+          <key>en</key>
+          <value>Unpack password</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Пароль распаковки</value>
@@ -3618,7 +3706,7 @@
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ПарольДляРаспаковкиФайлаОбменаExtendedTooltip</name>
+          <name>ExchangeFileUnpackPasswordExtendedTooltip</name>
           <id>303</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3633,7 +3721,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПарольДляРаспаковкиФайлаОбменаКонтекстноеМеню</name>
+          <name>ExchangeFileUnpackPasswordContextMenu</name>
           <id>71</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3660,7 +3748,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>БезопаснаяЗагрузка</name>
+        <name>SafeImport</name>
         <id>393</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3675,10 +3763,10 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>БезопаснаяЗагрузкаПриИзменении</name>
+          <name>SafeImportOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>БезопаснаяЗагрузкаРасширеннаяПодсказка</name>
+          <name>SafeImportExtendedTooltip</name>
           <id>395</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3693,7 +3781,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>БезопаснаяЗагрузкаКонтекстноеМеню</name>
+          <name>SafeImportContextMenu</name>
           <id>394</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3844,7 +3932,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ИспользоватьТранзакции</name>
+        <name>UseTransactions</name>
         <id>72</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3859,10 +3947,10 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>ИспользоватьТранзакцииПриИзменении</name>
+          <name>UseTransactionsOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>ИспользоватьТранзакцииExtendedTooltip</name>
+          <name>UseTransactionsExtendedTooltip</name>
           <id>304</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3877,7 +3965,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ИспользоватьТранзакцииКонтекстноеМеню</name>
+          <name>UseTransactionsContextMenu</name>
           <id>73</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3894,8 +3982,12 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>КоличествоОбъектовНаТранзакцию</name>
+        <name>ObjectsPerTransaction</name>
         <id>74</id>
+        <title>
+          <key>en</key>
+          <value>Amount of objects per transaction</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Количество элементов в транзакции</value>
@@ -3911,7 +4003,7 @@
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>КоличествоОбъектовНаТранзакциюExtendedTooltip</name>
+          <name>ObjectsPerTransactionExtendedTooltip</name>
           <id>305</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3926,7 +4018,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>КоличествоОбъектовНаТранзакциюКонтекстноеМеню</name>
+          <name>ObjectsPerTransactionContextMenu</name>
           <id>75</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3950,7 +4042,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ЗагружатьДанныеВРежимеОбмена</name>
+        <name>ImportDataInExchangeMode</name>
         <id>76</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3964,7 +4056,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ЗагружатьДанныеВРежимеОбменаExtendedTooltip</name>
+          <name>ImportDataInExchangeModeExtendedTooltip</name>
           <id>306</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3979,7 +4071,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ЗагружатьДанныеВРежимеОбменаКонтекстноеМеню</name>
+          <name>ImportDataInExchangeModeContextMenu</name>
           <id>77</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3996,7 +4088,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ЗаписыватьВИнформационнуюБазуТолькоИзмененныеОбъекты</name>
+        <name>WriteToInfobaseOnlyChangedObjects</name>
         <id>78</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4010,7 +4102,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ЗаписыватьВИнформационнуюБазуТолькоИзмененныеОбъектыExtendedTooltip</name>
+          <name>WriteToInfobaseOnlyChangedObjectsExtendedTooltip</name>
           <id>307</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4025,7 +4117,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ЗаписыватьВИнформационнуюБазуТолькоИзмененныеОбъектыКонтекстноеМеню</name>
+          <name>WriteToInfobaseOnlyChangedObjectsContextMenu</name>
           <id>79</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4042,7 +4134,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ОбъектыПоСсылкеЗагружатьБезПометкиУдаления</name>
+        <name>ImportReferencedObjectsWithoutDeletionMark</name>
         <id>80</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4056,7 +4148,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ОбъектыПоСсылкеЗагружатьБезПометкиУдаленияExtendedTooltip</name>
+          <name>ImportReferencedObjectsWithoutDeletionMarkExtendedTooltip</name>
           <id>308</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4071,7 +4163,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ОбъектыПоСсылкеЗагружатьБезПометкиУдаленияКонтекстноеМеню</name>
+          <name>ImportReferencedObjectsWithoutDeletionMarkContextMenu</name>
           <id>81</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4088,7 +4180,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ОптимизированнаяЗаписьОбъектов</name>
+        <name>OptimizedObjectsWriting</name>
         <id>82</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4102,7 +4194,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ОптимизированнаяЗаписьОбъектовExtendedTooltip</name>
+          <name>OptimizedObjectsWritingExtendedTooltip</name>
           <id>309</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4117,7 +4209,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ОптимизированнаяЗаписьОбъектовКонтекстноеМеню</name>
+          <name>OptimizedObjectsWritingContextMenu</name>
           <id>83</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4134,7 +4226,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ЗаписыватьРегистрыНаборамиЗаписей</name>
+        <name>WriteRegistersAsRecordSets</name>
         <id>84</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4148,7 +4240,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ЗаписыватьРегистрыНаборамиЗаписейExtendedTooltip</name>
+          <name>WriteRegistersAsRecordSetsExtendedTooltip</name>
           <id>310</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4163,7 +4255,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ЗаписыватьРегистрыНаборамиЗаписейКонтекстноеМеню</name>
+          <name>WriteRegistersAsRecordSetsContextMenu</name>
           <id>85</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4180,7 +4272,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ОбрезатьСтрокиСправа</name>
+        <name>RemoveTrailingSpaces</name>
         <id>86</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4194,7 +4286,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ОбрезатьСтрокиСправаExtendedTooltip</name>
+          <name>RemoveTrailingSpacesExtendedTooltip</name>
           <id>311</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4209,7 +4301,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ОбрезатьСтрокиСправаКонтекстноеМеню</name>
+          <name>RemoveTrailingSpacesContextMenu</name>
           <id>87</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4226,8 +4318,12 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>НастройкаАвтоматическойЗагрузкиДанных</name>
+        <name>AutomaticDataImportSettings</name>
         <id>88</id>
+        <title>
+          <key>en</key>
+          <value>Automatic data import settings</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Настройки автоматической загрузки данных</value>
@@ -4243,7 +4339,7 @@
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>НастройкаАвтоматическойЗагрузкиДанныхExtendedTooltip</name>
+          <name>AutomaticDataImportSettingsExtendedTooltip</name>
           <id>312</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4258,7 +4354,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>НастройкаАвтоматическойЗагрузкиДанныхКонтекстноеМеню</name>
+          <name>AutomaticDataImportSettingsContextMenu</name>
           <id>89</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4275,6 +4371,10 @@
         <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
           <choiceList>
             <presentation>
+              <key>en</key>
+              <value>Do not import data when opening this form</value>
+            </presentation>
+            <presentation>
               <key>ru</key>
               <value>Не использовать автоматическую загрузку при открытии</value>
             </presentation>
@@ -4284,6 +4384,10 @@
           </choiceList>
           <choiceList>
             <presentation>
+              <key>en</key>
+              <value>Ask for confirmation</value>
+            </presentation>
+            <presentation>
               <key>ru</key>
               <value>Перед автоматической загрузкой задать вопрос о выполнении операции</value>
             </presentation>
@@ -4292,6 +4396,10 @@
             </value>
           </choiceList>
           <choiceList>
+            <presentation>
+              <key>en</key>
+              <value>Import data</value>
+            </presentation>
             <presentation>
               <key>ru</key>
               <value>Использовать автоматическую загрузку данных</value>
@@ -4309,7 +4417,7 @@
           <name>ВерсияПравилГруппа</name>
           <id>153</id>
           <items xsi:type="form:FormField">
-            <name>ВерсияПравилОбмена</name>
+            <name>ExchangeRulesVersion</name>
             <id>168</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4322,7 +4430,7 @@
               </paths>
             </dataPath>
             <extendedTooltip>
-              <name>ВерсияПравилОбменаExtendedTooltip</name>
+              <name>ExchangeRulesVersionExtendedTooltip</name>
               <id>315</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4337,7 +4445,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ВерсияПравилОбменаКонтекстноеМеню</name>
+              <name>ExchangeRulesVersionContextMenu</name>
               <id>169</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4425,7 +4533,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДатаВыгрузкиДанных</name>
+          <name>DataExportDate</name>
           <id>170</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4438,7 +4546,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ДатаВыгрузкиДанныхExtendedTooltip</name>
+            <name>DataExportDateExtendedTooltip</name>
             <id>317</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4453,7 +4561,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДатаВыгрузкиДанныхКонтекстноеМеню</name>
+            <name>DataExportDateContextMenu</name>
             <id>171</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4530,7 +4638,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>КомментарийЗагрузки</name>
+          <name>CommentOnImport</name>
           <id>166</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4544,7 +4652,7 @@
           </dataPath>
           <titleLocation>Left</titleLocation>
           <extendedTooltip>
-            <name>КомментарийЗагрузкиExtendedTooltip</name>
+            <name>CommentOnImportExtendedTooltip</name>
             <id>319</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4559,7 +4667,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>КомментарийЗагрузкиКонтекстноеМеню</name>
+            <name>CommentOnImportContextMenu</name>
             <id>167</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4625,8 +4733,12 @@
           <name>ГруппаЗагрузкаОтладкаДоступна</name>
           <id>227</id>
           <items xsi:type="form:FormField">
-            <name>ФлагРежимОтладкиОбработчиковЗагрузки</name>
+            <name>ImportHandlersDebugModeFlag</name>
             <id>90</id>
+            <title>
+              <key>en</key>
+              <value>Import handlers debug mode</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Режим отладки обработчиков загрузки</value>
@@ -4644,10 +4756,10 @@
             <titleLocation>Right</titleLocation>
             <handlers>
               <event>OnChange</event>
-              <name>ФлагРежимОтладкиОбработчиковЗагрузкиПриИзменении</name>
+              <name>ImportHandlersDebugModeFlagOnChange</name>
             </handlers>
             <extendedTooltip>
-              <name>ФлагРежимОтладкиОбработчиковЗагрузкиExtendedTooltip</name>
+              <name>ImportHandlersDebugModeFlagExtendedTooltip</name>
               <id>322</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4662,7 +4774,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ФлагРежимОтладкиОбработчиковЗагрузкиКонтекстноеМеню</name>
+              <name>ImportHandlersDebugModeFlagContextMenu</name>
               <id>91</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4972,7 +5084,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ФлагРежимОтладки</name>
+        <name>DebugModeFlag</name>
         <id>94</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -4987,10 +5099,10 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>ФлагРежимОтладкиПриИзменении</name>
+          <name>DebugModeFlagOnChnange</name>
         </handlers>
         <extendedTooltip>
-          <name>ФлагРежимОтладкиExtendedTooltip</name>
+          <name>DebugModeFlagExtendedTooltip</name>
           <id>328</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5005,7 +5117,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ФлагРежимОтладкиКонтекстноеМеню</name>
+          <name>DebugModeFlagContextMenu</name>
           <id>95</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5022,7 +5134,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ВыводВОкноСообщенийИнформационныхСообщений</name>
+        <name>DisplayInfoMessagesIntoMessageWindow</name>
         <id>96</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5036,7 +5148,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ВыводВОкноСообщенийИнформационныхСообщенийExtendedTooltip</name>
+          <name>DisplayInfoMessagesIntoMessageWindowExtendedTooltip</name>
           <id>329</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5051,7 +5163,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ВыводВОкноСообщенийИнформационныхСообщенийКонтекстноеМеню</name>
+          <name>DisplayInfoMessagesIntoMessageWindowContextMenu</name>
           <id>97</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5068,7 +5180,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>КоличествоОбработанныхОбъектовДляОбновленияСтатуса</name>
+        <name>ProcessedObjectsCountToUpdateStatus</name>
         <id>98</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5082,10 +5194,10 @@
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>КоличествоОбработанныхОбъектовДляОбновленияСтатусаПриИзменении</name>
+          <name>ProcessedObjectsCountToUpdateStatusOnChange</name>
         </handlers>
         <extendedTooltip>
-          <name>КоличествоОбработанныхОбъектовДляОбновленияСтатусаExtendedTooltip</name>
+          <name>ProcessedObjectsCountToUpdateStatusExtendedTooltip</name>
           <id>330</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5100,7 +5212,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>КоличествоОбработанныхОбъектовДляОбновленияСтатусаКонтекстноеМеню</name>
+          <name>ProcessedObjectsCountToUpdateStatusContextMenu</name>
           <id>99</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5127,8 +5239,12 @@
         <name>НастройкиВыгрузкиДанных</name>
         <id>100</id>
         <items xsi:type="form:FormField">
-          <name>ВыполнитьОбменДаннымиВОптимизированномФормате</name>
+          <name>ExecuteDataExchangeInOptimizedFormat</name>
           <id>101</id>
+          <title>
+            <key>en</key>
+            <value>Use optimized data exchange format (V8–V8, data processor version 2.0.18 or later)</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Использовать оптимизированный формат для обмена данными (V8 - V8, версия обработки не ниже 2.0.18)</value>
@@ -5145,7 +5261,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ВыполнитьОбменДаннымиВОптимизированномФорматеExtendedTooltip</name>
+            <name>ExecuteDataExchangeInOptimizedFormatExtendedTooltip</name>
             <id>332</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5160,7 +5276,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ВыполнитьОбменДаннымиВОптимизированномФорматеКонтекстноеМеню</name>
+            <name>ExecuteDataExchangeInOptimizedFormatContextMenu</name>
             <id>102</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5177,7 +5293,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>ИспользоватьТранзакцииПриВыгрузкеДляПлановОбмена</name>
+          <name>UseTransactionsOnExportForExchangePlans</name>
           <id>103</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5191,7 +5307,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ИспользоватьТранзакцииПриВыгрузкеДляПлановОбменаExtendedTooltip</name>
+            <name>UseTransactionsOnExportForExchangePlansExtendedTooltip</name>
             <id>333</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5206,7 +5322,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ИспользоватьТранзакцииПриВыгрузкеДляПлановОбменаКонтекстноеМеню</name>
+            <name>UseTransactionsOnExportForExchangePlansContextMenu</name>
             <id>104</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5223,8 +5339,12 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>КоличествоЭлементовВТранзакцииПриВыгрузкеДляПлановОбмена</name>
+          <name>TransactionItemsCountOnExportForExchangePlans</name>
           <id>105</id>
+          <title>
+            <key>en</key>
+            <value>Amount of items in the transaction</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Количество элементов в транзакции</value>
@@ -5240,7 +5360,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>КоличествоЭлементовВТранзакцииПриВыгрузкеДляПлановОбменаExtendedTooltip</name>
+            <name>TransactionItemsCountOnExportForExchangePlansExtendedTooltip</name>
             <id>334</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5255,7 +5375,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>КоличествоЭлементовВТранзакцииПриВыгрузкеДляПлановОбменаКонтекстноеМеню</name>
+            <name>TransactionItemsCountOnExportForExchangePlansContextMenu</name>
             <id>106</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5279,8 +5399,12 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ВыгружатьТолькоРазрешенные</name>
+          <name>ExportAllowedObjectsOnly</name>
           <id>107</id>
+          <title>
+            <key>en</key>
+            <value>Export objects allowed by access rights</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Выгружать объекты на которые есть права доступа</value>
@@ -5297,7 +5421,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ВыгружатьТолькоРазрешенныеExtendedTooltip</name>
+            <name>ExportAllowedObjectsOnlyExtendedTooltip</name>
             <id>335</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5312,7 +5436,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ВыгружатьТолькоРазрешенныеКонтекстноеМеню</name>
+            <name>ExportAllowedObjectsOnlyContextMenu</name>
             <id>108</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5329,8 +5453,12 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>ВестиДополнительныйКонтрольЗаписиВXML</name>
+          <name>XMLWriterAdvancedMonitoring</name>
           <id>109</id>
+          <title>
+            <key>en</key>
+            <value>Automatically delete invalid characters when writing to XML files</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Автоматически удалять недопустимые символы из строк для записи в XML</value>
@@ -5347,7 +5475,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ВестиДополнительныйКонтрольЗаписиВXMLExtendedTooltip</name>
+            <name>XMLWriterAdvancedMonitoringExtendedTooltip</name>
             <id>336</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5362,7 +5490,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ВестиДополнительныйКонтрольЗаписиВXMLКонтекстноеМеню</name>
+            <name>XMLWriterAdvancedMonitoringContextMenu</name>
             <id>110</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5508,8 +5636,12 @@
         <name>ПротоколОбмена</name>
         <id>113</id>
         <items xsi:type="form:FormField">
-          <name>ИмяФайлаПротоколаОбмена</name>
+          <name>ExchangeLogFileName</name>
           <id>114</id>
+          <title>
+            <key>en</key>
+            <value>Exchange log file name at server</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Имя файла протокола обмена на сервере</value>
@@ -5525,7 +5657,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ИмяФайлаПротоколаОбменаExtendedTooltip</name>
+            <name>ExchangeLogFileNameExtendedTooltip</name>
             <id>339</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5540,7 +5672,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ИмяФайлаПротоколаОбменаКонтекстноеМеню</name>
+            <name>ExchangeLogFileNameContextMenu</name>
             <id>115</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5557,11 +5689,11 @@
           <extInfo xsi:type="form:InputFieldExtInfo">
             <handlers>
               <event>StartChoice</event>
-              <name>ИмяФайлаПротоколаОбменаНачалоВыбора</name>
+              <name>ExchangeLogFileNameStartChoice</name>
             </handlers>
             <handlers>
               <event>Opening</event>
-              <name>ИмяФайлаПротоколаОбменаОткрытие</name>
+              <name>ExchangeLogFileNameOpening</name>
             </handlers>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -5574,8 +5706,13 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ИмяФайлаПротоколаОбменаЗагрузка</name>
+          <name>ImportExchangeLogFileName</name>
           <id>116</id>
+          <title>
+            <key>en</key>
+            <value>Import log (for a COM connection)
+on the server</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Протокол загрузки (для COM - соединения)
@@ -5592,7 +5729,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>ИмяФайлаПротоколаОбменаЗагрузкаExtendedTooltip</name>
+            <name>ImportExchangeLogFileNameExtendedTooltip</name>
             <id>340</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5607,7 +5744,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ИмяФайлаПротоколаОбменаЗагрузкаКонтекстноеМеню</name>
+            <name>ImportExchangeLogFileNameContextMenu</name>
             <id>117</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5624,11 +5761,11 @@
           <extInfo xsi:type="form:InputFieldExtInfo">
             <handlers>
               <event>StartChoice</event>
-              <name>ИмяФайлаПротоколаОбменаЗагрузкаНачалоВыбора</name>
+              <name>ImportExchangeLogFileNameStartChoice</name>
             </handlers>
             <handlers>
               <event>Opening</event>
-              <name>ИмяФайлаПротоколаОбменаЗагрузкаОткрытие</name>
+              <name>ImportExchangeLogFileNameOpening</name>
             </handlers>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -5641,7 +5778,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>КодировкаФайлаПротоколаСписок</name>
+          <name>LogFileEncodingList</name>
           <id>407</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5654,7 +5791,7 @@
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>КодировкаФайлаПротоколаСписокРасширеннаяПодсказка</name>
+            <name>LogFileEncodingListExtendedTooltip</name>
             <id>409</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5669,7 +5806,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>КодировкаФайлаПротоколаСписокКонтекстноеМеню</name>
+            <name>LogFileEncodingListContextMenu</name>
             <id>408</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5693,6 +5830,10 @@
             <textEdit>true</textEdit>
             <choiceList>
               <presentation>
+                <key>en</key>
+                <value>ANSI</value>
+              </presentation>
+              <presentation>
                 <key>ru</key>
                 <value>ANSI</value>
               </presentation>
@@ -5701,6 +5842,10 @@
               </value>
             </choiceList>
             <choiceList>
+              <presentation>
+                <key>en</key>
+                <value>OEM</value>
+              </presentation>
               <presentation>
                 <key>ru</key>
                 <value>OEM</value>
@@ -5711,6 +5856,10 @@
             </choiceList>
             <choiceList>
               <presentation>
+                <key>en</key>
+                <value>UTF-8</value>
+              </presentation>
+              <presentation>
                 <key>ru</key>
                 <value>UTF-8</value>
               </presentation>
@@ -5720,6 +5869,10 @@
             </choiceList>
             <choiceList>
               <presentation>
+                <key>en</key>
+                <value>UTF-16</value>
+              </presentation>
+              <presentation>
                 <key>ru</key>
                 <value>UTF-16</value>
               </presentation>
@@ -5728,6 +5881,10 @@
               </value>
             </choiceList>
             <choiceList>
+              <presentation>
+                <key>en</key>
+                <value>System</value>
+              </presentation>
               <presentation>
                 <key>ru</key>
                 <value>Системная</value>
@@ -5739,7 +5896,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>ДописыватьДанныеВПротоколОбмена</name>
+          <name>AppendDataToExchangeLog</name>
           <id>118</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5753,7 +5910,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ДописыватьДанныеВПротоколОбменаExtendedTooltip</name>
+            <name>AppendDataToExchangeLogExtendedTooltip</name>
             <id>341</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5768,7 +5925,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ДописыватьДанныеВПротоколОбменаКонтекстноеМеню</name>
+            <name>AppendDataToExchangeLogContextMenu</name>
             <id>119</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5785,7 +5942,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>ВыводВПротоколИнформационныхСообщений</name>
+          <name>WriteInfoMessagesToLog</name>
           <id>120</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5799,7 +5956,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ВыводВПротоколИнформационныхСообщенийExtendedTooltip</name>
+            <name>WriteInfoMessagesToLogExtendedTooltip</name>
             <id>342</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5814,7 +5971,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ВыводВПротоколИнформационныхСообщенийКонтекстноеМеню</name>
+            <name>WriteInfoMessagesToLogContextMenu</name>
             <id>121</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5831,7 +5988,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>ОткрыватьПротоколыОбменаПослеВыполненияОпераций</name>
+          <name>OpenExchangeLogAfterExecutingOperations</name>
           <id>122</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5845,7 +6002,7 @@
           </dataPath>
           <titleLocation>Right</titleLocation>
           <extendedTooltip>
-            <name>ОткрыватьПротоколыОбменаПослеВыполненияОперацийExtendedTooltip</name>
+            <name>OpenExchangeLogAfterExecutingOperationsExtendedTooltip</name>
             <id>343</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5860,7 +6017,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ОткрыватьПротоколыОбменаПослеВыполненияОперацийКонтекстноеМеню</name>
+            <name>OpenExchangeLogAfterExecutingOperationsContextMenu</name>
             <id>123</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5989,8 +6146,12 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>УдалятьОбъектыНаКоторыеЕстьПраваДоступа</name>
+        <name>DeleteObjectsAllowedByAccessRights</name>
         <id>126</id>
+        <title>
+          <key>en</key>
+          <value>Delete objects allowed by access rights</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Удалять объекты на которые есть права доступа</value>
@@ -6007,7 +6168,7 @@
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>УдалятьОбъектыНаКоторыеЕстьПраваДоступаExtendedTooltip</name>
+          <name>DeleteObjectsAllowedByAccessRightsExtendedTooltip</name>
           <id>346</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6022,7 +6183,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>УдалятьОбъектыНаКоторыеЕстьПраваДоступаКонтекстноеМеню</name>
+          <name>DeleteObjectsAllowedByAccessRightsContextMenu</name>
           <id>127</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6593,7 +6754,7 @@
     <name>ФормаКоманднаяПанель</name>
     <id>-1</id>
     <items xsi:type="form:Button">
-      <name>ФормаВосстановить</name>
+      <name>FormRestore</name>
       <id>185</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -6601,7 +6762,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаВосстановитьExtendedTooltip</name>
+        <name>FormRestoreExtendedTooltip</name>
         <id>233</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6624,7 +6785,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>ФормаСохранить</name>
+      <name>FormSave</name>
       <id>184</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -6632,7 +6793,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаСохранитьExtendedTooltip</name>
+        <name>FormSaveExtendedTooltip</name>
         <id>234</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6655,10 +6816,10 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>РежимОбработки</name>
+      <name>ProcessingMode</name>
       <id>197</id>
       <items xsi:type="form:Button">
-        <name>ФормаНаКлиенте</name>
+        <name>FormAtClient</name>
         <id>198</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6666,7 +6827,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ФормаНаКлиентеExtendedTooltip</name>
+          <name>FormAtClientExtendedTooltip</name>
           <id>236</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6723,11 +6884,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Run mode</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Режим работы</value>
       </title>
       <extendedTooltip>
-        <name>РежимОбработкиExtendedTooltip</name>
+        <name>ProcessingModeExtendedTooltip</name>
         <id>235</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6786,11 +6951,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <saveDataInSettings>UseList</saveDataInSettings>
@@ -7002,7 +7167,11 @@
         <segments>Object.ParametersSettingsTable</segments>
       </tablePath>
       <columns>
-        <name>Наименование</name>
+        <name>Description</name>
+        <title>
+          <key>en</key>
+          <value>Description</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Наименование</value>
@@ -7020,7 +7189,11 @@
         </edit>
       </columns>
       <columns>
-        <name>Значение</name>
+        <name>Value</name>
+        <title>
+          <key>en</key>
+          <value>Value</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Значение</value>
@@ -7049,7 +7222,11 @@
         <segments>Object.ExportRulesTable</segments>
       </tablePath>
       <columns>
-        <name>Наименование</name>
+        <name>Description</name>
+        <title>
+          <key>en</key>
+          <value>Data export rules</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Правила выгрузки данных</value>
@@ -7067,7 +7244,11 @@
         </edit>
       </columns>
       <columns>
-        <name>СсылкаНаУзелОбмена</name>
+        <name>ExchangeNodeRef</name>
+        <title>
+          <key>en</key>
+          <value>Exchange node</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Узел обмена</value>
@@ -7084,7 +7265,11 @@
         </edit>
       </columns>
       <columns>
-        <name>Включить</name>
+        <name>Enable</name>
+        <title>
+          <key>en</key>
+          <value>Enable</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Включить</value>
@@ -7105,7 +7290,11 @@
         </edit>
       </columns>
       <columns>
-        <name>ЭтоГруппа</name>
+        <name>IsFolder</name>
+        <title>
+          <key>en</key>
+          <value>Is folder</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Это группа</value>
@@ -7122,7 +7311,11 @@
         </edit>
       </columns>
       <columns>
-        <name>ИспользоватьОтбор</name>
+        <name>UseFilter</name>
+        <title>
+          <key>en</key>
+          <value>V</value>
+        </title>
         <title>
           <key>ru</key>
           <value>V</value>
@@ -7139,7 +7332,11 @@
         </edit>
       </columns>
       <columns>
-        <name>ИмяМетаданных</name>
+        <name>MetadataName</name>
+        <title>
+          <key>en</key>
+          <value>Metadata name</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Имя метаданных</value>
@@ -7157,7 +7354,11 @@
         </edit>
       </columns>
       <columns>
-        <name>Отбор</name>
+        <name>Filter</name>
+        <title>
+          <key>en</key>
+          <value>Filter</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Отбор</value>
@@ -7653,12 +7854,20 @@
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВосстановитьПараметры</name>
+    <name>RestoreParameters</name>
+    <title>
+      <key>en</key>
+      <value>Restore</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Восстановить</value>
     </title>
     <id>4</id>
+    <toolTip>
+      <key>en</key>
+      <value>Restore parameters</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Восстановить параметры</value>
@@ -7668,7 +7877,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВосстановитьПараметры</name>
+        <name>RestoreParameters</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
