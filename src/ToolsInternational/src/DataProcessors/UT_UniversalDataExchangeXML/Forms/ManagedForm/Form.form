@@ -84,8 +84,12 @@
           </extInfo>
         </items>
         <items xsi:type="form:Button">
-          <name>ФормаЗагрузитьПравила</name>
+          <name>FormImportRules</name>
           <id>196</id>
+          <title>
+            <key>en</key>
+            <value>Read exchange rules</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Прочитать правила обмена</value>
@@ -96,7 +100,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>ФормаЗагрузитьПравилаExtendedTooltip</name>
+            <name>FormImportRulesExtendedTooltip</name>
             <id>243</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -111,7 +115,7 @@
             </extInfo>
           </extendedTooltip>
           <type>UsualButton</type>
-          <commandName>Form.Command.ПрочитатьПравилаОбмена</commandName>
+          <commandName>Form.Command.ReadExchangeRules</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -1062,7 +1066,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <type>UsualButton</type>
-                  <commandName>Form.Command.ТестПодключения</commandName>
+                  <commandName>Form.Command.ConnectionTest</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -1644,7 +1648,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:Button">
-            <name>УИ_ТестПодключенияКВебСервису</name>
+            <name>UT_WebServiceConnectionTest</name>
             <id>421</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1652,7 +1656,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>УИ_ТестПодключенияКВебСервисуРасширеннаяПодсказка</name>
+              <name>UT_WebServiceConnectionTestExtendedTooltip</name>
               <id>422</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1667,7 +1671,7 @@
               </extInfo>
             </extendedTooltip>
             <type>UsualButton</type>
-            <commandName>Form.Command.УИ_ТестПодключенияКВебСервису</commandName>
+            <commandName>Form.Command.UT_WebServiceConnectionTest</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -1763,7 +1767,7 @@
             </extInfo>
           </extendedTooltip>
           <type>UsualButton</type>
-          <commandName>Form.Command.ВыполнитьВыгрузку</commandName>
+          <commandName>Form.Command.ExecuteExport</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -2332,7 +2336,7 @@
               <name>ExportRulesTableCommandBar</name>
               <id>135</id>
               <items xsi:type="form:Button">
-                <name>ТаблицаПравилВыгрузкиВыгрузкаОтметитьВсе</name>
+                <name>ExportRulesTableExportCheckAll</name>
                 <id>178</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2340,7 +2344,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТаблицаПравилВыгрузкиВыгрузкаОтметитьВсеExtendedTooltip</name>
+                  <name>ExportRulesTableExportCheckAllExtendedTooltip</name>
                   <id>273</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2354,7 +2358,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ВыгрузкаОтметитьВсе</commandName>
+                <commandName>Form.Command.ExportCheckAll</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2362,7 +2366,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТаблицаПравилВыгрузкиВыгрузкаОтменитьВсе</name>
+                <name>ExportRulesTableExportUncheckAll</name>
                 <id>179</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2370,7 +2374,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТаблицаПравилВыгрузкиВыгрузкаОтменитьВсеExtendedTooltip</name>
+                  <name>ExportRulesTableExportUncheckAllExtendedTooltip</name>
                   <id>274</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2384,7 +2388,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.ВыгрузкаОтменитьВсе</commandName>
+                <commandName>Form.Command.ExportUncheckAll</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -2417,7 +2421,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Command.ВыгрузкаОчиститьУзлыОбмена</commandName>
+                  <commandName>Form.Command.ExportUncheckAllExchangeNodes</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -2447,7 +2451,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Command.ВыгрузкаУстановитьУзелОбмена</commandName>
+                  <commandName>Form.Command.ExportSetExchangeNode</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -2847,7 +2851,7 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:Button">
-                <name>ТаблицаНастройкиПараметровСохранитьПараметры</name>
+                <name>ParametersSettingsTableSaveParameters</name>
                 <id>62</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2855,7 +2859,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ТаблицаНастройкиПараметровСохранитьПараметрыExtendedTooltip</name>
+                  <name>ParametersSettingsTableSaveParametersExtendedTooltip</name>
                   <id>286</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2869,7 +2873,7 @@
                     <horizontalAlign>Left</horizontalAlign>
                   </extInfo>
                 </extendedTooltip>
-                <commandName>Form.Command.СохранитьПараметры</commandName>
+                <commandName>Form.Command.SaveParameters</commandName>
                 <representation>Auto</representation>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -3292,8 +3296,12 @@
               <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
             </items>
             <items xsi:type="form:Button">
-              <name>НастройкаОтладкиВыгрузки</name>
+              <name>ExportDebugSetup</name>
               <id>56</id>
+              <title>
+                <key>en</key>
+                <value>Export debug setup...</value>
+              </title>
               <title>
                 <key>ru</key>
                 <value>Настройка отладки выгрузки...</value>
@@ -3304,7 +3312,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>НастройкаОтладкиВыгрузкиExtendedTooltip</name>
+                <name>ExportDebugSetupExtendedTooltip</name>
                 <id>296</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -3319,7 +3327,7 @@
                 </extInfo>
               </extendedTooltip>
               <type>UsualButton</type>
-              <commandName>Form.Command.НастройкаОтладкиВыгрузки</commandName>
+              <commandName>Form.Command.ExportDebugSetup</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -3603,7 +3611,7 @@
           </extInfo>
         </extendedTooltip>
         <type>UsualButton</type>
-        <commandName>Form.Command.ВыполнитьЗагрузку</commandName>
+        <commandName>Form.Command.ExecuteImport</commandName>
         <representation>Auto</representation>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -4465,8 +4473,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Button">
-            <name>ПолучитьИнформациюОФайлеОбмена</name>
+            <name>GetExchangeFileInfo</name>
             <id>150</id>
+            <title>
+              <key>en</key>
+              <value>Exchange file details</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Подробно о файле обмена</value>
@@ -4477,7 +4489,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ПолучитьИнформациюОФайлеОбменаExtendedTooltip</name>
+              <name>GetExchangeFileInfoExtendedTooltip</name>
               <id>316</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4492,7 +4504,7 @@
               </extInfo>
             </extendedTooltip>
             <type>UsualButton</type>
-            <commandName>Form.Command.ПолучитьИнформациюОФайлеОбмена</commandName>
+            <commandName>Form.Command.GetExchangeFileInfo</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -4791,8 +4803,12 @@
             <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <items xsi:type="form:Button">
-            <name>НастройкаОтладкиЗагрузки</name>
+            <name>ImportDebugSetup</name>
             <id>93</id>
+            <title>
+              <key>en</key>
+              <value>Import debug setup...</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Настройка отладки загрузки...</value>
@@ -4803,7 +4819,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>НастройкаОтладкиЗагрузкиExtendedTooltip</name>
+              <name>ImportDebugSetupExtendedTooltip</name>
               <id>323</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -4818,7 +4834,7 @@
               </extInfo>
             </extendedTooltip>
             <type>UsualButton</type>
-            <commandName>Form.Command.НастройкаОтладкиЗагрузки</commandName>
+            <commandName>Form.Command.ImportDebugSetup</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6427,7 +6443,7 @@ on the server</value>
           <name>DataToDeleteCommandBar</name>
           <id>203</id>
           <items xsi:type="form:Button">
-            <name>УдаляемыеДанныеУдалениеОтметитьВсе</name>
+            <name>DataToDeleteDeletionCheckAll</name>
             <id>172</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6435,7 +6451,7 @@ on the server</value>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>УдаляемыеДанныеУдалениеОтметитьВсеExtendedTooltip</name>
+              <name>DataToDeleteDeletionCheckAllExtendedTooltip</name>
               <id>348</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6449,7 +6465,7 @@ on the server</value>
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.УдалениеОтметитьВсе</commandName>
+            <commandName>Form.Command.DeletionCheckAll</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6457,7 +6473,7 @@ on the server</value>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>УдаляемыеДанныеУдалениеОтменитьВсе</name>
+            <name>DataToDeleteDeletionUncheckAll</name>
             <id>173</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6465,7 +6481,7 @@ on the server</value>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>УдаляемыеДанныеУдалениеОтменитьВсеExtendedTooltip</name>
+              <name>DataToDeleteDeletionUncheckAllExtendedTooltip</name>
               <id>349</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6479,7 +6495,7 @@ on the server</value>
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.УдалениеОтменитьВсе</commandName>
+            <commandName>Form.Command.DeletionUncheckAll</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6487,7 +6503,7 @@ on the server</value>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>УдаляемыеДанныеУдалениеУдалить</name>
+            <name>DeletionDelete</name>
             <id>174</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6495,7 +6511,7 @@ on the server</value>
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>УдаляемыеДанныеУдалениеУдалитьExtendedTooltip</name>
+              <name>DeletionDeleteExtendedTooltip</name>
               <id>350</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -6509,7 +6525,7 @@ on the server</value>
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.УдалениеУдалить</commandName>
+            <commandName>Form.Command.DeletionDelete</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -6841,7 +6857,7 @@ on the server</value>
             <horizontalAlign>Left</horizontalAlign>
           </extInfo>
         </extendedTooltip>
-        <commandName>Form.Command.НаКлиенте</commandName>
+        <commandName>Form.Command.AtClient</commandName>
         <representation>Auto</representation>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -6849,7 +6865,7 @@ on the server</value>
         <representationInContextMenu>Auto</representationInContextMenu>
       </items>
       <items xsi:type="form:Button">
-        <name>ФормаНаСервере</name>
+        <name>FormAtServer</name>
         <id>199</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6857,7 +6873,7 @@ on the server</value>
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ФормаНаСервереExtendedTooltip</name>
+          <name>FormAtServerExtendedTooltip</name>
           <id>237</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6871,7 +6887,7 @@ on the server</value>
             <horizontalAlign>Left</horizontalAlign>
           </extInfo>
         </extendedTooltip>
-        <commandName>Form.Command.НаСервере</commandName>
+        <commandName>Form.Command.AtServer</commandName>
         <representation>Auto</representation>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -7790,12 +7806,20 @@ on the server</value>
     </edit>
   </attributes>
   <formCommands>
-    <name>ПрочитатьПравилаОбмена</name>
+    <name>ReadExchangeRules</name>
+    <title>
+      <key>en</key>
+      <value>Read exchange rules</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Прочитать правила обмена</value>
     </title>
     <id>1</id>
+    <toolTip>
+      <key>en</key>
+      <value>Read exchange rules</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Прочитать правила обмена</value>
@@ -7805,18 +7829,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПрочитатьПравилаОбмена</name>
+        <name>ReadExchangeRules</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ТестПодключения</name>
+    <name>ConnectionTest</name>
+    <title>
+      <key>en</key>
+      <value>Test connection</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Проверить подключение</value>
     </title>
     <id>2</id>
+    <toolTip>
+      <key>en</key>
+      <value>Connection test</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Тест подключения</value>
@@ -7826,19 +7858,27 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ТестПодключения</name>
+        <name>ConnectionTest</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>НастройкаОтладкиВыгрузки</name>
+    <name>ExportDebugSetup</name>
+    <title>
+      <key>en</key>
+      <value>Export debug setup</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Настройка отладки выгрузки</value>
     </title>
     <id>3</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export debug setup</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Настройка отладки выгрузки</value>
@@ -7848,7 +7888,7 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>НастройкаОтладкиВыгрузки</name>
+        <name>ExportDebugSetup</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -7883,12 +7923,20 @@ on the server</value>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СохранитьПараметры</name>
+    <name>SaveParameters</name>
+    <title>
+      <key>en</key>
+      <value>Save</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Сохранить</value>
     </title>
     <id>5</id>
+    <toolTip>
+      <key>en</key>
+      <value>Save parameters</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Сохранить параметры</value>
@@ -7898,19 +7946,27 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>СохранитьПараметры</name>
+        <name>SaveParameters</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>НастройкаОтладкиЗагрузки</name>
+    <name>ImportDebugSetup</name>
+    <title>
+      <key>en</key>
+      <value>Import debug setup</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Настройка отладки загрузки</value>
     </title>
     <id>8</id>
     <toolTip>
+      <key>en</key>
+      <value>Import debug setup</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Настройка отладки загрузки</value>
     </toolTip>
@@ -7919,18 +7975,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>НастройкаОтладкиЗагрузки</name>
+        <name>ImportDebugSetup</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ПолучитьИнформациюОФайлеОбмена</name>
+    <name>GetExchangeFileInfo</name>
+    <title>
+      <key>en</key>
+      <value>Get exchange file info</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Получить информацию о файле обмена</value>
     </title>
     <id>9</id>
+    <toolTip>
+      <key>en</key>
+      <value>Get exchange file info</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Получить информацию о файле обмена</value>
@@ -7940,18 +8004,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПолучитьИнформациюОФайлеОбмена</name>
+        <name>GetExchangeFileInfo</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>УдалениеОтметитьВсе</name>
+    <name>DeletionCheckAll</name>
+    <title>
+      <key>en</key>
+      <value>Deletion check all</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Удаление отметить все</value>
     </title>
     <id>10</id>
+    <toolTip>
+      <key>en</key>
+      <value>Deletion check all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Удаление отметить все</value>
@@ -7964,19 +8036,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалениеОтметитьВсе</name>
+        <name>DeletionCheckAll</name>
       </handler>
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>УдалениеОтменитьВсе</name>
+    <name>DeletionUncheckAll</name>
+    <title>
+      <key>en</key>
+      <value>Deletion uncheck all</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Удаление отменить все</value>
     </title>
     <id>11</id>
+    <toolTip>
+      <key>en</key>
+      <value>Deletion uncheck all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Удаление отменить все</value>
@@ -7989,19 +8069,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалениеОтменитьВсе</name>
+        <name>DeletionUncheckAll</name>
       </handler>
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>УдалениеУдалить</name>
+    <name>DeletionDelete</name>
+    <title>
+      <key>en</key>
+      <value>Delete</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Удалить</value>
     </title>
     <id>12</id>
+    <toolTip>
+      <key>en</key>
+      <value>Deletion delete</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Удаление удалить</value>
@@ -8014,19 +8102,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалениеУдалить</name>
+        <name>DeletionDelete</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыгрузкаОтметитьВсе</name>
+    <name>ExportCheckAll</name>
+    <title>
+      <key>en</key>
+      <value>Export check all</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Выгрузка отметить все</value>
     </title>
     <id>13</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export check all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выгрузка отметить все</value>
@@ -8039,19 +8135,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыгрузкаОтметитьВсе</name>
+        <name>ExportCheckAll</name>
       </handler>
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыгрузкаОтменитьВсе</name>
+    <name>ExportUncheckAll</name>
+    <title>
+      <key>en</key>
+      <value>Export uncheck all</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Выгрузка отменить все</value>
     </title>
     <id>14</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export uncheck all</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выгрузка отменить все</value>
@@ -8064,19 +8168,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыгрузкаОтменитьВсе</name>
+        <name>ExportUncheckAll</name>
       </handler>
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыгрузкаОчиститьУзлыОбмена</name>
+    <name>ExportUncheckAllExchangeNodes</name>
+    <title>
+      <key>en</key>
+      <value>Uncheck exchange nodes</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Очистить узлы обмена</value>
     </title>
     <id>15</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export uncheck all exchange nodes</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выгрузка очистить узлы обмена</value>
@@ -8086,18 +8198,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыгрузкаОчиститьУзлыОбмена</name>
+        <name>ExportUncheckAllExchangeNodes</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыгрузкаУстановитьУзелОбмена</name>
+    <name>ExportSetExchangeNode</name>
+    <title>
+      <key>en</key>
+      <value>Set current exchange node for all items</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Установить текущий узел обмена у всех</value>
     </title>
     <id>16</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export set exchange node</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выгрузка установить узел обмена</value>
@@ -8107,18 +8227,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыгрузкаУстановитьУзелОбмена</name>
+        <name>ExportSetExchangeNode</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыполнитьВыгрузку</name>
+    <name>ExecuteExport</name>
+    <title>
+      <key>en</key>
+      <value>Export</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Выполнить выгрузку</value>
     </title>
     <id>17</id>
+    <toolTip>
+      <key>en</key>
+      <value>Export data to a file or to a destination infobase</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выполнить выгрузку данных в файл или в базу приемник</value>
@@ -8131,19 +8259,27 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьВыгрузку</name>
+        <name>ExecuteExport</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ВыполнитьЗагрузку</name>
+    <name>ExecuteImport</name>
+    <title>
+      <key>en</key>
+      <value>Import</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Выполнить загрузку</value>
     </title>
     <id>18</id>
+    <toolTip>
+      <key>en</key>
+      <value>Import</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выполнить загрузку</value>
@@ -8156,20 +8292,28 @@ on the server</value>
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьЗагрузку</name>
+        <name>ExecuteImport</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>НаКлиенте</name>
+    <name>AtClient</name>
+    <title>
+      <key>en</key>
+      <value>At client</value>
+    </title>
     <title>
       <key>ru</key>
       <value>На клиенте</value>
     </title>
     <id>7</id>
     <toolTip>
+      <key>en</key>
+      <value>At client</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>На клиенте</value>
     </toolTip>
@@ -8178,18 +8322,26 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>НаКлиенте</name>
+        <name>AtClient</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>НаСервере</name>
+    <name>AtServer</name>
+    <title>
+      <key>en</key>
+      <value>At server</value>
+    </title>
     <title>
       <key>ru</key>
       <value>На сервере</value>
     </title>
     <id>19</id>
+    <toolTip>
+      <key>en</key>
+      <value>At server</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>На сервере</value>
@@ -8199,13 +8351,17 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>НаСервере</name>
+        <name>AtServer</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>УИ_ТестПодключенияКВебСервису</name>
+    <name>UT_WebServiceConnectionTest</name>
+    <title>
+      <key>en</key>
+      <value>Connection test</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Тест подключения</value>
@@ -8216,7 +8372,7 @@ on the server</value>
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УИ_ТестПодключенияКВебСервису</name>
+        <name>UT_WebServiceConnectionTest</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
