@@ -12934,10 +12934,10 @@ Function ExecuteInformationTransferOnCompleteDataTransfer()
 		HTTPRequestParameters=New Structure;
 		HTTPRequestParameters.Insert("Timeout", 0);
 
-		Authentification=New Structure;
-		Authentification.Insert("Username", InfobaseConnectionUsername);
-		Authentification.Insert("Password", InfobaseConnectionPassword);
-		HTTPRequestParameters.Insert("Authentification", Authentification);
+		Authentication=New Structure;
+		Authentication.Insert("Username", InfobaseConnectionUsername);
+		Authentication.Insert("Password", InfobaseConnectionPassword);
+		HTTPRequestParameters.Insert("Authentication", Authentication);
 
 		Try
 			ExportResult=UT_HTTPConnector.Post(UT_DestinationPublicationAddress + "/hs/tools-ui-1c/exchange",
@@ -13924,7 +13924,7 @@ Procedure InitAttributesAndModuleVariables()
 	mDataLogFile = Undefined;
 
 	ConnectedInfobaseType = True;
-	InfobaseConnectionWindowsAuthentification = False;
+	InfobaseConnectionWindowsAuthentication = False;
 	PlatformVersionForInfobaseConnection = "V8";
 	OpenExchangeLogAfterExecutingOperations = False;
 	ImportDataInExchangeMode = True;
@@ -14155,7 +14155,7 @@ Function EstablishConnectionWithDestinationIB() Export
 	
 	ConnectionStructure = New Structure();
 	ConnectionStructure.Insert("FileMode", ConnectedInfobaseType);
-	ConnectionStructure.Insert("WindowsAuthentication", InfobaseConnectionWindowsAuthentification);
+	ConnectionStructure.Insert("WindowsAuthentication", InfobaseConnectionWindowsAuthentication);
 	ConnectionStructure.Insert("IBDirectory", InfobaseConnectionDirectory);
 	ConnectionStructure.Insert("ServerName", InfobaseConnectionServerName);
 	ConnectionStructure.Insert("IBNameAtServer", InfobaseConnectionNameAtServer);

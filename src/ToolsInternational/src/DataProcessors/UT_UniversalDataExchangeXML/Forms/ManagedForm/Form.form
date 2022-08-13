@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГлавнаяПанельФормы</name>
+    <name>FormMainPanel</name>
     <id>1</id>
     <items xsi:type="form:FormGroup">
-      <name>Выгрузка</name>
+      <name>Export</name>
       <id>2</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаФайлаПравил</name>
+        <name>RulesFileGroup</name>
         <id>200</id>
         <items xsi:type="form:FormField">
           <name>RulesFileName</name>
@@ -128,11 +128,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Rules file</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Файла правил</value>
         </title>
         <extendedTooltip>
-          <name>ГруппаФайлаПравилExtendedTooltip</name>
+          <name>RulesFileGroupExtendedTooltip</name>
           <id>241</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -246,10 +250,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ПараметрыВыгрузки</name>
+        <name>ExportParameters</name>
         <id>63</id>
         <items xsi:type="form:FormGroup">
-          <name>ВыгрузкаВФайл</name>
+          <name>ExportToFile</name>
           <id>6</id>
           <items xsi:type="form:FormField">
             <name>DataFileName</name>
@@ -444,11 +448,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Export to file</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Выгрузка в файл</value>
           </title>
           <extendedTooltip>
-            <name>ВыгрузкаВФайлExtendedTooltip</name>
+            <name>ExportToFileExtendedTooltip</name>
             <id>246</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -469,16 +477,16 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ВыгрузкаВИБПриемник</name>
+          <name>ExportToDestinationIB</name>
           <id>7</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаОС</name>
+            <name>CDGroup</name>
             <id>355</id>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаWindows</name>
+              <name>WindowsGroup</name>
               <id>357</id>
               <items xsi:type="form:FormGroup">
-                <name>ТипПлатформа</name>
+                <name>PlatformType</name>
                 <id>26</id>
                 <items xsi:type="form:FormField">
                   <name>ConnectedInfobaseType</name>
@@ -673,12 +681,16 @@
                   <common>true</common>
                 </userVisible>
                 <title>
+                  <key>en</key>
+                  <value>Platform type</value>
+                </title>
+                <title>
                   <key>ru</key>
-                  <value>Тип платформа</value>
+                  <value>Тип платформы</value>
                 </title>
                 <horizontalStretch>true</horizontalStretch>
                 <extendedTooltip>
-                  <name>ТипПлатформаExtendedTooltip</name>
+                  <name>PlatformTypeExtendedTooltip</name>
                   <id>251</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -702,10 +714,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ТипБазы</name>
+                <name>InfobaseType</name>
                 <id>64</id>
                 <items xsi:type="form:FormGroup">
-                  <name>ФайловаяБаза</name>
+                  <name>FileInfobase</name>
                   <id>38</id>
                   <items xsi:type="form:FormField">
                     <name>InfobaseConnectionDirectory</name>
@@ -775,11 +787,15 @@
                     <common>true</common>
                   </userVisible>
                   <title>
+                    <key>en</key>
+                    <value>File infobase</value>
+                  </title>
+                  <title>
                     <key>ru</key>
                     <value>Файловая база</value>
                   </title>
                   <extendedTooltip>
-                    <name>ФайловаяБазаExtendedTooltip</name>
+                    <name>FileInfobaseExtendedTooltip</name>
                     <id>255</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -800,7 +816,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>БазаНаСервере</name>
+                  <name>ServerInfobase</name>
                   <id>39</id>
                   <items xsi:type="form:FormField">
                     <name>InfobaseConnectionServerName</name>
@@ -928,11 +944,15 @@
                     <common>true</common>
                   </userVisible>
                   <title>
+                    <key>en</key>
+                    <value>Server infobase</value>
+                  </title>
+                  <title>
                     <key>ru</key>
                     <value>База на сервере</value>
                   </title>
                   <extendedTooltip>
-                    <name>БазаНаСервереExtendedTooltip</name>
+                    <name>ServerInfobaseExtendedTooltip</name>
                     <id>257</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -958,11 +978,15 @@
                   <common>true</common>
                 </userVisible>
                 <title>
+                  <key>en</key>
+                  <value>Infobase type</value>
+                </title>
+                <title>
                   <key>ru</key>
                   <value>Тип базы</value>
                 </title>
                 <extendedTooltip>
-                  <name>ТипБазыExtendedTooltip</name>
+                  <name>InfobaseTypeExtendedTooltip</name>
                   <id>254</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -982,10 +1006,10 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>АутентификацияТест</name>
+                <name>AuthenticationTest</name>
                 <id>31</id>
                 <items xsi:type="form:FormField">
-                  <name>InfobaseConnectionWindowsAuthentification</name>
+                  <name>InfobaseConnectionWindowsAuthentication</name>
                   <id>29</id>
                   <title>
                     <key>en</key>
@@ -1002,16 +1026,16 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Object.InfobaseConnectionWindowsAuthentification</segments>
+                      <segments>Object.InfobaseConnectionWindowsAuthentication</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>Right</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>InfobaseConnectionWindowsAuthentificationOnChange</name>
+                    <name>InfobaseConnectionWindowsAuthenticationOnChange</name>
                   </handlers>
                   <extendedTooltip>
-                    <name>InfobaseConnectionWindowsAuthentificationExtendedTooltip</name>
+                    <name>InfobaseConnectionWindowsAuthenticationExtendedTooltip</name>
                     <id>261</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1026,7 +1050,7 @@
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>InfobaseConnectionWindowsAuthentificationContextMenu</name>
+                    <name>InfobaseConnectionWindowsAuthenticationContextMenu</name>
                     <id>30</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1043,7 +1067,7 @@
                   <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>ТестПодключения</name>
+                  <name>ConnectionTest</name>
                   <id>32</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1051,7 +1075,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>ТестПодключенияExtendedTooltip</name>
+                    <name>ConnectionTestExtendedTooltip</name>
                     <id>262</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1079,11 +1103,15 @@
                   <common>true</common>
                 </userVisible>
                 <title>
+                  <key>en</key>
+                  <value>Authentication test</value>
+                </title>
+                <title>
                   <key>ru</key>
-                  <value>Аутентификация тест</value>
+                  <value>Тест аутентификации</value>
                 </title>
                 <extendedTooltip>
-                  <name>АутентификацияТестExtendedTooltip</name>
+                  <name>AuthenticationTestExtendedTooltip</name>
                   <id>260</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1107,7 +1135,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>ПользовательПароль</name>
+                <name>UsernamePassword</name>
                 <id>33</id>
                 <items xsi:type="form:FormField">
                   <name>InfobaseConnectionUsername</name>
@@ -1238,11 +1266,15 @@
                   <common>true</common>
                 </userVisible>
                 <title>
+                  <key>en</key>
+                  <value>Username password</value>
+                </title>
+                <title>
                   <key>ru</key>
                   <value>Пользователь пароль</value>
                 </title>
                 <extendedTooltip>
-                  <name>ПользовательПарольExtendedTooltip</name>
+                  <name>UsernamePasswordExtendedTooltip</name>
                   <id>263</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1275,7 +1307,7 @@
                 <value>Windows</value>
               </title>
               <extendedTooltip>
-                <name>ГруппаWindowsРасширеннаяПодсказка</name>
+                <name>WindowsGroupExtendedTooltip</name>
                 <id>358</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1296,11 +1328,15 @@
               </extInfo>
             </items>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаLinux</name>
+              <name>LinuxGroup</name>
               <id>359</id>
               <items xsi:type="form:Decoration">
-                <name>ДекорацияНадписьLinux</name>
+                <name>LinuxLabelDecoration</name>
                 <id>361</id>
+                <title>
+                  <key>en</key>
+                  <value>Direct infobase connection is not supported if the client application is running on Linux.</value>
+                </title>
                 <title>
                   <key>ru</key>
                   <value>Прямое подключение к информационной базе не поддерживается в клиенте под управлением ОС Linux.</value>
@@ -1311,7 +1347,7 @@
                   <common>true</common>
                 </userVisible>
                 <extendedTooltip>
-                  <name>ДекорацияНадписьLinuxРасширеннаяПодсказка</name>
+                  <name>LinuxLabelDecorationExtendedTooltip</name>
                   <id>363</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1326,7 +1362,7 @@
                   </extInfo>
                 </extendedTooltip>
                 <contextMenu>
-                  <name>ДекорацияНадписьLinuxКонтекстноеМеню</name>
+                  <name>LinuxLabelDecorationContextMenu</name>
                   <id>362</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1356,7 +1392,7 @@
                 <value>Linux</value>
               </title>
               <extendedTooltip>
-                <name>ГруппаLinuxРасширеннаяПодсказка</name>
+                <name>LinuxGroupExtendedTooltip</name>
                 <id>360</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -1382,11 +1418,15 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>CD</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>ОС</value>
             </title>
             <extendedTooltip>
-              <name>ГруппаОСРасширеннаяПодсказка</name>
+              <name>CDGroupExtendedTooltip</name>
               <id>356</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1411,11 +1451,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Export to destination infobase</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Выгрузка в информационную базу-приемник</value>
           </title>
           <extendedTooltip>
-            <name>ВыгрузкаВИБПриемникExtendedTooltip</name>
+            <name>ExportToDestinationIBExtendedTooltip</name>
             <id>250</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1436,7 +1480,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>УИ_ГруппаВыгрузкаЧерезВебСервис</name>
+          <name>UT_ExportViaWebServiceGroup</name>
           <id>416</id>
           <items xsi:type="form:FormField">
             <name>DestinationPublicationAddress</name>
@@ -1489,7 +1533,7 @@
             </extInfo>
           </items>
           <items xsi:type="form:FormGroup">
-            <name>УИ_ПользовательПарольВебСервиса</name>
+            <name>UT_WebServiceUsernamePassword</name>
             <id>423</id>
             <items xsi:type="form:FormField">
               <name>UT_InfobaseWebServiceConnectionUsername</name>
@@ -1620,11 +1664,15 @@
               <common>true</common>
             </userVisible>
             <title>
-              <key>ru</key>
+              <key>en</key>
               <value>Пользователь пароль</value>
             </title>
+            <title>
+              <key>ru</key>
+              <value>Username password</value>
+            </title>
             <extendedTooltip>
-              <name>УИ_ПользовательПарольВебСервисаРасширеннаяПодсказка</name>
+              <name>UT_WebServiceUsernamePasswordExtendedTooltip</name>
               <id>424</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1684,11 +1732,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>UT export via web service group</value>
+          </title>
+          <title>
             <key>ru</key>
-            <value>У и группа выгрузка через веб сервис</value>
+            <value>УТ группа выгрузка через веб сервис</value>
           </title>
           <extendedTooltip>
-            <name>УИ_ГруппаВыгрузкаЧерезВебСервисРасширеннаяПодсказка</name>
+            <name>UT_ExportViaWebServiceGroupExtendedTooltip</name>
             <id>417</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1714,11 +1766,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Export parameters</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Параметры выгрузки</value>
         </title>
         <extendedTooltip>
-          <name>ПараметрыВыгрузкиExtendedTooltip</name>
+          <name>ExportParametersExtendedTooltip</name>
           <id>245</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1738,11 +1794,15 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаКомандыВыгрузки</name>
+        <name>ExportCommandGroup</name>
         <id>216</id>
         <items xsi:type="form:Button">
-          <name>ФормаВыполнитьВыгрузку</name>
+          <name>FormExecuteExport</name>
           <id>191</id>
+          <title>
+            <key>en</key>
+            <value>Export data</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Выгрузить данные</value>
@@ -1752,7 +1812,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>ФормаВыполнитьВыгрузкуExtendedTooltip</name>
+            <name>FormExecuteExportExtendedTooltip</name>
             <id>267</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1775,8 +1835,12 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Decoration">
-          <name>НадписьПояснениеВыгрузки</name>
+          <name>ExportNoteLabel</name>
           <id>217</id>
+          <title>
+            <key>en</key>
+            <value>An exchange rules reading is required before export the data</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Для выгрузки данных необходимо прочитать правила обмена</value>
@@ -1787,7 +1851,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>НадписьПояснениеВыгрузкиExtendedTooltip</name>
+            <name>ExportNoteLabelExtendedTooltip</name>
             <id>268</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1802,7 +1866,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НадписьПояснениеВыгрузкиКонтекстноеМеню</name>
+            <name>ExportNoteLabelContextMenu</name>
             <id>218</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1829,11 +1893,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Export commands</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Команды выгрузки</value>
         </title>
         <extendedTooltip>
-          <name>ГруппаКомандыВыгрузкиExtendedTooltip</name>
+          <name>ExportCommandGroupExtendedTooltip</name>
           <id>266</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1857,13 +1925,13 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ПанельВыгрузки</name>
+        <name>ExportPanel</name>
         <id>45</id>
         <items xsi:type="form:FormGroup">
-          <name>ВыгружаемыеДанные</name>
+          <name>DataToExport</name>
           <id>46</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаПериодаВыгрузки</name>
+            <name>ExportPeriodGroup</name>
             <id>211</id>
             <items xsi:type="form:FormField">
               <name>ExportPeriod</name>
@@ -1927,11 +1995,15 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Export period</value>
+            </title>
+            <title>
               <key>ru</key>
-              <value>Периода выгрузки</value>
+              <value>Период выгрузки</value>
             </title>
             <extendedTooltip>
-              <name>ГруппаПериодаВыгрузкиExtendedTooltip</name>
+              <name>ExportPeriodGroupExtendedTooltip</name>
               <id>271</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -1975,7 +2047,7 @@
             </dataPath>
             <titleLocation>None</titleLocation>
             <items xsi:type="form:FormGroup">
-              <name>ГруппаПометки</name>
+              <name>CheckBoxGroup</name>
               <id>142</id>
               <items xsi:type="form:FormField">
                 <name>Check</name>
@@ -2082,11 +2154,15 @@
                 <common>true</common>
               </userVisible>
               <title>
+                <key>en</key>
+                <value>Checkboxes</value>
+              </title>
+              <title>
                 <key>ru</key>
                 <value>Пометки</value>
               </title>
               <extendedTooltip>
-                <name>ГруппаПометкиExtendedTooltip</name>
+                <name>CheckBoxGroupExtendedTooltip</name>
                 <id>279</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -2396,10 +2472,10 @@
                 <representationInContextMenu>Auto</representationInContextMenu>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>УзлыОбмена</name>
+                <name>ExchangeNodes</name>
                 <id>180</id>
                 <items xsi:type="form:Button">
-                  <name>ТаблицаПравилВыгрузкиВыгрузкаОчиститьУзлыОбмена</name>
+                  <name>ExportRulesTableExportUncheckAllExchangeNodes</name>
                   <id>181</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2407,7 +2483,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>ТаблицаПравилВыгрузкиВыгрузкаОчиститьУзлыОбменаExtendedTooltip</name>
+                    <name>ExportRulesTableExportUncheckAllExchangeNodesExtendedTooltip</name>
                     <id>276</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2429,7 +2505,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>ТаблицаПравилВыгрузкиВыгрузкаУстановитьУзелОбмена</name>
+                  <name>ExportRulesTableExportSetExchangeNode</name>
                   <id>182</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2437,7 +2513,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>ТаблицаПравилВыгрузкиВыгрузкаУстановитьУзелОбменаExtendedTooltip</name>
+                    <name>ExportRulesTableExportSetExchangeNodeExtendedTooltip</name>
                     <id>277</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2464,11 +2540,15 @@
                   <common>true</common>
                 </userVisible>
                 <title>
+                  <key>en</key>
+                  <value>Exchange nodes</value>
+                </title>
+                <title>
                   <key>ru</key>
                   <value>Узлы обмена</value>
                 </title>
                 <extendedTooltip>
-                  <name>УзлыОбменаExtendedTooltip</name>
+                  <name>ExchangeNodesExtendedTooltip</name>
                   <id>275</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -2667,11 +2747,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Data to export</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Выгружаемые данные</value>
           </title>
           <extendedTooltip>
-            <name>ВыгружаемыеДанныеExtendedTooltip</name>
+            <name>DataToExportExtendedTooltip</name>
             <id>270</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -2692,7 +2776,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>Параметры</name>
+          <name>Parameters</name>
           <id>47</id>
           <items xsi:type="form:Table">
             <name>ParametersSettingsTable</name>
@@ -3053,11 +3137,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Export parameters</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Параметры выгрузки</value>
           </title>
           <extendedTooltip>
-            <name>ПараметрыExtendedTooltip</name>
+            <name>ParametersExtendedTooltip</name>
             <id>284</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3078,7 +3166,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ЗакладкаКомментарий</name>
+          <name>CommentBookmark</name>
           <id>48</id>
           <items xsi:type="form:FormField">
             <name>Comment</name>
@@ -3138,11 +3226,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Comment</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Комментарий</value>
           </title>
           <extendedTooltip>
-            <name>ЗакладкаКомментарийExtendedTooltip</name>
+            <name>CommentBookmarkExtendedTooltip</name>
             <id>290</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3168,11 +3260,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Export panel</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Панель выгрузки</value>
         </title>
         <extendedTooltip>
-          <name>ПанельВыгрузкиExtendedTooltip</name>
+          <name>ExportPanelExtendedTooltip</name>
           <id>269</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3193,7 +3289,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ОтладкаВыгрузки</name>
+        <name>ExportDebug</name>
         <id>57</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3201,11 +3297,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Export debug</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Отладка выгрузки</value>
         </title>
         <extendedTooltip>
-          <name>ОтладкаВыгрузкиExtendedTooltip</name>
+          <name>ExportDebugExtendedTooltip</name>
           <id>292</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3229,13 +3329,13 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>СтраницыОтладкиВыгрузки</name>
+        <name>ExportDebugPages</name>
         <id>221</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаВыгрузкаОтладкаДоступна</name>
+          <name>ExportDebugAvailableGroup</name>
           <id>222</id>
           <items xsi:type="form:FormGroup">
-            <name>ГруппаОтладкиВыгрузки</name>
+            <name>ExportDebugGroup</name>
             <id>364</id>
             <items xsi:type="form:FormField">
               <name>ExportHandlersDebugModeFlag</name>
@@ -3340,11 +3440,15 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Export debug</value>
+            </title>
+            <title>
               <key>ru</key>
-              <value>Отладки выгрузки</value>
+              <value>Отладка выгрузки</value>
             </title>
             <extendedTooltip>
-              <name>ГруппаОтладкиВыгрузкиРасширеннаяПодсказка</name>
+              <name>ExportDebugGroupExtendedTooltip</name>
               <id>365</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3373,11 +3477,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Export debug is available</value>
+          </title>
+          <title>
             <key>ru</key>
-            <value>Выгрузка отладка доступна</value>
+            <value>Отладка выгрузки доступна</value>
           </title>
           <extendedTooltip>
-            <name>ГруппаВыгрузкаОтладкаДоступнаExtendedTooltip</name>
+            <name>ExportDebugAvailableGroupExtendedTooltip</name>
             <id>294</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3398,10 +3506,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаВыгрузкаВебКлиент</name>
+          <name>WebClientExportGroup</name>
           <id>223</id>
           <items xsi:type="form:Decoration">
-            <name>ДекорацияИнформацияВыгрузка</name>
+            <name>ExportInfoDecoration</name>
             <id>224</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3409,7 +3517,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДекорацияИнформацияВыгрузкаExtendedTooltip</name>
+              <name>ExportInfoDecorationExtendedTooltip</name>
               <id>298</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3424,7 +3532,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ДекорацияИнформацияВыгрузкаКонтекстноеМеню</name>
+              <name>ExportInfoDecorationContextMenu</name>
               <id>225</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3444,8 +3552,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Decoration">
-            <name>ДекорацияОтладкаВыгрузки</name>
+            <name>ExportDebugDecoration</name>
             <id>219</id>
+            <title>
+              <key>en</key>
+              <value>Debugging tools are unavailable in the web client</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Возможности отладки недоступны при использовании веб-клиента</value>
@@ -3456,7 +3568,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДекорацияОтладкаВыгрузкиExtendedTooltip</name>
+              <name>ExportDebugDecorationExtendedTooltip</name>
               <id>299</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3471,7 +3583,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ДекорацияОтладкаВыгрузкиКонтекстноеМеню</name>
+              <name>ExportDebugDecorationContextMenu</name>
               <id>220</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3498,11 +3610,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Web client export</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Выгрузка веб клиент</value>
           </title>
           <extendedTooltip>
-            <name>ГруппаВыгрузкаВебКлиентExtendedTooltip</name>
+            <name>WebClientExportGroupExtendedTooltip</name>
             <id>297</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3527,11 +3643,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Export debug pages</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Страницы отладки выгрузки</value>
         </title>
         <extendedTooltip>
-          <name>СтраницыОтладкиВыгрузкиExtendedTooltip</name>
+          <name>ExportDebugPagesExtendedTooltip</name>
           <id>293</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3556,11 +3676,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Data export</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Выгрузка данных</value>
       </title>
       <extendedTooltip>
-        <name>ВыгрузкаExtendedTooltip</name>
+        <name>ExportExtendedTooltip</name>
         <id>240</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6738,11 +6862,15 @@ on the server</value>
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Form main panel</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Главная панель формы</value>
     </title>
     <extendedTooltip>
-      <name>ГлавнаяПанельФормыExtendedTooltip</name>
+      <name>FormMainPanelExtendedTooltip</name>
       <id>239</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -6760,7 +6888,7 @@ on the server</value>
     <extInfo xsi:type="form:PagesGroupExtInfo">
       <handlers>
         <event>OnCurrentPageChange</event>
-        <name>ГлавнаяПанельФормыПриСменеСтраницы</name>
+        <name>FormMainPanelOnCurrentPageChange</name>
       </handlers>
       <pagesRepresentation>TabsOnTop</pagesRepresentation>
       <currentRowUse>Auto</currentRowUse>
@@ -6928,7 +7056,7 @@ on the server</value>
       </extInfo>
     </items>
     <items xsi:type="form:Button">
-      <name>ФормаСправка</name>
+      <name>FormHelp</name>
       <id>183</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -6936,7 +7064,7 @@ on the server</value>
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаСправкаExtendedTooltip</name>
+        <name>FormHelpExtendedTooltip</name>
         <id>238</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -7016,7 +7144,7 @@ on the server</value>
       <segments>Object.ArchiveFile</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>Object.InfobaseConnectionWindowsAuthentification</segments>
+      <segments>Object.InfobaseConnectionWindowsAuthentication</segments>
     </settingsSavedData>
     <settingsSavedData xsi:type="form:DataPath">
       <segments>Object.PlatformVersionForInfobaseConnection</segments>

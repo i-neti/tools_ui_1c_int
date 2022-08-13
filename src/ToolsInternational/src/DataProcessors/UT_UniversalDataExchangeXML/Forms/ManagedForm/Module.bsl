@@ -30,21 +30,21 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillTypeAvailableToDeleteList();
 	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура OnOpen(Отказ)
-
-	Элементы.RulesFileName.СписокВыбора.ЗагрузитьЗначения(ExchangeRules.ВыгрузитьЗначения());
-	Элементы.ExchangeFileName.СписокВыбора.ЗагрузитьЗначения(DataImportFromFile.ВыгрузитьЗначения());
-	Элементы.DataFileName.СписокВыбора.ЗагрузитьЗначения(DataExportToFile.ВыгрузитьЗначения());
-
-	ПриИзмененииПериода();
-
-	ПриИзмененииТипаУдаленияРегистрацииИзменений();
-
-	ОчиститьДанныеОФайлеДляЗагрузкиДанных();
-
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	Items.RulesFileName.ChoiceList.LoadValues(ExchangeRules.UnloadValues());
+	Items.ExchangeFileName.ChoiceList.LoadValues(DataImportFromFile.UnloadValues());
+	Items.DataFileName.ChoiceList.LoadValues(DataExportToFile.UnloadValues());
+	
+	OnPeriodChange();
+	
+	OnChangeChangesRegistrationDeletionType();
+	
+	ClearDataImportFileData();
+	
 	DirectExport = ?(Object.DirectReadingFromDestinationIB, 1, 0);
 
 	СохраненныйРежимЗагрузки = (Object.ExchangeMode = "Загрузка");
@@ -52,7 +52,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Если СохраненныйРежимЗагрузки Тогда
 		
 		// Нужную страницу устанавливаем.
-		Элементы.ГлавнаяПанельФормы.ТекущаяСтраница = Элементы.ГлавнаяПанельФормы.ПодчиненныеЭлементы.Загрузка;
+		Элементы.FormMainPanel.ТекущаяСтраница = Элементы.FormMainPanel.ПодчиненныеЭлементы.Загрузка;
 
 	КонецЕсли;
 
@@ -66,7 +66,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ИзменитьРежимОбработки(IsClient);
 
 #Если ВебКлиент Тогда
-	Элементы.СтраницыОтладкиВыгрузки.ТекущаяСтраница = Элементы.СтраницыОтладкиВыгрузки.ПодчиненныеЭлементы.ГруппаВыгрузкаВебКлиент;
+	Элементы.ExportDebugPages.ТекущаяСтраница = Элементы.ExportDebugPages.ПодчиненныеЭлементы.WebClientExportGroup;
 	Элементы.СтраницыОтладкиЗагрузки.ТекущаяСтраница = Элементы.СтраницыОтладкиЗагрузки.ПодчиненныеЭлементы.ГруппаЗагрузкаВебКлиент;
 	Object.HandlersDebugModeFlag = Ложь;
 #КонецЕсли
@@ -90,7 +90,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	КонецЕсли;
 
 	Если Не ЭтоWindowsКлиент() Тогда
-		Элементы.ГруппаОС.ТекущаяСтраница = Элементы.ГруппаОС.ПодчиненныеЭлементы.ГруппаLinux;
+		Элементы.CDGroup.ТекущаяСтраница = Элементы.CDGroup.ПодчиненныеЭлементы.LinuxGroup;
 	КонецЕсли;
 
 КонецПроцедуры
@@ -140,11 +140,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 КонецПроцедуры
 
 &НаКлиенте
-Процедура ГлавнаяПанельФормыПриСменеСтраницы(Элемент, ТекущаяСтраница)
+Процедура FormMainPanelOnCurrentPageChange(Элемент, ТекущаяСтраница)
 
-	Если ТекущаяСтраница.Имя = "Выгрузка" Тогда
+	Если ТекущаяСтраница.Имя = "Export" Тогда
 
-		Object.ExchangeMode = "Выгрузка";
+		Object.ExchangeMode = "Export";
 
 	ИначеЕсли ТекущаяСтраница.Имя = "Загрузка" Тогда
 
@@ -251,10 +251,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 КонецПроцедуры
 
 &НаКлиенте
-Процедура InfobaseConnectionWindowsAuthentificationOnChange(Элемент)
+Процедура InfobaseConnectionWindowsAuthenticationOnChange(Элемент)
 
-	Элементы.InfobaseConnectionUsername.Доступность = Не Object.InfobaseConnectionWindowsAuthentification;
-	Элементы.InfobaseConnectionPassword.Доступность = Не Object.InfobaseConnectionWindowsAuthentification;
+	Элементы.InfobaseConnectionUsername.Доступность = Не Object.InfobaseConnectionWindowsAuthentication;
+	Элементы.InfobaseConnectionPassword.Доступность = Не Object.InfobaseConnectionWindowsAuthentication;
 
 КонецПроцедуры
 
@@ -1126,7 +1126,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ДиалогВыбораФайла.Фильтр = "Файл протокола обмена (*.txt)|*.txt";
 		ДиалогВыбораФайла.Расширение = "txt";
 
-	ИначеЕсли Object.ExchangeMode = "Выгрузка" Тогда
+	ИначеЕсли Object.ExchangeMode = "Export" Тогда
 
 		Если АрхивироватьФайлДанных Тогда
 
@@ -1505,9 +1505,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ЗначениеВРеквизитФормы(ОбъектДляСервера, "Object");
 
 	ПравилаЗагружены = Ложь;
-	Элементы.ФормаВыполнитьВыгрузку.Доступность = Ложь;
-	Элементы.НадписьПояснениеВыгрузки.Видимость = Истина;
-	Элементы.ГруппаВыгрузкаОтладкаДоступна.Доступность = Ложь;
+	Элементы.FormExecuteExport.Доступность = Ложь;
+	Элементы.ExportNoteLabel.Видимость = Истина;
+	Элементы.ExportDebugAvailableGroup.Доступность = Ложь;
 
 КонецПроцедуры
 
@@ -1779,18 +1779,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 &НаКлиенте
 Процедура ПрямаяВыгрузкаПриИзмененииЗначения()
 
-	ПараметрыВыгрузки = Элементы.ПараметрыВыгрузки;
+	ПараметрыВыгрузки = Элементы.ExportParameters;
 	
 	//УИ++
-//	ПараметрыВыгрузки.ТекущаяСтраница = ?(DirectExport = 0,
-//										  ПараметрыВыгрузки.ПодчиненныеЭлементы.ВыгрузкаВФайл,
-//										  ПараметрыВыгрузки.ПодчиненныеЭлементы.ВыгрузкаВИБПриемник);
+//	ExportParameters.ТекущаяСтраница = ?(DirectExport = 0,
+//										  ExportParameters.ПодчиненныеЭлементы.ExportToFile,
+//										  ExportParameters.ПодчиненныеЭлементы.ExportToDestinationIB);
 	Если DirectExport = 0 Тогда
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ВыгрузкаВФайл;
+		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ExportToFile;
 	ИначеЕсли DirectExport = 1 Тогда
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ВыгрузкаВИБПриемник;
+		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ExportToDestinationIB;
 	Иначе
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.УИ_ГруппаВыгрузкаЧерезВебСервис;
+		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.UT_ExportViaWebServiceGroup;
 	КонецЕсли;
 
 	Object.УИ_ВыгрузкаЧерезВебСервис=(DirectExport = 2);
@@ -1805,7 +1805,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 &НаКлиенте
 Процедура ТипИнформационнойБазыДляПодключенияПриИзмененииЗначения()
 
-	ТипБазы = Элементы.ТипБазы;
+	ТипБазы = Элементы.InfobaseType;
 	ТипБазы.ТекущаяСтраница = ?(Object.ConnectedInfobaseType, ТипБазы.ПодчиненныеЭлементы.ФайловаяБаза,
 		ТипБазы.ПодчиненныеЭлементы.БазаНаСервере);
 
@@ -1980,9 +1980,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 Процедура УстановитьПризнакЗагрузкиПравил(Признак)
 
 	ПравилаЗагружены = Признак;
-	Элементы.ФормаВыполнитьВыгрузку.Доступность = Признак;
-	Элементы.НадписьПояснениеВыгрузки.Видимость = Не Признак;
-	Элементы.ГруппаОтладкиВыгрузки.Доступность = Признак;
+	Элементы.FormExecuteExport.Доступность = Признак;
+	Элементы.ExportNoteLabel.Видимость = Не Признак;
+	Элементы.ExportDebugGroup.Доступность = Признак;
 
 КонецПроцедуры
 
