@@ -3705,11 +3705,15 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>Загрузка</name>
+      <name>Import</name>
       <id>3</id>
       <items xsi:type="form:Button">
-        <name>ФормаВыполнитьЗагрузку</name>
+        <name>FormExecuteImport</name>
         <id>192</id>
+        <title>
+          <key>en</key>
+          <value>Import data</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Загрузить данные</value>
@@ -3720,7 +3724,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ФормаВыполнитьЗагрузкуExtendedTooltip</name>
+          <name>FormExecuteImportExtendedTooltip</name>
           <id>301</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3930,10 +3934,10 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаБезопаснаяЗагрузка</name>
+        <name>SafeImportGroup</name>
         <id>396</id>
         <items xsi:type="form:Decoration">
-          <name>Декорация1</name>
+          <name>Decoration1</name>
           <id>401</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3941,7 +3945,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>Декорация1РасширеннаяПодсказка</name>
+            <name>Decoration1ExtendedTooltip</name>
             <id>403</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3956,7 +3960,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>Декорация1КонтекстноеМеню</name>
+            <name>Decoration1ContextMenu</name>
             <id>402</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4036,11 +4040,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Safe import</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Безопасная загрузка</value>
         </title>
         <extendedTooltip>
-          <name>ГруппаБезопаснаяЗагрузкаРасширеннаяПодсказка</name>
+          <name>SafeImportGroupExtendedTooltip</name>
           <id>397</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4543,10 +4551,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ИнформацияОФайлеОбмена</name>
+        <name>ExchangeFileInfo</name>
         <id>149</id>
         <items xsi:type="form:FormGroup">
-          <name>ВерсияПравилГруппа</name>
+          <name>RulesVersionGroup</name>
           <id>153</id>
           <items xsi:type="form:FormField">
             <name>ExchangeRulesVersion</name>
@@ -4641,11 +4649,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Rules version group</value>
+          </title>
+          <title>
             <key>ru</key>
-            <value>Версия правил группа</value>
+            <value>Группа версия правил</value>
           </title>
           <extendedTooltip>
-            <name>ВерсияПравилГруппаExtendedTooltip</name>
+            <name>RulesVersionGroupExtendedTooltip</name>
             <id>314</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4833,11 +4845,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Exchange file info</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Информация о файле обмена</value>
         </title>
         <extendedTooltip>
-          <name>ИнформацияОФайлеОбменаExtendedTooltip</name>
+          <name>ExchangeFileInfoExtendedTooltip</name>
           <id>313</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4863,10 +4879,10 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>СтраницыОтладкиЗагрузки</name>
+        <name>ImportDebugPages</name>
         <id>226</id>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаЗагрузкаОтладкаДоступна</name>
+          <name>ImportDebugAvailableGroup</name>
           <id>227</id>
           <items xsi:type="form:FormField">
             <name>ImportHandlersDebugModeFlag</name>
@@ -4971,11 +4987,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Import debugging available</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Загрузка отладка доступна</value>
           </title>
           <extendedTooltip>
-            <name>ГруппаЗагрузкаОтладкаДоступнаExtendedTooltip</name>
+            <name>ImportDebugAvailableGroupExtendedTooltip</name>
             <id>321</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4995,10 +5015,10 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаЗагрузкаВебКлиент</name>
+          <name>WebClientImportGroup</name>
           <id>228</id>
           <items xsi:type="form:Decoration">
-            <name>ДекорацияИнформацияЗагрузка</name>
+            <name>ImportInfoDecoration</name>
             <id>229</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5006,7 +5026,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДекорацияИнформацияЗагрузкаExtendedTooltip</name>
+              <name>ImportInfoDecorationExtendedTooltip</name>
               <id>325</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5021,7 +5041,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ДекорацияИнформацияЗагрузкаКонтекстноеМеню</name>
+              <name>ImportInfoDecorationContextMenu</name>
               <id>230</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5042,8 +5062,12 @@
             </extInfo>
           </items>
           <items xsi:type="form:Decoration">
-            <name>ДекорацияОтладкаЗагрузки</name>
+            <name>ImportDebugDecoration</name>
             <id>231</id>
+            <title>
+              <key>en</key>
+              <value>Debugging tools are unavailable in the web client</value>
+            </title>
             <title>
               <key>ru</key>
               <value>Возможности отладки недоступны при использовании веб-клиента</value>
@@ -5054,7 +5078,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>ДекорацияОтладкаЗагрузкиExtendedTooltip</name>
+              <name>ImportDebugDecorationExtendedTooltip</name>
               <id>326</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5069,7 +5093,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ДекорацияОтладкаЗагрузкиКонтекстноеМеню</name>
+              <name>ImportDebugDecorationContextMenu</name>
               <id>232</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5091,11 +5115,15 @@
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Import web client</value>
+          </title>
+          <title>
             <key>ru</key>
             <value>Загрузка веб клиент</value>
           </title>
           <extendedTooltip>
-            <name>ГруппаЗагрузкаВебКлиентExtendedTooltip</name>
+            <name>WebClientImportGroupExtendedTooltip</name>
             <id>324</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5120,11 +5148,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Import debug pages</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Страницы отладки загрузки</value>
         </title>
         <extendedTooltip>
-          <name>СтраницыОтладкиЗагрузкиExtendedTooltip</name>
+          <name>ImportDebugPagesExtendedTooltip</name>
           <id>320</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5149,11 +5181,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Data import</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Загрузка данных</value>
       </title>
       <extendedTooltip>
-        <name>ЗагрузкаExtendedTooltip</name>
+        <name>ImportExtendedTooltip</name>
         <id>300</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5174,10 +5210,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>НастройкиОбменаДанными</name>
+      <name>DataExchangeSettings</name>
       <id>4</id>
       <items xsi:type="form:FormField">
-        <name>БезопасныйРежим</name>
+        <name>SafeMode</name>
         <id>404</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -5187,7 +5223,7 @@
         <titleLocation>Right</titleLocation>
         <toolTipRepresentation>Button</toolTipRepresentation>
         <extendedTooltip>
-          <name>БезопасныйРежимРасширеннаяПодсказка</name>
+          <name>SafeModeExtendedTooltip</name>
           <id>406</id>
           <title>
             <key>ru</key>
@@ -5207,7 +5243,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>БезопасныйРежимКонтекстноеМеню</name>
+          <name>SafeModeContextMenu</name>
           <id>405</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5239,7 +5275,7 @@
         <titleLocation>Right</titleLocation>
         <handlers>
           <event>OnChange</event>
-          <name>DebugModeFlagOnChnange</name>
+          <name>DebugModeFlagOnChange</name>
         </handlers>
         <extendedTooltip>
           <name>DebugModeFlagExtendedTooltip</name>
@@ -5376,7 +5412,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>НастройкиВыгрузкиДанных</name>
+        <name>DataExportSettings</name>
         <id>100</id>
         <items xsi:type="form:FormField">
           <name>ExecuteDataExchangeInOptimizedFormat</name>
@@ -5743,11 +5779,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Data export settings</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Настройки выгрузки данных</value>
         </title>
         <extendedTooltip>
-          <name>НастройкиВыгрузкиДанныхExtendedTooltip</name>
+          <name>DataExportSettingsExtendedTooltip</name>
           <id>331</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5773,7 +5813,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>ПротоколОбмена</name>
+        <name>ExchangeProtocol</name>
         <id>113</id>
         <items xsi:type="form:FormField">
           <name>ExchangeLogFileName</name>
@@ -6179,11 +6219,15 @@ on the server</value>
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Exchange protocol</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Протокол обмена</value>
         </title>
         <extendedTooltip>
-          <name>ПротоколОбменаExtendedTooltip</name>
+          <name>ExchangeProtocolExtendedTooltip</name>
           <id>338</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6214,11 +6258,15 @@ on the server</value>
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Additional settings</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Дополнительные настройки</value>
       </title>
       <extendedTooltip>
-        <name>НастройкиОбменаДаннымиExtendedTooltip</name>
+        <name>DataExchangeSettingsExtendedTooltip</name>
         <id>327</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -6239,11 +6287,15 @@ on the server</value>
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>НастройкаУдалениеДанных</name>
+      <name>DataDeletionSetup</name>
       <id>5</id>
       <items xsi:type="form:Decoration">
-        <name>НадписьПредупреждениеПользователя</name>
+        <name>UserWarningLabel</name>
         <id>124</id>
+        <title>
+          <key>en</key>
+          <value>Data deletion functionality is intended for debugging data transfer. It is recommended that you do NOT use data deletion for other purposes.</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Функционал для удаления данных предназначен для отладки переноса. Использовать удаление объектов в других целях НЕ рекомендуется.</value>
@@ -6254,7 +6306,7 @@ on the server</value>
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>НадписьПредупреждениеПользователяExtendedTooltip</name>
+          <name>UserWarningLabelExtendedTooltip</name>
           <id>345</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6269,7 +6321,7 @@ on the server</value>
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>НадписьПредупреждениеПользователяКонтекстноеМеню</name>
+          <name>UserWarningLabelContextMenu</name>
           <id>125</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -6424,7 +6476,7 @@ on the server</value>
         </dataPath>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormGroup">
-          <name>ГруппаМетаданных</name>
+          <name>MetadataGroup</name>
           <id>208</id>
           <items xsi:type="form:FormField">
             <name>MetadataToDeleteCheck</name>
@@ -6539,11 +6591,15 @@ on the server</value>
             <common>true</common>
           </userVisible>
           <title>
+            <key>en</key>
+            <value>Metadata</value>
+          </title>
+          <title>
             <key>ru</key>
-            <value>Метаданных</value>
+            <value>Метаданные</value>
           </title>
           <extendedTooltip>
-            <name>ГруппаМетаданныхExtendedTooltip</name>
+            <name>MetadataGroupExtendedTooltip</name>
             <id>352</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -6832,11 +6888,15 @@ on the server</value>
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Delete data</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Удаление данных</value>
       </title>
       <extendedTooltip>
-        <name>НастройкаУдалениеДанныхExtendedTooltip</name>
+        <name>DataDeletionSetupExtendedTooltip</name>
         <id>344</id>
         <visible>true</visible>
         <enabled>true</enabled>

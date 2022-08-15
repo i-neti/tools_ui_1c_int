@@ -47,260 +47,258 @@ Procedure OnOpen(Cancel)
 	
 	DirectExport = ?(Object.DirectReadingFromDestinationIB, 1, 0);
 
-	СохраненныйРежимЗагрузки = (Object.ExchangeMode = "Загрузка");
+	SavedImportMode = (Object.ExchangeMode = "Import");
 
-	Если СохраненныйРежимЗагрузки Тогда
+	If SavedImportMode Then
 		
-		// Нужную страницу устанавливаем.
-		Элементы.FormMainPanel.ТекущаяСтраница = Элементы.FormMainPanel.ПодчиненныеЭлементы.Загрузка;
+		// Setting the appropriate page.
+		Items.FormMainPanel.CurrentPage = Items.FormMainPanel.ChildItems.Import;
+		
+	EndIf;
 
-	КонецЕсли;
+	ProcessTransactionManagementItemsEnabled();
+	
+	ExpandTreeRows(DataToDelete, Items.DataToDelete, "Check");
+	
+	ArchiveFileOnValueChange();
+	DirectExportOnValueChange();
+	
+	ChangeProcessingMode(IsClient);
 
-	ОбработатьДоступностьЭлементовУправленияТранзакциями();
+#If WebClient Then
+		Items.ExportDebugPages.CurrentPage = Items.ExportDebugPages.ChildItems.WebClientExportGroup;
+		Items.ImportDebugPages.CurrentPage = Items.ImportDebugPages.ChildItems.WebClientImportGroup;
+		Object.HandlersDebugModeFlag = False;
+	#EndIf
+	
+	SetDebugCommandsEnabled();
+	
+	If SavedImportMode AND Object.AutomaticDataImportSettings <> 0 Then
 
-	РазвернутьСтрокиДерева(DataToDelete, Элементы.DataToDelete, "Check");
+		If Object.AutomaticDataImportSettings = 1 Then
 
-	АрхивироватьФайлПриИзмененииЗначения();
-	ПрямаяВыгрузкаПриИзмененииЗначения();
+			NotifyDescription = New NotifyDescription("OnOpenCompletion", ThisObject);
+			ShowQueryBox(NotifyDescription, NStr("ru = 'Выполнить загрузку данных из файла обмена?'; en = 'Do you want to import data from the exchange file?'"), QuestionDialogMode.YesNo, , DialogReturnCode.Yes);
+			
+		Else
+			
+			OnOpenCompletion(DialogReturnCode.Yes, Undefined);
+			
+		EndIf;
+		
+	EndIf;
+	
+	If Not IsWindowsClient() Then
+		Items.CDGroup.CurrentPage = Items.CDGroup.ChildItems.LinuxGroup;
+	EndIf;
+	
+EndProcedure
 
-	ИзменитьРежимОбработки(IsClient);
+&AtClient
+Procedure OnOpenCompletion(Result, AdditionalParameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		
+		ExecuteImportFromForm();
+		ExportPeriodPresentation = PeriodPresentation(Object.StartDate, Object.EndDate);
+		
+	EndIf;
+	
+EndProcedure
 
-#Если ВебКлиент Тогда
-	Элементы.ExportDebugPages.ТекущаяСтраница = Элементы.ExportDebugPages.ПодчиненныеЭлементы.WebClientExportGroup;
-	Элементы.СтраницыОтладкиЗагрузки.ТекущаяСтраница = Элементы.СтраницыОтладкиЗагрузки.ПодчиненныеЭлементы.ГруппаЗагрузкаВебКлиент;
-	Object.HandlersDebugModeFlag = Ложь;
-#КонецЕсли
+#EndRegion
 
-	УстановитьДоступностьКомандОтладки();
+#Region FormHeaderItemsEventHandlers
 
-	Если СохраненныйРежимЗагрузки И Object.AutomaticDataImportSettings <> 0 Тогда
+&AtClient
+Procedure ArchiveFileOnChange(Item)
+	
+	ArchiveFileOnValueChange();
+	
+EndProcedure
 
-		Если Object.AutomaticDataImportSettings = 1 Тогда
+&AtClient
+Procedure RulesFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	SelectFile(Item, ThisObject, "RulesFileName", True, , False, True);
+	
+EndProcedure
 
-			ОписаниеОповещения = Новый ОписаниеОповещения("ПриОткрытииЗавершение", ЭтотОбъект);
-			ПоказатьВопрос(ОписаниеОповещения, НСтр("ru = 'Выполнить загрузку данных из файла обмена?'"),
-				РежимДиалогаВопрос.ДаНет, , КодВозвратаДиалога.Да);
+&AtClient
+Procedure RulesFileNameOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-		Иначе
+&AtClient
+Procedure DirectExportOnChange(Item)
+	
+	DirectExportOnValueChange();
+	
+EndProcedure
 
-			ПриОткрытииЗавершение(КодВозвратаДиалога.Да, Неопределено);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Если Не ЭтоWindowsКлиент() Тогда
-		Элементы.CDGroup.ТекущаяСтраница = Элементы.CDGroup.ПодчиненныеЭлементы.LinuxGroup;
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПриОткрытииЗавершение(Результат, ДополнительныеПараметры) Экспорт
-
-	Если Результат = КодВозвратаДиалога.Да Тогда
-
-		ВыполнитьЗагрузкуИзФормы();
-		ExportPeriodPresentation = ПредставлениеПериода(Object.StartDate, Object.EndDate);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ОбработчикиСобытийЭлементовШапкиФормы
-
-&НаКлиенте
-Процедура ArchiveFileOnChange(Элемент)
-
-	АрхивироватьФайлПриИзмененииЗначения();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура RulesFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
-
-	ВыборФайла(Элемент, ЭтотОбъект, "RulesFileName", Истина, , Ложь, Истина);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура RulesFileNameOpening(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DirectExportOnChange(Элемент)
-
-	ПрямаяВыгрузкаПриИзмененииЗначения();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура FormMainPanelOnCurrentPageChange(Элемент, ТекущаяСтраница)
-
-	Если ТекущаяСтраница.Имя = "Export" Тогда
-
+&AtClient
+Procedure FormMainPanelOnCurrentPageChange(Item, CurrentPage)
+	
+	If CurrentPage.Name = "Export" Then
+		
 		Object.ExchangeMode = "Export";
+		
+	ElsIf CurrentPage.Name = "Import" Then
+		
+		Object.ExchangeMode = "Import";
+		
+	EndIf;
+	
+EndProcedure
 
-	ИначеЕсли ТекущаяСтраница.Имя = "Загрузка" Тогда
+&AtClient
+Procedure DebugModeFlagOnChange(Item)
+	
+	If Object.DebugModeFlag Then
+		
+		Object.UseTransactions = False;
+				
+	EndIf;
+	
+	ProcessTransactionManagementItemsEnabled();
 
-		Object.ExchangeMode = "Загрузка";
+EndProcedure
 
-	КонецЕсли;
+&AtClient
+Procedure ProcessedObjectsCountToUpdateStatusOnChange(Item)
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DebugModeFlagOnChnange(Элемент)
-
-	Если Object.DebugModeFlag Тогда
-
-		Object.UseTransactions = Ложь;
-
-	КонецЕсли;
-
-	ОбработатьДоступностьЭлементовУправленияТранзакциями();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ProcessedObjectsCountToUpdateStatusOnChange(Элемент)
-
-	Если Object.ProcessedObjectsCountToUpdateStatus = 0 Тогда
+	If Object.ProcessedObjectsCountToUpdateStatus = 0 Then
 		Object.ProcessedObjectsCountToUpdateStatus = 100;
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ExchangeFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure ExchangeFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	SelectFile(Item, ThisObject, "ExchangeFileName", False, , Object.ArchiveFile);
+	
+EndProcedure
 
-	ВыборФайла(Элемент, ЭтотОбъект, "ExchangeFileName", Ложь, , Object.ArchiveFile);
+&AtClient
+Procedure ExchangeLogFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	SelectFile(Item, Object, "ExchangeLogFileName", False, "txt", False);
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ImportExchangeLogFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	SelectFile(Item, Object, "ImportExchangeLogFileName", False, "txt", False);
+	
+EndProcedure
 
-&НаКлиенте
-Процедура ExchangeLogFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure DataFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	SelectFile(Item, ThisObject, "DataFileName", False, , Object.ArchiveFile);
+	
+EndProcedure
 
-	ВыборФайла(Элемент, Object, "ExchangeLogFileName", Ложь, "txt", Ложь);
+&AtClient
+Procedure InfobaseConnectionDirectoryStartChoice(Item, ChoiceData, StandardProcessing)
+	
+	FileSelectionDialog = New FileDialog(FileDialogMode.ChooseDirectory);
+	
+	FileSelectionDialog.Title = NStr("ru = 'Выберите каталог информационной базы'; en = 'Select infobase directory'");
+	FileSelectionDialog.Directory = Object.InfobaseToConnectDirectory;
+	FileSelectionDialog.CheckFileExist = True;
+	
+	Notification = New NotifyDescription("InfobaseConnectionDirectoryChoiceProcessing", ThisObject);
+	FileSelectionDialog.Show(Notification);
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure InfobaseConnectionDirectoryChoiceProcessing(SelectedFiles, AdditionalParameters) Export
+	
+	If SelectedFiles = Undefined Then
+		Return;
+	EndIf;
+	
+	Object.InfobaseConnectionDirectory = SelectedFiles[0];
+	
+EndProcedure
 
-&НаКлиенте
-Процедура ImportExchangeLogFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure ExchangeLogFileNameOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-	ВыборФайла(Элемент, Object, "ImportExchangeLogFileName", Ложь, "txt", Ложь);
+&AtClient
+Procedure ImportExchangeLogFileNameOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure InfobaseConnectionDirectoryOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-&НаКлиенте
-Процедура DataFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure InfobaseConnectionWindowsAuthenticationOnChange(Item)
 
-	ВыборФайла(Элемент, ЭтотОбъект, "DataFileName", Ложь, , Object.ArchiveFile);
+	Items.InfobaseConnectionUsername.Enabled = Not Object.InfobaseConnectionWindowsAuthentication;
+	Items.InfobaseConnectionPassword.Enabled = Not Object.InfobaseConnectionWindowsAuthentication;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура InfobaseConnectionDirectoryStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
+&AtClient
+Procedure RulesFileNameOnChange(Item)
+	
+	File = New File(RulesFileName);
+	
+	Notification = New NotifyDescription("RulesFileNameAfterExistenceCheck", ThisObject);
+	File.BeginCheckingExistence(Notification);
+	
+EndProcedure
 
-	ДиалогВыбораФайла = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.ВыборКаталога);
+&AtClient
+Procedure RulesFileNameAfterExistenceCheck(Exists, AdditionalParameters) Export
+	
+	If Not Exists Then
+		MessageToUser(NStr("ru = 'Не найден файл правил обмена'; en = 'Exchange rule file not found'"), "RulesFileName");
+		SetImportRulesFlag(False);
+		Return;
+	EndIf;
+	
+	If RuleAndExchangeFileNamesMatch() Then
+		Return;
+	EndIf;
+	
+	NotifyDescription = New NotifyDescription("RulesFileNameOnChangeCompletion", ThisObject);
+	ShowQueryBox(NotifyDescription, NStr("ru = 'Загрузить правила обмена данными?'; en = 'Do you want to import data exchange rules?'"), QuestionDialogMode.YesNo, , DialogReturnCode.Yes);
+	
+EndProcedure
 
-	ДиалогВыбораФайла.Заголовок = НСтр("ru = 'Выберите каталог информационной базы'");
-	ДиалогВыбораФайла.Каталог = Object.InfobaseConnectionDirectory;
-	ДиалогВыбораФайла.ПроверятьСуществованиеФайла = Истина;
-
-	Оповещение = Новый ОписаниеОповещения("КаталогИнформационнойБазыДляПодключенияОбработкаВыбора", ЭтотОбъект);
-	ДиалогВыбораФайла.Показать(Оповещение);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура КаталогИнформационнойБазыДляПодключенияОбработкаВыбора(ВыбранныеФайлы, ДополнительныеПараметры) Экспорт
-
-	Если ВыбранныеФайлы = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	Object.InfobaseConnectionDirectory = ВыбранныеФайлы[0];
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExchangeLogFileNameOpening(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ImportExchangeLogFileNameOpening(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура InfobaseConnectionDirectoryOpening(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура InfobaseConnectionWindowsAuthenticationOnChange(Элемент)
-
-	Элементы.InfobaseConnectionUsername.Доступность = Не Object.InfobaseConnectionWindowsAuthentication;
-	Элементы.InfobaseConnectionPassword.Доступность = Не Object.InfobaseConnectionWindowsAuthentication;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура RulesFileNameOnChange(Элемент)
-
-	Файл = Новый Файл(RulesFileName);
-
-	Оповещение = Новый ОписаниеОповещения("ИмяФайлаПравилПослеПроверкиСуществования", ЭтотОбъект);
-	Файл.НачатьПроверкуСуществования(Оповещение);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ИмяФайлаПравилПослеПроверкиСуществования(Существует, ДополнительныеПараметры) Экспорт
-
-	Если Не Существует Тогда
-		СообщитьПользователю(НСтр("ru = 'Не найден файл правил обмена'"), "RulesFileName");
-		УстановитьПризнакЗагрузкиПравил(Ложь);
-		Возврат;
-	КонецЕсли;
-
-	Если ИменаФайловПравилИОбменаСовпадают() Тогда
-		Возврат;
-	КонецЕсли;
-
-	ОписаниеОповещения = Новый ОписаниеОповещения("ИмяФайлаПравилПриИзмененииЗавершение", ЭтотОбъект);
-	ПоказатьВопрос(ОписаниеОповещения, НСтр("ru = 'Загрузить правила обмена данными?'"), РежимДиалогаВопрос.ДаНет, ,
-		КодВозвратаДиалога.Да);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ИмяФайлаПравилПриИзмененииЗавершение(Результат, ДополнительныеПараметры) Экспорт
-
-	Если Результат = КодВозвратаДиалога.Да Тогда
-
-		ВыполнитьЗагрузкуПравилОбмена();
-
-	Иначе
-
-		УстановитьПризнакЗагрузкиПравил(Ложь);
-
-	КонецЕсли;
-
-КонецПроцедуры
+&AtClient
+Procedure RulesFileNameOnChangeCompletion(Result, AdditionalParameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		
+		ExecuteImportExchangeRules();
+		
+	Else
+		
+		SetImportRulesFlag(False);
+		
+	EndIf;
+	
+EndProcedure
 
 &НаКлиенте
 Процедура ExchangeFileNameOpening(Элемент, СтандартнаяОбработка)
@@ -1898,7 +1896,7 @@ Procedure OnOpen(Cancel)
 	Элементы.RulesFileName.Видимость = Не IsClient;
 	Элементы.DataFileName.Видимость = Не IsClient;
 	Элементы.ExchangeFileName.Видимость = Не IsClient;
-	Элементы.ГруппаБезопаснаяЗагрузка.Видимость = Не IsClient;
+	Элементы.SafeImportGroup.Видимость = Не IsClient;
 
 	УстановитьПризнакЗагрузкиПравил(Ложь);
 
@@ -2047,7 +2045,7 @@ Procedure OnOpen(Cancel)
 &НаКлиенте
 Процедура ИзменитьРежимБезопаснаяЗагрузка(Интерактивно = Истина)
 
-	Элементы.ГруппаБезопаснаяЗагрузка.Доступность = Object.SafeImport;
+	Элементы.SafeImportGroup.Доступность = Object.SafeImport;
 
 	ЧерезХранилище = IsClient;
 #Если ВебКлиент Тогда
