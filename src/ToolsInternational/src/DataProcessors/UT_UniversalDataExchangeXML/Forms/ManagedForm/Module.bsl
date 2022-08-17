@@ -65,7 +65,7 @@ Procedure OnOpen(Cancel)
 	
 	ChangeProcessingMode(IsClient);
 
-#If WebClient Then
+	#If WebClient Then
 		Items.ExportDebugPages.CurrentPage = Items.ExportDebugPages.ChildItems.WebClientExportGroup;
 		Items.ImportDebugPages.CurrentPage = Items.ImportDebugPages.ChildItems.WebClientImportGroup;
 		Object.HandlersDebugModeFlag = False;
@@ -73,7 +73,7 @@ Procedure OnOpen(Cancel)
 	
 	SetDebugCommandsEnabled();
 	
-	If SavedImportMode AND Object.AutomaticDataImportSettings <> 0 Then
+	If SavedImportMode And Object.AutomaticDataImportSettings <> 0 Then
 
 		If Object.AutomaticDataImportSettings = 1 Then
 
@@ -271,7 +271,7 @@ EndProcedure
 Procedure RulesFileNameAfterExistenceCheck(Exists, AdditionalParameters) Export
 	
 	If Not Exists Then
-		MessageToUser(NStr("ru = 'Не найден файл правил обмена'; en = 'Exchange rule file not found'"), "RulesFileName");
+		MessageToUser(NStr("ru = 'Не найден файл правил обмена'; en = 'Exchange rules file not found'"), "RulesFileName");
 		SetImportRulesFlag(False);
 		Return;
 	EndIf;
@@ -300,1815 +300,1806 @@ Procedure RulesFileNameOnChangeCompletion(Result, AdditionalParameters) Export
 	
 EndProcedure
 
-&НаКлиенте
-Процедура ExchangeFileNameOpening(Элемент, СтандартнаяОбработка)
+&AtClient
+Procedure ExchangeFileNameOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
+&AtClient
+Procedure ExchangeFileNameOnChange(Item)
+	
+	ClearDataImportFileData();
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure UseTransactionsOnChange(Item)
+	
+	ProcessTransactionManagementItemsEnabled();
+	
+EndProcedure
 
-&НаКлиенте
-Процедура ExchangeFileNameOnChange(Элемент)
+&AtClient
+Procedure ImportHandlersDebugModeFlagOnChange(Item)
+	
+	SetDebugCommandsEnabled();
+	
+EndProcedure
 
-	ОчиститьДанныеОФайлеДляЗагрузкиДанных();
+&AtClient
+Procedure ExportHandlerDebugModeFlagOnChange(Item)
+	
+	SetDebugCommandsEnabled();
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure DataFileNameOpening(Item, StandardProcessing)
+	
+	OpenInApplication(Item.EditText, StandardProcessing);
+	
+EndProcedure
 
-&НаКлиенте
-Процедура UseTransactionsOnChange(Элемент)
-
-	ОбработатьДоступностьЭлементовУправленияТранзакциями();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ImportHandlersDebugModeFlagOnChange(Элемент)
-
-	УстановитьДоступностьКомандОтладки();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportHandlersDebugModeFlagOnChange(Элемент)
-
-	УстановитьДоступностьКомандОтладки();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DataFileNameOpening(Элемент, СтандартнаяОбработка)
-
-	ОткрытьВПриложении(Элемент.ТекстРедактирования, СтандартнаяОбработка);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DataFileNameOnChange(Элемент)
-
-	Если ПустоеЗначениеРеквизита(DataFileName, "DataFileName", Элементы.DataFileName.Заголовок)
-		Или ИменаФайловПравилИОбменаСовпадают() Тогда
-		Возврат;
-	КонецЕсли;
-
+&AtClient
+Procedure DataFileNameOnChange(Item)
+	
+	If EmptyAttributeValue(DataFileName, "DataFileName", Items.DataFileName.Title)
+		Or RuleAndExchangeFileNamesMatch() Then
+		Return;
+	EndIf;
+	
 	Object.ExchangeFileName = DataFileName;
+	
+	File = New File(Object.ExchangeFileName);
+	Object.ArchiveFile = (Upper(File.Extension) = Upper(".zip"));
+	
+EndProcedure
 
-	Файл = Новый Файл(Object.ExchangeFileName);
-	Object.ArchiveFile = (ВРЕГ(Файл.Расширение) = ВРЕГ(".zip"));
+&AtClient
+Procedure ConnectedInfobaseTypeOnChange(Item)
 
-КонецПроцедуры
+	ConnectedInfobaseTypeOnValueChange();
 
-&НаКлиенте
-Процедура ConnectedInfobaseTypeOnChange(Элемент)
+EndProcedure
 
-	ТипИнформационнойБазыДляПодключенияПриИзмененииЗначения();
+&AtClient
+Procedure PlatformVersionForInfobaseConnectionOnChange(Item)
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура PlatformVersionForInfobaseConnectionOnChange(Элемент)
-
-	Если ПустаяСтрока(Object.PlatformVersionForInfobaseConnection) Тогда
+	If IsBlankString(Object.PlatformVersionForInfobaseConnection) Then
 
 		Object.PlatformVersionForInfobaseConnection = "V8";
 
-	КонецЕсли;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ChangesRegistrationDeletionTypeForExportedExchangeNodes(Элемент)
+&AtClient
+Procedure ChangesRegistrationDeletionTypeForExportedExchangeNodes(Элемент)
 
-	ПриИзмененииТипаУдаленияРегистрацииИзменений();
+	OnChangeChangesRegistrationDeletionType();
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ExportPeriodOnChange(Item)
+	
+	OnPeriodChange();
+	
+EndProcedure
 
-&НаКлиенте
-Процедура ExportPeriodOnChange(Элемент)
+&AtClient
+Procedure DeletionPeriodOnChange(Item)
+	
+	OnPeriodChange();
+	
+EndProcedure
 
-	ПриИзмененииПериода();
+&AtClient
+Procedure SafeImportOnChange(Item)
+	
+	ChangeSafeImportMode();
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClient
+Procedure ImportRulesFileNameStartChoice(Item, ChoiceData, StandardProcessing)
 
-&НаКлиенте
-Процедура DeletionPeriodOnChange(Элемент)
-
-	ПриИзмененииПериода();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура SafeImportOnChange(Элемент)
-
-	ИзменитьРежимБезопаснаяЗагрузка();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ImportRulesFileNameStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
-
-	ВыборФайла(Элемент, ЭтотОбъект, "ImportRulesFileName", Истина, , Ложь, Истина);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ИмяФайлаПравилЗагрузкиПриИзменении(Элемент)
-
-	ПоместитьФайлПравилЗагрузкиВХранилище();
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ОбработчикиСобытийЭлементовТаблицыФормыТаблицаПравилВыгрузки
+	SelectFile(Item, ThisObject, "ImportRulesFileName", True, , False, True);
+	
+EndProcedure
 
 &НаКлиенте
-Процедура ExportRulesTableBeforeRowChange(Элемент, Отказ)
-
-	Если Элемент.ТекущийЭлемент.Имя = "ExchangeNodeRef" Тогда
-
-		Если Элемент.ТекущиеДанные.IsFolder Тогда
-			Отказ = Истина;
-		КонецЕсли;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportRulesTableOnChange(Элемент)
-
-	Если Элемент.ТекущийЭлемент.Имя = "DER" Тогда
-
-		ТекСтрока = Элемент.ТекущиеДанные;
-
-		Если ТекСтрока.Check = 2 Тогда
-			ТекСтрока.Check = 0;
-		КонецЕсли;
-
-		УстановитьПометкиПодчиненных(ТекСтрока, "Check");
-		УстановитьПометкиРодителей(ТекСтрока, "Check");
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportRulesTableFilterStartChoice(Элемент, ДанныеВыбора, СтандартнаяОбработка)
-
-	ТекущаяСтрока = Элементы.ExportRulesTable.ТекущиеДанные;
-
-	Если ТекущаяСтрока = Неопределено Тогда
-		СтандартнаяОбработка = Ложь;
-		Возврат;
-	КонецЕсли;
-
-	Если ТекущаяСтрока.ИмяМетаданных = "" Тогда
-		СтандартнаяОбработка = Ложь;
-		Возврат;
-	КонецЕсли;
-
-	КомпоновщикНастроек = ИнициализироватьКомпоновщикНастроекОтбораПравилВыгрузки(
-		Элементы.ExportRulesTable.ТекущаяСтрока);
-	ТекущаяСтрока.Filter = КомпоновщикНастроек.Настройки.Filter;
-
-КонецПроцедуры
-&НаКлиенте
-Процедура ExportRulesTableFilterOnChange(Элемент)
-	ТекущаяСтрока = Элементы.ExportRulesTable.ТекущиеДанные;
-	Если ТекущаяСтрока.Filter.Элементы.Количество() > 0 Тогда
-		ТекущаяСтрока.UseFilter = Истина;
-	Иначе
-		ТекущаяСтрока.UseFilter = Ложь;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportRulesTableFilterClearing(Элемент, СтандартнаяОбработка)
-	ТекущаяСтрока = Элементы.ExportRulesTable.ТекущиеДанные;
-	Если ТекущаяСтрока.Filter.Элементы.Количество() > 0 Тогда
-		ТекущаяСтрока.UseFilter = Истина;
-	Иначе
-		ТекущаяСтрока.UseFilter = Ложь;
-	КонецЕсли;
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ОбработчикиСобытийЭлементовТаблицыФормыУдаляемыеДанные
-
-&НаКлиенте
-Процедура DataToDeleteOnChange(Элемент)
-
-	ТекСтрока = Элемент.ТекущиеДанные;
-
-	УстановитьПометкиПодчиненных(ТекСтрока, "Check");
-	УстановитьПометкиРодителей(ТекСтрока, "Check");
-
-КонецПроцедуры
-
-#КонецОбласти
-
-#Область ОбработчикиКомандФормы
-
-&НаКлиенте
-Процедура ConnectionTest(Команда)
-
-	ВыполнитьПодключениеКИБПриемникуНаСервере();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура GetExchangeFileInfo(Команда)
-
-	АдресФайла = "";
-
-	Если IsClient Тогда
-
-		ОписаниеОповещения = Новый ОписаниеОповещения("ПолучитьИнформациюОФайлеОбменаЗавершение", ЭтотОбъект);
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайла, , , УникальныйИдентификатор);
-
-	Иначе
-
-		ПолучитьИнформациюОФайлеОбменаЗавершение(Истина, АдресФайла, "", Неопределено);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПолучитьИнформациюОФайлеОбменаЗавершение(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-
-	Если Результат Тогда
-
-		Попытка
-
-			ОткрытьФайлЗагрузкиНаСервере(Адрес);
-			ExportPeriodPresentation = ПредставлениеПериода(Object.StartDate, Object.EndDate);
-
-		Исключение
-
-			СообщитьПользователю(НСтр("ru = 'Не удалось прочитать файл обмена.'"));
-			ОчиститьДанныеОФайлеДляЗагрузкиДанных();
-
-		КонецПопытки;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DeletionCheckAll(Команда)
-
-	Для Каждого Строка Из DataToDelete.ПолучитьЭлементы() Цикл
-
-		Строка.Check = 1;
-		УстановитьПометкиПодчиненных(Строка, "Check");
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DeletionUncheckAll(Команда)
-
-	Для Каждого Строка Из DataToDelete.ПолучитьЭлементы() Цикл
-		Строка.Check = 0;
-		УстановитьПометкиПодчиненных(Строка, "Check");
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура DeletionDelete(Команда)
-
-	ОписаниеОповещения = Новый ОписаниеОповещения("УдалениеУдалитьЗавершение", ЭтотОбъект);
-	ПоказатьВопрос(ОписаниеОповещения, НСтр("ru = 'Удалить выбранные данные в информационной базе?'"),
-		РежимДиалогаВопрос.ДаНет, , КодВозвратаДиалога.Нет);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура УдалениеУдалитьЗавершение(Результат, ДополнительныеПараметры) Экспорт
-
-	Если Результат = КодВозвратаДиалога.Да Тогда
-
-		УдалитьНаСервере();
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportCheckAll(Команда)
-
-	Для Каждого Строка Из Object.ExportRulesTable.ПолучитьЭлементы() Цикл
-		Строка.Check = 1;
-		УстановитьПометкиПодчиненных(Строка, "Check");
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportUncheckAll(Команда)
-
-	Для Каждого Строка Из Object.ExportRulesTable.ПолучитьЭлементы() Цикл
-		Строка.Check = 0;
-		УстановитьПометкиПодчиненных(Строка, "Check");
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportUncheckAllExchangeNodes(Команда)
-
-	УстановитьУзелОбменаУСтрокДереваНаСервере(Неопределено);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportSetExchangeNode(Команда)
-
-	Если Элементы.ExportRulesTable.ТекущиеДанные = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	УстановитьУзелОбменаУСтрокДереваНаСервере(Элементы.ExportRulesTable.ТекущиеДанные.СсылкаНаУзелОбмена);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура SaveParameters(Команда)
-
-	СохранитьПараметрыНаСервере();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура RestoreParameters(Команда)
-
-	ВосстановитьПараметрыНаСервере();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExportDebugSetup(Команда)
-
-	Object.ExchangeRulesFileName = ИмяФайлаНаСервереИлиКлиенте(RulesFileName, АдресФайлаПравилВХранилище);
-
-	ОткрытьФормуНастройкиОтладкиОбработчиков(Истина);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура AtClient(Команда)
-
-	Если Не IsClient Тогда
-
-		IsClient = Истина;
-
-		ИзменитьРежимОбработки(IsClient);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура AtServer(Команда)
-
-	Если IsClient Тогда
-
-		IsClient = Ложь;
-
-		ИзменитьРежимОбработки(IsClient);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ImportDebugSetup(Команда)
-
-	АдресФайлаОбменаВХранилище = "";
-	ИмяФайлаДляРасширения = "";
-
-	Если IsClient Тогда
-
-		ОписаниеОповещения = Новый ОписаниеОповещения("НастройкаОтладкиЗагрузкиЗавершение", ЭтотОбъект);
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайлаОбменаВХранилище, , , УникальныйИдентификатор);
-
-	Иначе
-
-		Если ПустоеЗначениеРеквизита(ExchangeFileName, "ExchangeFileName", Элементы.ExchangeFileName.Заголовок) Тогда
-			Возврат;
-		КонецЕсли;
-
-		НастройкаОтладкиЗагрузкиЗавершение(Истина, АдресФайлаОбменаВХранилище, ИмяФайлаДляРасширения, Неопределено);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура НастройкаОтладкиЗагрузкиЗавершение(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-
-	Если Результат Тогда
-
-		Object.ExchangeFileName = ИмяФайлаНаСервереИлиКлиенте(ExchangeFileName, Адрес, ВыбранноеИмяФайла);
-
-		ОткрытьФормуНастройкиОтладкиОбработчиков(Ложь);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExecuteExport(Команда)
-
-	ВыполнитьВыгрузкуИзФормы();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ExecuteImport(Команда)
-
-	ВыполнитьЗагрузкуИзФормы();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ReadExchangeRules(Команда)
-
-	Если Не ЭтоWindowsКлиент() И DirectExport = 1 Тогда
-		ПоказатьПредупреждение( , НСтр(
-			"ru = 'Прямое подключение к информационной базе поддерживается только в клиенте под управлением ОС Windows.'"));
-		Возврат;
-	КонецЕсли;
-
-	ИмяФайлаДляРасширения = "";
-
-	Если IsClient Тогда
-
-		ОписаниеОповещения = Новый ОписаниеОповещения("ПрочитатьПравилаОбменаЗавершение", ЭтотОбъект);
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайлаПравилВХранилище, , , УникальныйИдентификатор);
-
-	Иначе
-
-		АдресФайлаПравилВХранилище = "";
-		Если ПустоеЗначениеРеквизита(RulesFileName, "RulesFileName", Элементы.RulesFileName.Заголовок) Тогда
-			Возврат;
-		КонецЕсли;
-
-		ПрочитатьПравилаОбменаЗавершение(Истина, АдресФайлаПравилВХранилище, ИмяФайлаДляРасширения, Неопределено);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПрочитатьПравилаОбменаЗавершение(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-
-	Если Результат Тогда
-
-		АдресФайлаПравилВХранилище = Адрес;
-
-		ВыполнитьЗагрузкуПравилОбмена(Адрес, ВыбранноеИмяФайла);
-
-		Если Object.ErrorFlag Тогда
-
-			УстановитьПризнакЗагрузкиПравил(Ложь);
-
-		Иначе
-
-			УстановитьПризнакЗагрузкиПравил(Истина);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура UT_WebServiceConnectionTest(Команда)
-	Путь=Object.UT_DestinationPublicationAddress + "/hs/tools-ui-1c/exchange";
-
-	ДопПараметры=Новый Структура;
-	ДопПараметры.Вставить("Таймаут", 10);
-
-	Аутентификация=Новый Структура;
-	Аутентификация.Вставить("Пользователь", Object.InfobaseConnectionUsername);
-	Аутентификация.Вставить("Пароль", Object.InfobaseConnectionPassword);
-	ДопПараметры.Вставить("Аутентификация", Аутентификация);
-
-	Попытка
-		РезультатПодключения=УИ_КоннекторHTTP.Get(Путь, , ДопПараметры);
-		РезультатПодключения=УИ_КоннекторHTTP.КакТекст(РезультатПодключения);
-	Исключение
-		РезультатПодключения=Неопределено;
-		СообщитьПользователю(ОписаниеОшибки());
-	КонецПопытки;
-	Если РезультатПодключения = "OK" Тогда
-		ПоказатьПредупреждение( , "Тест подключения пройден успешно");
-	КонецЕсли;
-КонецПроцедуры
+Процедура ImportRulesFileNameOnChange(Item)
+
+	PutImportRulesFileInStorage();
+	
+EndProcedure
+
+#EndRegion
+
+#Region ExportRulesTableFormTableItemsEventHandlers
+
+&AtClient
+Procedure ExportRulesTableBeforeRowChange(Item, Cancel)
+	
+	If Item.CurrentItem.Name = "ExchangeNodeRef" Then
+		
+		If Item.CurrentData.IsFolder Then
+			Cancel = True;
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExportRulesTableOnChange(Item)
+	
+	If Item.CurrentItem.Name = "DER" Then
+		
+		curRow = Item.CurrentData;
+		
+		If curRow.Check = 2 Then
+			curRow.Check = 0;
+		EndIf;
+
+		SetChildMarks(curRow, "Check");
+		SetParentMarks(curRow, "Check");
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExportRulesTableFilterStartChoice(Item, ChoiceData, StandardProcessing)
+
+	CurrentRow = Items.ExportRulesTable.CurrentData;
+
+	If CurrentRow = Undefined Then
+		StandardProcessing = False;
+		Return;
+	EndIf;
+
+	If CurrentRow.MetadataName = "" Then
+		StandardProcessing = False;
+		Return;
+	EndIf;
+
+	SettingsComposer = InitExportRulesFilterSettingsComposer(
+		Items.ExportRulesTable.CurrentRow);
+	CurrentRow.Filter = SettingsComposer.Settings.Filter;
+
+EndProcedure
+&AtClient
+Procedure ExportRulesTableFilterOnChange(Item)
+	CurrentRow = Items.ExportRulesTable.CurrentData;
+	If CurrentRow.Filter.Items.Count() > 0 Then
+		CurrentRow.UseFilter = True;
+	Else
+		CurrentRow.UseFilter = False;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ExportRulesTableFilterClearing(Item, StandardProcessing)
+	CurrentRow = Items.ExportRulesTable.CurrentData;
+	If CurrentRow.Filter.Items.Count() > 0 Then
+		CurrentRow.UseFilter = True;
+	Else
+		CurrentRow.UseFilter = False;
+	EndIf;
+EndProcedure
+
+#EndRegion
+
+#Region DataToDeleteFormTableItemEventHandlers
+
+&AtClient
+Procedure DataToDeleteOnChange(Item)
+	
+	curRow = Item.CurrentData;
+	
+	SetChildMarks(curRow, "Check");
+	SetParentMarks(curRow, "Check");
+
+EndProcedure
+
+#EndRegion
+
+#Region FormCommandHandlers
+
+&AtClient
+Procedure ConnectionTest(Command)
+	
+	EstablishConnectionWithDestinationIBAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure GetExchangeFileInfo(Command)
+	
+	FileAddress = "";
+	
+	If IsClient Then
+		
+		NotifyDescription = New NotifyDescription("GetExchangeFileInfoCompletion", ThisObject);
+		BeginPutFile(NotifyDescription, FileAddress, , , UUID);
+		
+	Else
+		
+		GetExchangeFileInfoCompletion(True, FileAddress, "", Undefined);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure GetExchangeFileInfoCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If Result Then
+		
+		Try
+			
+			OpenImportFileAtServer(Address);
+			ExportPeriodPresentation = PeriodPresentation(Object.StartDate, Object.EndDate);
+			
+		Except
+			
+			MessageToUser(NStr("ru = 'Не удалось прочитать файл обмена.'; en = 'Cannot read the exchange file.'"));
+			ClearDataImportFileData();
+			
+		EndTry;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure DeletionCheckAll(Command)
+	
+	For Each Row In DataToDelete.GetItems() Do
+		
+		Row.Check = 1;
+		SetChildMarks(Row, "Check");
+		
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure DeletionUncheckAll(Command)
+	
+	For Each Row In DataToDelete.GetItems() Do
+		Row.Check = 0;
+		SetChildMarks(Row, "Check");
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure DeletionDelete(Command)
+	
+	NotifyDescription = New NotifyDescription("DeletionDeleteCompletion", ThisObject);
+	ShowQueryBox(NotifyDescription, NStr("ru = 'Удалить выбранные данные в информационной базе?'; en = 'Do you want to delete selected data?'"), QuestionDialogMode.YesNo, , DialogReturnCode.No);
+	
+EndProcedure
+
+&AtClient
+Procedure DeletionDeleteCompletion(Result, AdditionalParameters) Export
+	
+	If Result = DialogReturnCode.Yes Then
+		
+		DeleteAtServer();
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExportCheckAll(Command)
+
+	For Each Row In Object.ExportRulesTable.GetItems() Do
+		Row.Check = 1;
+		SetChildMarks(Row, "Check");
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure ExportUncheckAll(Command)
+
+	For Each Row In Object.ExportRulesTable.GetItems() Do
+		Row.Check = 0;
+		SetChildMarks(Row, "Check");
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure ExportUncheckAllExchangeNodes(Command)
+
+	FillExchangeNodeInTreeRowsAtServer(Undefined);
+
+EndProcedure
+
+&AtClient
+Procedure ExportSetExchangeNode(Command)
+
+	If Items.ExportRulesTable.CurrentData = Undefined Then
+		Return;
+	EndIf;
+	
+	FillExchangeNodeInTreeRowsAtServer(Items.ExportRulesTable.CurrentData.ExchangeNodeRef);
+
+EndProcedure
+
+&AtClient
+Procedure SaveParameters(Command)
+	
+	SaveParametersAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure RestoreParameters(Command)
+	
+	RestoreParametersAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure ExportDebugSetup(Command)
+	
+	Object.ExchangeRulesFileName = FileNameAtServerOrClient(RulesFileName, RulesFileAddressInStorage);
+	
+	OpenHandlerDebugSetupForm(True);
+	
+EndProcedure
+
+&AtClient
+Procedure AtClient(Command)
+	
+	If Not IsClient Then
+		
+		IsClient = True;
+		
+		ChangeProcessingMode(IsClient);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure AtServer(Command)
+	
+	If IsClient Then
+		
+		IsClient = False;
+		
+		ChangeProcessingMode(IsClient);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ImportDebugSetup(Command)
+	
+	ExchangeFileAddressInStorage = "";
+	FileNameForExtension = "";
+	
+	If IsClient Then
+		
+		NotifyDescription = New NotifyDescription("ImportDebugSetupCompletion", ThisObject);
+		BeginPutFile(NotifyDescription, ExchangeFileAddressInStorage, , , UUID);
+
+	Else
+		
+		If EmptyAttributeValue(ExchangeFileName, "ExchangeFileName", Items.ExchangeFileName.Title) Then
+			Return;
+		EndIf;
+		
+		ImportDebugSetupCompletion(True, ExchangeFileAddressInStorage, FileNameForExtension, Undefined);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ImportDebugSetupCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If Result Then
+		
+		Object.ExchangeFileName = FileNameAtServerOrClient(ExchangeFileName ,Address, SelectedFileName);
+		
+		OpenHandlerDebugSetupForm(False);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExecuteExport(Command)
+	
+	ExecuteExportFromForm();
+	
+EndProcedure
+
+&AtClient
+Procedure ExecuteImport(Command)
+	
+	ExecuteImportFromForm();
+	
+EndProcedure
+
+&AtClient
+Procedure ReadExchangeRules(Command)
+	
+	If Not IsWindowsClient() AND DirectExport = 1 Then
+		ShowMessageBox(,NStr("ru = 'Прямое подключение к информационной базе поддерживается только в клиенте под управлением ОС Windows.'; en = 'Direct connection to the infobase is available only on a client running Windows OS.'"));
+		Return;
+	EndIf;
+	
+	FileNameForExtension = "";
+	
+	If IsClient Then
+		
+		NotifyDescription = New NotifyDescription("ReadExchangeRulesCompletion", ThisObject);
+		BeginPutFile(NotifyDescription, RulesFileAddressInStorage, , , UUID);
+		
+	Else
+		
+		RulesFileAddressInStorage = "";
+		If EmptyAttributeValue(RulesFileName, "RulesFileName", Items.RulesFileName.Title) Then
+			Return;
+		EndIf;
+		
+		ReadExchangeRulesCompletion(True, RulesFileAddressInStorage, FileNameForExtension, Undefined);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ReadExchangeRulesCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If Result Then
+		
+		RulesFileAddressInStorage = Address;
+		
+		ExecuteImportExchangeRules(Address, SelectedFileName);
+		
+		If Object.ErrorFlag Then
+			
+			SetImportRulesFlag(False);
+			
+		Else
+			
+			SetImportRulesFlag(True);
+			
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UT_WebServiceConnectionTest(Command)
+	Path=Object.UT_DestinationPublicationAddress + "/hs/tools-ui-1c/exchange";
+
+	AddlParameters=New Structure;
+	AddlParameters.Insert("Timeout", 10);
+
+	Authentication=New Structure;
+	Authentication.Insert("Username", Object.InfobaseConnectionUsername);
+	Authentication.Insert("Password", Object.InfobaseConnectionPassword);
+	AddlParameters.Insert("Authentication", Authentication);
+
+	Try
+		ConnectionResult=UT_HTTPConnector.Get(Path, , AddlParameters);
+		ConnectionResult=UT_HTTPConnector.AsText(ConnectionResult);
+	Except
+		ConnectionResult=Undefined;
+		MessageToUser(ErrorDescription());
+	EndTry;
+	If ConnectionResult = "OK" Then
+		ShowMessageBox( , NStr("ru = 'Тест подключения пройден успешно'; en = 'Connection success'"));
+	EndIf;
+EndProcedure
 
 //@skip-warning
-&НаКлиенте
-Процедура Attachable_ExecuteToolsCommonCommand(Команда) 
-	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ЭтотОбъект, Команда);
-КонецПроцедуры
+&AtClient
+Procedure Attachable_ExecuteToolsCommonCommand(Command) 
+	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
+EndProcedure
 
 
-#КонецОбласти
+#EndRegion
 
-#Область СлужебныеПроцедурыИФункции
+#Region Private
 
-// Открывает файл обмена во внешнем приложении.
+// Opens an exchange file in an external application.
 //
 // Parameters:
-//  
+// 	- FileName - String - a file name.
+//  - StandardProcessing - Boolean - a standard processing flag.
 // 
-&НаКлиенте
-Процедура ОткрытьВПриложении(ИмяФайла, СтандартнаяОбработка = Ложь)
+&AtClient
+Procedure OpenInApplication(FileName, StandardProcessing = False)
+	
+	StandardProcessing = False;
+	
+	AdditionalParameters = New Structure();
+	AdditionalParameters.Insert("FileName", FileName);
+	AdditionalParameters.Insert("NotifyDescription", New NotifyDescription);
+	
+	File = New File(FileName);
 
-	СтандартнаяОбработка = Ложь;
+	NotifyDescription = New NotifyDescription("AfterDetermineFileExistence", ThisObject,
+		AdditionalParameters);
+	File.BeginCheckingExistence(NotifyDescription);
 
-	ДополнительныеПараметры = Новый Структура;
-	ДополнительныеПараметры.Вставить("ИмяФайла", ИмяФайла);
-	ДополнительныеПараметры.Вставить("ОписаниеОповещения", Новый ОписаниеОповещения);
+EndProcedure
 
-	Файл = Новый Файл(ИмяФайла);
+// Continuation of the procedure (see above).
+&AtClient
+Procedure AfterDetermineFileExistence(Exists, AdditionalParameters) Export
+	
+	If Exists Then
+		BeginRunningApplication(AdditionalParameters.NotifyDescription, AdditionalParameters.FileName);
+	EndIf;
+	
+EndProcedure
 
-	ОписаниеОповещения = Новый ОписаниеОповещения("ПослеОпределенияСуществованияФайла", ЭтотОбъект,
-		ДополнительныеПараметры);
-	Файл.НачатьПроверкуСуществования(ОписаниеОповещения);
-
-КонецПроцедуры
-
-// Продолжение процедуры (см. выше).
-&НаКлиенте
-Процедура ПослеОпределенияСуществованияФайла(Существует, ДополнительныеПараметры) Экспорт
-
-	Если Существует Тогда
-		НачатьЗапускПриложения(ДополнительныеПараметры.ОписаниеОповещения, ДополнительныеПараметры.ИмяФайла);
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОчиститьДанныеОФайлеДляЗагрузкиДанных()
+&AtClient
+Procedure ClearDataImportFileData()
 
 	Object.ExchangeRulesVersion = "";
 	Object.DataExportDate = "";
 	ExportPeriodPresentation = "";
 
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОбработатьДоступностьЭлементовУправленияТранзакциями()
-
-	Элементы.UseTransactions.Доступность = Не Object.DebugModeFlag;
-
-	Элементы.ObjectsPerTransaction.Доступность = Object.UseTransactions;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура АрхивироватьФайлПриИзмененииЗначения()
-
-	Если Object.ArchiveFile Тогда
-		DataFileName = СтрЗаменить(DataFileName, ".xml", ".zip");
-	Иначе
-		DataFileName = СтрЗаменить(DataFileName, ".zip", ".xml");
-	КонецЕсли;
-
-	Элементы.ExchangeFileCompressionPassword.Доступность = Object.ArchiveFile;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура УстановитьУзелОбменаУСтрокДерева(Дерево, УзелОбмена)
-
-	Для Каждого Строка Из Дерево Цикл
-
-		Если Строка.IsFolder Тогда
-
-			УстановитьУзелОбменаУСтрокДерева(Строка.ПолучитьЭлементы(), УзелОбмена);
-
-		Иначе
-
-			Строка.ExchangeNodeRef = УзелОбмена;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Функция ИменаФайловПравилИОбменаСовпадают()
-
-	Если ВРег(СокрЛП(RulesFileName)) = ВРег(СокрЛП(DataFileName)) Тогда
-
-		СообщитьПользователю(НСтр("ru = 'Файл правил обмена не может совпадать с файлом данных.
-								  |Выберите другой файл для выгрузки данных.'"));
-		Возврат Истина;
-
-	Иначе
-
-		Возврат Ложь;
-
-	КонецЕсли;
-
-КонецФункции
-
-// Заполняет дерево метаданных, доступных для удаления.
-&НаСервере
-Процедура ЗаполнитьСписокТиповДоступныхДляУдаления()
-
-	ДеревоДанных = РеквизитФормыВЗначение("DataToDelete");
-
-	ДеревоДанных.Строки.Очистить();
-
-	СтрокаДерева = ДеревоДанных.Строки.Добавить();
-	СтрокаДерева.Presentation = НСтр("ru = 'Справочники'");
-
-	Для Каждого ОбъектМД Из Метаданные.Справочники Цикл
-
-		Если Не ПравоДоступа("Удаление", ОбъектМД) Тогда
-			Продолжить;
-		КонецЕсли;
-
-		СтрокаМД = СтрокаДерева.Строки.Добавить();
-		СтрокаМД.Presentation = ОбъектМД.Имя;
-		СтрокаМД.Метаданные = "СправочникСсылка." + ОбъектМД.Имя;
-
-	КонецЦикла;
-
-	СтрокаДерева = ДеревоДанных.Строки.Добавить();
-	СтрокаДерева.Presentation = НСтр("ru = 'Планы видов характеристик'");
-
-	Для Каждого ОбъектМД Из Метаданные.ПланыВидовХарактеристик Цикл
-
-		Если Не ПравоДоступа("Удаление", ОбъектМД) Тогда
-			Продолжить;
-		КонецЕсли;
-
-		СтрокаМД = СтрокаДерева.Строки.Добавить();
-		СтрокаМД.Presentation = ОбъектМД.Имя;
-		СтрокаМД.Метаданные = "ПланВидовХарактеристикСсылка." + ОбъектМД.Имя;
-
-	КонецЦикла;
-
-	СтрокаДерева = ДеревоДанных.Строки.Добавить();
-	СтрокаДерева.Presentation = НСтр("ru = 'Документы'");
-
-	Для Каждого ОбъектМД Из Метаданные.Документы Цикл
-
-		Если Не ПравоДоступа("Удаление", ОбъектМД) Тогда
-			Продолжить;
-		КонецЕсли;
-
-		СтрокаМД = СтрокаДерева.Строки.Добавить();
-		СтрокаМД.Presentation = ОбъектМД.Имя;
-		СтрокаМД.Метаданные = "ДокументСсылка." + ОбъектМД.Имя;
-
-	КонецЦикла;
-
-	СтрокаДерева = ДеревоДанных.Строки.Добавить();
-	СтрокаДерева.Presentation = "РегистрыСведений";
-
-	Для Каждого ОбъектМД Из Метаданные.РегистрыСведений Цикл
-
-		Если Не ПравоДоступа("Изменение", ОбъектМД) Тогда
-			Продолжить;
-		КонецЕсли;
-
-		Подчинен = (ОбъектМД.РежимЗаписи = Метаданные.СвойстваОбъектов.РежимЗаписиРегистра.ПодчинениеРегистратору);
-		Если Подчинен Тогда
-			Продолжить;
-		КонецЕсли
-		;
-
-		СтрокаМД = СтрокаДерева.Строки.Добавить();
-		СтрокаМД.Presentation = ОбъектМД.Имя;
-		СтрокаМД.Метаданные = "РегистрСведенийЗапись." + ОбъектМД.Имя;
-
-	КонецЦикла;
-
-	ЗначениеВРеквизитФормы(ДеревоДанных, "DataToDelete");
-
-КонецПроцедуры
-
-// Возвращает версию обработки.
-&НаСервере
-Функция ВерсияОбъектаСтрокойНаСервере()
-
-	Возврат РеквизитФормыВЗначение("Object").ВерсияОбъектаСтрокой();
-
-КонецФункции
-
-&НаКлиенте
-Процедура ВыполнитьЗагрузкуПравилОбмена(АдресФайлаПравилВХранилище = "", ИмяФайлаДляРасширения = "")
-
-	Object.ErrorFlag = Ложь;
-
-	ЗагрузитьПравилаОбменаИПараметрыНаСервере(АдресФайлаПравилВХранилище, ИмяФайлаДляРасширения);
-
-	Если Object.ErrorFlag Тогда
-
-		УстановитьПризнакЗагрузкиПравил(Ложь);
-
-	Иначе
-
-		УстановитьПризнакЗагрузкиПравил(Истина);
-		РазвернутьСтрокиДерева(Object.ExportRulesTable, Элементы.ExportRulesTable, "Check");
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура РазвернутьСтрокиДерева(ДеревоДанных, ПредставлениеНаФорме, ИмяФлажка)
-
-	СтрокиДерева = ДеревоДанных.ПолучитьЭлементы();
-
-	Для Каждого Строка Из СтрокиДерева Цикл
-
-		ИдентификаторСтроки=Строка.ПолучитьИдентификатор();
-		ПредставлениеНаФорме.Развернуть(ИдентификаторСтроки, Ложь);
-		ВключитьРодителяЕслиВключеныПодчиненные(Строка, ИмяФлажка);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ВключитьРодителяЕслиВключеныПодчиненные(СтрокаДерева, ИмяФлажка)
-
-	Включить = СтрокаДерева[ИмяФлажка];
-
-	Для Каждого ПодчиненнаяСтрока Из СтрокаДерева.ПолучитьЭлементы() Цикл
-
-		Если ПодчиненнаяСтрока[ИмяФлажка] = 1 Тогда
-
-			Включить = 1;
-
-		КонецЕсли;
-
-		Если ПодчиненнаяСтрока.ПолучитьЭлементы().Количество() > 0 Тогда
-
-			ВключитьРодителяЕслиВключеныПодчиненные(ПодчиненнаяСтрока, ИмяФлажка);
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	СтрокаДерева[ИмяФлажка] = Включить;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПриИзмененииПериода()
-
-	Object.StartDate = ExportPeriod.ДатаНачала;
-	Object.EndDate = ExportPeriod.ДатаОкончания;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ЗагрузитьПравилаОбменаИПараметрыНаСервере(АдресФайлаПравилВХранилище, ИмяФайлаДляРасширения)
-
-	ИмяФайлаПравилОбмена = ИмяФайлаНаСервереИлиКлиенте(RulesFileName, АдресФайлаПравилВХранилище,
-		ИмяФайлаДляРасширения);
-
-	Если ИмяФайлаПравилОбмена = Неопределено Тогда
-
-		Возврат;
-
-	Иначе
-
-		Object.ExchangeRulesFileName = ИмяФайлаПравилОбмена;
-
-	КонецЕсли;
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-	ОбъектДляСервера.ExportRulesTable = РеквизитФормыВЗначение("Object.ExportRulesTable");
-	ОбъектДляСервера.ParametersSettingsTable = РеквизитФормыВЗначение("Object.ParametersSettingsTable");
-
-	ОбъектДляСервера.ЗагрузитьПравилаОбмена();
-	ОбъектДляСервера.ИнициализироватьПервоначальныеЗначенияПараметров();
-	ОбъектДляСервера.Parameters.Очистить();
-	Object.ErrorFlag = ОбъектДляСервера.ErrorFlag;
-
-	Если IsClient Тогда
-
-		УдалитьФайлы(Object.ExchangeRuleFileName);
-
-	КонецЕсли;
-
-	ЗначениеВРеквизитФормы(ОбъектДляСервера.ExportRulesTable, "Object.ExportRulesTable");
-	ЗначениеВРеквизитФормы(ОбъектДляСервера.ParametersSettingsTable, "Object.ParametersSettingsTable");
-
-КонецПроцедуры
-
-// Открывает диалог выбора файла.
+EndProcedure
+
+&AtClient
+Procedure ProcessTransactionManagementItemsEnabled()
+	
+	Items.UseTransactions.Enabled = Not Object.DebugModeFlag;
+	
+	Items.ObjectsPerTransaction.Enabled = Object.UseTransactions;
+	
+EndProcedure
+
+&AtClient
+Procedure ArchiveFileOnValueChange()
+	
+	If Object.ArchiveFile Then
+		DataFileName = StrReplace(DataFileName, ".xml", ".zip");
+	Else
+		DataFileName = StrReplace(DataFileName, ".zip", ".xml");
+	EndIf;
+	
+	Items.ExchangeFileCompressionPassword.Enabled = Object.ArchiveFile;
+	
+EndProcedure
+
+&AtServer
+Procedure FillExchangeNodeInTreeRows(Tree, ExchangeNode)
+	
+	For Each Row In Tree Do
+		
+		If Row.IsFolder Then
+			
+			FillExchangeNodeInTreeRows(Row.GetItems(), ExchangeNode);
+			
+		Else
+			
+			Row.ExchangeNodeRef = ExchangeNode;
+			
+		EndIf;
+		
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Function RuleAndExchangeFileNamesMatch()
+	
+	If Upper(TrimAll(RulesFileName)) = Upper(TrimAll(DataFileName)) Then
+		
+		MessageToUser(NStr("ru = 'Файл правил обмена не может совпадать с файлом данных.
+		|Выберите другой файл для выгрузки данных.'; 
+		|en = 'Exchange rule file cannot match the data file.
+		|Select another file to export the data to.'"));
+		Return True;
+		
+	Else
+		
+		Return False;
+		
+	EndIf;
+	
+EndFunction
+
+// Fills a value tree with metadata objects available for deletion
+&AtServer
+Procedure FillTypeAvailableToDeleteList()
+	
+	DataTree = FormAttributeToValue("DataToDelete");
+	
+	DataTree.Rows.Clear();
+	
+	TreeRow = DataTree.Rows.Add();
+	TreeRow.Presentation = NStr("ru = 'Справочники'; en = 'Catalogs'");
+	
+	For each MetadataObject In Metadata.Catalogs Do
+		
+		If Not AccessRight("Delete", MetadataObject) Then
+			Continue;
+		EndIf;
+		
+		MDRow = TreeRow.Rows.Add();
+		MDRow.Presentation = MetadataObject.Name;
+		MDRow.Metadata = "CatalogRef." + MetadataObject.Name;
+		
+	EndDo;
+	
+	TreeRow = DataTree.Rows.Add();
+	TreeRow.Presentation = NStr("ru = 'Планы видов характеристик'; en = 'Charts of characteristic types'");
+	
+	For each MetadataObject In Metadata.ChartsOfCharacteristicTypes Do
+		
+		If Not AccessRight("Delete", MetadataObject) Then
+			Continue;
+		EndIf;
+		
+		MDRow = TreeRow.Rows.Add();
+		MDRow.Presentation = MetadataObject.Name;
+		MDRow.Metadata = "ChartOfCharacteristicTypesRef." + MetadataObject.Name;
+		
+	EndDo;
+	
+	TreeRow = DataTree.Rows.Add();
+	TreeRow.Presentation = NStr("ru = 'Документы'; en = 'Documents'");
+	
+	For each MetadataObject In Metadata.Documents Do
+		
+		If Not AccessRight("Delete", MetadataObject) Then
+			Continue;
+		EndIf;
+		
+		MDRow = TreeRow.Rows.Add();
+		MDRow.Presentation = MetadataObject.Name;
+		MDRow.Metadata = "DocumentRef." + MetadataObject.Name;
+		
+	EndDo;
+	
+	TreeRow = DataTree.Rows.Add();
+	TreeRow.Presentation = "InformationRegisters";
+	
+	For each MetadataObject In Metadata.InformationRegisters Do
+		
+		If Not AccessRight("Update", MetadataObject) Then
+			Continue;
+		EndIf;
+		
+		Subordinate = (MetadataObject.WriteMode = Metadata.ObjectProperties.RegisterWriteMode.RecorderSubordinate);
+		If Subordinate Then Continue EndIf;
+		
+		MDRow = TreeRow.Rows.Add();
+		MDRow.Presentation = MetadataObject.Name;
+		MDRow.Metadata = "InformationRegisterRecord." + MetadataObject.Name;
+		
+	EndDo;
+	
+	ValueToFormAttribute(DataTree, "DataToDelete");
+	
+EndProcedure
+
+// Returns data processor version
+&AtServer
+Function ObjectVersionAsStringAtServer()
+	
+	Return FormAttributeToValue("Object").ObjectVersionAsString();
+	
+EndFunction
+
+&AtClient
+Procedure ExecuteImportExchangeRules(RulesFileAddressInStorage = "", FileNameForExtension = "")
+	
+	Object.ErrorFlag = False;
+	
+	ImportExchangeRulesAndParametersAtServer(RulesFileAddressInStorage, FileNameForExtension);
+	
+	If Object.ErrorFlag Then
+		
+		SetImportRulesFlag(False);
+		
+	Else
+		
+		SetImportRulesFlag(True);
+		ExpandTreeRows(Object.ExportRulesTable, Items.ExportRulesTable, "Check");
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExpandTreeRows(DataTree, PresentationOnForm, CheckBoxName)
+	
+	TreeRows = DataTree.GetItems();
+	
+	For Each Row In TreeRows Do
+		
+		RowID=Row.GetID();
+		PresentationOnForm.Expand(RowID, False);
+		EnableParentIfChildItemsEnabled(Row, CheckBoxName);
+		
+	EndDo;
+	
+EndProcedure
+
+&AtClient
+Procedure EnableParentIfChildItemsEnabled(TreeRow, CheckBoxName)
+	
+	Enable = TreeRow[CheckBoxName];
+	
+	For Each ChildRow In TreeRow.GetItems() Do
+		
+		If ChildRow[CheckBoxName] = 1 Then
+			
+			Enable = 1;
+			
+		EndIf;
+		
+		If ChildRow.GetItems().Count() > 0 Then
+			
+			EnableParentIfChildItemsEnabled(ChildRow, CheckBoxName);
+			
+		EndIf;
+		
+	EndDo;
+	
+	TreeRow[CheckBoxName] = Enable;
+	
+EndProcedure
+
+&AtClient
+Procedure OnPeriodChange()
+	
+	Object.StartDate = ExportPeriod.StartDate;
+	Object.EndDate = ExportPeriod.EndDate;
+	
+EndProcedure
+
+&AtServer
+Procedure ImportExchangeRulesAndParametersAtServer(RulesFileAddressInStorage, FileNameForExtension)
+
+	ExchangeRulesFileName = FileNameAtServerOrClient(RulesFileName ,RulesFileAddressInStorage, FileNameForExtension);
+
+	If ExchangeRulesFileName = Undefined Then
+		
+		Return;
+		
+	Else
+		
+		Object.ExchangeRulesFileName = ExchangeRulesFileName;
+		
+	EndIf;
+	
+	ObjectForServer = FormAttributeToValue("Object");
+	ObjectForServer.ExportRulesTable = FormAttributeToValue("Object.ExportRulesTable");
+	ObjectForServer.ParametersSettingsTable = FormAttributeToValue("Object.ParametersSettingsTable");
+
+	ObjectForServer.ImportExchangeRules();
+	ObjectForServer.InitializeInitialParameterValues();
+	ObjectForServer.Parameters.Clear();
+	Object.ErrorFlag = ObjectForServer.ErrorFlag;
+	
+	If IsClient Then
+		
+		DeleteFiles(Object.ExchangeRulesFileName);
+		
+	EndIf;
+
+	ValueToFormAttribute(ObjectForServer.ExportRulesTable, "Object.ExportRulesTable");
+	ValueToFormAttribute(ObjectForServer.ParametersSettingsTable, "Object.ParametersSettingsTable");
+
+EndProcedure
+
+// Opens file selection dialog.
 //
-&НаКлиенте
-Процедура ВыборФайла(Элемент, ОбъектХранения, ИмяСвойства, ПроверятьСуществование, Знач РасширениеПоУмолчанию = "xml",
-	АрхивироватьФайлДанных = Истина, ВыборФайлаПравил = Ложь)
+&AtClient
+Procedure SelectFile(Item, StorageObject, PropertyName, CheckForExistence, Val DefaultExtension = "xml",
+	ArchiveDataFile = True, RulesFileSelection = False)
 
-	ДиалогВыбораФайла = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.Открытие);
+	FileSelectionDialog = New FileDialog(FileDialogMode.Open);
 
-	Если РасширениеПоУмолчанию = "txt" Тогда
+	If DefaultExtension = "txt" Then
+		
+		FileSelectionDialog.Filter = "Exchange log file (*.txt)|*.txt";
+		FileSelectionDialog.DefaultExt = "txt";
 
-		ДиалогВыбораФайла.Фильтр = "Файл протокола обмена (*.txt)|*.txt";
-		ДиалогВыбораФайла.Расширение = "txt";
+	ElsIf Object.ExchangeMode = "Export" Then
 
-	ИначеЕсли Object.ExchangeMode = "Export" Тогда
+		If ArchiveDataFile Then
+			
+			FileSelectionDialog.Filter = "Archive data file (*.zip)|*.zip";
+			FileSelectionDialog.DefaultExt = "zip";
 
-		Если АрхивироватьФайлДанных Тогда
+		ElsIf RulesFileSelection Then
+			
+			FileSelectionDialog.Filter = "Data file (*.xml)|*.xml|Archive data file (*.zip)|*.zip";
+			FileSelectionDialog.DefaultExt = "xml";
 
-			ДиалогВыбораФайла.Фильтр = "Архивный файл данных (*.zip)|*.zip";
-			ДиалогВыбораФайла.Расширение = "zip";
+		Else
+			
+			FileSelectionDialog.Filter = "Data file (*.xml)|*.xml";
+			FileSelectionDialog.DefaultExt = "xml";
+			
+		EndIf;
 
-		ИначеЕсли ВыборФайлаПравил Тогда
+	Else
+		If RulesFileSelection Then
+			FileSelectionDialog.Filter = "Data file (*.xml)|*.xml";
+			FileSelectionDialog.DefaultExt = "xml";
+		Else
+			FileSelectionDialog.Filter = "Data file (*.xml)|*.xml|Archive data file (*.zip)|*.zip";
+			FileSelectionDialog.DefaultExt = "xml";
+		EndIf;
+	EndIf;
 
-			ДиалогВыбораФайла.Фильтр = "Файл данных (*.xml)|*.xml|Архивный файл данных (*.zip)|*.zip";
-			ДиалогВыбораФайла.Расширение = "xml";
-
-		Иначе
-
-			ДиалогВыбораФайла.Фильтр = "Файл данных (*.xml)|*.xml";
-			ДиалогВыбораФайла.Расширение = "xml";
-
-		КонецЕсли;
-
-	Иначе
-		Если ВыборФайлаПравил Тогда
-			ДиалогВыбораФайла.Фильтр = "Файл данных (*.xml)|*.xml";
-			ДиалогВыбораФайла.Расширение = "xml";
-		Иначе
-			ДиалогВыбораФайла.Фильтр = "Файл данных (*.xml)|*.xml|Архивный файл данных (*.zip)|*.zip";
-			ДиалогВыбораФайла.Расширение = "xml";
-		КонецЕсли;
-	КонецЕсли;
-
-	ДиалогВыбораФайла.Заголовок = НСтр("ru = 'Выберите файл'");
-	ДиалогВыбораФайла.ПредварительныйПросмотр = Ложь;
-	ДиалогВыбораФайла.ИндексФильтра = 0;
-	ДиалогВыбораФайла.ПолноеИмяФайла = Элемент.ТекстРедактирования;
-	ДиалогВыбораФайла.ПроверятьСуществованиеФайла = ПроверятьСуществование;
-
-	ДополнительныеПараметры = Новый Структура;
-	ДополнительныеПараметры.Вставить("ОбъектХранения", ОбъектХранения);
-	ДополнительныеПараметры.Вставить("ИмяСвойства", ИмяСвойства);
-	ДополнительныеПараметры.Вставить("Элемент", Элемент);
-
-	Оповещение = Новый ОписаниеОповещения("ДиалогВыбораФайлаОбработкаВыбора", ЭтотОбъект, ДополнительныеПараметры);
-	ДиалогВыбораФайла.Показать(Оповещение);
-
-КонецПроцедуры
+	FileSelectionDialog.Title = NStr("ru = 'Выберите файл'; en = 'Select file'");
+	FileSelectionDialog.Preview = False;
+	FileSelectionDialog.FilterIndex = 0;
+	FileSelectionDialog.FullFileName = Item.EditText;
+	FileSelectionDialog.CheckFileExist = CheckForExistence;
+	
+	AdditionalParameters = New Structure;
+	AdditionalParameters.Insert("StorageObject", StorageObject);
+	AdditionalParameters.Insert("PropertyName",    PropertyName);
+	AdditionalParameters.Insert("Item",        Item);
+	
+	Notification = New NotifyDescription("FileSelectionDialogChoiceProcessing", ThisObject, AdditionalParameters);
+	FileSelectionDialog.Show(Notification);
+	
+EndProcedure
 
 // Parameters:
-//   ВыбранныеФайлы - Массив из Строка - результат выбора файла.
-//   ДополнительныеПараметры - Структура - произвольные дополнительные параметры:
-//     * ОбъектХранения - Структура, ФормаКлиентскогоПриложения - приемник для хранения свойства.
-//     * ИмяСвойства - Строка - имя свойства объекта хранения.
-//     * Элемент - ПолеФормы - источник события выбора файла.
+//   SelectedFiles - Array
+//   	- String - a file selection result.
+//   AdditionalParameters - Structure - an arbitrary additional parameters:
+//     * StorageObject - Structure, ClientApplicationForm - an object to store the properties.
+//     * PropertyName - String - a storage object property name.
+//     * Item - FormField - a file selection event source.
 //
-&НаКлиенте
-Процедура ДиалогВыбораФайлаОбработкаВыбора(ВыбранныеФайлы, ДополнительныеПараметры) Экспорт
+&AtClient
+Procedure FileSelectionDialogChoiceProcessing(SelectedFiles, AdditionalParameters) Export
+	
+	If SelectedFiles = Undefined Then
+		Return;
+	EndIf;
+	
+	AdditionalParameters.StorageObject[AdditionalParameters.PropertyName] = SelectedFiles[0];
+	
+	Item = AdditionalParameters.Item;
+	
+	If Item = Items.RulesFileName Then
+		RulesFileNameOnChange(Item);
+	ElsIf Item = Items.ExchangeFileName Then
+		ExchangeFileNameOnChange(Item);
+	ElsIf Item = Items.DataFileName Then
+		DataFileNameOnChange(Item);
+	ElsIf Item = Items.ImportRulesFileName Then
+		ImportRulesFileNameOnChange(Item);
+	EndIf;
 
-	Если ВыбранныеФайлы = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+EndProcedure
 
-	ДополнительныеПараметры.ОбъектХранения[ДополнительныеПараметры.ИмяСвойства] = ВыбранныеФайлы[0];
+&AtServer
+Procedure EstablishConnectionWithDestinationIBAtServer()
+	
+	ObjectForServer = FormAttributeToValue("Object");
+	FillPropertyValues(ObjectForServer, Object);
+	ConnectionResult = ObjectForServer.EstablishConnectionWithDestinationIB();
+	
+	If ConnectionResult <> Undefined Then
+		
+		MessageToUser(NStr("ru = 'Подключение успешно установлено.'; en = 'Connection established.'"));
+		
+	EndIf;
+	
+EndProcedure
 
-	Элемент = ДополнительныеПараметры.Элемент;
-
-	Если Элемент = Элементы.RulesFileName Тогда
-		ИмяФайлаПравилПриИзменении(Элемент);
-	ИначеЕсли Элемент = Элементы.ExchangeFileName Тогда
-		ИмяФайлаОбменаПриИзменении(Элемент);
-	ИначеЕсли Элемент = Элементы.DataFileName Тогда
-		ИмяФайлаДанныхПриИзменении(Элемент);
-	ИначеЕсли Элемент = Элементы.ImportRulesFileName Тогда
-		ИмяФайлаПравилЗагрузкиПриИзменении(Элемент);
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ВыполнитьПодключениеКИБПриемникуНаСервере()
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-	ЗаполнитьЗначенияСвойств(ОбъектДляСервера, Object);
-	РезультатПодключения = ОбъектДляСервера.ВыполнитьПодключениеКИБПриемнику();
-
-	Если РезультатПодключения <> Неопределено Тогда
-
-		СообщитьПользователю(НСтр("ru = 'Подключение успешно установлено.'"));
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-// Устанавливает состояние пометки у подчиненных строк строки дерева значений
-// в зависимости от пометки текущей строки.
-//
-// Parameters:
-//  ТекСтрока      - Строка дерева значений.
+// Sets mark value in child tree rows according to the mark value in the current row.
 // 
-&НаКлиенте
-Процедура УстановитьПометкиПодчиненных(ТекСтрока, ИмяФлажка)
-
-	Подчиненные = ТекСтрока.ПолучитьЭлементы();
-
-	Если Подчиненные.Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
-
-	Для Каждого Строка Из Подчиненные Цикл
-
-		Строка[ИмяФлажка] = ТекСтрока[ИмяФлажка];
-
-		УстановитьПометкиПодчиненных(Строка, ИмяФлажка);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Устанавливает состояние пометки у родительских строк строки дерева значений
-// в зависимости от пометки текущей строки.
 //
 // Parameters:
-//  ТекСтрока      - Строка дерева значений.
+//  CurRow      - a value tree row.
+//  CheckBoxName - a checkbox name in the tree.
 // 
-&НаКлиенте
-Процедура УстановитьПометкиРодителей(ТекСтрока, ИмяФлажка)
+&AtClient
+Procedure SetChildMarks(curRow, CheckBoxName)
+	
+	ChildElements = curRow.GetItems();
+	
+	If ChildElements.Count() = 0 Then
+		Return;
+	EndIf;
+	
+	For Each Row In ChildElements Do
+		
+		Row[CheckBoxName] = curRow[CheckBoxName];
+		
+		SetChildMarks(Row, CheckBoxName);
+		
+	EndDo;
+		
+EndProcedure
 
-	Родитель = ТекСтрока.ПолучитьРодителя();
-	Если Родитель = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+// Sets mark values in parent tree rows according to the mark value in the current row.
+// 
+//
+// Parameters:
+//  CurRow      - a value tree row.
+//  CheckBoxName - a checkbox name in the tree.
+// 
+&AtClient
+Procedure SetParentMarks(curRow, CheckBoxName)
+	
+	Parent = curRow.GetParent();
+	If Parent = Undefined Then
+		Return;
+	EndIf; 
+	
+	CurState = Parent[CheckBoxName];
+	
+	EnabledItemsFound  = False;
+	DisabledItemsFound = False;
+	
+	For Each Row In Parent.GetItems() Do
+		If Row[CheckBoxName] = 0 Then
+			DisabledItemsFound = True;
+		ElsIf Row[CheckBoxName] = 1
+			Or Row[CheckBoxName] = 2 Then
+			EnabledItemsFound  = True;
+		EndIf; 
+		If EnabledItemsFound And DisabledItemsFound Then
+			Break;
+		EndIf; 
+	EndDo;
+	
+	If EnabledItemsFound And DisabledItemsFound Then
+		Enable = 2;
+	ElsIf EnabledItemsFound And (Not DisabledItemsFound) Then
+		Enable = 1;
+	ElsIf (Not EnabledItemsFound) And DisabledItemsFound Then
+		Enable = 0;
+	ElsIf (Not EnabledItemsFound) And (Not DisabledItemsFound) Then
+		Enable = 2;
+	EndIf;
+	
+	If Enable = CurState Then
+		Return;
+	Else
+		Parent[CheckBoxName] = Enable;
+		SetParentMarks(Parent, CheckBoxName);
+	EndIf; 
+	
+EndProcedure
 
-	ТекСостояние = Родитель[ИмяФлажка];
-
-	НайденыВключенные  = Ложь;
-	НайденыВыключенные = Ложь;
-
-	Для Каждого Строка Из Родитель.ПолучитьЭлементы() Цикл
-		Если Строка[ИмяФлажка] = 0 Тогда
-			НайденыВыключенные = Истина;
-		ИначеЕсли Строка[ИмяФлажка] = 1 Или Строка[ИмяФлажка] = 2 Тогда
-			НайденыВключенные  = Истина;
-		КонецЕсли;
-		Если НайденыВключенные И НайденыВыключенные Тогда
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
-
-	Если НайденыВключенные И НайденыВыключенные Тогда
-		Включить = 2;
-	ИначеЕсли НайденыВключенные И (Не НайденыВыключенные) Тогда
-		Включить = 1;
-	ИначеЕсли (Не НайденыВключенные) И НайденыВыключенные Тогда
-		Включить = 0;
-	ИначеЕсли (Не НайденыВключенные) И (Не НайденыВыключенные) Тогда
-		Включить = 2;
-	КонецЕсли;
-
-	Если Включить = ТекСостояние Тогда
-		Возврат;
-	Иначе
-		Родитель[ИмяФлажка] = Включить;
-		УстановитьПометкиРодителей(Родитель, ИмяФлажка);
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ОткрытьФайлЗагрузкиНаСервере(АдресФайла)
-
-	Если IsClient Тогда
-
-		ДвоичныеДанные = ПолучитьИзВременногоХранилища(АдресФайла); // ДвоичныеДанные
-		АдресНаСервере = ПолучитьИмяВременногоФайла(".xml");
-		// Удаление временного файла происходит не через УдалитьФайлы(АдресНаСервере), а через
-		// УдалитьФайлы(Object.ExchangeFileName) далее.
-		ДвоичныеДанные.Записать(АдресНаСервере);
-		Object.ExchangeFileName = АдресНаСервере;
-
-	Иначе
-
-		ФайлНаСервере = Новый Файл(ExchangeFileName);
-
-		Если Не ФайлНаСервере.Существует() Тогда
-
-			СообщитьПользователю(НСтр("ru = 'Не найден файл обмена на сервере.'"), "ExchangeFileName");
-			Возврат;
-
-		КонецЕсли;
-
+&AtServer
+Procedure OpenImportFileAtServer(FileAddress)
+	
+	If IsClient Then
+		
+		BinaryData = GetFromTempStorage (FileAddress);
+		AddressOnServer = GetTempFileName(".xml");
+		// Temporary file is deleted not via DeleteFiles(AddressOnServer), but via
+		// DeleteFiles(Object.ExchangeFileName) below.
+		BinaryData.Write(AddressOnServer);
+		Object.ExchangeFileName = AddressOnServer;
+		
+	Else
+		
+		FileOnServer = New File(ExchangeFileName);
+		
+		If Not FileOnServer.Exist() Then
+			
+			MessageToUser(NStr("ru = 'Не найден файл обмена на сервере.'; en = 'Exchange file not found on the server.'"), "ExchangeFileName");
+			Return;
+			
+		EndIf;
+		
 		Object.ExchangeFileName = ExchangeFileName;
-
-	КонецЕсли;
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-
-	ОбъектДляСервера.ОткрытьФайлЗагрузки(Истина);
-
-	Object.StartDate = ОбъектДляСервера.StartDate;
-	Object.EndDate = ОбъектДляСервера.EndDate;
-	Object.DataExportDate = ОбъектДляСервера.DataExportDate;
-	Object.ExchangeRulesVersion = ОбъектДляСервера.ExchangeRulesVersion;
-	Object.Comment = ОбъектДляСервера.Comment;
-
-КонецПроцедуры
-
-// Удаляет помеченные строки дерева метаданных.
-//
-&НаСервере
-Процедура УдалитьНаСервере()
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-	ДеревоУдаляемыхДанных = РеквизитФормыВЗначение("DataToDelete");
-
-	ОбъектДляСервера.ИнициализироватьМенеджерыИСообщения();
-
-	Для Каждого СтрокаДерева Из ДеревоУдаляемыхДанных.Строки Цикл
-
-		Для Каждого СтрокаМД Из СтрокаДерева.Строки Цикл
-
-			Если Не СтрокаМД.Check Тогда
-				Продолжить;
-			КонецЕсли;
-
-			ТипСтрокой = СтрокаМД.Метаданные;
-			ОбъектДляСервера.УдалитьОбъектыТипа(ТипСтрокой);
-
-		КонецЦикла;
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Устанавливает узел обмена у строк дерева.
-//
-&НаСервере
-Процедура УстановитьУзелОбменаУСтрокДереваНаСервере(УзелОбмена)
-
-	УстановитьУзелОбменаУСтрокДерева(Object.ExportRulesTable.ПолучитьЭлементы(), УзелОбмена);
-
-КонецПроцедуры
-
-// Сохраняет значения параметров.
-//
-&НаСервере
-Процедура СохранитьПараметрыНаСервере()
-
-	ТаблицаПараметров = РеквизитФормыВЗначение("Object.ParametersSettingsTable");
-
-	СохраняемыеПараметры = Новый Соответствие;
-
-	Для Каждого СтрокаТаблицы Из ТаблицаПараметров Цикл
-		СохраняемыеПараметры.Вставить(СтрокаТаблицы.Наименование, СтрокаТаблицы.Значение);
-	КонецЦикла;
-
-	ХранилищеСистемныхНастроек.Сохранить("УниверсальныйОбменДаннымиXML", "Parameters", СохраняемыеПараметры);
-
-КонецПроцедуры
-
-// Восстанавливает значения параметров.
-//
-&НаСервере
-Процедура ВосстановитьПараметрыНаСервере()
-
-	ТаблицаПараметров = РеквизитФормыВЗначение("Object.ParametersSettingsTable");
-	ВосстановленныеПараметры = ХранилищеСистемныхНастроек.Загрузить("УниверсальныйОбменДаннымиXML", "Parameters");
-
-	Если ТипЗнч(ВосстановленныеПараметры) <> Тип("Соответствие") Тогда
-		Возврат;
-	КонецЕсли;
-
-	Если ВосстановленныеПараметры.Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
-
-	Для Каждого Парам Из ВосстановленныеПараметры Цикл
-
-		ИмяПараметра = Парам.Ключ;
-
-		СтрокаТаблицы = ТаблицаПараметров.Найти(Парам.Ключ, "Description");
-
-		Если СтрокаТаблицы <> Неопределено Тогда
-
-			СтрокаТаблицы.Value = Парам.Value;
-
-		КонецЕсли;
-
-	КонецЦикла;
-
-	ЗначениеВРеквизитФормы(ТаблицаПараметров, "Object.ParametersSettingsTable");
-
-КонецПроцедуры
-
-// Интерактивная выгрузка данных.
-//
-&НаКлиенте
-Процедура ВыполнитьЗагрузкуИзФормы()
-
-	АдресФайла = "";
-	ИмяФайлаДляРасширения = "";
-
-	ДобавитьСтрокуКСпискуВыбора(Элементы.ExchangeFileName.СписокВыбора, ExchangeFileName, DataImportFromFile);
-
-	Если IsClient Тогда
-
-		ОписаниеОповещения = Новый ОписаниеОповещения("ВыполнитьЗагрузкуИзФормыЗавершение", ЭтотОбъект);
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайла, , , УникальныйИдентификатор);
-
-	Иначе
-
-		Если ПустоеЗначениеРеквизита(ExchangeFileName, "ExchangeFileName", Элементы.ExchangeFileName.Заголовок) Тогда
-			Возврат;
-		КонецЕсли;
-
-		ВыполнитьЗагрузкуИзФормыЗавершение(Истина, АдресФайла, ИмяФайлаДляРасширения, Неопределено);
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ВыполнитьЗагрузкуИзФормыЗавершение(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-
-	Если Результат Тогда
-
-		ВыполнитьЗагрузкуНаСервере(Адрес, ВыбранноеИмяФайла);
-
-		ОткрытьДанныеПротоколовОбменаПриНеобходимости();
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаСервере
-Процедура ВыполнитьЗагрузкуНаСервере(АдресФайла, ИмяФайлаДляРасширения)
-
-	ИмяЗагружаемогоФайла = ИмяФайлаНаСервереИлиКлиенте(ExchangeFileName, АдресФайла, ИмяФайлаДляРасширения);
-
-	Если ИмяЗагружаемогоФайла = Неопределено Тогда
-
-		Возврат;
-
-	Иначе
-
-		Object.ExchangeFileName = ИмяЗагружаемогоФайла;
-
-	КонецЕсли;
-
-	Если Object.SafeImport Тогда
-		Если ЭтоАдресВременногоХранилища(АдресФайлаПравилЗагрузкиВХранилище) Тогда
-			ДвоичныеДанные = ПолучитьИзВременногоХранилища(АдресФайлаПравилЗагрузкиВХранилище); // ДвоичныеДанные
-			АдресНаСервере = ПолучитьИмяВременногоФайла("xml");
-			// Удаление временного файла происходит не через УдалитьФайлы(АдресНаСервере), а через
-			// УдалитьФайлы(Object.ExchangeRulesFileName) далее.
-			ДвоичныеДанные.Записать(АдресНаСервере);
-			Object.ExchangeRulesFileName = АдресНаСервере;
-		Иначе
-			СообщитьПользователю(НСтр("ru = 'Не указан файл правил для загрузки данных.'"));
-			Возврат;
-		КонецЕсли;
-	КонецЕсли;
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-	ЗаполнитьЗначенияСвойств(ОбъектДляСервера, Object);
-	ОбъектДляСервера.ВыполнитьЗагрузку();
-
-	Попытка
-
-		Если Не ПустаяСтрока(АдресФайла) Тогда
-			УдалитьФайлы(ИмяЗагружаемогоФайла);
-		КонецЕсли;
-
-	Исключение
-		ЗаписьЖурналаРегистрации(НСтр("ru = 'Универсальный обмен данными в формате XML'",
-			ОбъектДляСервера.DefaultLanguageCode()), УровеньЖурналаРегистрации.Ошибка, , , ПодробноеПредставлениеОшибки(
-			ИнформацияОбОшибке()));
-	КонецПопытки;
-
-	ОбъектДляСервера.Parameters.Очистить();
-	ЗначениеВРеквизитФормы(ОбъектДляСервера, "Object");
-
-	ПравилаЗагружены = Ложь;
-	Элементы.FormExecuteExport.Доступность = Ложь;
-	Элементы.ExportNoteLabel.Видимость = Истина;
-	Элементы.ExportDebugAvailableGroup.Доступность = Ложь;
-
-КонецПроцедуры
-
-&НаСервере
-Функция ИмяФайлаНаСервереИлиКлиенте(ИмяРеквизита, Знач АдресФайла, Знач ИмяФайлаДляРасширения = ".xml",
-	СоздатьНовый = Ложь, ПроверятьСуществование = Истина)
-
-	ИмяФайла = Неопределено;
-
-	Если IsClient Тогда
-
-		Если СоздатьНовый Тогда
-
-			Расширение = ?(Object.ArchiveFile, ".zip", ".xml");
-
-			ИмяФайла = ПолучитьИмяВременногоФайла(Расширение);
-
-		Иначе
-
-			Расширение = РасширениеФайла(ИмяФайлаДляРасширения);
-			ДвоичныеДанные = ПолучитьИзВременногоХранилища(АдресФайла); // ДвоичныеДанные
-			АдресНаСервере = ПолучитьИмяВременногоФайла(Расширение);
-			// Удаление временного файла происходит не через УдалитьФайлы(АдресНаСервере),
-			// а через УдалитьФайлы(Object.ExchangeRulesFileName) и УдалитьФайлы(Object.ExchangeFileName) далее.
-			ДвоичныеДанные.Записать(АдресНаСервере);
-			ИмяФайла = АдресНаСервере;
-
-		КонецЕсли;
-
-	Иначе
-
-		ФайлНаСервере = Новый Файл(ИмяРеквизита);
-
-		Если Не ФайлНаСервере.Существует() И ПроверятьСуществование Тогда
-
-			СообщитьПользователю(НСтр("ru = 'Указанный файл не существует.'"));
-
-		Иначе
-
-			ИмяФайла = ИмяРеквизита;
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-	Возврат ИмяФайла;
-
-КонецФункции
-
-&НаСервере
-Функция РасширениеФайла(Знач ИмяФайла)
-
-	ПозицияТочки = ПоследнийРазделитель(ИмяФайла);
-
-	Расширение = Прав(ИмяФайла, СтрДлина(ИмяФайла) - ПозицияТочки + 1);
-
-	Возврат Расширение;
-
-КонецФункции
-
-&НаСервере
-Функция ПоследнийРазделитель(СтрокаСРазделителем, Разделитель = ".")
-
-	ДлинаСтроки = СтрДлина(СтрокаСРазделителем);
-
-	Пока ДлинаСтроки > 0 Цикл
-
-		Если Сред(СтрокаСРазделителем, ДлинаСтроки, 1) = Разделитель Тогда
-
-			Возврат ДлинаСтроки;
-
-		КонецЕсли;
-
-		ДлинаСтроки = ДлинаСтроки - 1;
-
-	КонецЦикла;
-
-КонецФункции
-
-&НаКлиенте
-Процедура ВыполнитьВыгрузкуИзФормы()
+		
+	EndIf;
 	
-	// Запомним файл правил и файл выгрузки.
-	ДобавитьСтрокуКСпискуВыбора(Элементы.RulesFileName.СписокВыбора, RulesFileName, ExchangeRules);
-
-	Если Не Object.DirectReadFromDestinationIB И Не IsClient Тогда
-
-		Если ИменаФайловПравилИОбменаСовпадают() Тогда
-			Возврат;
-		КонецЕсли;
-
-		ДобавитьСтрокуКСпискуВыбора(Элементы.DataFileName.СписокВыбора, DataFileName, DataExportToFile);
-
-	КонецЕсли;
-
-	АдресФайлаДанныхВХранилище = ВыполнитьВыгрузкуНаСервере();
-
-	Если АдресФайлаДанныхВХранилище = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-
-	РазвернутьСтрокиДерева(Object.ExportRulesTable, Элементы.ExportRulesTable, "Check");
-
-	Если IsClient И Не DirectExport И Не Object.ErrorFlag Тогда
-
-		ИмяСохраняемогоФайла = ?(Object.ArchiveFile, НСтр("ru = 'Файл выгрузки.zip'"), НСтр(
-			"ru = 'Файл выгрузки.xml'"));
-
-		ПолучитьФайл(АдресФайлаДанныхВХранилище, ИмяСохраняемогоФайла);
-
-	КонецЕсли
-	;
-
-	ОткрытьДанныеПротоколовОбменаПриНеобходимости();
-
-КонецПроцедуры
-
-&НаСервере
-Функция ВыполнитьВыгрузкуНаСервере()
-
-	Object.ExchangeRulesFileName = ИмяФайлаНаСервереИлиКлиенте(RulesFileName, АдресФайлаПравилВХранилище);
-
-	Если Не DirectExport Тогда
-
-		ИмяВременногоФайлаДанных = ИмяФайлаНаСервереИлиКлиенте(DataFileName, "", , Истина, Ложь);
-
-		Если ИмяВременногоФайлаДанных = Неопределено Тогда
-
-			СообщитьПользователю(НСтр("ru = 'Не определен файл данных'"));
-			Возврат Неопределено;
-
-		Иначе
-
-			Object.ExchangeFileName = ИмяВременногоФайлаДанных;
-
-		КонецЕсли;
-	//УИ++
-	ИначеЕсли DirectExport = 2 Тогда
-		ИмяВременногоФайлаДанных=ПолучитьИмяВременногоФайла(".xml");
-		Object.ExchangeFileName = ИмяВременногоФайлаДанных;
-		Object.УИ_ВыгрузкаЧерезВебСервис=Истина;
-	//УИ--
-
-	КонецЕсли;
-
-	ТаблицаПравилВыгрузки = РеквизитФормыВЗначение("Object.ExportRulesTable");
-	ТаблицаНастройкиПараметров = РеквизитФормыВЗначение("Object.ParametersSettingsTable");
-
-	ОбъектДляСервера = РеквизитФормыВЗначение("Object");
-	ЗаполнитьЗначенияСвойств(ОбъектДляСервера, Object);
-
-	Если ОбъектДляСервера.HandlersDebugModeFlag Тогда
-
-		Отказ = Ложь;
-
-		Файл = Новый Файл(ОбъектДляСервера.EventHandlerExternalDataProcessorFileName);
-
-		Если Не Файл.Существует() Тогда
-
-			СообщитьПользователю(НСтр("ru = 'Файл внешней обработки отладчиков событий не существует на сервере'"));
-			Возврат Неопределено;
-
-		КонецЕсли;
-
-		ОбъектДляСервера.ВыгрузитьОбработчикиСобытий(Отказ);
-
-		Если Отказ Тогда
-
-			СообщитьПользователю(НСтр("ru = 'Не удалось выгрузить обработчики событий'"));
-			Возврат "";
-
-		КонецЕсли;
-
-	Иначе
-
-		ОбъектДляСервера.ЗагрузитьПравилаОбмена();
-		ОбъектДляСервера.ИнициализироватьПервоначальныеЗначенияПараметров();
-
-	КонецЕсли;
-
-	ИзменитьДеревоПравилВыгрузки(ОбъектДляСервера.ExportRulesTable.Строки, ТаблицаПравилВыгрузки.Строки);
-	ИзменитьТаблицуПараметров(ОбъектДляСервера.ParametersSettingsTable, ТаблицаНастройкиПараметров);
-
-	ОбъектДляСервера.ВыполнитьВыгрузку();
-	ОбъектДляСервера.ExportRulesTable = РеквизитФормыВЗначение("Object.ExportRulesTable");
-
-	Если IsClient И Не DirectExport Тогда
-
-		АдресФайлаДанных = ПоместитьВоВременноеХранилище(Новый ДвоичныеДанные(Object.ExchangeFileName),
-			УникальныйИдентификатор);
-		УдалитьФайлы(Object.ExchangeFileName);
+	ObjectForServer = FormAttributeToValue("Object");
 	
-	//УИ++
-	ИначеЕсли DirectExport = 2 Тогда
-		АдресФайлаДанных = "";
-		УдалитьФайлы(Object.ExchangeFileName);
+	ObjectForServer.OpenImportFile(True);
+	
+	Object.StartDate = ObjectForServer.StartDate;
+	Object.EndDate = ObjectForServer.EndDate;
+	Object.DataExportDate = ObjectForServer.DataExportDate;
+	Object.ExchangeRulesVersion = ObjectForServer.ExchangeRulesVersion;
+	Object.Comment = ObjectForServer.Comment;
+	
+EndProcedure
+
+// Deletes marked metadata tree rows.
+//
+&AtServer
+Procedure DeleteAtServer()
+	
+	ObjectForServer = FormAttributeToValue("Object");
+	DataToDeleteTree = FormAttributeToValue("DataToDelete");
+	
+	ObjectForServer.InitManagersAndMessages();
+	
+	For Each TreeRow In DataToDeleteTree.Rows Do
+		
+		For Each MDRow In TreeRow.Rows Do
+			
+			If Not MDRow.Check Then
+				Continue;
+			EndIf;
+			
+			TypeString = MDRow.Metadata;
+			ObjectForServer.DeleteObjectsOfType(TypeString);
+			
+		EndDo;
+		
+	EndDo;
+	
+EndProcedure
+
+// Sets an exchange node at tree rows.
+//
+&AtServer
+Procedure FillExchangeNodeInTreeRowsAtServer(ExchangeNode)
+	
+	FillExchangeNodeInTreeRows(Object.ExportRulesTable.GetItems(), ExchangeNode);
+	
+EndProcedure
+
+// Saves parameter values.
+//
+&AtServer
+Procedure SaveParametersAtServer()
+	
+	ParametersTable = FormAttributeToValue("Object.ParametersSettingsTable");
+
+	SavedParameters = New Map;
+	
+	For Each TableRow In ParametersTable Do
+		SavedParameters.Insert(TableRow.Description, TableRow.Value);
+	EndDo;
+	
+	SystemSettingsStorage.Save("UniversalDataExchangeXML", "Parameters", SavedParameters);
+	
+EndProcedure
+
+// Restores parameter values
+//
+&AtServer
+Procedure RestoreParametersAtServer()
+	
+	ParametersTable = FormAttributeToValue("Object.ParametersSettingsTable");
+	RestoredParameters = SystemSettingsStorage.Load("UniversalDataExchangeXML", "Parameters");
+	
+	If TypeOf(RestoredParameters) <> Type("Map") Then
+		Return;
+	EndIf;
+	
+	If RestoredParameters.Count() = 0 Then
+		Return;
+	EndIf;
+	
+	For Each Param In RestoredParameters Do
+		
+		ParameterName = Param.Key;
+		
+		TableRow = ParametersTable.Find(Param.Key, "Description");
+		
+		If TableRow <> Undefined Then
+			
+			TableRow.Value = Param.Value;
+			
+		EndIf;
+		
+	EndDo;
+	
+	ValueToFormAttribute(ParametersTable, "Object.ParametersSettingsTable");
+
+EndProcedure
+
+// Performs interactive data export.
+//
+&AtClient
+Procedure ExecuteImportFromForm()
+	
+	FileAddress = "";
+	FileNameForExtension = "";
+	
+	AddRowToChoiceList(Items.ExchangeFileName.ChoiceList, ExchangeFileName, DataImportFromFile);
+	
+	If IsClient Then
+		
+		NotifyDescription = New NotifyDescription("ExecuteImportFromFormCompletion", ThisObject);
+		BeginPutFile(NotifyDescription, FileAddress, , , UUID);
+
+	Else
+		
+		If EmptyAttributeValue(ExchangeFileName, "ExchangeFileName", Items.ExchangeFileName.Title) Then
+			Return;
+		EndIf;
+		
+		ExecuteImportFromFormCompletion(True, FileAddress, FileNameForExtension, Undefined);
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure ExecuteImportFromFormCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If Result Then
+		
+		ExecuteImportAtServer(Address, SelectedFileName);
+		
+		OpenExchangeLogDataIfNecessary();
+		
+	EndIf;
+	
+EndProcedure
+
+&AtServer
+Procedure ExecuteImportAtServer(FileAddress, FileNameForExtension)
+	
+	FileToImportName = FileNameAtServerOrClient(ExchangeFileName ,FileAddress, FileNameForExtension);
+	
+	If FileToImportName = Undefined Then
+		
+		Return;
+		
+	Else
+		
+		Object.ExchangeFileName = FileToImportName;
+		
+	EndIf;
+	
+	If Object.SafeImport Then
+		If IsTempStorageURL(ImportRulesFileAddressInStorage) Then
+			BinaryData = GetFromTempStorage(ImportRulesFileAddressInStorage);
+			AddressOnServer = GetTempFileName("xml");
+			// Temporary file is deleted not via DeleteFiles(AddressOnServer), but via
+			// DeleteFiles(Object.ExchangeRuleFileName) below.
+			BinaryData.Write(AddressOnServer);
+			Object.ExchangeRulesFileName = AddressOnServer;
+		Else
+			MessageToUser(NStr("ru = 'Не указан файл правил для загрузки данных.'; en = 'File of data import rules is not specified.'"));
+			Return;
+		EndIf;
+	EndIf;
+	
+	ObjectForServer = FormAttributeToValue("Object");
+	FillPropertyValues(ObjectForServer, Object);
+	ObjectForServer.ExecuteImport();
+	
+	Try
+		
+		If Not IsBlankString(FileAddress) Then
+			DeleteFiles(FileToImportName);
+		EndIf;
+		
+	Except
+		WriteLogEvent(NStr("ru = 'Универсальный обмен данными в формате XML'; en = 'Universal data exchange in XML format'", ObjectForServer.DefaultLanguageCode()),
+			EventLogLevel.Error,,, DetailErrorDescription(ErrorInfo()));
+	EndTry;
+	
+	ObjectForServer.Parameters.Clear();
+	ValueToFormAttribute(ObjectForServer, "Object");
+	
+	RulesAreImported = False;
+	Items.FormExecuteExport.Enabled = False;
+	Items.ExportNoteLabel.Visible = True;
+	Items.ExportDebugAvailableGroup.Enabled = False;
+	
+EndProcedure
+
+&AtServer
+Function FileNameAtServerOrClient(AttributeName ,Val FileAddress, Val FileNameForExtension = ".xml",
+	CreateNew = False, CheckForExistence = True)
+	
+	FileName = Undefined;
+	
+	If IsClient Then
+		
+		If CreateNew Then
+			
+			Extension = ? (Object.ArchiveFile, ".zip", ".xml");
+			
+			FileName = GetTempFileName(Extension);
+			
+		Else
+			
+			Extension = FileExtention(FileNameForExtension);
+			BinaryData = GetFromTempStorage(FileAddress);
+			AddressOnServer = GetTempFileName(Extension);
+			// The temporary file is deleted not via the DeleteFiles(AddressOnServer), but via 
+			// DeleteFiles(Object.ExchangeRulesFileName) and DeleteFiles(Object.ExchangeFileName) below.
+			BinaryData.Write(AddressOnServer);
+			FileName = AddressOnServer;
+			
+		EndIf;
+		
+	Else
+		
+		FileOnServer = New File(AttributeName);
+		
+		If Not FileOnServer.Exist() And CheckForExistence Then
+			
+			MessageToUser(NStr("ru = 'Указанный файл не существует.'; en = 'The file does not exist.'"));
+			
+		Else
+			
+			FileName = AttributeName;
+			
+		EndIf;
+		
+	EndIf;
+	
+	Return FileName;
+	
+EndFunction
+
+&AtServer
+Function FileExtention(Val FileName)
+	
+	PointPosition = LastSeparator(FileName);
+	
+	Extension = Right(FileName,StrLen(FileName) - PointPosition + 1);
+	
+	Return Extension;
+	
+EndFunction
+
+&AtServer
+Function LastSeparator(StringWithSeparator, Separator = ".")
+	
+	StringLength = StrLen(StringWithSeparator);
+	
+	While StringLength > 0 Do
+		
+		If Mid(StringWithSeparator, StringLength, 1) = Separator Then
+			
+			Return StringLength; 
+			
+		EndIf;
+		
+		StringLength = StringLength - 1;
+		
+	EndDo;
+
+EndFunction
+
+&AtClient
+Procedure ExecuteExportFromForm()
+	
+	// Adding rule file name and data file name to the selection list.
+	AddRowToChoiceList(Items.RulesFileName.ChoiceList, RulesFileName, ExchangeRules);
+	
+	If Not Object.DirectReadFromDestinationIB And Not IsClient Then
+		
+		If RuleAndExchangeFileNamesMatch() Then
+			Return;
+		EndIf;
+		
+		AddRowToChoiceList(Items.DataFileName.ChoiceList, DataFileName, DataExportToFile);
+		
+	EndIf;
+	
+	DataFileAddressInStorage = ExecuteExportAtServer();
+	
+	If DataFileAddressInStorage = Undefined Then
+		Return;
+	EndIf;
+	
+	ExpandTreeRows(Object.ExportRulesTable, Items.ExportRulesTable, "Check");
+
+	If IsClient And Not DirectExport And Not Object.ErrorFlag Then
+		
+		FileToSaveName = ?(Object.ArchiveFile, NStr("ru = 'Файл выгрузки.zip'; en = 'Export file.zip'"),NStr("ru = 'Файл выгрузки.xml'; en = 'Export file.xml'"));
+		
+		GetFile(DataFileAddressInStorage, FileToSaveName)
+		
+	EndIf;
+	
+	OpenExchangeLogDataIfNecessary();
+	
+EndProcedure
+
+&AtServer
+Function ExecuteExportAtServer()
+	
+	Object.ExchangeRulesFileName = FileNameAtServerOrClient(RulesFileName, RulesFileAddressInStorage);
+	
+	If Not DirectExport Then
+		
+		TempDataFileName = FileNameAtServerOrClient(DataFileName, "",,True, False);
+		
+		If TempDataFileName = Undefined Then
+			
+			MessageToUser(NStr("ru = 'Не определен файл данных'; en = 'Data file not specified'"));
+			Return Undefined;
+			
+		Else
+			
+			Object.ExchangeFileName = TempDataFileName;
+			
+		EndIf;
+	//UT++
+	ElsIf DirectExport = 2 Then
+		TempDataFileName=GetTempFileName(".xml");
+		Object.ExchangeFileName = TempDataFileName;
+		Object.UT_ExportViaWebService=True;
+	//UT--
+
+	EndIf;
+
+	ExportRulesTable = FormAttributeToValue("Object.ExportRulesTable");
+	ParametersSettingsTable = FormAttributeToValue("Object.ParametersSettingsTable");
+
+	ObjectForServer = FormAttributeToValue("Object");
+	FillPropertyValues(ObjectForServer, Object);
+	
+	If ObjectForServer.HandlersDebugModeFlag Then
+		
+		Cancel = False;
+		
+		File = New File(ObjectForServer.EventHandlerExternalDataProcessorFileName);
+		
+		If Not File.Exist() Then
+			
+			MessageToUser(NStr("ru = 'Файл внешней обработки отладчиков событий не существует на сервере'; en = 'Event debugger external data processor file does not exist on the server'"));
+			Return Undefined;
+			
+		EndIf;
+		
+		ObjectForServer.ExportEventHandlers(Cancel);
+		
+		If Cancel Then
+			
+			MessageToUser(NStr("ru = 'Не удалось выгрузить обработчики событий'; en = 'Cannot export event handlers'"));
+			Return "";
+			
+		EndIf;
+		
+	Else
+		
+		ObjectForServer.ImportExchangeRules();
+		ObjectForServer.InitializeInitialParameterValues();
+		
+	EndIf;
+
+	ChangeExportRulesTree(ObjectForServer.ExportRulesTable.Rows, ExportRulesTable.Rows);
+	ChangeParametersTable(ObjectForServer.ParametersSettingsTable, ParametersSettingsTable);
+
+	ObjectForServer.ExecuteExport();
+	ObjectForServer.ExportRulesTable = FormAttributeToValue("Object.ExportRulesTable");
+
+	If IsClient AND Not DirectExport Then
+		
+		DataFileAddress = PutToTempStorage(New BinaryData(Object.ExchangeFileName), UUID);
+		DeleteFiles(Object.ExchangeFileName);
+	
+	//UT++
+	ElsIf DirectExport = 2 Then
+		DataFileAddress = "";
+		DeleteFiles(Object.ExchangeFileName);
 			
 	//УИ--	
 
-	Иначе
-
-		АдресФайлаДанных = "";
-
-	КонецЕсли;
-
-	Если IsClient Тогда
-
-		УдалитьФайлы(ОбъектДляСервера.ExchangeRulesFileName);
-
-	КонецЕсли;
-
-	ОбъектДляСервера.Parameters.Очистить();
-	ЗначениеВРеквизитФормы(ОбъектДляСервера, "Object");
-
-	Возврат АдресФайлаДанных;
-
-КонецФункции
-
-&НаКлиенте
-Процедура УстановитьДоступностьКомандОтладки()
-	;
+	Else
+		
+		DataFileAddress = "";
+		
+	EndIf;
 	
-	Элементы.ImportDebugSetup.Доступность = Object.HandlersDebugModeFlag;
-	Элементы.ExportDebugSetup.Доступность = Object.HandlersDebugModeFlag;
+	If IsClient Then
+		
+		DeleteFiles(ObjectForServer.ExchangeRulesFileName);
 
-КонецПроцедуры
+	EndIf;
 
-// Изменяет дерево DER в соответствии с деревом на форме.
-//
-&НаСервере
-Процедура ИзменитьДеревоПравилВыгрузки(СтрокиИсходногоДерева, СтрокиЗаменяемогоДерева)
-
-	КолонкаВключить = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("Check");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаВключить, "Check");
-	КолонкаУзел = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("ExchangeNodeRef");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаУзел, "ExchangeNodeRef");
-
-	КолонкаИспользоватьОтбор = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("UseFilter");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаИспользоватьОтбор, "UseFilter");
-
-	КолонкаОтбор = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("Filter");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаОтбор, "Filter");
-
-	КолонкаИмяМетаданных = СтрокиЗаменяемогоДерева.ВыгрузитьКолонку("ИмяМетаданных");
-	СтрокиИсходногоДерева.ЗагрузитьКолонку(КолонкаИмяМетаданных, "ИмяМетаданных");
-	Для Каждого СтрокаИсходногоДерева Из СтрокиИсходногоДерева Цикл
-
-		ИндексСтроки = СтрокиИсходногоДерева.Индекс(СтрокаИсходногоДерева);
-		СтрокаИзменяемогоДерева = СтрокиЗаменяемогоДерева.Получить(ИндексСтроки);
-
-		ИзменитьДеревоПравилВыгрузки(СтрокаИсходногоДерева.Строки, СтрокаИзменяемогоДерева.Строки);
-
-	КонецЦикла;
-
-КонецПроцедуры
-
-// Изменяет таблицу параметров в соответствии с таблицей на форме.
-//
-&НаСервере
-Процедура ИзменитьТаблицуПараметров(ТаблицаБазы, ТаблицаФормы)
-
-	КолонкаНаименование = ТаблицаФормы.ВыгрузитьКолонку("Description");
-	ТаблицаБазы.ЗагрузитьКолонку(КолонкаНаименование, "Description");
-	КолонкаЗначение = ТаблицаФормы.ВыгрузитьКолонку("Value");
-	ТаблицаБазы.ЗагрузитьКолонку(КолонкаЗначение, "Value");
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПрямаяВыгрузкаПриИзмененииЗначения()
-
-	ПараметрыВыгрузки = Элементы.ExportParameters;
+	ObjectForServer.Parameters.Clear();
+	ValueToFormAttribute(ObjectForServer, "Object");
 	
-	//УИ++
-//	ExportParameters.ТекущаяСтраница = ?(DirectExport = 0,
-//										  ExportParameters.ПодчиненныеЭлементы.ExportToFile,
-//										  ExportParameters.ПодчиненныеЭлементы.ExportToDestinationIB);
-	Если DirectExport = 0 Тогда
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ExportToFile;
-	ИначеЕсли DirectExport = 1 Тогда
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.ExportToDestinationIB;
-	Иначе
-		ПараметрыВыгрузки.ТекущаяСтраница=ПараметрыВыгрузки.ПодчиненныеЭлементы.UT_ExportViaWebServiceGroup;
-	КонецЕсли;
+	Return DataFileAddress;
+	
+EndFunction
 
-	Object.УИ_ВыгрузкаЧерезВебСервис=(DirectExport = 2);
-	//УИ--
+&AtClient
+Procedure SetDebugCommandsEnabled()
+	
+	Items.ImportDebugSetup.Enabled = Object.HandlersDebugModeFlag;
+	Items.ExportDebugSetup.Enabled = Object.HandlersDebugModeFlag;
+	
+EndProcedure
+
+// Modifies a DER tree according to the tree specified in the form
+//
+&AtServer
+Procedure ChangeExportRulesTree(SourceTreeRows, TreeToReplaceRows)
+
+	CheckColumn = TreeToReplaceRows.UnloadColumn("Check");
+	SourceTreeRows.LoadColumn(CheckColumn, "Check");
+	NodeColumn = TreeToReplaceRows.UnloadColumn("ExchangeNodeRef");
+	SourceTreeRows.LoadColumn(NodeColumn, "ExchangeNodeRef");
+
+	UseFilterColumn = TreeToReplaceRows.UnloadColumn("UseFilter");
+	SourceTreeRows.LoadColumn(UseFilterColumn, "UseFilter");
+
+	FilterColumn = TreeToReplaceRows.UnloadColumn("Filter");
+	SourceTreeRows.LoadColumn(FilterColumn, "Filter");
+
+	MetadataNameColumn = TreeToReplaceRows.UnloadColumn("MetadataName");
+	SourceTreeRows.LoadColumn(MetadataNameColumn, "MetadataName");
+	For Each SourceTreeRow In SourceTreeRows Do
+		
+		RowIndex = SourceTreeRows.IndexOf(SourceTreeRow);
+		TreeToChangeRow = TreeToReplaceRows.Get(RowIndex);
+		
+		ChangeExportRulesTree(SourceTreeRow.Rows, TreeToChangeRow.Rows);
+		
+	EndDo;
+	
+EndProcedure
+
+// Changed parameter table according the table in the form.
+//
+&AtServer
+Procedure ChangeParametersTable(BaseTable, FormTable)
+	
+	DescriptionColumn = FormTable.UnloadColumn("Description");
+	BaseTable.LoadColumn(DescriptionColumn, "Description");
+	ValueColumn = FormTable.UnloadColumn("Value");
+	BaseTable.LoadColumn(ValueColumn, "Value");
+	
+EndProcedure
+
+&AtClient
+Procedure DirectExportOnValueChange()
+	
+	ExportParameters = Items.ExportParameters;
+	
+	//UT++
+//	ExportParameters.CurrentPage = ?(DirectExport = 0,
+//										  ExportParameters.ChildItems.ExportToFile,
+//										  ExportParameters.ChildItems.ExportToDestinationIB);
+	If DirectExport = 0 Then
+		ExportParameters.CurrentPage=ExportParameters.ChildItems.ExportToFile;
+	ElsIf DirectExport = 1 Then
+		ExportParameters.CurrentPage=ExportParameters.ChildItems.ExportToDestinationIB;
+	Else
+		ExportParameters.CurrentPage=ExportParameters.ChildItems.UT_ExportViaWebServiceGroup;
+	EndIf;
+
+	Object.UT_ExportViaWebService=(DirectExport = 2);
+	//UT--
 
 	Object.DirectReadFromDestinationIB = (DirectExport = 1);
 
-	ТипИнформационнойБазыДляПодключенияПриИзмененииЗначения();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ТипИнформационнойБазыДляПодключенияПриИзмененииЗначения()
-
-	ТипБазы = Элементы.InfobaseType;
-	ТипБазы.ТекущаяСтраница = ?(Object.ConnectedInfobaseType, ТипБазы.ПодчиненныеЭлементы.ФайловаяБаза,
-		ТипБазы.ПодчиненныеЭлементы.БазаНаСервере);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ДобавитьСтрокуКСпискуВыбора(СписокСохраняемыхЗначений, ЗначениеСохранения, ИмяПараметраДляСохранения)
-
-	Если ПустаяСтрока(ЗначениеСохранения) Тогда
-		Возврат;
-	КонецЕсли;
-
-	НайденныйЭлемент = СписокСохраняемыхЗначений.НайтиПоЗначению(ЗначениеСохранения);
-	Если НайденныйЭлемент <> Неопределено Тогда
-		СписокСохраняемыхЗначений.Удалить(НайденныйЭлемент);
-	КонецЕсли;
-
-	СписокСохраняемыхЗначений.Вставить(0, ЗначениеСохранения);
-
-	Пока СписокСохраняемыхЗначений.Количество() > 10 Цикл
-		СписокСохраняемыхЗначений.Удалить(СписокСохраняемыхЗначений.Количество() - 1);
-	КонецЦикла;
-
-	ИмяПараметраДляСохранения = СписокСохраняемыхЗначений;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОткрытьФормуНастройкиОтладкиОбработчиков(ОбработчикиСобытийИзФайлаПравил)
-
-	ИмяОбработки = Лев(ИмяФормы, ПоследнийРазделитель(ИмяФормы));
-	ИмяВызываемойФормы = ИмяОбработки + "УправляемаяФормаНастройкиОтладкиОбработчиков";
-
-	ПараметрыФормы = Новый Структура;
-	ПараметрыФормы.Вставить("EventHandlerExternalDataProcessorFileName",
-		Object.EventHandlerExternalDataProcessorFileName);
-	ПараметрыФормы.Вставить("AlgorithmDebugMode", Object.AlgorithmDebugMode);
-	ПараметрыФормы.Вставить("ExchangeRulesFileName", Object.ExchangeRuleFileName);
-	ПараметрыФормы.Вставить("ExchangeFileName", Object.ExchangeFileName);
-	ПараметрыФормы.Вставить("ReadEventHandlersFromExchangeRulesFile", ОбработчикиСобытийИзФайлаПравил);
-	ПараметрыФормы.Вставить("ИмяОбработки", ИмяОбработки);
-
-	Режим = РежимОткрытияОкнаФормы.БлокироватьОкноВладельца;
-	Обработчик = Новый ОписаниеОповещения("ОткрытьФормуНастройкиОтладкиОбработчиковЗавершение", ЭтотОбъект,
-		ОбработчикиСобытийИзФайлаПравил);
-
-	ОткрытьФорму(ИмяВызываемойФормы, ПараметрыФормы, ЭтотОбъект, , , , Обработчик, Режим);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОткрытьФормуНастройкиОтладкиОбработчиковЗавершение(ПараметрыОтладки, ОбработчикиСобытийИзФайлаПравил) Экспорт
-
-	Если ПараметрыОтладки <> Неопределено Тогда
-
-		ЗаполнитьЗначенияСвойств(Object, ПараметрыОтладки);
-
-		Если IsClient Тогда
-
-			Если ОбработчикиСобытийИзФайлаПравил Тогда
-
-				ИмяФайла = Object.ExchangeRulesFileName;
-
-			Иначе
-
-				ИмяФайла = Object.ExchangeFileName;
-
-			КонецЕсли;
-
-			Оповещение = Новый ОписаниеОповещения("ОткрытьФормуНастройкиОтладкиОбработчиковЗавершениеУдалениеФайлов",
-				ЭтотОбъект);
-			НачатьУдалениеФайлов(Оповещение, ИмяФайла);
-
-		КонецЕсли;
-
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОткрытьФормуНастройкиОтладкиОбработчиковЗавершениеУдалениеФайлов(ДополнительныеПараметры) Экспорт
-
-	Возврат;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ИзменитьРасположениеФайла()
-
-	Элементы.RulesFileName.Видимость = Не IsClient;
-	Элементы.DataFileName.Видимость = Не IsClient;
-	Элементы.ExchangeFileName.Видимость = Не IsClient;
-	Элементы.SafeImportGroup.Видимость = Не IsClient;
-
-	УстановитьПризнакЗагрузкиПравил(Ложь);
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ИзменитьРежимОбработки(РежимРаботы)
-
-	ГруппаРежима = КоманднаяПанель.ПодчиненныеЭлементы.ProcessingMode.ПодчиненныеЭлементы;
-
-	ГруппаРежима.FormAtClient.Check = РежимРаботы;
-	ГруппаРежима.FormAtServer.Check = Не РежимРаботы;
-
-	КоманднаяПанель.ПодчиненныеЭлементы.ProcessingMode.Заголовок = ?(РежимРаботы, НСтр(
-		"ru = 'Режим работы (на клиенте)'"), НСтр("ru = 'Режим работы (на сервере)'"));
-
-	Object.ExportRulesTable.ПолучитьЭлементы().Очистить();
-	Object.ParametersSettingsTable.Очистить();
-
-	ИзменитьРасположениеФайла();
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ОткрытьДанныеПротоколовОбменаПриНеобходимости()
-
-	Если Не Object.OpenExchangeLogAfterExecutingOperations Тогда
-		Возврат;
-	КонецЕсли;
-
-#Если Не ВебКлиент Тогда
-
-	Если Не ПустаяСтрока(Object.ExchangeLogFileName) Тогда
-		ОткрытьВПриложении(Object.ExchangeLogFileName);
-	КонецЕсли;
-
-	Если Object.DirectReadFromDestinationIB Тогда
-
-		Object.ImportExchangeLogFileName = ПолучитьИмяПротоколаДляВторойИнформационнойБазыComСоединенияНаСервере();
-
-		Если Не ПустаяСтрока(Object.ImportExchangeLogFileName) Тогда
-			ОткрытьВПриложении(Object.ImportExchangeLogFileName);
-		КонецЕсли;
-
-	КонецЕсли;
-
-#КонецЕсли
-
-КонецПроцедуры
-
-&НаСервере
-Функция ПолучитьИмяПротоколаДляВторойИнформационнойБазыComСоединенияНаСервере()
-
-	Возврат РеквизитФормыВЗначение("Object").ПолучитьИмяПротоколаДляВторойИнформационнойБазыComСоединения();
-
-КонецФункции
-
-&НаКлиенте
-Функция ПустоеЗначениеРеквизита(Реквизит, ПутьКДанным, Заголовок)
-
-	Если ПустаяСтрока(Реквизит) Тогда
-
-		ТекстСообщения = НСтр("ru = 'Поле ""%1"" не заполнено'");
-		ТекстСообщения = СтрЗаменить(ТекстСообщения, "%1", Заголовок);
-
-		СообщитьПользователю(ТекстСообщения, ПутьКДанным);
-
-		Возврат Истина;
-
-	Иначе
-
-		Возврат Ложь;
-
-	КонецЕсли;
-
-КонецФункции
-
-&НаКлиенте
-Процедура УстановитьПризнакЗагрузкиПравил(Признак)
-
-	ПравилаЗагружены = Признак;
-	Элементы.FormExecuteExport.Доступность = Признак;
-	Элементы.ExportNoteLabel.Видимость = Не Признак;
-	Элементы.ExportDebugGroup.Доступность = Признак;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПриИзмененииТипаУдаленияРегистрацииИзменений()
-
-	Если ПустаяСтрока(ChangesRegistrationDeletionTypeForExportedExchangeNodes) Тогда
+	ConnectedInfobaseTypeOnValueChange();
+
+EndProcedure
+
+&AtClient
+Procedure ConnectedInfobaseTypeOnValueChange()
+	
+	InfobaseType = Items.InfobaseType;
+	InfobaseType.CurrentPage = ?(Object.ConnectedInfobaseType, InfobaseType.ChildItems.FileInfobase,
+								InfobaseType.ChildItems.ServerInfobase);
+	
+EndProcedure
+
+&AtClient
+Procedure AddRowToChoiceList(ValueListToSave, SavingValue, ParameterNameToSave)
+	
+	If IsBlankString(SavingValue) Then
+		Return;
+	EndIf;
+	
+	FoundItem = ValueListToSave.FindByValue(SavingValue);
+	If FoundItem <> Undefined Then
+		ValueListToSave.Delete(FoundItem);
+	EndIf;
+	
+	ValueListToSave.Insert(0, SavingValue);
+	
+	While ValueListToSave.Count() > 10 Do
+		ValueListToSave.Delete(ValueListToSave.Count() - 1);
+	EndDo;
+	
+	ParameterNameToSave = ValueListToSave;
+	
+EndProcedure
+
+&AtClient
+Procedure OpenHandlerDebugSetupForm(EventHandlersFromRulesFile)
+
+	DataProcessorName = Left(FormName, LastSeparator(FormName));
+	FormNameToCall = DataProcessorName + "HandlerDebugSetupManagedForm";
+	
+	FormParameters = New Structure;
+	FormParameters.Insert("EventHandlerExternalDataProcessorFileName", Object.EventHandlerExternalDataProcessorFileName);
+	FormParameters.Insert("AlgorithmsDebugMode", Object.AlgorithmDebugMode);
+	FormParameters.Insert("ExchangeRulesFileName", Object.ExchangeRulesFileName);
+	FormParameters.Insert("ExchangeFileName", Object.ExchangeFileName);
+	FormParameters.Insert("ReadEventHandlersFromExchangeRulesFile", EventHandlersFromRulesFile);
+	FormParameters.Insert("DataProcessorName", DataProcessorName);
+
+	Mode = FormWindowOpeningMode.LockOwnerWindow;
+	Handler = New NotifyDescription("OpenHandlerDebugSetupFormCompletion", ThisObject, EventHandlersFromRulesFile);
+	
+	OpenForm(FormNameToCall, FormParameters, ThisObject,,,,Handler, Mode);
+	
+EndProcedure
+
+&AtClient
+Procedure OpenHandlerDebugSetupFormCompletion(DebugParameters, EventHandlersFromRulesFile) Export
+	
+	If DebugParameters <> Undefined Then
+		
+		FillPropertyValues(Object, DebugParameters);
+		
+		If IsClient Then
+			
+			If EventHandlersFromRulesFile Then
+				
+				FileName = Object.ExchangeRulesFileName;
+				
+			Else
+				
+				FileName = Object.ExchangeFileName;
+				
+			EndIf;
+			
+			Notification = New NotifyDescription("OpenHandlersDebugSettingsFormCompletionFileDeletion", ThisObject);
+			BeginDeletingFiles(Notification, FileName);
+			
+		EndIf;
+		
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure OpenHandlersDebugSettingsFormCompletionFileDeletion(AdditionalParameters) Export
+	
+	Return;
+	
+EndProcedure
+
+&AtClient
+Procedure ChangeFileLocation()
+	
+	Items.RulesFileName.Visible = Not IsClient;
+	Items.DataFileName.Visible = Not IsClient;
+	Items.ExchangeFileName.Visible = Not IsClient;
+	Items.SafeImportGroup.Visible = Not IsClient;
+	
+	SetImportRulesFlag(False);
+	
+EndProcedure
+
+&AtClient
+Procedure ChangeProcessingMode(RunMode)
+	
+	ModeGroup = CommandBar.ChildItems.ProcessingMode.ChildItems;
+	
+	ModeGroup.FormAtClient.Check = RunMode;
+	ModeGroup.FormAtServer.Check = Not RunMode;
+	
+	CommandBar.ChildItems.ProcessingMode.Title = 
+	?(RunMode, NStr("ru = 'Режим работы (на клиенте)'; en = 'Mode (client)'"), NStr("ru = 'Режим работы (на сервере)'; en = 'Mode (server)'"));
+	
+	Object.ExportRulesTable.GetItems().Clear();
+	Object.ParametersSettingsTable.Clear();
+
+	ChangeFileLocation();
+
+EndProcedure
+
+&AtClient
+Procedure OpenExchangeLogDataIfNecessary()
+	
+	If Not Object.OpenExchangeLogAfterExecutingOperations Then
+		Return;
+	EndIf;
+	
+#If Not WebClient Then
+		
+	If Not IsBlankString(Object.ExchangeLogFileName) Then
+		OpenInApplication(Object.ExchangeLogFileName);
+	EndIf;
+
+	If Object.DirectReadFromDestinationIB Then
+
+		Object.ImportExchangeLogFileName = GetLogNameForSecondCOMConnectionInfobaseAtServer();
+
+		If Not IsBlankString(Object.ImportExchangeLogFileName) Then
+			OpenInApplication(Object.ImportExchangeLogFileName);
+		EndIf;
+
+	EndIf;
+
+#EndIf
+
+EndProcedure
+
+&AtServer
+Function GetLogNameForSecondCOMConnectionInfobaseAtServer()
+
+	Return FormAttributeToValue("Object").GetLogNameForCOMConnectionSecondInfobase();
+
+EndFunction
+
+&AtClient
+Function EmptyAttributeValue(Attribute, DataPath, Title)
+	
+	If IsBlankString(Attribute) Then
+		
+		MessageText = NStr("ru = 'Поле ""%1"" не заполнено'; en = 'Field ""%1"" is blank'");
+		MessageText = StrReplace(MessageText, "%1", Title);
+		
+		MessageToUser(MessageText, DataPath);
+		
+		Return True;
+		
+	Else
+		
+		Return False;
+		
+	EndIf;
+	
+EndFunction
+
+&AtClient
+Procedure SetImportRulesFlag(Flag)
+	
+	RulesAreImported = Flag;
+	Items.FormExecuteExport.Enabled = Flag;
+	Items.ExportNoteLabel.Visible = Not Flag;
+	Items.ExportDebugGroup.Enabled = Flag;
+	
+EndProcedure
+
+&AtClient
+Procedure OnChangeChangesRegistrationDeletionType()
+	
+	If IsBlankString(ChangesRegistrationDeletionTypeForExportedExchangeNodes) Then
 		Object.ChangesRegistrationDeletionTypeForExportedExchangeNodes = 0;
-	Иначе
-		Object.ChangesRegistrationDeletionTypeForExportedExchangeNodes = Число(
-			ChangesRegistrationDeletionTypeForExportedExchangeNodes);
-	КонецЕсли;
+	Else
+		Object.ChangesRegistrationDeletionTypeForExportedExchangeNodes = Number(ChangesRegistrationDeletionTypeForExportedExchangeNodes);
+	EndIf;
+	
+EndProcedure
 
-КонецПроцедуры
+&AtClientAtServerNoContext
+Procedure MessageToUser(Text, DataPath = "")
+	
+	Message = New UserMessage;
+	Message.Text = Text;
+	Message.DataPath = DataPath;
+	Message.Message();
+	
+EndProcedure
 
-&НаКлиентеНаСервереБезКонтекста
-Процедура СообщитьПользователю(Текст, ПутьКДанным = "")
-
-	Сообщение = Новый СообщениеПользователю;
-	Сообщение.Текст = Текст;
-	Сообщение.ПутьКДанным = ПутьКДанным;
-	Сообщение.Сообщить();
-
-КонецПроцедуры
-
-// Возвращает Истина, если клиентское приложение запущено под управлением ОС Windows.
+// Returns True if the client application is running on Windows.
 //
-// Возвращаемое значение:
-//  Булево -  Если нет клиентского приложения, возвращается Ложь.
-//
-&НаКлиенте
-Функция ЭтоWindowsКлиент()
+&AtClient
+Function IsWindowsClient()
+	
+	SystemInfo = New SystemInfo;
+	
+	IsWindowsClient = SystemInfo.PlatformType = PlatformType.Windows_x86
+	             OR SystemInfo.PlatformType = PlatformType.Windows_x86_64;
+	
+	Return IsWindowsClient;
+	
+EndFunction
 
-	СистемнаяИнформация = Новый СистемнаяИнформация;
+&AtServer
+Procedure CheckPlatformVersionAndCompatibilityMode()
+	
+	Information = New SystemInfo;
+	If Not (Left(Information.AppVersion, 3) = "8.3"
+		And (Metadata.CompatibilityMode = Metadata.ObjectProperties.CompatibilityMode.DontUse
+		Or (Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode.Version8_1
+		And Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode.Version8_2_13
+		And Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_2_16"]
+		And Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_3_1"]
+		And Metadata.CompatibilityMode <> Metadata.ObjectProperties.CompatibilityMode["Version8_3_2"]))) Then
+		
+		Raise NStr("ru = 'Обработка предназначена для запуска на версии платформы
+			|1С:Предприятие 8.3 с отключенным режимом совместимости или выше'; 
+			|en = 'The data processor is intended for use with 
+			|1C:Enterprise 8.3 or later, with disabled compatibility mode'");
+		
+	EndIf;
+	
+EndProcedure
 
-	ЭтоWindowsКлиент = СистемнаяИнформация.ТипПлатформы = ТипПлатформы.Windows_x86 Или СистемнаяИнформация.ТипПлатформы
-		= ТипПлатформы.Windows_x86_64;
+&AtClient
+Procedure ChangeSafeImportMode(Interactively = True)
+	
+	Items.SafeImportGroup.Enabled = Object.SafeImport;
+	
+	ThroughStorage = IsClient;
+	#If WebClient Then
+		ThroughStorage = True;
+	#EndIf
+	
+	If Object.SafeImport AND ThroughStorage Then
+		PutImportRulesFileInStorage();
+	EndIf;
+	
+EndProcedure
 
-	Возврат ЭтоWindowsКлиент;
+&AtClient
+Procedure PutImportRulesFileInStorage()
+	
+	ThroughStorage = IsClient;
+	#If WebClient Then
+		ThroughStorage = True;
+	#EndIf
+	
+	FileAddress = "";
+	NotifyDescription = New NotifyDescription("PutImportRulesFileInStorageCompletion", ThisObject);
 
-КонецФункции
+	If ThroughStorage Then
+		BeginPutFile(NotifyDescription, FileAddress, , , UUID);
+	Else
+		BeginPutFile(NotifyDescription, FileAddress, ImportRulesFileName, False, UUID);
+	EndIf;
 
-&НаСервере
-Процедура ПроверитьВерсиюИРежимСовместимостиПлатформы()
+EndProcedure
 
-	Информация = Новый СистемнаяИнформация;
-	Если Не (Лев(Информация.ВерсияПриложения, 3) = "8.3" И (Метаданные.РежимСовместимости
-		= Метаданные.СвойстваОбъектов.РежимСовместимости.НеИспользовать Или (Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости.Версия8_1 И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости.Версия8_2_13 И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_2_16"] И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_3_1"] И Метаданные.РежимСовместимости
-		<> Метаданные.СвойстваОбъектов.РежимСовместимости["Версия8_3_2"]))) Тогда
+&AtClient
+Procedure PutImportRulesFileInStorageCompletion(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	If Result Then
+		ImportRulesFileAddressInStorage = Address;
+	EndIf;
+	
+EndProcedure
+&AtServer
+Function InitExportRulesFilterSettingsComposer(Val RowIndex = Undefined,
+	Val MetadataTreeRow = Undefined)
 
-		ВызватьИсключение НСтр("ru = 'Обработка предназначена для запуска на версии платформы
-							   |1С:Предприятие 8.3 с отключенным режимом совместимости или выше'");
+	If MetadataTreeRow = Undefined Then
+		MetadataTreeRow = Object.ExportRulesTable.FindByID(RowIndex);
+	EndIf;
 
-	КонецЕсли;
+	DataProcessorObject = FormAttributeToValue("Object");
+	QueryText = DataProcessorObject.GetRowQueryText(MetadataTreeRow, False);
+	DataCompositionSchema = DataProcessorObject.DataCompositionSchema(QueryText);
+	SettingsComposer = New DataCompositionSettingsComposer;
+	SettingsComposer.Initialize(New DataCompositionAvailableSettingsSource(PutToTempStorage(
+		DataCompositionSchema, UUID)));
+	SettingsComposer.LoadSettings(DataCompositionSchema.DefaultSettings);
 
-КонецПроцедуры
+	AdditionalFiltersExists  = MetadataTreeRow.Filter.Items.Count() <> 0;
 
-&НаКлиенте
-Процедура ИзменитьРежимБезопаснаяЗагрузка(Интерактивно = Истина)
+	If AdditionalFiltersExists Then
+		UT_CommonClientServer.CopyItems(SettingsComposer.Settings.Filter,
+			MetadataTreeRow.Filter);
+	EndIf;
 
-	Элементы.SafeImportGroup.Доступность = Object.SafeImport;
+	Return SettingsComposer;
 
-	ЧерезХранилище = IsClient;
-#Если ВебКлиент Тогда
-	ЧерезХранилище = Истина;
-#КонецЕсли
-
-	Если Object.SafeImport И ЧерезХранилище Тогда
-		ПоместитьФайлПравилЗагрузкиВХранилище();
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПоместитьФайлПравилЗагрузкиВХранилище()
-
-	ЧерезХранилище = IsClient;
-#Если ВебКлиент Тогда
-	ЧерезХранилище = Истина;
-#КонецЕсли
-
-	АдресФайла = "";
-	ОписаниеОповещения = Новый ОписаниеОповещения("ПоместитьФайлПравилЗагрузкиВХранилищеЗавершить", ЭтотОбъект);
-
-	Если ЧерезХранилище Тогда
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайла, , , УникальныйИдентификатор);
-	Иначе
-		НачатьПомещениеФайла(ОписаниеОповещения, АдресФайла, ImportRulesFileName, Ложь, УникальныйИдентификатор);
-	КонецЕсли;
-
-КонецПроцедуры
-
-&НаКлиенте
-Процедура ПоместитьФайлПравилЗагрузкиВХранилищеЗавершить(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
-
-	Если Результат Тогда
-		АдресФайлаПравилЗагрузкиВХранилище = Адрес;
-	КонецЕсли;
-
-КонецПроцедуры
-&НаСервере
-Функция ИнициализироватьКомпоновщикНастроекОтбораПравилВыгрузки(Знач ИндексСтроки = Неопределено,
-	Знач СтрокаДереваМетаданных = Неопределено)
-
-	Если СтрокаДереваМетаданных = Неопределено Тогда
-		СтрокаДереваМетаданных = Object.ExportRulesTable.НайтиПоИдентификатору(ИндексСтроки);
-	КонецЕсли;
-
-	ОбъектОбработка = РеквизитФормыВЗначение("Object");
-	ТекстЗапроса = ОбъектОбработка.ПолучитьТекстЗапросаПоСтроке(СтрокаДереваМетаданных, Ложь);
-	СхемаКомпоновкиДанных = ОбъектОбработка.СхемаКомпоновкиДанных(ТекстЗапроса);
-	КомпоновщикНастроек = Новый КомпоновщикНастроекКомпоновкиДанных;
-	КомпоновщикНастроек.Инициализировать(Новый ИсточникДоступныхНастроекКомпоновкиДанных(ПоместитьВоВременноеХранилище(
-		СхемаКомпоновкиДанных, УникальныйИдентификатор)));
-	КомпоновщикНастроек.ЗагрузитьНастройки(СхемаКомпоновкиДанных.НастройкиПоУмолчанию);
-
-	ЕстьДополнительныеОтборы  = СтрокаДереваМетаданных.Filter.Элементы.Количество() <> 0;
-
-	Если ЕстьДополнительныеОтборы Тогда
-		UT_CommonClientServer.CopyItems(КомпоновщикНастроек.Настройки.Отбор,
-			СтрокаДереваМетаданных.Отбор);
-	КонецЕсли;
-
-	Возврат КомпоновщикНастроек;
-
-КонецФункции
-#КонецОбласти
+EndFunction
+#EndRegion
