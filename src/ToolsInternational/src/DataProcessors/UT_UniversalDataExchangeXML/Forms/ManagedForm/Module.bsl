@@ -1167,9 +1167,9 @@ Procedure SelectFile(Item, StorageObject, PropertyName, CheckForExistence, Val D
 EndProcedure
 
 // Parameters:
-//   SelectedFiles - Array
+//   SelectedFiles - Array:
 //   	- String - a file selection result.
-//   AdditionalParameters - Structure - an arbitrary additional parameters:
+//   AdditionalParameters - Structure:
 //     * StorageObject - Structure, ClientApplicationForm - an object to store the properties.
 //     * PropertyName - String - a storage object property name.
 //     * Item - FormField - a file selection event source.
