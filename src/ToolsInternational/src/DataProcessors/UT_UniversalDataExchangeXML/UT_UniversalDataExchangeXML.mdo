@@ -1867,7 +1867,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="619283f0-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>УправляемаяФормаНастройкиОтладкиОбработчиков</name>
+    <name>HandlerDebugSetupManagedForm</name>
+    <synonym>
+      <key>en</key>
+      <value>Configure handlers debugging (managed form)</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Управляемая форма настройки отладки обработчиков</value>
