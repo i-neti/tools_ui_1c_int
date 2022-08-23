@@ -340,8 +340,8 @@ EndFunction
 // Casts the number (code) to the required length, splitting the number into a prefix and numeric part. 
 // The space between the prefix and number is filled with zeros.
 // 
-// Can be used in the event handlers whose script is stored in data exchange rules.
-//  Is called with the Execute() method.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
 // The "No links to function found" message during the configuration check is not an error.
 //
 // Parameters:
@@ -395,8 +395,8 @@ Function CastNumberToLength(Val Str, Length, AddZerosIfLengthNotLessNumberCurren
 EndFunction
 
 // Adds a substring to a number of code prefix.
-// Can be used in the event handlers whose script is stored in data exchange rules.
-//  Is called with the Execute() method.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
 // The "No links to function found" message during the configuration check is not an error.
 // 
 //
@@ -462,8 +462,8 @@ EndFunction
 #Region DataOperations
 
 // Returns a string - a name of the passed enumeration value.
-// Can be used in the event handlers whose script is stored in data exchange rules.
-//  Is called with the Execute() method.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
 // The "No links to function found" message during the configuration check is not an error.
 // 
 //
@@ -484,7 +484,7 @@ Function deEnumValueName(Value) Export
 
 EndFunction
 
-// Defines whether the passed value is filled.
+// Defines whether the value is filled.
 //
 // Parameters:
 //  Value       - Arbitrary - CatalogRef, DocumentRef, string or any other type.
@@ -775,7 +775,7 @@ Function deValueTypeAsString(ValueOrType) Export
 EndFunction
 
 // Returns an XML presentation of the TypeDescription object.
-// Can be used in the event handlers whose script is stored in data exchange rules.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
 // 
 // Parameters:
 //  TypeDescription  - TypeDescription - a TypeDescription object whose XML presentation is being retrieved.
@@ -850,7 +850,7 @@ EndFunction
 
 // Creates a new XML node
 // The function can be used in event handlers, application code.
-// of which is stored in the data exchange rules. Is called with the Execute() method.
+// of which is stored in the data exchange rules. It is called with the Execute() method.
 //
 // Parameters:
 //  Name  - String - a node name.
@@ -869,13 +869,13 @@ Function CreateNode(Name) Export
 EndFunction
 
 // Adds a new XML node to the specified parent node.
-// Can be used in the event handlers whose script is stored in data exchange rules.
-//  Is called with the Execute() method.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
 // The "No links to function found" message during the configuration check is not an error.
 // 
 //
 // Parameters:
-//  ParentNode - parent XML node.
+//  ParentNode - a parent XML node.
 //  Name - String - a name of the node to be added.
 //
 // Returns:
@@ -890,8 +890,8 @@ Function AddNode(ParentNode, Name) Export
 EndFunction
 
 // Copies the specified xml node.
-// Can be used in the event handlers whose script is stored in data exchange rules.
-//  Is called with the Execute() method.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
 // The "No links to function found" message during the configuration check is not an error.
 // 
 //
@@ -1520,9 +1520,9 @@ EndProcedure
 
 #Region DataExportProcedures
 
-// Производит выгрузку объекта в соответствии с указанным правилом конвертации.
+// Exports an object according to the conversion rule
 //
-// Параметры:
+// Parameters:
 //  Source				 - Arbitrary - a data source.
 //  Destination				 - XMLWriter - a destination object XML node.
 //  IncomingData			 - Arbitrary - auxiliary data to execute conversion.                           
@@ -1542,7 +1542,6 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 	OutgoingData = Undefined, OCRName = "", RefNode	= Undefined, GetRefNodeOnly	= False,
 	OCR	= Undefined, IsRuleWithGlobalObjectExport = False, SelectionForDataExport = Undefined) Export
 
-	Var НеНужноВыгружатьПоСоответствиюЗначений;
 	If SafeMode Then
 		SetSafeMode(True);
 		For Each SeparatorName In ConfigurationSeparators Do
@@ -1791,9 +1790,9 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 		PredefinedItemName = Undefined;
 	EndIf;
 
-	DontExportByValueMap = (ValueMapItemCount = 0);
+	DoNotExportByValueMap = (ValueMapItemCount = 0);
 	
-	If Not DontExportByValueMap Then
+	If Not DoNotExportByValueMap Then
 		
 		// If value mapping does not contain values, exporting mapping in the ordinary way.
 		RefNode = ValueMap[Source];
@@ -1807,7 +1806,7 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 				
 			Else
 						
-				DontExportByValueMap = True;	
+				DoNotExportByValueMap = True;	
 				
 			EndIf;
 			
@@ -1817,7 +1816,7 @@ Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData 
 
 	MustRememberObject = RememberExported And (Not AllObjectsExported);
 
-	If DontExportByValueMap Then
+	If DoNotExportByValueMap Then
 		
 		If OCR.SearchProperties.Count() > 0 Or PredefinedItemName <> Undefined Then
 			

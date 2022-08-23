@@ -1879,19 +1879,27 @@
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
-  <templates uuid="619284ae-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ПараметрыОбработчиков</name>
-    <synonym>
-      <key>ru</key>
-      <value>Параметры обработчиков</value>
-    </synonym>
-  </templates>
   <templates uuid="6192858a-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ОбщиеПроцедурыФункции</name>
+    <name>CommonProceduresFunctions</name>
+    <synonym>
+      <key>en</key>
+      <value>Common procedures functions</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Общие процедуры функции</value>
     </synonym>
     <templateType>TextDocument</templateType>
+  </templates>
+  <templates uuid="2fc1c036-fea3-44cb-b421-0c39824d99fe">
+    <name>HandlersParameters</name>
+    <synonym>
+      <key>ru</key>
+      <value>Параметры обработчиков</value>
+    </synonym>
+    <synonym>
+      <key>en</key>
+      <value>Handler parameters</value>
+    </synonym>
   </templates>
 </mdclass:DataProcessor>
