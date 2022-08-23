@@ -1,0 +1,667 @@
+#Region Header_Comment
+////////////////////////////////////////////////////////////////////////////////
+//
+// This module contains an export procedures of conversion event handlers 
+// and is intended for debugging exchange rules. 
+// After debugging, it is recommended to make the appropriate corrections of the handlers
+// in the "Data Conversion 2.0" database and regenerate the rules file.
+//
+////////////////////////////////////////////////////////////////////////////////
+// ACRONYMS IN VARIABLE NAMES
+//
+//  OCR is an object conversion rule.
+//  PCR is an object property conversion rule.
+//  PGCR is an object property group conversion rule.
+//  VCR is an object value conversion rule.
+//  DER is a data export rule.
+//  DCR is a data clearing rule.
+#Region Conversion_Comment
+////////////////////////////////////////////////////////////////////////////////
+// CONVERSION HANDLERS (GLOBAL)
+#Region OCR_Comment
+////////////////////////////////////////////////////////////////////////////////
+// OBJECT CONVERSION HANDLERS
+#Region PCR_Comment
+////////////////////////////////////////////////////////////////////////////////
+// PROPERTIES AND PROPERTY GROUPS CONVERSION HANDLERS
+#Region DER_Comment
+////////////////////////////////////////////////////////////////////////////////
+// DATA EXPORT HANDLERS
+#Region DCR_Comment
+////////////////////////////////////////////////////////////////////////////////
+// DATA CLEANING HANDLERS
+#Region Warning_Comment
+////////////////////////////////////////////////////////////////////////////////
+//                             WARNING 
+//            CHANGING THE SCRIPT IN THIS BLOCK (BELOW) IS FORBIDDEN!
+////////////////////////////////////////////////////////////////////////////////
+#Region CommonProceduresFunctions_Comment
+////////////////////////////////////////////////////////////////////////////////
+// COMMON PROCEDURES AND FUNCTIONS CALLING
+#Region DataProcessorVariables_Comment
+////////////////////////////////////////////////////////////////////////////////
+// DATA PROCESSOR VARIABLES
+#Region Algorithms_Comment
+////////////////////////////////////////////////////////////////////////////////
+// ALGORITHMS
+#Region Constructor_Comment
+////////////////////////////////////////////////////////////////////////////////
+// DATA PROCESSOR CONSTRUCTOR AND DESTRUCTOR
+
+#Region DataProcessorVariables
+////////////////////////////////////////////////////////////////////////////////
+// AUXILIARY VARIABLES FOR ALGORITHMS (FOR BOTH IMPORT AND EXPORT)
+
+Var Parameters;
+Var Rules;
+Var Algorithms;
+Var Queries;
+Var ExportRulesTable;
+Var ParametersSettingsTable;
+Var ExchangeNode; // only for online exchange
+Var CommonProceduresFucntions;
+Var StartDate;
+Var EndDate;
+Var DataExportDate; // only for online exchange
+Var CommentOnDataExport;
+Var CommentOnDataImport;
+
+
+////////////////////////////////////////////////////////////////////////////////
+// EXCHANGE DATA PROCESSOR VARIABLES (FOR BOTH IMPORT AND EXPORT)
+
+Var deStringType;                // Type("String")
+Var deBooleanType;                // Type("Boolean")
+Var deNumberType;                 // Type("Number")
+Var deDateType;                  // Type("Date")
+Var deValueStorageType;     // Type("ValueStorage")
+Var deBinaryDataType;        // Type("BinaryData")
+Var deAccumulationRecordTypeType; // Type("AccumulationRecordType")
+Var deObjectDeletionType;       // Type("ObjectDeletion")
+Var deAccountTypeType;			  // Type("AccountType")
+Var вуTypeType;			  		  // Type("Type")
+Var deMapType;		  // Type("Map")
+
+Var deXMLNodeType_EndElement;
+Var deXMLNodeType_StartElement;
+Var deXMLNodeType_Text;
+
+Var BlankDateValue;
+
+#Region Constructor_ProcedureBody
+CommonProceduresFunctions      = Owner;
+Parameters                  = Owner.Parameters;
+Queries                    = Owner.Queries;
+Rules                    = Owner.Rules;
+ExportRulesTable      = Owner.ExportRulesTable;
+ParametersSettingsTable = Owner.ParametersSettingsTable;
+
+CommentOnDataExport = Owner.CommentOnDataExport;
+CommentOnDataImport = Owner.CommentOnDataImport;
+
+
+//a variable for an universal exchange
+Try
+	StartDate = Owner.StartDate;
+Except
+EndTry;
+
+//a variable for an universal exchange
+Try
+	EndDate = Owner.EndDate;
+Except
+EndTry;
+
+//a variable for an online exchange
+Try
+	DataExportDate = Owner.DataExportDate;
+Except
+EndTry;
+
+//a variable for an online exchange
+Try
+	ExchangeNode = Owner.ExchangeNode;
+Except
+EndTry;
+
+// Types
+deStringType                = Type("String");
+deBooleanType                = Type("Boolean");
+deNumberType                 = Type("Number");
+deDateType                  = Type("Date");
+deValueStorageType     = Type("ValueStorage");
+deBinaryDataType        = Type("BinaryData");
+deAccumulationRecordTypeType = Type("AccumulationRecordType");
+deObjectDeletionType       = Type("ObjectDeletion");
+deAccountTypeType			   = Type("AccountType");
+deTypeType                   = Type("Type");
+deMapType          = Type("Map");
+
+BlankDateValue		   = Date('00010101');
+
+// XML node types
+deXMLNodeType_EndElement  = XMLNodeType.EndElement;
+deXMLNodeType_StartElement = XMLNodeType.StartElement;
+deXMLNodeType_Text          = XMLNodeType.Text;
+
+#Region Constructor_ProcedureBody_ProceduralAlgorithmCall
+Algorithms = New Structure;
+
+#Region Constructor_ProcedureBody_AlgorithmCodeIntegration
+Algorithms = Owner.Algorithms;
+
+#Region Constructor_ProcedureBody_DoNotUseAlgorithmDebug
+Algorithms = Owner.Algorithms;
+
+#Region Destructor
+Procedure Destructor() Export
+	
+	CommonProceduresFunctions = Undefined;
+	
+EndProcedure
+
+#Region CommonProceduresFunctions
+// Exports an object according to the conversion rule
+//
+// Parameters:
+//  Source				 - Arbitrary - a data source.
+//  Destination				 - XMLWriter - a destination object XML node.
+//  IncomingData			 - Arbitrary - auxiliary data to execute conversion.                           
+//  OutgoingData			 - Arbitrary - auxiliary data passed to property conversion rules.                           
+//  OCRName					 - String - a name of the conversion rule used to execute export.
+//
+// Returns:
+//  XMLWriter - a reference XML node or a destination value.
+//
+Function ExportByRule(Source = Undefined, Destination = Undefined, IncomingData = Undefined,
+	OutgoingData = Undefined, OCRName = "") Export
+						   
+	Return CommonProceduresFunctions.ExportByRule(Source, Destination, IncomingData, OutgoingData, OCRName);
+	
+EndFunction
+
+// Creates a new XML node
+// The function can be used in event handlers, application code.
+// of which is stored in the data exchange rules. It is called with the Execute() method.
+//
+// Parameters:
+//  Name  - String - a node name.
+//
+// Returns:
+//  XMLWriter - an object of the new XML node.
+//
+Function CreateNode(Name) Export
+
+	Return CommonProceduresFunctions.CreateNode(Name); 
+
+EndFunction
+
+// Adds a new XML node to the specified parent node.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  ParentNode - a parent XML node.
+//  Name - String - a name of the node to be added.
+//
+// Returns:
+//  New XML node added to the specified parent node.
+//
+Function AddNode(ParentNode, Name) Export
+
+	Return CommonProceduresFunctions.AddNode(ParentNode, Name); 
+
+EndFunction
+
+// Copies the specified xml node.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Node - XML node.
+//
+// Returns:
+//  New xml is a copy of the specified node.
+//
+Function CopyNode(Node) Export
+
+	Return CommonProceduresFunctions.CopyNode(Node); 
+	
+EndFunction 
+
+// Sets the Load parameter value for the DataExchange object property.
+//
+// Parameters:
+//  Object - object whose property will be set.
+//  Value - a value of the Import property being set.
+// 
+Procedure SetDataExchangeLoad(Object, Value = True) Export
+
+	CommonProceduresFunctions.SetDataExchangeLoad(Object, Value);
+	
+EndProcedure
+
+// Sets an attribute of the specified xml node.
+//
+// Parameters:
+//  Node - XML node
+//  Name - String - an attribute name.
+//  Value - Arbitrary - a value to set.
+//
+Procedure SetAttribute(Node, Name, Value) Export
+	
+	CommonProceduresFunctions.SetAttribute(Node, Name, Value);
+	
+EndProcedure
+
+// Subordinates an xml node to the specified parent node.
+//
+// Parameters:
+//  ParentNode - parent XML node.
+//  Node - XML - a node to be subordinated. 
+//
+Procedure AddSubordinateNode(ParentNode, Node) Export
+
+	CommonProceduresFunctions.AddSubordinateNode(ParentNode, Node);
+		
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////
+// XMLReader PROCEDURES AND FUNCTIONS
+
+// Writes an element and its value to the specified object.
+//
+// Parameters:
+//  Object - XMLWriter - an object of the XMLWriter type.
+//  Name - String - an element name.
+//  Value - Arbitrary - element value.
+// 
+Procedure deWriteElement(Object, Name, Value="") Export
+
+	CommonProceduresFunctions.deWriteElement(Object, Name, Value);
+	
+EndProcedure
+
+// Reads the attribute value by the name from the specified object, converts the value to the 
+// specified primitive type.
+//
+// Parameters:
+//  Object      - XMLReader - XMLReader object positioned to the beginning of the item whose 
+//                attribute is required.
+//  Type        - Type - an attribute type.
+//  Name         - String - an attribute name.
+//
+// Returns:
+//  Arbitrary - an attribute value received by the name and cast to the specified type.
+// 
+Function deAttribute(Object, Type, Name) Export
+	
+	Return CommonProceduresFunctions.deAttribute(Object, Type, Name);
+		
+EndFunction
+ 
+// Skips xml nodes to the end of the specified item (current item by default).
+//
+// Parameters:
+//  Object   - XMLReader - an object of the XMLReader type.
+//  Name      - String - a name of node, to the end of which items are skipped.
+// 
+Procedure deSkip(Object, Name = "") Export
+	
+	CommonProceduresFunctions.deSkip(Object, Name);
+	
+EndProcedure
+
+// Reads the element text and converts the value to the specified type.
+//
+// Parameters:
+//  Object           - XMLReader - XMLReader object whose data will be read.
+//  Type              - Type - type of the value to be received.
+//  SearchByProperty - String - for reference types, contains a property, by which
+//                     search will be implemented for the following object: Code, Description, <AttributeName>, Name (of the predefined value).
+//  TrimStringRight - Boolean - True, if it is needed to trim a string from the right.
+//
+// Returns:
+//  Value of an XML element converted to the relevant type.
+//
+Function deElementValue(Object, Type, SearchByProperty = "", TrimStringRight = True) Export
+
+	Return CommonProceduresFunctions.одЗначениеЭлемента(deElementValue(Object, Type, SearchByProperty, TrimStringRight);
+
+EndFunction
+
+////////////////////////////////////////////////////////////////////////////////
+// DATA OPERATIONS
+
+// Returns a string - a name of the passed enumeration value.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Value     - EnumRef - an enumeration value.
+//
+// Returns:
+//  String       - a name of the passed enumeration value.
+//
+Function deEnumValueName(Value) Export
+	
+	Return CommonProceduresFunctions.deEnumValueName(Value);
+	
+EndFunction
+
+// Defines whether the value is filled.
+//
+// Parameters:
+//  Value       - Arbitrary - CatalogRef, DocumentRef, string or any other type.
+//                   Value to be checked.
+//  IsNULL        - Boolean - if the passed value is NULL, this variable is set to True.
+//
+// Returns:
+//  Boolean - True, if the value is not filled in.
+//
+Function deEmpty(Value, IsNULL=False) Export
+	
+	Return CommonProceduresFunctions.deEmpty(Value, IsNULL);
+	
+EndFunction
+
+// Returns the TypeDescription object that contains the specified type.
+//
+// Parameters:
+//  TypeValue - String, Type - contains a type name or value of the Type type.
+//  
+// Returns:
+//  TypeDescription - the Type description object.
+//
+Function deTypeDescription(TypeValue) Export
+	
+	Return CommonProceduresFunctions.deTypeDescription(TypeValue);
+	
+EndFunction
+
+// Returns the empty (default) value of the specified type.
+//
+// Parameters:
+//  Type          - String, Type - a type name or value of the Type type.
+//
+// Returns:
+//  Arbitrary - an empty value of the specified type.
+// 
+Function deGetEmptyValue(Type) Export
+	
+	Return CommonProceduresFunctions.deGetEmptyValue(Type);
+	
+EndFunction
+
+// Performs a simple search for infobase object by the specified property.
+//
+// Parameters:
+//  Manager       - CatalogManager, DocumentManager - manager of the object to be searched.
+//  Property       - String - a property to implement the search: Name, Code, 
+//                   Description or a Name of an indexed attribute.
+//  Value       - String, Number, Date - value of a property to be used for searching the object.
+//  FoundByUUIDObject - CatalogObject, DocumentObject - an infobase object that was found by UUID 
+//                   while executing function.
+//  CommonPropertyStructure - structure - properties of the object to be searched.
+//  CommonSearchProperties - Structure - common properties of the search.
+//  SearchByUUIDQueryString - String - a query text for to search by UUID.
+//
+// Returns:
+//  Arbitrary - found infobase object.
+//
+Function FindObjectByProperty(Manager, Property, Value, FoundByUUIDObject = Undefined,
+	CommonPropertyStructure = Undefined, CommonSearchProperties = Undefined,
+	SearchByUUIDQueryString = "") Export
+	
+	Return CommonProceduresFunctions.FindObjectByProperty(Manager, Property, Value, FoundByUUIDObject,
+		CommonPropertyStructure, CommonSearchProperties,
+		SearchByUUIDQueryString);
+	
+EndFunction
+
+// Performs a simple search for infobase object by the specified property.
+//
+// Parameters:
+//  Str            - String - a property value, by which an object is searched.                 
+//  Type            - Type - type of the document to be searched.
+//  Property       - String - a property name, by which an object is searched.
+//
+// Returns:
+//  Arbitrary - found infobase object.
+//
+Function deGetValueByString(Str, Type, Property = "") Export
+	
+	Return CommonProceduresFunctions.deGetValueByString(Str, Type, Property);
+	
+EndFunction
+
+// Returns a string presentation of a value type.
+//
+// Parameters:
+//  ValueOrType - Arbitrary - a value of any type or Type.
+//
+// Returns:
+//  String - a string presentation of the value type.
+//
+Function deValueTypeAsString(ValueOrType) Export
+	
+	Return CommonProceduresFunctions.deValueTypeAsString(ValueOrType);
+	
+EndFunction
+
+// Returns an XML presentation of the TypeDescription object.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+// Parameters:
+//  TypeDescription  - TypeDescription - a TypeDescription object whose XML presentation is being retrieved.
+//
+// Returns:
+//  String - an XML presentation of the passed TypeDescription object.
+//
+Function deGetTypeDescriptionXMLPresentation(TypeDescription) Export
+	
+	Return CommonProceduresFunctions.deGetTypeDescriptionXMLPresentation(TypeDescription);
+	
+EndFunction
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING OPERATIONS
+
+// Splits a string into two parts: before the separator substring and after it.
+//
+// Parameters:
+//  Str          - String - a string to be split;
+//  Separator  - String - a separator substring:
+//  Mode        - Number -0 - separator is not included in the returned substrings.
+//                        1 - separator is included in the left substring.
+//                        2 - separator is included in the right substring.
+//
+// Returns:
+//  The right part of the string - before the separator character.
+// 
+Function SplitWithSeparator(Str, Val Separator, Mode=0) Export
+	
+	Return CommonProceduresFunctions.SplitWithSeparator(Str, Separator, Mode);
+	
+EndFunction
+
+// Converts values from a string to an array using the specified separator.
+//
+// Parameters:
+//  Str            - String - a string to be split.
+//  Separator    - String - a separator substring.
+//
+// Returns:
+//  Array - received array of values.
+// 
+Function ArrayFromString(Val Str, Separator=",") Export
+
+	Return CommonProceduresFunctions.ArrayFromString(Str, Separator);
+
+EndFunction
+
+// Returns a number in the string format without a character prefix.
+// Example:
+//  GetStringNumberWithoutPrefixes("TM0000001234") = "0000001234"
+//
+// Parameters:
+//  Number - String - a number, from which the function result must be calculated.
+// 
+// Returns:
+//   String - a number string without character prefixes.
+//
+Function GetStringNumberWithoutPrefixes(Number) Export
+	
+	Return CommonProceduresFunctions.GetStringNumberWithoutPrefixes(Number);
+	
+EndFunction
+
+// Splits a string into a prefix and numerical part.
+//
+// Parameters:
+//  Str            - String - a string to be split;
+//  NumericalPart  - Number - a variable that contains numeric part of the passed string.
+//  Mode          - String -  if "Number", then returns the numerical part otherwise returns a prefix.
+//
+// Returns:
+//  String - a string prefix.
+//
+Function GetNumberPrefixAndNumericalPart(Val Str, NumericalPart = "", Mode = "") Export
+	
+	Return CommonProceduresFunctions.GetNumberPrefixAndNumericalPart(Str, NumericalPart, Mode);
+	
+EndFunction
+
+// Casts the number (code) to the required length, splitting the number into a prefix and numeric part. 
+// The space between the prefix and number is filled with zeros.
+// 
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+//
+// Parameters:
+//  Str          - String - a string to be converted.
+//  Length        - Number - required length of a string.
+//  AddZerosIfLengthNotLessNumberCurrentLength - Boolean - indicates that it is necessary to add zeros.
+//  Prefix      - String - a prefix to be added to the number.
+//
+// Returns:
+//  String       - a code or number cast to the required length.
+// 
+Function CastNumberToLength(Val Str, Length, AddZerosIfLengthNotLessNumberCurrentLength = True, Prefix = "") Export
+	
+	Return CommonProceduresFunctions.CastNumberToLength(Str, Length, AddZerosIfLengthNotLessNumberCurrentLength, Prefix);
+	
+EndFunction
+
+// Adds a substring to a number of code prefix.
+// The function can be used in the event handlers whose script is stored in data exchange rules.
+//  It is called with the Execute() method.
+// The "No links to function found" message during the configuration check is not an error.
+// 
+//
+// Parameters:
+//  Str          - String - a number or code.
+//  Additive      - String - a substring to be added to a prefix.
+//  Length        - Number - required resulting length of a string.
+//  Mode        - String - pass "Left" if you want to add substring from the left, otherwise the substring will be added from the right.
+//
+// Returns:
+//  String       - a number or code with the specified substring added to the prefix.
+//
+Function AddToPrefix(Val Str, Additive = "", Length = "", Mode = "Left") Export
+
+	Return CommonProceduresFunctions.AddToPrefix(Str, Additive, Length, Mode); 
+
+EndFunction
+
+// Supplements string with the specified symbol to the specified length.
+//
+// Parameters:
+//  Str          - String - string to be supplemented;
+//  Length        - Number - required length of a resulting string.
+//  Symbol          - String - a character used for supplementing the string.
+//
+// Returns:
+//  String - the received string that is supplemented with the specified symbol to the specified length.
+//
+Function deSupplementString(Str, Length, Symbol = " ") Export
+	
+	Return CommonProceduresFunctions.deSupplementString(Str, Length, Symbol);
+
+EndFunction
+
+////////////////////////////////////////////////////////////////////////////////
+// EXCHANGE FILE PROCEDURES AND FUNCTIONS
+
+// Saves the specified xml node to the file.
+//
+// Parameters:
+//  Node - XML node to be saved to the file.
+//
+Procedure WriteToFile(Node) Export
+
+	CommonProceduresFunctions.WriteToFile(Node);
+
+EndProcedure
+
+////////////////////////////////////////////////////////////////////////////////
+// EXCHANGE RULES PROCEDURES AND FUNCTIONS
+
+// Searches for the conversion rule by name or according to the passed object type.
+// 
+//
+// Parameters:
+//  Object         -  a source object whose conversion rule will be searched.
+//  RuleName     - String - a conversion rule name.
+//
+// Returns:
+//   ValueTableRow - a conversion rule reference (a row in the rules table):
+//     * Name - String -
+//     * Description - String -
+//     * Source - String -
+//     * Properties - see PropertyConversionRulesCollection.
+// 
+Function FindRule(Object, RuleName="") Export
+
+	Return CommonProceduresFunctions.FindRule(Object, RuleName);
+
+EndFunction
+
+////////////////////////////////////////////////////////////////////////////////
+//
+
+// Passed the data string to import in the destination base.
+//
+// Parameters:
+//  InformationToWriteToFile - String - a data string (XML text).
+//  ErrorStringInDestinationInfobase - String - contains error description upon import to the destination infobase.
+// 
+Procedure SendWriteInformationToDestination(InformationToWriteToFile, ErrorStringInDestinationInfobase = "") Export
+	
+	CommonProceduresFunctions.SendWriteInformationToDestination(InformationToWriteToFile, ErrorStringInDestinationInfobase);
+	
+EndProcedure
+
+// Writes a name, a type, and a value of the parameter to an exchange message file. This data is sent to the destination infobase.
+//
+Procedure SendSingleParameterToDestination(Name, InitialParameterValue, ConversionRule = "") Export
+	
+	CommonProceduresFunctions.SendSingleParameterToDestination(Name, InitialParameterValue, ConversionRule);
+	
+EndProcedure
+
+// Sends all additional parameters to the destination.
+//
+Procedure SendAdditionalParametersToDestination() Export
+	
+	CommonProceduresFunctions.SendAdditionalParametersToDestination();
+	
+EndProcedure
