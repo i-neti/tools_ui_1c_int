@@ -4198,7 +4198,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 			
 			If ConditionsProhibitOutputRows.Count() > 1 And Not ValueIsFilled(BooleanOperatorForProhibitingConditionsOutputRows) Then
 				AttributesFilledOutCorrectly = False;
-				ErrorText = StrTemplate(Nstr("ru = 'Не заполнен логический оператор для объединения условий запрета вывода строк';en = 'The logical operator for combining the conditions for prohibiting the output of rows is not filled'");
+				ErrorText = StrTemplate(Nstr("ru = 'Не заполнен логический оператор для объединения условий запрета вывода строк';en = 'The logical operator for combining the conditions for prohibiting the output of rows is not filled'"));
 				UserMessage = New UserMessage;
 				UserMessage.Text = ErrorText;
 				UserMessage.Field = "Object.BooleanOperatorForProhibitingConditionsOutputRows";
