@@ -14,7 +14,7 @@
     <value>Универсальный обмен данными в формате XML(с фильтрами и выгрузкой на HTTP сервис) [УИ]</value>
   </synonym>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_UniversalDataExchangeXML.Form.УправляемаяФорма</defaultForm>
+  <defaultForm>DataProcessor.UT_UniversalDataExchangeXML.Form.ManagedForm</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -61,7 +61,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="61922f0e-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>InfobaseConnectionWindowsAuthentification</name>
+    <name>InfobaseConnectionWindowsAuthentication</name>
     <synonym>
       <key>en</key>
       <value>Windows authentication for infobase connection</value>
@@ -75,7 +75,7 @@
     </type>
     <toolTip>
       <key>en</key>
-      <value>Windows authentification</value>
+      <value>Windows authentication</value>
     </toolTip>
     <toolTip>
       <key>ru</key>
@@ -1854,7 +1854,11 @@
     </type>
   </attributes>
   <forms uuid="6192831e-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>УправляемаяФорма</name>
+    <name>ManagedForm</name>
+    <synonym>
+      <key>en</key>
+      <value>Managed form</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Управляемая форма</value>
@@ -1863,7 +1867,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="619283f0-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>УправляемаяФормаНастройкиОтладкиОбработчиков</name>
+    <name>HandlerDebugSetupManagedForm</name>
+    <synonym>
+      <key>en</key>
+      <value>Configure handlers debugging (managed form)</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Управляемая форма настройки отладки обработчиков</value>
@@ -1871,19 +1879,27 @@
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
-  <templates uuid="619284ae-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ПараметрыОбработчиков</name>
-    <synonym>
-      <key>ru</key>
-      <value>Параметры обработчиков</value>
-    </synonym>
-  </templates>
   <templates uuid="6192858a-8f8a-11ea-4a9c-e86a6452d1f2">
-    <name>ОбщиеПроцедурыФункции</name>
+    <name>CommonProceduresFunctions</name>
+    <synonym>
+      <key>en</key>
+      <value>Common procedures functions</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Общие процедуры функции</value>
     </synonym>
     <templateType>TextDocument</templateType>
+  </templates>
+  <templates uuid="2fc1c036-fea3-44cb-b421-0c39824d99fe">
+    <name>HandlersParameters</name>
+    <synonym>
+      <key>ru</key>
+      <value>Параметры обработчиков</value>
+    </synonym>
+    <synonym>
+      <key>en</key>
+      <value>Handler parameters</value>
+    </synonym>
   </templates>
 </mdclass:DataProcessor>
