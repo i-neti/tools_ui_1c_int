@@ -164,6 +164,7 @@ Procedure RefreshDataPeriod()
 	ValueToFormAttribute(ProcessingObject, "Object");
 			
 EndProcedure
+
 #EndRegion 
 
 &AtClient
@@ -382,6 +383,8 @@ Procedure GetParametersFromQueryOnServer(BaseID)
 	If IsBlankString(Object["QueryText" + BaseID]) Then	
 		Return;
 	EndIf;
+	
+	TextErrors = "";
 	
 	//Current
 	If Object["BaseType" + BaseID] = 0 Then
@@ -673,6 +676,7 @@ EndFunction
 
 
 #Region Visibility_Availability_of_form_elements
+
 &AtClient
 Procedure UpdateVisibilityAccessibilityFormItems()
 		
@@ -1078,7 +1082,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 EndProcedure
 
 &AtClient
-Procedure UpdateVisibilityKeysTP(Форсировать = Ложь)
+Procedure UpdateVisibilityKeysTP(Форсировать = False)
 	
 	UpdateVisibilityAttributeTP("Key1");
 	UpdateVisibilityAttributeTP("Key2");
@@ -1187,6 +1191,7 @@ Procedure UpdateVisibilityAvailabilityOrderSortTableDifferences()
 	Items.OrderSortTableDifferences.ReadOnly = Not Object.SortTableDifferences;
 	
 EndProcedure
+
 #EndRegion 
 
 
@@ -1306,6 +1311,7 @@ Procedure SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments = Fa
 	ValueToFormAttribute(FormObject, "Object");
 		
 EndProcedure
+
 #EndRegion 
 
 
@@ -1337,9 +1343,9 @@ Procedure OpenSettingsFromFileAtClientEnd(SelectedFiles, AdditionalParameters) E
 		
 		Address = PutToTempStorage(New BinaryData(SelectionDialog.FullFileName));
 		OpenSettingsFromFileAtServer(Address, UploadSpreadsheetDocuments);
-		ПервыйСимвол = StrFind(SelectionDialog.FullFileName, "\", SearchDirection.FromEnd) + 1;
-		ПоследнийСимвол = StrFind(SelectionDialog.FullFileName, ".", SearchDirection.FromEnd);
-		Object.Title = Mid(SelectionDialog.FullFileName, ПервыйСимвол, ПоследнийСимвол - ПервыйСимвол);
+		FirstChar = StrFind(SelectionDialog.FullFileName, "\", SearchDirection.FromEnd) + 1;
+		LastChar = StrFind(SelectionDialog.FullFileName, ".", SearchDirection.FromEnd);
+		Object.Title = Mid(SelectionDialog.FullFileName, FirstChar, LastChar - FirstChar);
 		UpdateVisibilityAccessibilityFormItems();
 		UpdateVisibilityAvailabilityItemsRelationalOperation();
 		UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
@@ -1363,14 +1369,14 @@ Procedure OpenSettingsFromFileAtServer(Address, UploadSpreadsheetDocuments = Fal
 	Data = ExternalStorage.Get();
 	FillPropertyValues(Object, Data);
 	
-	If Data.Property("ТЗУсловияВыводаСтрок") Then
-		Object.ConditionsOutputRows.Load(Data.ТЗУсловияВыводаСтрок);
+	If Data.Property("ValueTableConditionsOutputRows") Then
+		Object.ConditionsOutputRows.Load(Data.ValueTableConditionsOutputRows);
 	Else
 		Object.ConditionsOutputRows.Clear();
 	EndIf;
 	
-	If Data.Property("ТЗУсловияЗапретаВыводаСтрок") Then
-		Object.ConditionsProhibitOutputRows.Load(Data.ТЗУсловияЗапретаВыводаСтрок);
+	If Data.Property("ValueTableConditionsProhibitOutputRows") Then
+		Object.ConditionsProhibitOutputRows.Load(Data.ValueTableConditionsProhibitOutputRows);
 	Else
 		Object.ConditionsProhibitOutputRows.Clear();
 	EndIf;
@@ -1447,11 +1453,11 @@ EndProcedure
 &AtClient
 Procedure OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments = False)
 
-	SelectedItem = Undefined;
+	//SelectedItem = Undefined;
 	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
 		,,,,,
 		, New NotifyDescription("SaveSelectedOperationEnd", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments))
-		, FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+		, FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -1477,33 +1483,36 @@ EndProcedure
 #EndRegion 
 
 
-#Region Обработка_выбора_параметра
+#Region Processing_selection_parameter
+
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметра(BaseID, StandardProcessing)
+Procedure OnStartChoiceParameterValue(BaseID, StandardProcessing)
 	
 	If Object["BaseType" + BaseID] = 1 Then
 		StandardProcessing = False;
-		СписокДоступныхТипов = New ValueList;
-		СписокДоступныхТипов.Add("Number");
-		СписокДоступныхТипов.Add("String");
-		СписокДоступныхТипов.Add("Date");
-		СписокДоступныхТипов.Add("Boolean");
-		ВыбранныйТип = Undefined;
+		ListAvailableTypes = New ValueList;
+		ListAvailableTypes.Add("Number");
+		ListAvailableTypes.Add("String");
+		ListAvailableTypes.Add("Date");
+		ListAvailableTypes.Add("Boolean");
+		//SelectedType = Undefined;
 
-		ShowChooseFromList(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение4", ThisForm, New Structure("BaseID", BaseID)), СписокДоступныхТипов, Items["ParameterList" + BaseID + "ParameterValue"]);
+		ShowChooseFromList(New NotifyDescription("OnStartChoiceParameterValueEnd4", ThisForm, New Structure("BaseID", BaseID))
+			, ListAvailableTypes
+			, Items["ParameterList" + BaseID + "ParameterValue"]);
 	
 	EndIf;
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение4(SelectedItem, AdditionalParameters) Export
+Procedure OnStartChoiceParameterValueEnd4(SelectedItem, AdditionalParameters) Export
 	
 	BaseID = AdditionalParameters.BaseID;
 	
 	
-	ВыбранныйТип = SelectedItem;
-	If ВыбранныйТип = Undefined Then
+	SelectedType = SelectedItem;
+	If SelectedType = Undefined Then
 		Return;
 	EndIf;
 	
@@ -1514,28 +1523,28 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 		CurrentParameterValue =  CurrentData.ParameterValue;
 	EndIf;
 	
-	If ВыбранныйТип.Value = "Number" Then
-		ShowInputNumber(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение3", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
+	If SelectedType.Value = "Number" Then
+		ShowInputNumber(New NotifyDescription("OnStartChoiceParameterValueEnd3", ThisForm, New Structure("SelectedType, CurrentData, CurrentParameterValue", SelectedType, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
-	ElsIf ВыбранныйТип.Value = "String" Then
-		ShowInputString(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение2", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
+	ElsIf SelectedType.Value = "String" Then
+		ShowInputString(New NotifyDescription("OnStartChoiceParameterValueEnd2", ThisForm, New Structure("SelectedType, CurrentData, CurrentParameterValue", SelectedType, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
-	ElsIf ВыбранныйТип.Value = "Date" Then
-		ShowInputDate(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение1", ThisForm, New Structure("ВыбранныйТип, CurrentData, CurrentParameterValue", ВыбранныйТип, CurrentData, CurrentParameterValue)), CurrentParameterValue);
+	ElsIf SelectedType.Value = "Date" Then
+		ShowInputDate(New NotifyDescription("OnStartChoiceParameterValueEnd1", ThisForm, New Structure("SelectedType, CurrentData, CurrentParameterValue", SelectedType, CurrentData, CurrentParameterValue)), CurrentParameterValue);
 		Return;
-	ElsIf ВыбранныйТип.Value = "Boolean" Then
-		ShowInputValue(New NotifyDescription("ПриНачалеВыбораЗначенияПараметраЗавершение", ThisForm, New Structure("CurrentData, CurrentParameterValue", CurrentData, CurrentParameterValue)), CurrentParameterValue,,New TypeDescription("Boolean"));
+	ElsIf SelectedType.Value = "Boolean" Then
+		ShowInputValue(New NotifyDescription("OnStartChoiceParameterValueEnd", ThisForm, New Structure("CurrentData, CurrentParameterValue", CurrentData, CurrentParameterValue)), CurrentParameterValue,,New TypeDescription("Boolean"));
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент3(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment3(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение3(Number, AdditionalParameters) Export
+Procedure OnStartChoiceParameterValueEnd3(Number, AdditionalParameters) Export
 	
-	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
+	//SelectedType = AdditionalParameters.SelectedType;
 	CurrentData = AdditionalParameters.CurrentData;
 	CurrentParameterValue = ?(Number = Undefined, AdditionalParameters.CurrentParameterValue, Number);
 	
@@ -1544,21 +1553,21 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент3(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment3(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент3(Val CurrentParameterValue, Val CurrentData)
+Procedure OnStartChoiceParameterValueFragment3(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент2(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment2(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение2(String, AdditionalParameters) Export
+Procedure OnStartChoiceParameterValueEnd2(String, AdditionalParameters) Export
 	
-	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
+	//SelectedType = AdditionalParameters.SelectedType;
 	CurrentData = AdditionalParameters.CurrentData;
 	CurrentParameterValue = ?(String = Undefined, AdditionalParameters.CurrentParameterValue, String);
 	
@@ -1567,21 +1576,21 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент2(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment2(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент2(Val CurrentParameterValue, Val CurrentData)
+Procedure OnStartChoiceParameterValueFragment2(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент1(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment1(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение1(Date, AdditionalParameters) Export
+Procedure OnStartChoiceParameterValueEnd1(Date, AdditionalParameters) Export
 	
-	ВыбранныйТип = AdditionalParameters.ВыбранныйТип;
+	//SelectedType = AdditionalParameters.SelectedType;
 	CurrentData = AdditionalParameters.CurrentData;
 	CurrentParameterValue = ?(Date = Undefined, AdditionalParameters.CurrentParameterValue, Date);
 	
@@ -1590,19 +1599,19 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент1(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment1(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент1(Val CurrentParameterValue, Val CurrentData)
+Procedure OnStartChoiceParameterValueFragment1(Val CurrentParameterValue, Val CurrentData)
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраЗавершение(Value, AdditionalParameters) Export
+Procedure OnStartChoiceParameterValueEnd(Value, AdditionalParameters) Export
 	
 	CurrentData = AdditionalParameters.CurrentData;
 	CurrentParameterValue = ?(Value = Undefined, AdditionalParameters.CurrentParameterValue, Value);
@@ -1612,22 +1621,24 @@ Procedure ПриНачалеВыбораЗначенияПараметраЗав
 		Return;
 	EndIf;
 	
-	ПриНачалеВыбораЗначенияПараметраФрагмент(CurrentParameterValue, CurrentData);
+	OnStartChoiceParameterValueFragment(CurrentParameterValue, CurrentData);
 
 EndProcedure
 
 &AtClient
-Procedure ПриНачалеВыбораЗначенияПараметраФрагмент(Val CurrentParameterValue, Val CurrentData)
+Procedure OnStartChoiceParameterValueFragment(Val CurrentParameterValue, Val CurrentData)
 	
 	CurrentData.ParameterValue = CurrentParameterValue;
 
 EndProcedure
+
 #EndRegion 
 
 #EndRegion
 
 
 #Region Commands
+
 &AtClient
 Procedure CompareData(Command)
 	
@@ -1637,12 +1648,12 @@ EndProcedure
 
 &AtClient
 Procedure QueryConstructorB(Command)
-	OpenQueryConstructor("Б");
+	OpenQueryConstructor("B");
 EndProcedure
 
 &AtClient
 Procedure QueryConstructorA(Command)
-	OpenQueryConstructor("А");
+	OpenQueryConstructor("A");
 EndProcedure
 
 &AtClient
@@ -1690,25 +1701,32 @@ EndProcedure
 &AtClient
 Procedure OpenSettingsFromBase(Command)
 	
-	SelectedItem = Undefined; 
+	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
 &AtClient
 Procedure LoadSettingsAndSpreadsheetDocumentsFromDatabase(Command)
 	
-	SelectedItem = Undefined; 
+	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True)), FormWindowOpeningMode.БлокироватьВесьИнтерфейс);
+	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
+		,
+		,
+		,
+		,
+		,
+		, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True))
+		, FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
 &AtClient
 Procedure CommandGetQueryParametersA(Command)
 	
-	GetParametersFromQueryOnServer("А");
+	GetParametersFromQueryOnServer("A");
 	Items.GroupPagesBaseA.CurrentPage = Items.GroupPageQueryParametersA;
 	
 EndProcedure
@@ -1716,29 +1734,29 @@ EndProcedure
 &AtClient
 Procedure CommandGetQueryParametersB(Command)
 	
-	GetParametersFromQueryOnServer("Б");
+	GetParametersFromQueryOnServer("B");
 	Items.GroupPagesBaseB.CurrentPage = Items.GroupPageQueryParametersB;
 	
 EndProcedure
 
 &AtClient
-Procedure ПосетитьСтраницуАвтора(Command)
+Procedure VisitAuthorPage(Command)
 
-	BeginRunningApplication(New NotifyDescription("ПосетитьСтраницу", ThisForm), "http://sertakov.by");
+	BeginRunningApplication(New NotifyDescription("VisitPage", ThisForm), "http://sertakov.by");
 	
 EndProcedure
 
 &AtClient
 Procedure VisitPageProcessing(Command)
 	
-	BeginRunningApplication(New NotifyDescription("ПосетитьСтраницу", ThisForm), "https://infostart.ru/public/581794/");
+	BeginRunningApplication(New NotifyDescription("VisitPage", ThisForm), "https://infostart.ru/public/581794/");
 	
 EndProcedure
 
 &AtClient
 Procedure CommandDownloadProcessing(Command)
 	
-	BeginRunningApplication(New NotifyDescription("ПосетитьСтраницу", ThisForm), "http://sertakov.by/work/KSD.epf");
+	BeginRunningApplication(New NotifyDescription("VisitPage", ThisForm), "http://sertakov.by/work/KSD.epf");
 	
 EndProcedure
 
@@ -1758,72 +1776,73 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_AllRows(Command)	
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А");
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A");
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src А");	
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник А';en = 'Source A'"));	
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_100Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",100);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",100);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src А (100 строк)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (100 строк)';en = 'Source A (100 rows)'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_100Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",100);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",100);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src Б (100 строк)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (100 строк)';en = 'Source B (100 rows)'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_AllRows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б");
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B");
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src Б");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б';en = 'Source B'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_Duplicates(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",,True);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",,True);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src А (дубликаты)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (дубликаты)';en = 'Source A (duplicates)'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_Duplicates(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",,True);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",,True);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src Б (дубликаты)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (дубликаты)';en = 'Source B (duplicates)'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_1000Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("А",1000);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",1000);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src А (1000 строк)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (1000 строк)';en = 'Source A (1000 rows)'"));
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_1000Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("Б",1000);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",1000);
 	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show("Src Б (1000 строк)");
+		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (1000 строк)';en = 'Source B (1000 rows)'"));
 	EndIf;
 EndProcedure
 
 #EndRegion
 
 
-#Region Обработчики_событий
+#Region Event_handlers
+
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
@@ -1834,9 +1853,9 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.UserMode = True;
 	EndIf;
 	
-	If Parameters.Property("ОперацияСравненияДанных") And ValueIsFilled(Parameters.ОперацияСравненияДанных) Then
+	If Parameters.Property("DataComparisonOperation") And ValueIsFilled(Parameters.DataComparisonOperation) Then
 		
-		Object.RelatedDataComparisonOperation = Parameters.ОперацияСравненияДанных;
+		Object.RelatedDataComparisonOperation = Parameters.DataComparisonOperation;
 		FormObject = FormAttributeToValue("Object");
 		FormObject.OpenSettingsFromBaseAtServer(Object.RelatedDataComparisonOperation);
 		ValueToFormAttribute(FormObject, "Object");
@@ -1884,12 +1903,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	EndIf;
 		
-	Example1 = "КлючТек = Left(КлючТек,10);";
-	Example2 = "КлючТек = Number(КлючТек) + 1;";
-	Example3 = "If Left(КлючТек,1) = ""#"" Then КлючТек = Mid(КлючТек, 2); EndIf;";
-	Example4 = "КлючТек = Right(""0000000000"" + КлючТек, 10);";
-	Example5 = "КлючТек = StrReplace(КлючТек, ""_"", """");";
-	Example6 = "КлючТек = ?(ValueIsFilled(КлючТек), КлючТек, ""<>"");";
+	Example1 = "CurrentKey = Left(CurrentKey,10);";
+	Example2 = "CurrentKey = Number(CurrentKey) + 1;";
+	Example3 = "If Left(CurrentKey,1) = ""#"" Then CurrentKey = Mid(CurrentKey, 2); EndIf;";
+	Example4 = "CurrentKey = Right(""0000000000"" + CurrentKey, 10);";
+	Example5 = "CurrentKey = StrReplace(CurrentKey, ""_"", """");";
+	Example6 = "CurrentKey = ?(ValueIsFilled(CurrentKey), CurrentKey, ""<>"");";
 	
 	If Object.UserMode Then
 		
@@ -1898,8 +1917,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Items.GroupBaseBPage.Visible = False;
 		Items.GroupOutputSettings.Visible = False;
 		Items.GroupMain.PagesRepresentation = FormPagesRepresentation.None;
-		Items.РезультатКомандаВыгрузитьРезультатВФайлНаСервере.Visible = False;
-		Items.РезультатГруппаВидимостьСтолбцовКлюча.Visible = False;
+		Items.CommandUploadResultToFileOnServer.Visible = False;
+		Items.ResultGroupVisibilityColumnsKey.Visible = False;
 				
 	Else		
 	
@@ -1946,7 +1965,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 
 	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing,
-		Items.ГруппаПанель2);
+		Items.GroupPanel2);
 
 EndProcedure
 
@@ -1962,7 +1981,7 @@ Procedure OnOpen(Cancel)
 EndProcedure
 
 &AtClient
-Procedure ОперацияНажатие(Item, StandardProcessing)
+Procedure OperationClick(Item, StandardProcessing)
 	
 	StandardProcessing = False;
 	Object.RelationalOperation = Number(Right(Item.Name,1));
@@ -1974,43 +1993,46 @@ EndProcedure
 Procedure BeforeClose(Cancel, StandardProcessing)
 	If Not ClosingFormConfirmed Then
 		Cancel = True;
-		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm),"Close консоль сравнения данных?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm)
+			, Nstr("ru = 'Закрыть консоль сравнения данных?';en = 'Close Data Compare Console?'"), QuestionDialogMode.YesNo);
 	EndIf;
 EndProcedure
 
 &AtClient
-Procedure OnClose(ЗавершениеРаботы)
+Procedure OnClose(Exit)
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation) And Not Object.UserMode  Then
-		
-		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave,SaveSpreadsheetDocuments,OnCloseForm",True,False,True)), "Update элемент справочника """ + Object.RelatedDataComparisonOperation + """?", QuestionDialogMode.YesNo);
+		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'"), Object.RelatedDataComparisonOperation);
+		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave,SaveSpreadsheetDocuments,OnCloseForm",True,False,True))
+			, QueryText
+			, QuestionDialogMode.YesNo);
 	
 	EndIf; 
 	
 EndProcedure
 
 &AtClient
-Procedure ПосетитьСтраницу(КодВозврата, AdditionalParameters) Export
+Procedure VisitPage(ReturnCode, AdditionalParameters) Export
 	
-	
-
 EndProcedure
 
 &AtClient
-Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзменении(Item)
+Procedure CodeForOutputRowsEditedManuallyOnChange(Item)
 	
 	If Not Object.CodeForOutputRowsEditedManually Then
 		
-		ShowQueryBox(New NotifyDescription("КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение", ThisForm), "Code, внесенный вручную будет утерян. Continue?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("CodeForOutputRowsEditedManuallyOnChangeEnd", ThisForm)
+			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
+			, QuestionDialogMode.YesNo);
         Return;
 		
 	EndIf;
 	
-	КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент();
+	CodeForOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
 &AtClient
-Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(Result, AdditionalParameters) Export
+Procedure CodeForOutputRowsEditedManuallyOnChangeEnd(Result, AdditionalParameters) Export
 	
 	If Result = DialogReturnCode.None Then
 		Object.CodeForOutputRowsEditedManually = True;
@@ -2018,12 +2040,12 @@ Procedure КодДляВыводаСтрокРедактируетсяВручн
 	EndIf;
 	
 	
-	КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент();
+	CodeForOutputRowsEditedManuallyOnChangeFragment();
 
 EndProcedure
 
 &AtClient
-Procedure КодДляВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
+Procedure CodeForOutputRowsEditedManuallyOnChangeFragment()
 	
 	UpdateCodeToOutputAndProhibitOutputRows();
 	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
@@ -2035,16 +2057,18 @@ Procedure CodeForProhibitingOutputRowsEditedManuallyOnChange(Item)
 	
 	If Not Object.CodeForProhibitingOutputRowsEditedManually Then
 		
-		ShowQueryBox(New NotifyDescription("КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение", ThisForm), "Code, внесенный вручную будет утерян. Continue?", QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("CodeForProhibitingOutputRowsEditedManuallyOnChangeEnd", ThisForm)
+			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
+			, QuestionDialogMode.YesNo);
         Return;
 		
 	EndIf;
 	
-	КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент();
+	CodeForProhibitingOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
 &AtClient
-Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииЗавершение(Result, AdditionalParameters) Export
+Procedure CodeForProhibitingOutputRowsEditedManuallyOnChangeEnd(Result, AdditionalParameters) Export
 	
 	If Result = DialogReturnCode.None Then
 		Object.CodeForProhibitingOutputRowsEditedManually = True;
@@ -2052,12 +2076,12 @@ Procedure КодДляЗапретаВыводаСтрокРедактирует
 	EndIf;
 	
 	
-	КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент();
+	CodeForProhibitingOutputRowsEditedManuallyOnChangeFragment();
 
 EndProcedure
 
 &AtClient
-Procedure КодДляЗапретаВыводаСтрокРедактируетсяВручнуюПриИзмененииФрагмент()
+Procedure CodeForProhibitingOutputRowsEditedManuallyOnChangeFragment()
 	
 	UpdateCodeToOutputAndProhibitOutputRows();
 	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
@@ -2080,7 +2104,7 @@ Procedure BooleanOperatorForProhibitingConditionsOutputRowsOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure ЛогическийОператорДляУсловийВыводаСтрокПриИзменении(Item)
+Procedure BooleanOperatorForConditionsOutputRowsOnChange(Item)
 	UpdateCodeToOutputAndProhibitOutputRows();
 EndProcedure
 
@@ -2093,14 +2117,6 @@ Procedure CommandVisibilityColumnTP(Command)
 	
 	UpdateVisibilityAttributeTP(AttributeName);
 		
-EndProcedure
-
-&AtClient
-Procedure ТипПараметраПериодПриИзменении(Item)
-	
-	RefreshDataPeriod();
-	UpdateVisibilityAccessibilityFormItems();
-	
 EndProcedure
 
 &AtClient
@@ -2118,7 +2134,7 @@ Procedure DiscretenessOfRelativePeriodOnChange(Item)
 EndProcedure
 
 &AtClient
-Procedure ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбора(Item, ChoiceData, StandardProcessing)
+Procedure ConnectionToExternalBaseAPathToFileStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	FileDialog = New FileDialog(FileDialogMode.Opening);
 	
@@ -2138,14 +2154,14 @@ Procedure ПодключениеКВнешнейБазеАПутьКФайлуН
 			"|*." + Object.ConnectionToExternalBaseAFileFormat;
 	EndIf;
 		
-	FileDialog.Title = "Выберите файл";
+	FileDialog.Title = Nstr("ru = 'Выберите файл';en = 'Select a file'");
 	FileDialog.FilterIndex = 0;
-	FileDialog.Show(New NotifyDescription("ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбораЗавершение", ThisForm, New Structure("FileDialog", FileDialog)));
+	FileDialog.Show(New NotifyDescription("ConnectionToExternalBaseAPathToFileStartChoiceEnd", ThisForm, New Structure("FileDialog", FileDialog)));
 	
 EndProcedure
 
 &AtClient
-Procedure ПодключениеКВнешнейБазеАПутьКФайлуНачалоВыбораЗавершение(SelectedFiles, AdditionalParameters) Export
+Procedure ConnectionToExternalBaseAPathToFileStartChoiceEnd(SelectedFiles, AdditionalParameters) Export
 	
 	FileDialog = AdditionalParameters.FileDialog;
 	
@@ -2179,7 +2195,7 @@ Procedure ConnectionToExternalBaseBPathToFileStartChoice(Item, ChoiceData, Stand
 			"|*." + Object.ConnectionToExternalBaseBFileFormat;
 	EndIf;
 		
-	FileDialog.Title = "Выберите файл";
+	FileDialog.Title = Nstr("ru = 'Выберите файл';en = 'Select a file'");
 	FileDialog.FilterIndex = 0;
 	FileDialog.Show(New NotifyDescription("ConnectionToExternalBaseBPathToFileStartChoiceEnd", ThisForm, New Structure("FileDialog", FileDialog)));
 	
@@ -2202,10 +2218,10 @@ EndProcedure
 &AtClient
 Procedure SettingsFileBAggregateFunctionCalculationTotalClearing(Item, StandardProcessing)
 	
-	StandardProcessing = Ложь;
-	пТекущаяСтрока = Items.SettingsFileB.CurrentData;
-	If пТекущаяСтрока <> Undefined Then
-		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	StandardProcessing = False;
+	CurrentRow = Items.SettingsFileB.CurrentData;
+	If CurrentRow <> Undefined Then
+		CurrentRow.AggregateFunctionCalculationTotal = "Sum";
 	EndIf;
 	
 EndProcedure
@@ -2213,22 +2229,21 @@ EndProcedure
 &AtClient
 Procedure SettingsFileAAggregateFunctionCalculationTotalClearing(Item, StandardProcessing)
 	
-	StandardProcessing = Ложь;
-	пТекущаяСтрока = Items.SettingsFileA.CurrentData;
-	If пТекущаяСтрока <> Undefined Then
-		пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	StandardProcessing = False;
+	CurrentRow = Items.SettingsFileA.CurrentData;
+	If CurrentRow <> Undefined Then
+		CurrentRow.AggregateFunctionCalculationTotal = "Sum";
 	EndIf;
 
 EndProcedure
 
-
 &AtClient
 Procedure SettingsFileAOnChange(Item)
 	
-	пТекущаяСтрока = Items.SettingsFileA.CurrentData;
-	If пТекущаяСтрока <> Undefined Then
-		If IsBlankString(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
-			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	CurrentRow = Items.SettingsFileA.CurrentData;
+	If CurrentRow <> Undefined Then
+		If IsBlankString(CurrentRow.AggregateFunctionCalculationTotal) Then
+			CurrentRow.AggregateFunctionCalculationTotal = "Sum";
 		EndIf;
 	EndIf;
 	
@@ -2237,10 +2252,10 @@ EndProcedure
 &AtClient
 Procedure SettingsFileBOnChange(Item)
 	
-	пТекущаяСтрока = Items.SettingsFileB.CurrentData;
-	If пТекущаяСтрока <> Undefined Then
-		If IsBlankString(пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога) Then
-			пТекущаяСтрока.АгрегатнаяФункцияРасчетаИтога = "Сумма";
+	CurrentRow = Items.SettingsFileB.CurrentData;
+	If CurrentRow <> Undefined Then
+		If IsBlankString(CurrentRow.AggregateFunctionCalculationTotal) Then
+			CurrentRow.AggregateFunctionCalculationTotal = "Sum";
 		EndIf;
 	EndIf;
 	
@@ -2265,7 +2280,7 @@ Procedure SettingsFileBBeforeAddRow(Item, Cancel, Copy, Parent, Group, Parameter
 EndProcedure
 
 &AtClient
-Procedure ПриИзмененииКлючевогоРеквизита(Item)
+Procedure OnChangeKeyAttribute(Item)
 	
 	UpdateVisibilityAccessibilityFormItems();
 	
@@ -2275,7 +2290,7 @@ EndProcedure
 Procedure ParameterListAParameterValueStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	Items.ParameterListAParameterValue.ChooseType = TypeOf(Items.ParameterListA.CurrentData.ParameterValue) = Type("Undefined");	
-	ПриНачалеВыбораЗначенияПараметра("А", StandardProcessing);
+	OnStartChoiceParameterValue("A", StandardProcessing);
 	
 EndProcedure
 
@@ -2291,7 +2306,7 @@ EndProcedure
 Procedure ParameterListBParameterValueStartChoice(Item, ChoiceData, StandardProcessing)
 	
 	Items.ParameterListBParameterValue.ChooseType = TypeOf(Items.ParameterListB.CurrentData.ParameterValue) = Type("Undefined");	
-	ПриНачалеВыбораЗначенияПараметра("Б", StandardProcessing);
+	OnStartChoiceParameterValue("B", StandardProcessing);
 		
 EndProcedure
 
@@ -2348,7 +2363,7 @@ Procedure ResultKey3Clearing(Item, StandardProcessing)
 EndProcedure
 
 &AtClient
-Procedure ПриИзмененииФлагаВыполнятьПроизвольныйКодКлюча(Item)
+Procedure OnChangeFlagExecuteArbitraryKeyCode(Item)
 	
 	UpdateAttributesArbitraryCode();
 	
@@ -2379,7 +2394,7 @@ Procedure CommandUploadResultToFileOnServer(Command)
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
 		UserMessage.Field = "Object.UploadFileFormat";
-		UserMessage.Text = "Not задан формат файла выгрузки";
+		UserMessage.Text = Nstr("ru = 'Не задан формат файла выгрузки';en = 'Upload file format not set'");
 		UserMessage.Message();
 		Return;
 	EndIf;
@@ -2387,13 +2402,18 @@ Procedure CommandUploadResultToFileOnServer(Command)
 	If IsBlankString(Object.PathToDownloadFile) Then
 		UserMessage = New UserMessage;
 		UserMessage.Field = "Object.PathToDownloadFile";
-		UserMessage.Text = "Not задан путь к файлу выгрузки";
+		UserMessage.Text = Nstr("ru = 'Не задан путь к файлу выгрузки';en = 'The path to the upload file is not set'");
 		UserMessage.Message();
 		Return;
 	EndIf;
 			
-	Ответ = Undefined; 	
-	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnServerEnd", ThisForm), "Unload таблицу в файл на сервере?", QuestionDialogMode.YesNo, , DialogReturnCode.None, "Выгрузка");
+	//Ответ = Undefined; 	
+	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnServerEnd", ThisForm)
+		, Nstr("ru = 'Выгрузить таблицу в файл на сервере?';en = 'Download table to file on server?'")
+		, QuestionDialogMode.YesNo
+		, 
+		, DialogReturnCode.None
+		, Nstr("ru = 'Выгрузка';en = 'Unloading'"));
 	
 EndProcedure
 
@@ -2415,7 +2435,7 @@ Procedure PathToDownloadFileStartChoice(Item, ChoiceData, StandardProcessing)
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
 		UserMessage.Field = "Object.UploadFileFormat";
-		UserMessage.Text = "Not задан формат файла выгрузки";
+		UserMessage.Text = Nstr("ru = 'Не задан формат файла выгрузки';en = 'Upload file format not set'");
 		UserMessage.Message();
 		Return;
 	EndIf;
@@ -2425,14 +2445,14 @@ Procedure PathToDownloadFileStartChoice(Item, ChoiceData, StandardProcessing)
 	SelectionDialog.FullFileName = Object.Title;
 	Filter = "File " + Object.UploadFileFormat + " (*." + Object.UploadFileFormat + ")|*." + Object.UploadFileFormat + "";
 	SelectionDialog.Filter = Filter;
-	SelectionDialog.Title = "Укажите файл для сохранения результата сравнения";   
+	SelectionDialog.Title = Nstr("ru = 'Укажите файл для сохранения результата сравнения';en = 'Specify a file to save the comparison result'");   
 
-	SelectionDialog.Show(New NotifyDescription("ПутьКФайлуВыгрузкиНачалоВыбораЗавершение", ThisForm, New Structure("SelectionDialog", SelectionDialog)));
+	SelectionDialog.Show(New NotifyDescription("PathToDownloadFileStartChoiceEnd", ThisForm, New Structure("SelectionDialog", SelectionDialog)));
 	
 EndProcedure
 
 &AtClient
-Procedure ПутьКФайлуВыгрузкиНачалоВыбораЗавершение(SelectedFiles, AdditionalParameters) Export
+Procedure PathToDownloadFileStartChoiceEnd(SelectedFiles, AdditionalParameters) Export
 	
 	SelectionDialog = AdditionalParameters.SelectionDialog;	
 	
@@ -2450,17 +2470,22 @@ Procedure CommandUploadResultToFileOnClient(Command)
 	If IsBlankString(Object.UploadFileFormat) Then
 		UserMessage = New UserMessage;
 		UserMessage.Field = "Object.UploadFileFormat";
-		UserMessage.Text = "Not задан формат файла выгрузки";
+		UserMessage.Text = Nstr("ru = 'Не задан формат файла выгрузки';en = 'Upload file format not set'");
 		UserMessage.Message();
 		Return;
 	EndIf;
 	
-	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnClientEndQuestion", ThisForm), "Unload таблицу в файл на клиенте?", QuestionDialogMode.YesNo,, DialogReturnCode.None, "Выгрузка");
+	ShowQueryBox(New NotifyDescription("CommandUploadResultToFileOnClientEndQuestion", ThisForm)
+		, Nstr("ru = 'Выгрузить таблицу в файл на клиенте?';en = 'Download table to file on client?'")
+		, QuestionDialogMode.YesNo
+		,
+		, DialogReturnCode.None
+		, Nstr("ru = 'Выгрузка';en = 'Unloading'"));
 	
 EndProcedure
 
 &AtClient
-Procedure ТипПериодаПриИзменении(Item)
+Procedure PeriodTypeOnChange(Item)
 	
 	RefreshDataPeriod();
 	UpdateVisibilityAccessibilityFormItems();
@@ -2521,7 +2546,7 @@ EndProcedure
 &AtClient
 Procedure OrderSortTableDifferencesStartChoice(Item, ChoiceData, StandardProcessing)
 	
-	ReturnValue = Undefined;
+	//ReturnValue = Undefined;
 	
 	OpenForm(StrReplace(FormName, "Form", "SortingSettingsForm")
 		, New Structure("OrderSortTableDifferences", Object.OrderSortTableDifferences)
@@ -2530,7 +2555,7 @@ Procedure OrderSortTableDifferencesStartChoice(Item, ChoiceData, StandardProcess
 		,
 		,
 		, New NotifyDescription("OrderSortTableDifferencesStartChoiceEnd", ThisForm)
-		, РежимОткрытияОкнаФормы.БлокироватьВесьИнтерфейс);
+		, FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -2549,8 +2574,6 @@ EndProcedure
 Procedure Attachable_ExecuteToolsCommonCommand(Command) 
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
-
-
 
 #EndRegion
 

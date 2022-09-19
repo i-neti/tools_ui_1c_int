@@ -4174,4 +4174,44 @@
       <value>Предварительный просмотр</value>
     </synonym>
   </templates>
+  <templates uuid="ae56b8af-a2b9-4f2e-9e86-7c732afad6be">
+    <name>PictureActiveOperationA1</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation a1</value>
+    </synonym>
+    <templateType>BinaryData</templateType>
+  </templates>
+  <templates uuid="e6df0638-0438-4b2c-adb1-7dd56c5c375f">
+    <name>PictureActiveOperationA2</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation a2</value>
+    </synonym>
+    <templateType>BinaryData</templateType>
+  </templates>
+  <templates uuid="fa72ce08-dad0-4a96-b357-ef0118fb72e7">
+    <name>PictureActiveOperationA3</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation a3</value>
+    </synonym>
+    <templateType>BinaryData</templateType>
+  </templates>
+  <templates uuid="8c1471d6-39ca-41cd-84a5-0b7cb0ab2473">
+    <name>PictureActiveOperationA4</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation a4</value>
+    </synonym>
+    <templateType>BinaryData</templateType>
+  </templates>
+  <templates uuid="01104c7f-43db-4dae-a988-76fcedcd3cfb">
+    <name>PictureActiveOperationA5</name>
+    <synonym>
+      <key>en</key>
+      <value>Picture active operation a5</value>
+    </synonym>
+    <templateType>BinaryData</templateType>
+  </templates>
 </mdclass:DataProcessor>
