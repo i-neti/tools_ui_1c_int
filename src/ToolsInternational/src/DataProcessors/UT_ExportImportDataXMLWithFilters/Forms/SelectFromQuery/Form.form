@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:Table">
-    <name>ПараметрыЗапроса</name>
+    <name>QueryParameters</name>
     <id>3</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -9,11 +9,11 @@
       <common>true</common>
     </userVisible>
     <dataPath xsi:type="form:DataPath">
-      <segments>ПараметрыЗапроса</segments>
+      <segments>QueryParameters</segments>
     </dataPath>
     <titleLocation>None</titleLocation>
     <items xsi:type="form:FormField">
-      <name>ПараметрыЗапросаИмяПараметра</name>
+      <name>QueryParametersParameterName</name>
       <id>18</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -22,11 +22,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ПараметрыЗапроса.ИмяПараметра</segments>
+          <segments>QueryParameters.ParameterName</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>ПараметрыЗапросаИмяПараметраРасширеннаяПодсказка</name>
+        <name>QueryParametersParameterNameExtendedTooltip</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -41,7 +41,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаИмяПараметраКонтекстноеМеню</name>
+        <name>QueryParametersParameterNameContextMenu</name>
         <id>19</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -65,7 +65,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>ПараметрыЗапросаЭтоВыражение</name>
+      <name>QueryParametersIsExpression</name>
       <id>47</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -74,19 +74,23 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ПараметрыЗапроса.ЭтоВыражение</segments>
+          <segments>QueryParameters.IsExpression</segments>
         </paths>
       </dataPath>
+      <toolTip>
+        <key>en</key>
+        <value>Select check boxes for any parameters whose values are to be defined by script expressions.</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Необходимо установить флажок для параметров значения которых будут задаваться выражениями на встроенном языке.</value>
       </toolTip>
       <handlers>
         <event>OnChange</event>
-        <name>ПараметрыЗапросаЭтоВыражениеПриИзменении</name>
+        <name>QueryParametersIsExpressionOnChange</name>
       </handlers>
       <extendedTooltip>
-        <name>ПараметрыЗапросаЭтоВыражениеРасширеннаяПодсказка</name>
+        <name>QueryParametersIsExpressionExtendedTooltip</name>
         <id>49</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -101,7 +105,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаЭтоВыражениеКонтекстноеМеню</name>
+        <name>QueryParametersIsExpressionContextMenu</name>
         <id>48</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -118,7 +122,7 @@
       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
     </items>
     <items xsi:type="form:FormField">
-      <name>ПараметрыЗапросаЗначениеПараметра</name>
+      <name>QueryParametersParameterValue</name>
       <id>24</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -127,11 +131,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ПараметрыЗапроса.ЗначениеПараметра</segments>
+          <segments>QueryParameters.ParameterValue</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>ПараметрыЗапросаЗначениеПараметраРасширеннаяПодсказка</name>
+        <name>QueryParametersParameterValueExtendedTooltip</name>
         <id>26</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -146,7 +150,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаЗначениеПараметраКонтекстноеМеню</name>
+        <name>QueryParametersParameterValueContextMenu</name>
         <id>25</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -169,7 +173,7 @@
       </extInfo>
     </items>
     <autoCommandBar>
-      <name>ПараметрыЗапросаКоманднаяПанель</name>
+      <name>QueryParametersCommandBar</name>
       <id>5</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -184,10 +188,10 @@
       <userVisible>
         <common>true</common>
       </userVisible>
-      <name>ПараметрыЗапросаСтрокаПоиска</name>
+      <name>QueryParametersSearchString</name>
       <id>52</id>
       <extendedTooltip>
-        <name>ПараметрыЗапросаСтрокаПоискаРасширеннаяПодсказка</name>
+        <name>QueryParametersSearchStringExtendedTooltip</name>
         <id>54</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -202,7 +206,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаСтрокаПоискаКонтекстноеМеню</name>
+        <name>QueryParametersSearchStringContextMenu</name>
         <id>53</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -221,10 +225,10 @@
       <userVisible>
         <common>true</common>
       </userVisible>
-      <name>ПараметрыЗапросаСостояниеПросмотра</name>
+      <name>QueryParametersViewStatus</name>
       <id>55</id>
       <extendedTooltip>
-        <name>ПараметрыЗапросаСостояниеПросмотраРасширеннаяПодсказка</name>
+        <name>QueryParametersViewStatusExtendedTooltip</name>
         <id>57</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -239,7 +243,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаСостояниеПросмотраКонтекстноеМеню</name>
+        <name>QueryParametersViewStatusContextMenu</name>
         <id>56</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -260,10 +264,10 @@
       <userVisible>
         <common>true</common>
       </userVisible>
-      <name>ПараметрыЗапросаУправлениеПоиском</name>
+      <name>QueryParametersSearchControl</name>
       <id>58</id>
       <extendedTooltip>
-        <name>ПараметрыЗапросаУправлениеПоискомРасширеннаяПодсказка</name>
+        <name>QueryParametersSearchControlExtendedTooltip</name>
         <id>60</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -278,7 +282,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ПараметрыЗапросаУправлениеПоискомКонтекстноеМеню</name>
+        <name>QueryParametersSearchControlContextMenu</name>
         <id>59</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -293,7 +297,7 @@
       </extInfo>
     </searchControlAddition>
     <extendedTooltip>
-      <name>ПараметрыЗапросаРасширеннаяПодсказка</name>
+      <name>QueryParametersExtendedTooltip</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -308,7 +312,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ПараметрыЗапросаКонтекстноеМеню</name>
+      <name>QueryParametersContextMenu</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -345,8 +349,12 @@
     <rowFilter xsi:type="core:UndefinedValue"/>
   </items>
   <items xsi:type="form:FormField">
-    <name>ТекстЗапроса</name>
+    <name>QueryText</name>
     <id>7</id>
+    <title>
+      <key>en</key>
+      <value>Query text</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Текст запроса</value>
@@ -358,11 +366,11 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ДокументТекстЗапроса</segments>
+        <segments>DocumentQueryText</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>ТекстЗапросаРасширеннаяПодсказка</name>
+      <name>QueryTextExtendedTooltip</name>
       <id>9</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -377,7 +385,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ТекстЗапросаКонтекстноеМеню</name>
+      <name>QueryTextContextMenu</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -401,14 +409,18 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаРезультатаЗапроса</name>
+    <name>QueryResultGroup</name>
     <id>38</id>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаЗапросНеВыполнен</name>
+      <name>QueryNotExecutedGroup</name>
       <id>40</id>
       <items xsi:type="form:Decoration">
-        <name>ДекорацияЗапросНеВыполнен</name>
+        <name>QueryNotExecutedDecoration</name>
         <id>44</id>
+        <title>
+          <key>en</key>
+          <value>Query is not executed</value>
+        </title>
         <title>
           <key>ru</key>
           <value>Запрос не выполнен</value>
@@ -419,7 +431,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ДекорацияЗапросНеВыполненРасширеннаяПодсказка</name>
+          <name>QueryNotExecutedDecorationExtendedTooltip</name>
           <id>46</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -434,7 +446,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ДекорацияЗапросНеВыполненКонтекстноеМеню</name>
+          <name>QueryNotExecutedDecorationContextMenu</name>
           <id>45</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -459,7 +471,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ГруппаЗапросНеВыполненРасширеннаяПодсказка</name>
+        <name>QueryNotExecutedGroupExtendedTooltip</name>
         <id>41</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -480,23 +492,23 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаРезультатЗапроса</name>
+      <name>QueryResultGroup1</name>
       <id>42</id>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
         <common>true</common>
       </userVisible>
-      <title>
-        <key>ru</key>
-        <value>Группа результат запроса</value>
-      </title>
+      <toolTip>
+        <key>en</key>
+        <value>Query result group</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Группа результат запроса</value>
       </toolTip>
       <extendedTooltip>
-        <name>ГруппаРезультатЗапросаРасширеннаяПодсказка</name>
+        <name>QueryResultGroup1ExtendedTooltip</name>
         <id>43</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -526,7 +538,7 @@
     <horizontalStretch>true</horizontalStretch>
     <verticalStretch>true</verticalStretch>
     <extendedTooltip>
-      <name>ГруппаРезультатаЗапросаРасширеннаяПодсказка</name>
+      <name>QueryResultGroupExtendedTooltip</name>
       <id>39</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -549,8 +561,12 @@
     <name>ФормаКоманднаяПанель</name>
     <id>-1</id>
     <items xsi:type="form:Button">
-      <name>ФормаДобавитьВРезультатВыгрузки</name>
+      <name>FormAddToExportResult</name>
       <id>50</id>
+      <title>
+        <key>en</key>
+        <value>Select result</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Выбрать результат</value>
@@ -561,7 +577,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаДобавитьВРезультатВыгрузкиРасширеннаяПодсказка</name>
+        <name>FormAddToExportResultExtendedTooltip</name>
         <id>51</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -575,7 +591,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ДобавитьВРезультатВыгрузки</commandName>
+      <commandName>Form.Command.AddToExportResult</commandName>
       <representation>Auto</representation>
       <defaultButton>true</defaultButton>
       <autoMaxWidth>true</autoMaxWidth>
@@ -584,8 +600,12 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>ФормаВыполнить</name>
+      <name>FormExecute</name>
       <id>14</id>
+      <title>
+        <key>en</key>
+        <value>Execute</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Выполнить</value>
@@ -596,7 +616,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаВыполнитьРасширеннаяПодсказка</name>
+        <name>FormExecuteExtendedTooltip</name>
         <id>15</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -610,7 +630,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ВыполнитьЗапрос</commandName>
+      <commandName>Form.Command.ExecuteQuery</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -618,7 +638,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>ФормаЗаполнитьПараметры</name>
+      <name>FormFillParameters</name>
       <id>16</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -626,7 +646,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ФормаЗаполнитьПараметрыРасширеннаяПодсказка</name>
+        <name>FormFillParametersExtendedTooltip</name>
         <id>17</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -640,7 +660,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ЗаполнитьПараметры</commandName>
+      <commandName>Form.Command.FillParameters</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -664,7 +684,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ExportImportDataXMLWithFilters</types>
@@ -678,7 +698,11 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ДокументТекстЗапроса</name>
+    <name>DocumentQueryText</name>
+    <title>
+      <key>en</key>
+      <value>Document query text</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Документ текст запроса</value>
@@ -695,7 +719,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПараметрыЗапроса</name>
+    <name>QueryParameters</name>
+    <title>
+      <key>en</key>
+      <value>Query parameters</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Параметры запроса</value>
@@ -711,7 +739,11 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ИмяПараметра</name>
+      <name>ParameterName</name>
+      <title>
+        <key>en</key>
+        <value>Parameter name</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Имя параметра</value>
@@ -729,7 +761,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ЗначениеПараметра</name>
+      <name>ParameterValue</name>
+      <title>
+        <key>en</key>
+        <value>Parameter value</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Значение параметра</value>
@@ -744,7 +780,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ЭтоВыражение</name>
+      <name>IsExpression</name>
+      <title>
+        <key>en</key>
+        <value>In</value>
+      </title>
       <title>
         <key>ru</key>
         <value>В</value>
@@ -761,7 +801,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ТипПараметра</name>
+      <name>ParameterType</name>
+      <title>
+        <key>en</key>
+        <value>Parameter type</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Тип параметра</value>
@@ -779,12 +823,20 @@
     </columns>
   </attributes>
   <formCommands>
-    <name>ВыполнитьЗапрос</name>
+    <name>ExecuteQuery</name>
+    <title>
+      <key>en</key>
+      <value>Execute query</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Выполнить запрос</value>
     </title>
     <id>2</id>
+    <toolTip>
+      <key>en</key>
+      <value>Execute query</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Выполнить запрос</value>
@@ -797,19 +849,27 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ВыполнитьЗапрос</name>
+        <name>ExecuteQuery</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ЗаполнитьПараметры</name>
+    <name>FillParameters</name>
+    <title>
+      <key>en</key>
+      <value>Fill parameters</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Заполнить параметры</value>
     </title>
     <id>1</id>
+    <toolTip>
+      <key>en</key>
+      <value>Fill parameters</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Заполнить параметры</value>
@@ -822,19 +882,27 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ЗаполнитьПараметры</name>
+        <name>FillParameters</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ДобавитьВРезультатВыгрузки</name>
+    <name>AddToExportResult</name>
+    <title>
+      <key>en</key>
+      <value>Add to export result</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Добавить в результат выгрузки</value>
     </title>
     <id>3</id>
+    <toolTip>
+      <key>en</key>
+      <value>Add to export result</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Добавить в результат выгрузки</value>
@@ -847,7 +915,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ДобавитьВРезультатВыгрузки</name>
+        <name>AddToExportResult</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
