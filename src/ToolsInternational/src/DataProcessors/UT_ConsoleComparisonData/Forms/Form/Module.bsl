@@ -2120,14 +2120,6 @@ Procedure CommandVisibilityColumnTP(Command)
 EndProcedure
 
 &AtClient
-Procedure ТипПараметраПериодПриИзменении(Item)
-	
-	RefreshDataPeriod();
-	UpdateVisibilityAccessibilityFormItems();
-	
-EndProcedure
-
-&AtClient
 Procedure RelativePeriodValueOnChange(Item)
 	
 	RefreshDataPeriod();
