@@ -1346,14 +1346,14 @@ EndFunction
 Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined, ExternalDataSets=Undefined) Export
 	
 	ImmediatelyOpenConsole = False;
-#If ThickClientOrdinaryApplication Или ThickClientManagedApplication Then
+#If ThickClientOrdinaryApplication or ThickClientManagedApplication Then
 	ImmediatelyOpenConsole = True;
 #EndIf
 
 	AllRefsType = UT_CommonCached.AllRefsTypeDescription();
 	SerializeObject = SerializeObjectForDebugToStructure(ObjectForDebugging, DcsSettingsOrHTTPConnection, ExternalDataSets);
 	If AllRefsType.ContainsType(TypeOf(ObjectForDebugging)) Then
-		DebugObjectType = "DataBaseOobject";
+		DebugObjectType = "DataBaseObject";
 	ElsIf TypeOf(ObjectForDebugging) = Type("HTTPRequest") Then
 		DebugObjectType = "HTTPRequest";
 	ElsIf TypeOf(ObjectForDebugging) = Type("Query") Then
@@ -1776,7 +1776,7 @@ Function PortableDistributionType() Export
 EndFunction
 
 Function Version() Export
-	Return "2.4.12";	
+	Return "2.4.13";	
 EndFunction
 
 Function IsPortableDistribution() Export

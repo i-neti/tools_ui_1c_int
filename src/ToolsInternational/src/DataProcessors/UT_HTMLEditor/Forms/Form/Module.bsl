@@ -1,8 +1,13 @@
+#Region VariablesDescription
 &AtClient
 Var FormCloseConfirmed;
 
 &AtClient
 Var SavedEditorsValues;
+
+&AtClient
+Var UT_CodeEditorClientData Export;
+#EndRegion
 
 #Region FormEvents
 
@@ -595,7 +600,10 @@ EndProcedure
 Procedure Attachable_CodeEditorInitializingCompletion() Export
 	
 EndProcedure
-
+&AtClient
+Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
+	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
+EndProcedure
 
 &AtClient
 Procedure OnOpenComplete(Result, AdditionalParams) Export

@@ -120,6 +120,7 @@
   <editType>InDialog</editType>
   <choiceMode>BothWays</choiceMode>
   <defaultObjectForm>Catalog.UT_Algorithms.Form.ItemForm</defaultObjectForm>
+  <defaultListForm>Catalog.UT_Algorithms.Form.ListForm</defaultListForm>
   <attributes uuid="e4ace370-6f4c-11e9-1495-002522f8f390">
     <name>AtClient</name>
     <synonym>
@@ -464,24 +465,13 @@
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
-  <commands uuid="bfe3f57a-904a-48da-b4dc-8c5271289365">
-    <name>ExecuteAlgorithm</name>
+  <forms uuid="2f3f6e24-624a-4534-a7a5-c9b2b72fab59">
+    <name>ListForm</name>
     <synonym>
       <key>en</key>
-      <value>Execute algorithm</value>
+      <value>List form</value>
     </synonym>
-    <synonym>
-      <key>ru</key>
-      <value>Execute algorithm</value>
-    </synonym>
-    <group>FormCommandBarImportant</group>
-    <commandParameterType>
-      <types>CatalogRef.UT_Algorithms</types>
-    </commandParameterType>
-    <parameterUseMode>Multiple</parameterUseMode>
-    <representation>PictureAndText</representation>
-    <picture xsi:type="core:PictureRef">
-      <picture>StdPicture.GenerateReport</picture>
-    </picture>
-  </commands>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
 </mdclass:Catalog>

@@ -15,7 +15,7 @@ Function ItemAttributeNewDescription() Export
 	AttributeStructure.Insert("MultiLine", Undefined);
 	AttributeStructure.Insert("ExtendedEdit", Undefined);
 	AttributeStructure.Insert("HorizontalStretch", Undefined);
-	AttributeStructure.Insert("VerticalStretch", Неопределено);
+	AttributeStructure.Insert("VerticalStretch", Undefined);
 
 	AttributeStructure.Insert("Properties", AttributePropertiesNew());
 

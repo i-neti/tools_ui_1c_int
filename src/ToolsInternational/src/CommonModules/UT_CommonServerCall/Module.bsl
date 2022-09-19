@@ -487,7 +487,7 @@ EndFunction
 Function DebuggingObjectDataStructureFromSystemSettingsStorage(SettingsKey,User=Undefined, FormID=Undefined) Export
 	
 	DebuggingDataObjectKey=UT_CommonClientServer.DebuggingDataObjectDataKeyInSettingsStorage();
-	DebugSettings=UT_Common.SystemSettingsStorageLoad(DebuggingDataObjectKey, SettingsKey);
+	DebugSettings=UT_Common.SystemSettingsStorageLoad(DebuggingDataObjectKey, SettingsKey,  ,  , User);
 
 	If DebugSettings = Undefined Then
 		Return Undefined;

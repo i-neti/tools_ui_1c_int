@@ -3,6 +3,9 @@
 &AtClient
 Var mLastUUID;
 
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 #EndRegion
 
 #Region EventHandlers
@@ -105,7 +108,7 @@ EndProcedure
 //@skip-warning
 &AtClient 
 Procedure Attachable_CodeEditorInitializingCompletion() Export
-	UT_CodeEditorClient.SetEditorText(ThisObject, "Editor", BeforeWriteProcedure);
+	UT_CodeEditorClient.SetEditorText(ThisObject, "Editor", BeforeWriteProcedure,True);
 	
 	AddedContext = New Structure;
 	If ObjectType <> New TypeDescription Then
@@ -116,4 +119,8 @@ Procedure Attachable_CodeEditorInitializingCompletion() Export
 	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Editor", AddedContext);
 EndProcedure
 
+&AtClient
+Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
+	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
+EndProcedure
 #EndRegion

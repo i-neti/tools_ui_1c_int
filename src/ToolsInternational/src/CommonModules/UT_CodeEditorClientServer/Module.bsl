@@ -79,6 +79,10 @@ Function ExecuteAlgorithm(__AlgorithmText__, __Context__) Export
 	Return ExecutionResult;
 EndFunction
 
+Function FormCodeEditorType(Form) Export
+	Return Form[UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor()];
+EndFunction
+
 #EndRegion
 
 #Region Internal
@@ -119,6 +123,7 @@ Function  MonacoEditorParametersByDefault() Export
 	EditorSettings.Insert("ScriptVariant", MonacoEditorSyntaxLanguageByDefault());
 	EditorSettings.Insert("UseScriptMap", False);
 	EditorSettings.Insert("HideLineNumbers", False);
+	EditorSettings.Insert("DisplaySpacesAndTabs", False);
 	EditorSettings.Insert("SourceFilesDirectories", New Array);
 	
 	Return EditorSettings;
