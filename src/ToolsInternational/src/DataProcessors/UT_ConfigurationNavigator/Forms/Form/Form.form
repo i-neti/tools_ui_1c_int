@@ -1107,7 +1107,7 @@
                 <name>ObjectsTreeRun1C</name>
                 <id>85</id>
                 <items xsi:type="form:Button">
-                  <name>kRunConfigurator</name>
+                  <name>kRunDesigner</name>
                   <id>87</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1115,7 +1115,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>kRunConfiguratorExtendedTooltip</name>
+                    <name>kRunDesignerExtendedTooltip</name>
                     <id>88</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -1129,7 +1129,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Command.kRunConfigurator</commandName>
+                  <commandName>Form.Command.kRunDesigner</commandName>
                   <representation>Auto</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -1138,7 +1138,7 @@
                   <representationInContextMenu>Auto</representationInContextMenu>
                 </items>
                 <items xsi:type="form:Button">
-                  <name>кЗапускТолстыйКлиент</name>
+                  <name>kRunOrdinaryClient</name>
                   <id>89</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -1146,7 +1146,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>кЗапускТолстыйКлиентРасширеннаяПодсказка</name>
+                    <name>kRunOrdinaryClientExtendedTooltip</name>
                     <id>90</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -5305,7 +5305,7 @@
             <name>_DBUserListGroupRunUnderUser</name>
             <id>797</id>
             <items xsi:type="form:Button">
-              <name>_DBUserListGroupRunUnderUser_RunConfiguratorUnderUser</name>
+              <name>_DBUserListGroupRunUnderUser_RunDesignerUnderUser</name>
               <id>804</id>
               <title>
                 <key>ru</key>
@@ -5317,7 +5317,7 @@
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>_DBUserListGroupRunUnderUser_RunConfiguratorUnderUserExtendedTooltip</name>
+                <name>_DBUserListGroupRunUnderUser_RunDesignerUnderUserExtendedTooltip</name>
                 <id>805</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
@@ -5331,7 +5331,7 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command.RunConfiguratorUnderUser</commandName>
+              <commandName>Form.Command.RunDesignerUnderUser</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -10858,7 +10858,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>_ПоказыватьСтандартныеНастройкиПриИзменении</name>
+            <name>_ShowStandartSettingsOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_ShowStandardSettingsExtendedTooltip</name>
@@ -10906,7 +10906,7 @@
           <titleLocation>Right</titleLocation>
           <handlers>
             <event>OnChange</event>
-            <name>_ПоказыватьТаблицыИИндексыБДПриИзменении</name>
+            <name>_ShowTablesAndIndexesDBOnChange</name>
           </handlers>
           <extendedTooltip>
             <name>_ShowTablesAndIndexesDBExtendedTooltip</name>
@@ -14275,10 +14275,10 @@
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>kRunConfigurator</name>
+    <name>kRunDesigner</name>
     <title>
       <key>en</key>
-      <value>Configurator 1C</value>
+      <value>Designer 1C</value>
     </title>
     <title>
       <key>ru</key>
@@ -14294,7 +14294,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>kRunConfigurator</name>
+        <name>kRunDesigner</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -15139,14 +15139,14 @@
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>RunConfiguratorUnderUser</name>
+    <name>RunDesignerUnderUser</name>
     <title>
       <key>ru</key>
       <value>Запуск под пользователем конфигуратор</value>
     </title>
     <title>
       <key>en</key>
-      <value>Run configurator under user</value>
+      <value>Run designer under user</value>
     </title>
     <id>39</id>
     <use>
@@ -15154,7 +15154,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>RunConfiguratorUnderUser</name>
+        <name>RunDesignerUnderUser</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>

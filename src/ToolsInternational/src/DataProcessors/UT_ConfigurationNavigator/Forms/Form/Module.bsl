@@ -137,7 +137,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	pIsAdministratorRights = vIsAdministratorRights();
 	WaitingTimeBeforePasswordRecovery=20;
 	
-	//Items.SettingsPage.Visible = ложь;
+	//Items.SettingsPage.Visible = False;
 	Items.StorageStructurePage.Visible = False;
 	Items.ObjectRightPages.Visible = False;
 	Items._DisplayObjectsRights.Enabled = pIsAdministratorRights;
@@ -235,7 +235,7 @@ Procedure OnOpen(Cancel)
 	TreeLine.NType = 1;
 	
 	
-	// избранное
+	// Favorites
 	TreeLine = TreeLines.Add();
 	TreeLine.Name = "Favorites...";
 	TreeLine.NodeType = "Favorites";
@@ -279,14 +279,14 @@ Procedure OnOpen(Cancel)
 	TreeLines = SettingsTree.GetItems();
 	TreeLines.Clear();
 
-	ГруппаДЗ = TreeLines.Add();
-	ГруппаДЗ.Presentation = "ru = 'Стандартные хранилища настроек';en = 'Standart settings storages'";
+	ValueTreeGroup = TreeLines.Add();
+	ValueTreeGroup.Presentation = "ru = 'Стандартные хранилища настроек';en = 'Standart settings storages'";
 
 	SectionStructure = New Structure("ReportsVariantsStorage, FormDataSettingsStorage, CommonSettingsStorage
 								   |, DynamicListsUserSettingsStorage, ReportsUserSettingsStorage, SystemSettingsStorage");
 
 	For Each Item In SectionStructure Do
-		TreeLine = ГруппаДЗ.GetItems().Add();
+		TreeLine = ValueTreeGroup.GetItems().Add();
 		TreeLine.Name = Item.Key;
 		TreeLine.Presentation = Item.Key;
 		TreeLine.NodeType = "Х";
@@ -378,9 +378,9 @@ Function vDeleteUser(ID)
 	pResult = New Structure("Cancel, ReasonForRefusal", False, "");
 
 	Try
-		пUUID = New UUID(ID);
+		userUUID = New UUID(ID);
 
-		vUser = InfoBaseUsers.FindByUUID(пUUID);
+		vUser = InfoBaseUsers.FindByUUID(userUUID);
 		If vUser = Undefined Then
 			pResult.Cancel = True;
 			pResult.ReasonForRefusal = Nstr("ru = 'Указанный пользователь не найден!';en = 'The specified user was not found!'");
@@ -389,7 +389,7 @@ Function vDeleteUser(ID)
 
 		pCurrentUser = InfoBaseUsers.CurrentUser();
 
-		If pCurrentUser.UUID = пUUID Then
+		If pCurrentUser.UUID = userUUID Then
 			pResult.Cancel = True;
 			pResult.ReasonForRefusal = Nstr("ru = 'Нельзя удалить текущего пользоватля!';en = 'You cannot delete the current user!'");
 			Return pResult;
@@ -478,7 +478,7 @@ Procedure kOpenListForm(Command)
 					Return;
 				EndIf;
 
-				If ObjectTypeMD = "Processing" Then
+				If ObjectTypeMD = "DataProcessor" Then
 					FormNameMD = ".Form";
 				ElsIf ObjectTypeMD = "Report" Then
 					FormNameMD = ".Form";
@@ -516,7 +516,7 @@ Procedure kCollapseTreeSection(Command)
 EndProcedure
 
 &AtClient
-Procedure kRunConfigurator(Command)
+Procedure kRunDesigner(Command)
 	vLaunch1C(1);
 EndProcedure
 
@@ -599,9 +599,9 @@ Procedure ObjectsTreeBeforeExpand(Item, String, Cancel)
 					If Item.ThereAreChildren Then
 						TreeLine.GetItems().Add();
 					EndIf;
-				ElsIf StrFind(TreeLine.FullName, "WebServise.") = 1 Then
+				ElsIf StrFind(TreeLine.FullName, "WebService.") = 1 Then
 					TreeLine.GetItems().Add();
-				ElsIf StrFind(TreeLine.FullName, "HTTPServise.") = 1 Then
+				ElsIf StrFind(TreeLine.FullName, "HTTPService.") = 1 Then
 					TreeLine.GetItems().Add();
 				EndIf;
 			EndDo;
@@ -647,13 +647,13 @@ Procedure ObjectsTreeBeforeExpand(Item, String, Cancel)
 						TreeLine.GetItems().Add();
 					EndIf;
 				EndDo;
-			ElsIf ObjectTypeMD = "WebServise" Then
+			ElsIf ObjectTypeMD = "WebService" Then
 				ObjectsArray = vGetWebServiceOperations(TreeNode.FullName);
 				For Each Item In ObjectsArray Do
 					TreeLine = TreeLines.Add();
 					FillPropertyValues(TreeLine, Item);
 				EndDo;
-			ElsIf ObjectTypeMD = "HTTPServise" Then
+			ElsIf ObjectTypeMD = "HTTPService" Then
 				ObjectsArray = vGetHTTPServiceMethods(TreeNode.FullName);
 				For Each Item In ObjectsArray Do
 					TreeLine = TreeLines.Add();
@@ -669,8 +669,8 @@ Procedure ObjectsTreeBeforeExpand(Item, String, Cancel)
 EndProcedure
 
 &AtClient
-Procedure vLaunch1C(ТипЗапуска)
-	UT_CommonClient.Run1CSession(ТипЗапуска, UserName());
+Procedure vLaunch1C(LaunchType)
+	UT_CommonClient.Run1CSession(LaunchType, UserName());
 EndProcedure
 
 &AtClient
@@ -683,7 +683,7 @@ Procedure vRunOSCommand(pCommand)
 EndProcedure
 
 &AtClient
-Procedure vAfterRunningApplication(КодВозврата, AdditionalParameters = Undefined) Export
+Procedure vAfterRunningApplication(ReturnCode, AdditionalParameters = Undefined) Export
 	// the procedure for compatibility of different versions of the platform
 EndProcedure
 &AtClientAtServerNoContext
@@ -768,7 +768,7 @@ Function vGetCompositionSectionMD(Val NameOfSection)
 
 		For Each Item In SectionStructure Do
 			For Each ObjectXXX In Metadata[Item.Key] Do
-				ИмяТипаХХХ = ObjectXXX.FullName();
+				TypeNameXXX = ObjectXXX.FullName();
 
 				If vCheckProperty(ObjectXXX, "Commands") Then
 					For Each Item In ObjectXXX.Commands Do
@@ -966,7 +966,7 @@ Procedure ObjectTreeSelection(Item, SelectedRow, Field, StandardProcessing)
 				Return;
 			EndIf;
 
-			SpecialList = "Processing, Report";
+			SpecialList = "DataProcessor, Report";
 			_Structure = New Structure(SpecialList);
 
 			ObjectTypeMD = Left(CurrentData.FullName, StrFind(CurrentData.FullName, ".") - 1);
@@ -1145,7 +1145,7 @@ Procedure vFillServiceTree()
 			PropertyStructure.AvailabilityExpression = TrimAll(Template.Area(LineNumber, 4).Text);
 			PropertyStructure.Comment = TrimAll(Template.Area(LineNumber, 5).Text);
 
-			If PropertyStructure.NodeType = "Г" Then
+			If PropertyStructure.NodeType = "G" Then
 				TreeNode = TreeRoot.GetItems().Add();
 				FillPropertyValues(TreeNode, PropertyStructure);
 				TreeNode.IsGroup = True;
@@ -1157,7 +1157,7 @@ Procedure vFillServiceTree()
 					TreeLine.Enabled = Eval(PropertyStructure.AvailabilityExpression);
 				EndIf;
 				If Not TreeLine.Enabled Then
-					TreeLine.Presentation = TreeLine.Presentation + " (не доступно)";
+					TreeLine.Presentation = TreeLine.Presentation +Nstr("ru = '(не доступно)';en = 'not available'") ;
 				EndIf;
 
 				If TreeLine.Name = "ExclusiveMode" Then
@@ -1210,7 +1210,7 @@ Procedure vProcessServiceCommand(TreeLine)
 				FormWindowOpeningMode.LockOwnerWindow);
 #EndIf
 	ElsIf
-	TreeLine.Name = "1CConfigurator" Then
+	TreeLine.Name = "1CDesigner" Then
 		vLaunch1C(1);
 	ElsIf TreeLine.Name = "OrdinaryСlient" Then
 		vLaunch1C(2);
@@ -1293,11 +1293,11 @@ Procedure ProcessingActivationOfNavigatorLine()
 			TypeMD = Left(CurrentData.FullName, StrFind(CurrentData.FullName, ".") - 1);
 		EndIf;
 
-		If TypeMD = "WebServise" And StrFind(CurrentData.FullName, ".Operation.") <> 0 Then
-			TypeMD = "WebServise.Property";
-		ElsIf TypeMD = "HTTPServise" And StrFind(CurrentData.FullName, ".URLTemplates.") <> 0 And StrFind(
+		If TypeMD = "WebService" And StrFind(CurrentData.FullName, ".Operation.") <> 0 Then
+			TypeMD = "WebService.Property";
+		ElsIf TypeMD = "HTTPService" And StrFind(CurrentData.FullName, ".URLTemplates.") <> 0 And StrFind(
 			CurrentData.FullName, ".Method.") <> 0 Then
-			TypeMD = "HTTPServise.Property";
+			TypeMD = "HTTPService.Property";
 		EndIf;
 
 		For Each Row In VerifiableRightsTable.FindRows(New Structure("MetadataObject", TypeMD)) Do
@@ -1561,10 +1561,10 @@ Procedure UsersWithAccessTableSelection(Item, SelectedRow, Field, StandardProces
 
 	CurrentData = Items.UsersWithAccessTable.CurrentData;
 	If CurrentData <> Undefined Then
-		пИдентификаторПользователя = vGetUserId(CurrentData.Name);
+		pUserID = vGetUserId(CurrentData.Name);
 
-		If Not IsBlankString(пИдентификаторПользователя) Then
-			pStructure = New Structure("WorkMode, DBUserID", 0, пИдентификаторПользователя);
+		If Not IsBlankString(pUserID) Then
+			pStructure = New Structure("WorkMode, DBUserID", 0, pUserID);
 			OpenForm(PathToForms + "UserForm", pStructure, , , , , ,
 				FormWindowOpeningMode.LockOwnerWindow);
 		EndIf;
@@ -1585,15 +1585,15 @@ Procedure vFormDescriptionOfAccessRights()
 	mDescriptionAccessRights.Insert("CommonForm", "View");
 	mDescriptionAccessRights.Insert("CommonCommand", "View");
 	mDescriptionAccessRights.Insert("OtherCommand", "View");
-	mDescriptionAccessRights.Insert("WebServise.Property", "Use");
-	mDescriptionAccessRights.Insert("HTTPServise.Property", "Use");
+	mDescriptionAccessRights.Insert("WebService.Property", "Use");
+	mDescriptionAccessRights.Insert("HTTPService.Property", "Use");
 	mDescriptionAccessRights.Insert("Constant", "Read, Update, View, Edit");
 	mDescriptionAccessRights.Insert("Catalog", ListA);
 	mDescriptionAccessRights.Insert("Document", ListA + ", Posting, UndoPosting");
 	mDescriptionAccessRights.Insert("Sequence", "Read, Update");
 	mDescriptionAccessRights.Insert("DocumentJournal", "Read, View");
 	mDescriptionAccessRights.Insert("Report", "Use, View");
-	mDescriptionAccessRights.Insert("Processing", "Use, View");
+	mDescriptionAccessRights.Insert("DataProcessor", "Use, View");
 	mDescriptionAccessRights.Insert("ChartOfCharacteristicTypes", ListA);
 	mDescriptionAccessRights.Insert("ChartOfCalculationTypes", ListA);
 	mDescriptionAccessRights.Insert("ChartOfAccounts", ListA);
@@ -1714,12 +1714,12 @@ Function vCalculateNumberOfObjects(ObjectsArray)
 EndFunction
 
 &AtClient
-Procedure _ПоказыватьСтандартныеНастройкиПриИзменении(Item)
+Procedure _ShowStandartSettingsOnChange(Item)
 	Items.DefaultSettingsPage.Visible = _ShowStandardSettings;
 EndProcedure
 
 &AtClient
-Procedure _ПоказыватьТаблицыИИндексыБДПриИзменении(Item)
+Procedure _ShowTablesAndIndexesDBOnChange(Item)
 	Items.StorageStructurePage.Visible = _ShowTablesAndIndexesDB;
 EndProcedure
 
@@ -1789,7 +1789,7 @@ EndProcedure
 Procedure _OpenObjectsEditor(Command)
 	ParamsStructure = New Structure;
 	ParamsStructure.Insert("mObjectRef", Undefined);
-	OpenForm("Processing.UT_ObjectsAttributesEditor.Form", ParamsStructure, , CurrentDate());
+	OpenForm("DataProcessor.UT_ObjectsAttributesEditor.Form", ParamsStructure, , CurrentDate());
 EndProcedure
 
 &AtClient
@@ -1856,8 +1856,8 @@ Procedure _FillInSchema(Command)
 
 	vFillInSX();
 
-	Items._IndexesPage.Title = NStr("ru = 'Все индексы БД (';en = 'All indexes DB ('") + _Indexes.Count() + ")";
-	Items.TablePage.Title = NStr("ru = 'Все таблицы БД (';en = 'All tables DB ('") + _Tables.Count() + ")";
+	Items._IndexesPage.Title = NStr("ru = 'Все индексы БД (';en = 'All indexes of DB ('") + _Indexes.Count() + ")";
+	Items.TablePage.Title = NStr("ru = 'Все таблицы БД (';en = 'All tables  of DB ('") + _Tables.Count() + ")";
 EndProcedure
 
 &AtServer
@@ -1907,8 +1907,8 @@ Procedure _MoveToTableFromIndex(Command)
 		Array = _Tables.FindRows(New Structure("TableName", CurrentData.TableName));
 		If Array.Count() <> 0 Then
 			String = Array[0].GetID();
-			ТекСтрока = _Tables.FindByID(String);
-			If ТекСтрока <> Undefined Then
+			CurrentRow = _Tables.FindByID(String);
+			If CurrentRow <> Undefined Then
 				Items._Tables.CurrentRow = String;
 				Items.TableAndIndexesGrpip.CurrentPage = Items.TablePage;
 			EndIf;
@@ -1917,7 +1917,7 @@ Procedure _MoveToTableFromIndex(Command)
 EndProcedure
 
 
-// работа с пользователями ИБ
+// Work with database users
 &AtClient
 Procedure _FillInDBUsersList(Command)
 	_DBUserList.Clear();
@@ -1926,7 +1926,7 @@ Procedure _FillInDBUsersList(Command)
 					 |StandartAuthentication, FullName, OSUser, LaunchMode, UUID,
 					 |ListOfRoles";
 
-	pArray = вПолучитьПользователейИБ(pFieldList, _ShowUserRolesList);
+	pArray = vGetDataBaseUsers(pFieldList, _ShowUserRolesList);
 	For Each Item In pArray Do
 		FillPropertyValues(_DBUserList.Add(), Item);
 	EndDo;
@@ -1941,25 +1941,25 @@ Procedure _FillInDBUsersList(Command)
 EndProcedure
 
 &AtServerNoContext
-Function вПолучитьПользователейИБ(Val pFieldList, Val пЗаполнятьПереченьРолнй = False)
+Function vGetDataBaseUsers(Val pFieldList, Val pFillRolesList = False)
 	pResult = New Array;
 
 	For Each Item In InfoBaseUsers.GetUsers() Do
 		pStructure = New Structure(pFieldList);
 		FillPropertyValues(pStructure, Item);
 
-		If пЗаполнятьПереченьРолнй Then
-			пСписокРолей = New ValueList;
-			For Each пРоль In Item.Roles Do
-				пСписокРолей.Add(пРоль.Name);
+		If pFillRolesList Then
+			pRolesList = New ValueList;
+			For Each pRole In Item.Roles Do
+				pRolesList.Add(pRole.Name);
 			EndDo;
-			пСписокРолей.SortByValue();
+			pRolesList.SortByValue();
 
-			пПереченьРолей = "";
-			For Each пРоль In пСписокРолей Do
-				пПереченьРолей = пПереченьРолей + ", " + пРоль.Value;
+			pRolesString = "";
+			For Each pRole In pRolesList Do
+				pRolesString = pRolesString + ", " + pRole.Value;
 			EndDo;
-			pStructure.ListOfRoles = Mid(пПереченьРолей, 2);
+			pStructure.ListOfRoles = Mid(pRolesString, 2);
 		EndIf;
 
 		pResult.Add(pStructure);
@@ -2003,23 +2003,25 @@ Procedure _DBUserListBeforeDeleteRow(Item, Cancel)
 	Cancel = True;
 
 	pSelectedLines = Item.SelectedRows;
-	пЧисло = pSelectedLines.Count();
+	pCount = pSelectedLines.Count();
 
-	If пЧисло = 0 Then
+	If pCount = 0 Then
 		Return;
-	ElsIf пЧисло = 1 Then
-		pText = StrTemplate("User ""%1"" будет удален из информационной базы!
-						   |Continue?", _DBUserList.FindByID(pSelectedLines[0]).Name);
+	ElsIf pCount = 1 Then
+		pText = StrTemplate (NSTR("ru = 'Отмеченные пользователи (%1 шт) будут удалены из информационной базы! 
+		|Продолжить?'; en = 'Selected users  (%1 pc) will be deleted from database! 
+		|Continue?'"),_DBUserList.FindByID(pSelectedLines[0]).Name)                 			   
 	Else
-		pText = StrTemplate("Отмеченные пользователи (%1 шт) будут удалены из информационной базы!
-						   |Continue?", пЧисло);
+		pText = StrTemplate (NSTR("ru = 'Отмеченные пользователи (%1 шт) будут удалены из информационной базы! 
+		|Продолжить?'; en = 'Selected users  (%1 pc) will be deleted from database! 
+		|Continue?'"),pCount)      				   
 	EndIf;
 
-	vShowQueryBox(pText, "вУдалитьПользователейИБОтвет", pSelectedLines);
+	vShowQueryBox(pText, "vDeleteDataBaseUsersResponse", pSelectedLines);
 EndProcedure
 
 &AtClient
-Procedure вУдалитьПользователейИБОтвет(Response, pSelectedLines) Export
+Procedure vDeleteDataBaseUsersResponse(Response, pSelectedLines) Export
 	If Response = DialogReturnCode.Yes Then
 		pArray = New Array;
 		For Each Row In pSelectedLines Do
@@ -2030,7 +2032,7 @@ Procedure вУдалитьПользователейИБОтвет(Response, pSe
 		EndDo;
 
 		If pArray.Count() <> 0 Then
-			pDeletedArray = вУдалитьПользователейИБ(pArray);
+			pDeletedArray = vDeleteDataBaseUsers(pArray);
 			For Each Item In pDeletedArray Do
 				For Each LineX In _DBUserList.FindRows(New Structure("UUID",
 					Item)) Do
@@ -2042,18 +2044,18 @@ Procedure вУдалитьПользователейИБОтвет(Response, pSe
 EndProcedure
 
 &AtServerNoContext
-Function вУдалитьПользователейИБ(Val пМассивИдентификаторов)
+Function vDeleteDataBaseUsers(Val pIdentifersArray)
 	pResult = New Array;
 
 	pCurrentUser = InfoBaseUsers.CurrentUser();
 
-	For Each Item In пМассивИдентификаторов Do
+	For Each Item In pIdentifersArray Do
 		Try
-			пUUID = New UUID(Item);
+			userUUID = New UUID(Item);
 
-			vUser = InfoBaseUsers.FindByUUID(пUUID);
+			vUser = InfoBaseUsers.FindByUUID(userUUID);
 			If vUser = Undefined Or (pCurrentUser <> Undefined
-				And pCurrentUser.UUID = пUUID) Then
+				And pCurrentUser.UUID = userUUID) Then
 				Continue;
 			EndIf;
 
@@ -2068,7 +2070,7 @@ Function вУдалитьПользователейИБ(Val пМассивИде
 EndFunction
 
 
-// работа с сеансами
+// work with sessions
 &AtClient
 Procedure _SetSessionsLock(Command)
 	OpenForm(PathToForms + "SessionLockForm", , ThisForm, , , , ,
@@ -2456,7 +2458,7 @@ Function vGetExtensionList()
 EndFunction
 
 &AtClient
-Procedure RunConfiguratorUnderUser(Command)
+Procedure RunDesignerUnderUser(Command)
 	CurrentData=Items._DBUserList.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -2504,15 +2506,3 @@ EndProcedure
 Procedure Attachable_ExecuteToolsCommonCommand(Command) 
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
-
-
-
-
-
-
-
-
-
-
-
-
