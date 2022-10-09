@@ -83,10 +83,10 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <templates uuid="900f95f8-81be-4442-affb-5882998bbc1f">
-    <name>ServiceTamplate</name>
+    <name>ServiceTemplate</name>
     <synonym>
       <key>ru</key>
-      <value>Service tamplate</value>
+      <value>Service template</value>
     </synonym>
   </templates>
 </mdclass:DataProcessor>

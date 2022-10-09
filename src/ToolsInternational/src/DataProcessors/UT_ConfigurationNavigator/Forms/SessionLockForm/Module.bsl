@@ -1,28 +1,27 @@
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
-	вПолучитьБлокировкуСеансов();
-КонецПроцедуры
-
-&НаСервере
-Процедура вПолучитьБлокировкуСеансов()
-	БлокировкаСеансов = ПолучитьБлокировкуСеансов();
-	ЗаполнитьЗначенияСвойств(ЭтаФорма, БлокировкаСеансов);
-КонецПроцедуры
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	vGetSessionsLock();
+EndProcedure
+&AtServer
+Procedure vGetSessionsLock()
+	SessionsLock = GetSessionsLock();
+	FillPropertyValues(ThisForm, SessionsLock);
+EndProcedure
 &НаКлиенте
-Процедура кУстановитьБлокировкуСеансов(Команда)
-	вУстановитьБлокировкуСеансовНаСервере();
-КонецПроцедуры
+Procedure kSetSessionsLock(Command)
+	vSetSessionsLockAtServer();
+EndProcedure
 
-&НаСервере
-Процедура вУстановитьБлокировкуСеансовНаСервере()
-	БлокировкаСеансов = Новый БлокировкаСеансов;
-	ЗаполнитьЗначенияСвойств(БлокировкаСеансов, ЭтаФорма);
+&AtServer
+Procedure vSetSessionsLockAtServer()
+	SessionsLock = New SessionsLock;
+	FillPropertyValues(SessionsLock, ThisForm);
 
-	Попытка
-		УстановитьБлокировкуСеансов(БлокировкаСеансов);
-	Исключение
-		Сообщить(ОписаниеОшибки());
-	КонецПопытки;
+	Try
+		SetSessionsLock(SessionsLock);
+	Except
+		Message(ErrorDescription());
+	EndTry;;
 
-	вПолучитьБлокировкуСеансов();
-КонецПроцедуры
+	vGetSessionsLock();
+EndProcedure
