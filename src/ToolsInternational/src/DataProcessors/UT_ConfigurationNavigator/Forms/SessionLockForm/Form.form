@@ -5,10 +5,10 @@
     <value>Блокировка сеансов пользователей</value>
   </title>
   <items xsi:type="form:FormGroup">
-    <name>ПараметрыБлокировки</name>
+    <name>SessionsLockParameters</name>
     <id>15</id>
     <items xsi:type="form:FormField">
-      <name>Установлена</name>
+      <name>Use</name>
       <id>19</id>
       <titleFont xsi:type="core:FontRef">
         <font>Style.NormalTextFont</font>
@@ -24,11 +24,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Установлена</segments>
+          <segments>Use</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>УстановленаРасширеннаяПодсказка</name>
+        <name>UseExtendedTooltip</name>
         <id>21</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -43,7 +43,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>УстановленаКонтекстноеМеню</name>
+        <name>UseContextMenu</name>
         <id>20</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -60,7 +60,7 @@
       <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
     </items>
     <items xsi:type="form:FormField">
-      <name>КодРазрешения</name>
+      <name>KeyCode</name>
       <id>1</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -69,7 +69,7 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>КодРазрешения</segments>
+          <segments>KeyCode</segments>
         </paths>
       </dataPath>
       <toolTip>
@@ -77,7 +77,7 @@
         <value>используется при запуске с ключом /UC</value>
       </toolTip>
       <extendedTooltip>
-        <name>КодРазрешенияРасширеннаяПодсказка</name>
+        <name>KeyCodeExtendedTooltip</name>
         <id>3</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -92,7 +92,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>КодРазрешенияКонтекстноеМеню</name>
+        <name>KeyCodeContextMenu</name>
         <id>2</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -116,7 +116,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>Начало</name>
+      <name>Begin</name>
       <id>4</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -125,11 +125,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Начало</segments>
+          <segments>Begin</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>НачалоРасширеннаяПодсказка</name>
+        <name>BeginExtendedTooltip</name>
         <id>6</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -144,7 +144,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>НачалоКонтекстноеМеню</name>
+        <name>BeginContextMenu</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -173,7 +173,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>Конец</name>
+      <name>End</name>
       <id>7</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -182,11 +182,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Конец</segments>
+          <segments>End</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>КонецРасширеннаяПодсказка</name>
+        <name>EndExtendedTooltip</name>
         <id>9</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -201,7 +201,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>КонецКонтекстноеМеню</name>
+        <name>EndContextMenu</name>
         <id>8</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -230,7 +230,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>Сообщение</name>
+      <name>Message</name>
       <id>10</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -239,11 +239,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Сообщение</segments>
+          <segments>Message</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>СообщениеРасширеннаяПодсказка</name>
+        <name>MessageExtendedTooltip</name>
         <id>12</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -258,7 +258,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СообщениеКонтекстноеМеню</name>
+        <name>MessageContextMenu</name>
         <id>11</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -291,13 +291,17 @@
       <key>ru</key>
       <value>Параметры блокировки</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Sessions lock parameters</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Параметры блокировки</value>
     </toolTip>
     <width>40</width>
     <extendedTooltip>
-      <name>ПараметрыБлокировкиРасширеннаяПодсказка</name>
+      <name>SessionsLockParametersExtendedTooltip</name>
       <id>16</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -323,15 +327,23 @@
     </extInfo>
   </items>
   <items xsi:type="form:Button">
-    <name>кУстановитьБлокировкуСеансов</name>
+    <name>kSetSessionsLock</name>
     <id>13</id>
+    <title>
+      <key>en</key>
+      <value>Set sessions lock</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Установить блокировку сеансов</value>
+    </title>
     <visible>true</visible>
     <enabled>true</enabled>
     <userVisible>
       <common>true</common>
     </userVisible>
     <extendedTooltip>
-      <name>кУстановитьБлокировкуСеансовРасширеннаяПодсказка</name>
+      <name>kSetSessionsLockExtendedTooltip</name>
       <id>14</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -346,7 +358,7 @@
       </extInfo>
     </extendedTooltip>
     <type>UsualButton</type>
-    <commandName>Form.Command.кУстановитьБлокировкуСеансов</commandName>
+    <commandName>Form.Command.kSetSessionsLock</commandName>
     <representation>Auto</representation>
     <autoMaxWidth>true</autoMaxWidth>
     <autoMaxHeight>true</autoMaxHeight>
@@ -365,7 +377,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -376,7 +388,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
+    <title>
+      <key>en</key>
+      <value>Object</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ConfigurationNavigator</types>
@@ -390,7 +406,11 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>КодРазрешения</name>
+    <name>KeyCode</name>
+    <title>
+      <key>en</key>
+      <value>Key сode</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Код разрешения</value>
@@ -408,10 +428,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Начало</name>
+    <name>Begin</name>
     <title>
       <key>ru</key>
       <value>Начало</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Begin</value>
     </title>
     <id>3</id>
     <valueType>
@@ -426,10 +450,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Конец</name>
+    <name>End</name>
     <title>
       <key>ru</key>
       <value>Конец</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>End</value>
     </title>
     <id>4</id>
     <valueType>
@@ -444,10 +472,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Сообщение</name>
+    <name>Message</name>
     <title>
       <key>ru</key>
       <value>Сообщение</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Message</value>
     </title>
     <id>5</id>
     <valueType>
@@ -462,10 +494,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Установлена</name>
+    <name>Use</name>
     <title>
       <key>ru</key>
       <value>Установлена</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Use</value>
     </title>
     <id>6</id>
     <valueType>
@@ -479,10 +515,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>кУстановитьБлокировкуСеансов</name>
+    <name>kSetSessionsLock</name>
     <title>
       <key>ru</key>
       <value>Установить блокировку сеансов</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>K set sessions lock</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -497,7 +537,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>кУстановитьБлокировкуСеансов</name>
+        <name>kSetSessionsLock</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

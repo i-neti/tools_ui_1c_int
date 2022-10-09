@@ -52,7 +52,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Представление</v8:content>
+							<v8:content>Presentation</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -67,7 +67,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>ВидУзла</v8:content>
+							<v8:content>NodeType</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -82,7 +82,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Имя</v8:content>
+							<v8:content>Name</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -97,7 +97,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Выражение для доступности</v8:content>
+							<v8:content>Expression for availability</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -112,7 +112,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Комментарий</v8:content>
+							<v8:content>Comment</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -242,7 +242,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Показать версии подсистем конфигурации (БСП)</v8:content>
+							<v8:content>Show versions of configuration subsystems (SSL)</v8:content>
 						</v8:item>
 					</tl>
 				</c>

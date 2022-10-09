@@ -542,6 +542,10 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Main</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Основное</value>
       </title>
@@ -1008,6 +1012,10 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Roles</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Роли</value>
       </title>
@@ -1041,6 +1049,10 @@
     <userVisible>
       <common>true</common>
     </userVisible>
+    <title>
+      <key>en</key>
+      <value>Pages group</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Группа страницы</value>
