@@ -15,7 +15,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_ДанныеДляОтладки</name>
+		<name>DataProcessor.UT_DebugData</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
@@ -344,7 +344,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.УИ_ДанныеДляОтладки.Command.ДанныеДляОтладки</name>
+		<name>DataProcessor.UT_DebugData.Command.DebugData</name>
 		<right>
 			<name>View</name>
 			<value>true</value>

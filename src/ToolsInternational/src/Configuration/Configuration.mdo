@@ -162,7 +162,7 @@
   <dataProcessors>DataProcessor.UT_Support</dataProcessors>
   <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_ДанныеДляОтладки</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConsoleComparisonData</dataProcessors>
   <dataProcessors>DataProcessor.УИ_КонструкторРегулярныхВыражений</dataProcessors>
