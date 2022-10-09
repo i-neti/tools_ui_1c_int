@@ -4,7 +4,7 @@
     <objectType typeId="e6f6eebc-65c1-47c4-840f-cb7ce9babcc9" valueTypeId="628b7728-b407-414d-a470-54e6fe00c4b9"/>
     <managerType typeId="d712832b-f3ec-4a78-a945-0793c6e8daa9" valueTypeId="6921898f-4c15-4ce5-87f0-e7b6250c0cc3"/>
   </producedTypes>
-  <name>УИ_ДанныеДляОтладки</name>
+  <name>UT_DebugData</name>
   <synonym>
     <key>en</key>
     <value>{} Debug data (UT)</value>
@@ -13,25 +13,29 @@
     <key>ru</key>
     <value>Данные для отладки [УИ]</value>
   </synonym>
-  <defaultForm>DataProcessor.УИ_ДанныеДляОтладки.Form.Форма</defaultForm>
+  <defaultForm>DataProcessor.UT_DebugData.Form.Form</defaultForm>
   <extendedPresentation>
     <key>ru</key>
     <value>Данные для отладки</value>
   </extendedPresentation>
   <forms uuid="6ec88c41-4c28-4b90-844f-dafc62c03144">
-    <name>Форма</name>
+    <name>Form</name>
     <synonym>
       <key>ru</key>
-      <value>Форма</value>
+      <value>Form</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <commands uuid="be758a7f-6d7b-4119-a854-a9fe973dee27">
-    <name>ДанныеДляОтладки</name>
+    <name>DebugData</name>
+    <synonym>
+      <key>en</key>
+      <value>Debug data</value>
+    </synonym>
     <synonym>
       <key>ru</key>
-      <value>Данные для отладки</value>
+      <value>Debug data</value>
     </synonym>
     <group>NavigationPanelOrdinary</group>
     <representation>Auto</representation>
