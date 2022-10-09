@@ -6,12 +6,10 @@
 		<languageInfo>
 			<id>ru</id>
 			<code>Russian</code>
-			<description/>
 		</languageInfo>
 		<languageInfo>
 			<id>en</id>
 			<code>English</code>
-			<description/>
 		</languageInfo>
 	</languageSettings>
 	<columns>

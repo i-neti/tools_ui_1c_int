@@ -1125,7 +1125,7 @@ EndProcedure
 
 &AtServer
 Procedure vFillServiceTree()
-	Template = vGetProcessor().GetTemplate("ServiceTamplate");
+	Template = vGetProcessor().GetTemplate("ServiceTemplate");
 	If Template = Undefined Then
 		Template = New SpreadsheetDocument;
 	EndIf;
