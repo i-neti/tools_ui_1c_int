@@ -2740,12 +2740,12 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 	UsersTable.Columns.Add("FullName", New TypeDescription("String"));
 
 	If StrFind(FullName, ".Command.") <> 0 Then
-		ТипМД = "OtherCommand";
+		MDType = "OtherCommand";
 	Else
-		ТипМД = Left(FullName, StrFind(FullName, ".") - 1);
+		MDType = Left(FullName, StrFind(FullName, ".") - 1);
 	EndIf;
 
-	If ТипМД <> "User" Then
+	If MDType <> "User" Then
 		MDObject = Metadata.FindByFullName(FullName);
 
 		If MDObject = Undefined Then
@@ -2753,9 +2753,9 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		EndIf;
 	EndIf;
 
-	If ТипМД = "InformationRegister" And MDObject.Dimensions.Count() <> 0 Then
+	If MDType = "InformationRegister" And MDObject.Dimensions.Count() <> 0 Then
 		pField = MDObject.Dimensions[0].Name;
-		vRestrictedObjects[ТипМД] = pField;
+		vRestrictedObjects[MDType] = pField;
 	EndIf;
 
 	ЭтоОбычныйРежим = True;
@@ -2769,7 +2769,7 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 				NewLine = ТабРоли.Add();
 				FillPropertyValues(NewLine, Itm);
 
-				pField = vRestrictedObjects[ТипМД];
+				pField = vRestrictedObjects[MDType];
 				If pField <> Undefined Then
 					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, pField, Itm).RestrictionByCondition;
 				EndIf;
