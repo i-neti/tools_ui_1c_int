@@ -62,7 +62,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormField">
-    <name>ВариантОтображения</name>
+    <name>ScaleVariant</name>
     <id>1</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -75,7 +75,7 @@
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>ВариантОтображенияРасширеннаяПодсказка</name>
+      <name>ScaleVariantExtendedTooltip</name>
       <id>3</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -90,7 +90,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ВариантОтображенияКонтекстноеМеню</name>
+      <name>ScaleVariantContextMenu</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>

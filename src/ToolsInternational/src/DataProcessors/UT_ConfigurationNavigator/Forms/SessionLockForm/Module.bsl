@@ -7,7 +7,7 @@ Procedure vGetSessionsLock()
 	SessionsLock = GetSessionsLock();
 	FillPropertyValues(ThisForm, SessionsLock);
 EndProcedure
-&НаКлиенте
+&AtClient
 Procedure kSetSessionsLock(Command)
 	vSetSessionsLockAtServer();
 EndProcedure
