@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГруппаСтраницы</name>
+    <name>GroupPages</name>
     <id>22</id>
     <items xsi:type="form:FormGroup">
-      <name>СтрОсновное</name>
+      <name>PageMain</name>
       <id>24</id>
       <items xsi:type="form:FormField">
-        <name>Имя</name>
+        <name>Name</name>
         <id>1</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -16,11 +16,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Имя</segments>
+            <segments>Name</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ИмяРасширеннаяПодсказка</name>
+          <name>NameExtendedTooltip</name>
           <id>3</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -35,7 +35,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ИмяКонтекстноеМеню</name>
+          <name>NameContextMenu</name>
           <id>2</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -59,7 +59,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПолноеИмя</name>
+        <name>FullName</name>
         <id>4</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -68,11 +68,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПолноеИмя</segments>
+            <segments>FullName</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ПолноеИмяРасширеннаяПодсказка</name>
+          <name>FullNameExtendedTooltip</name>
           <id>6</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -87,7 +87,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПолноеИмяКонтекстноеМеню</name>
+          <name>FullNameContextMenu</name>
           <id>5</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -111,7 +111,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>Идентификатор</name>
+        <name>UUID</name>
         <id>68</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -120,11 +120,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Идентификатор</segments>
+            <segments>UUID</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ИдентификаторРасширеннаяПодсказка</name>
+          <name>UUIDExtendedTooltip</name>
           <id>70</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -139,7 +139,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ИдентификаторКонтекстноеМеню</name>
+          <name>UUIDContextMenu</name>
           <id>69</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -164,7 +164,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>АутентификацияСтандартная</name>
+        <name>StandardAuthentication</name>
         <id>7</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -173,12 +173,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>АутентификацияСтандартная</segments>
+            <segments>StandardAuthentication</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>АутентификацияСтандартнаяРасширеннаяПодсказка</name>
+          <name>StandardAuthenticationExtendedTooltip</name>
           <id>9</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -193,7 +193,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>АутентификацияСтандартнаяКонтекстноеМеню</name>
+          <name>StandardAuthenticationContextMenu</name>
           <id>8</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -210,7 +210,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>Пароль</name>
+        <name>Password</name>
         <id>10</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -219,11 +219,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>Пароль</segments>
+            <segments>Password</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ПарольРасширеннаяПодсказка</name>
+          <name>PasswordExtendedTooltip</name>
           <id>12</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -238,7 +238,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПарольКонтекстноеМеню</name>
+          <name>PasswordContextMenu</name>
           <id>11</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -263,7 +263,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПодтверждениеПароля</name>
+        <name>PasswordConfirmation</name>
         <id>13</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -272,11 +272,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПодтверждениеПароля</segments>
+            <segments>PasswordConfirmation</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ПодтверждениеПароляРасширеннаяПодсказка</name>
+          <name>PasswordConfirmationExtendedTooltip</name>
           <id>15</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -291,7 +291,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПодтверждениеПароляКонтекстноеМеню</name>
+          <name>PasswordConfirmationContextMenu</name>
           <id>14</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -316,7 +316,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:Button">
-        <name>ИзменитьПароль</name>
+        <name>ChangePassword</name>
         <id>66</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -324,7 +324,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>ИзменитьПарольРасширеннаяПодсказка</name>
+          <name>ChangePasswordExtendedTooltip</name>
           <id>67</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -339,7 +339,7 @@
           </extInfo>
         </extendedTooltip>
         <type>UsualButton</type>
-        <commandName>Form.Command.ИзменитьПароль</commandName>
+        <commandName>Form.Command.ChangePassword</commandName>
         <representation>Auto</representation>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -347,7 +347,7 @@
         <representationInContextMenu>Auto</representationInContextMenu>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПоказыватьВСпискеВыбора</name>
+        <name>ShowInSelectionList</name>
         <id>59</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -356,12 +356,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПоказыватьВСпискеВыбора</segments>
+            <segments>ShowInSelectionList</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ПоказыватьВСпискеВыбораРасширеннаяПодсказка</name>
+          <name>ShowInSelectionListExtendedTooltip</name>
           <id>61</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -376,7 +376,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПоказыватьВСпискеВыбораКонтекстноеМеню</name>
+          <name>ShowInSelectionListContextMenu</name>
           <id>60</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -393,7 +393,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>АутентификацияОС</name>
+        <name>OSAuthentication</name>
         <id>16</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -402,12 +402,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>АутентификацияОС</segments>
+            <segments>OSAuthentication</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>АутентификацияОСРасширеннаяПодсказка</name>
+          <name>OSAuthenticationExtendedTooltip</name>
           <id>18</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -422,7 +422,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>АутентификацияОСКонтекстноеМеню</name>
+          <name>OSAuthenticationContextMenu</name>
           <id>17</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -439,7 +439,7 @@
         <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
       </items>
       <items xsi:type="form:FormField">
-        <name>ПользовательОС</name>
+        <name>OSUser</name>
         <id>19</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -448,11 +448,11 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ПользовательОС</segments>
+            <segments>OSUser</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
-          <name>ПользовательОСРасширеннаяПодсказка</name>
+          <name>OSUserExtendedTooltip</name>
           <id>21</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -467,7 +467,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ПользовательОСКонтекстноеМеню</name>
+          <name>OSUserContextMenu</name>
           <id>20</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -491,7 +491,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ЗащитаОтОпасныхДействий</name>
+        <name>UnsafeOperationProtection</name>
         <id>50</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -500,12 +500,12 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ЗащитаОтОпасныхДействий</segments>
+            <segments>UnsafeOperationProtection</segments>
           </paths>
         </dataPath>
         <titleLocation>Right</titleLocation>
         <extendedTooltip>
-          <name>ЗащитаОтОпасныхДействийРасширеннаяПодсказка</name>
+          <name>UnsafeOperationProtectionExtendedTooltip</name>
           <id>52</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -520,7 +520,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ЗащитаОтОпасныхДействийКонтекстноеМеню</name>
+          <name>UnsafeOperationProtectionContextMenu</name>
           <id>51</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -554,7 +554,7 @@
         <value>Стр основное</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтрОсновноеРасширеннаяПодсказка</name>
+        <name>PageMainExtendedTooltip</name>
         <id>25</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -575,10 +575,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтрРоли</name>
+      <name>PageRoles</name>
       <id>26</id>
       <items xsi:type="form:Table">
-        <name>РолиПользователя</name>
+        <name>UserRoles</name>
         <id>28</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -586,11 +586,11 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>РолиПользователя</segments>
+          <segments>UserRoles</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <items xsi:type="form:FormField">
-          <name>РолиПользователяПометка</name>
+          <name>UserRolesCheck</name>
           <id>41</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -599,7 +599,7 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>РолиПользователя.Пометка</segments>
+              <segments>UserRoles.Check</segments>
             </paths>
           </dataPath>
           <toolTip>
@@ -607,7 +607,7 @@
             <value>Роль доступна</value>
           </toolTip>
           <extendedTooltip>
-            <name>РолиПользователяПометкаРасширеннаяПодсказка</name>
+            <name>UserRolesCheckExtendedTooltip</name>
             <id>43</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -622,7 +622,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяПометкаКонтекстноеМеню</name>
+            <name>UserRolesCheckContextMenu</name>
             <id>42</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -639,7 +639,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>РолиПользователяИмя</name>
+          <name>UserRolesName</name>
           <id>44</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -648,11 +648,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>РолиПользователя.Имя</segments>
+              <segments>UserRoles.Name</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РолиПользователяИмяРасширеннаяПодсказка</name>
+            <name>UserRolesNameExtendedTooltip</name>
             <id>46</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -667,7 +667,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяИмяКонтекстноеМеню</name>
+            <name>UserRolesNameContextMenu</name>
             <id>45</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -692,7 +692,7 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>РолиПользователяПредставление</name>
+          <name>UserRolesPresentation</name>
           <id>47</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -701,11 +701,11 @@
           </userVisible>
           <dataPath xsi:type="form:MultiLanguageDataPath">
             <paths xsi:type="form:DataPath">
-              <segments>РолиПользователя.Представление</segments>
+              <segments>UserRoles.Presentation</segments>
             </paths>
           </dataPath>
           <extendedTooltip>
-            <name>РолиПользователяПредставлениеРасширеннаяПодсказка</name>
+            <name>UserRolesPresentationExtendedTooltip</name>
             <id>49</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -720,7 +720,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяПредставлениеКонтекстноеМеню</name>
+            <name>UserRolesPresentationContextMenu</name>
             <id>48</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -745,10 +745,10 @@
           </extInfo>
         </items>
         <autoCommandBar>
-          <name>РолиПользователяКоманднаяПанель</name>
+          <name>UserRolesCommandBar</name>
           <id>30</id>
           <items xsi:type="form:Button">
-            <name>РолиПользователя_ПоказатьТолькоДоступные</name>
+            <name>UserRoles_ShowOnlyAvailable</name>
             <id>71</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -756,7 +756,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>РолиПользователя_ПоказатьТолькоДоступныеРасширеннаяПодсказка</name>
+              <name>UserRoles_ShowOnlyAvailableExtendedTooltip</name>
               <id>72</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -770,7 +770,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command._ПоказатьТолькоДоступные</commandName>
+            <commandName>Form.Command._ShowOnlyAvailable</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -779,7 +779,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>РолиПользователяОтменитьПоиск</name>
+            <name>UserRolesCancelSearch</name>
             <id>73</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -787,7 +787,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>РолиПользователяОтменитьПоискРасширеннаяПодсказка</name>
+              <name>UserRolesCancelSearchExtendedTooltip</name>
               <id>74</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -801,7 +801,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item.РолиПользователя.StandardCommand.CancelSearch</commandName>
+            <commandName>Form.Item.UserRoles.StandardCommand.CancelSearch</commandName>
             <representation>Auto</representation>
             <onlyInAllActions>false</onlyInAllActions>
             <autoMaxWidth>true</autoMaxWidth>
@@ -810,7 +810,7 @@
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
-            <name>РолиПользователяВывестиСписок</name>
+            <name>UserRolesOutputList</name>
             <id>75</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -818,7 +818,7 @@
               <common>true</common>
             </userVisible>
             <extendedTooltip>
-              <name>РолиПользователяВывестиСписокРасширеннаяПодсказка</name>
+              <name>UserRolesOutputListExtendedTooltip</name>
               <id>76</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -832,7 +832,7 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Item.РолиПользователя.StandardCommand.OutputList</commandName>
+            <commandName>Form.Item.UserRoles.StandardCommand.OutputList</commandName>
             <representation>Auto</representation>
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -852,10 +852,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РолиПользователяСтрокаПоиска</name>
+          <name>UserRolesSearchString</name>
           <id>32</id>
           <extendedTooltip>
-            <name>РолиПользователяСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>UserRolesSearchStringExtendedTooltip</name>
             <id>34</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -870,7 +870,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяСтрокаПоискаКонтекстноеМеню</name>
+            <name>UserRolesSearchStringContextMenu</name>
             <id>33</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -889,10 +889,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РолиПользователяСостояниеПросмотра</name>
+          <name>UserRolesViewStatus</name>
           <id>35</id>
           <extendedTooltip>
-            <name>РолиПользователяСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>UserRolesViewStatusExtendedTooltip</name>
             <id>37</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -907,7 +907,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяСостояниеПросмотраКонтекстноеМеню</name>
+            <name>UserRolesViewStatusContextMenu</name>
             <id>36</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -928,10 +928,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>РолиПользователяУправлениеПоиском</name>
+          <name>UserRolesSearchControl</name>
           <id>38</id>
           <extendedTooltip>
-            <name>РолиПользователяУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>UserRolesSearchControlExtendedTooltip</name>
             <id>40</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -946,7 +946,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>РолиПользователяУправлениеПоискомКонтекстноеМеню</name>
+            <name>UserRolesSearchControlContextMenu</name>
             <id>39</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -961,7 +961,7 @@
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>РолиПользователяРасширеннаяПодсказка</name>
+          <name>UserRolesExtendedTooltip</name>
           <id>31</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -976,7 +976,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>РолиПользователяКонтекстноеМеню</name>
+          <name>UserRolesContextMenu</name>
           <id>29</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1024,7 +1024,7 @@
         <value>Стр роли</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтрРолиРасширеннаяПодсказка</name>
+        <name>PageRolesExtendedTooltip</name>
         <id>27</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1062,7 +1062,7 @@
       <value>Группа страницы</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаСтраницыРасширеннаяПодсказка</name>
+      <name>GroupPagesExtendedTooltip</name>
       <id>23</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -1083,10 +1083,10 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаКоманды</name>
+    <name>GroupCommands</name>
     <id>53</id>
     <items xsi:type="form:Button">
-      <name>ЗаписатьОбъект</name>
+      <name>WriteObject</name>
       <id>62</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -1094,7 +1094,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ЗаписатьОбъектРасширеннаяПодсказка</name>
+        <name>WriteObjectExtendedTooltip</name>
         <id>63</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1108,7 +1108,7 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <commandName>Form.Command.ЗаписатьОбъект</commandName>
+      <commandName>Form.Command.WriteObject</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -1116,7 +1116,7 @@
       <representationInContextMenu>Auto</representationInContextMenu>
     </items>
     <items xsi:type="form:Button">
-      <name>Отмена</name>
+      <name>Cancel</name>
       <id>64</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -1124,7 +1124,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>ОтменаРасширеннаяПодсказка</name>
+        <name>CancelExtendedTooltip</name>
         <id>65</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1154,12 +1154,16 @@
       <key>ru</key>
       <value>Группа команды</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Group commands</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Группа команды</value>
     </toolTip>
     <extendedTooltip>
-      <name>ГруппаКомандыРасширеннаяПодсказка</name>
+      <name>GroupCommandsExtendedTooltip</name>
       <id>54</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -1202,10 +1206,14 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Имя</name>
+    <name>Name</name>
     <title>
       <key>ru</key>
       <value>Имя</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Name</value>
     </title>
     <id>1</id>
     <valueType>
@@ -1220,10 +1228,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПолноеИмя</name>
+    <name>FullName</name>
     <title>
       <key>ru</key>
       <value>Полное имя</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Full name</value>
     </title>
     <id>2</id>
     <valueType>
@@ -1238,7 +1250,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПользовательОС</name>
+    <name>OSUser</name>
+    <title>
+      <key>en</key>
+      <value>Operation system user</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Пользователь ОС</value>
@@ -1256,7 +1272,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>АутентификацияОС</name>
+    <name>OSAuthentication</name>
+    <title>
+      <key>en</key>
+      <value>Authentication of Operation System</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Аутентификация операционной системы</value>
@@ -1273,7 +1293,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>АутентификацияСтандартная</name>
+    <name>StandardAuthentication</name>
+    <title>
+      <key>en</key>
+      <value>Authentication of 1C:Enterprise</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Аутентификация 1С:Предприятие</value>
@@ -1290,10 +1314,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Пароль</name>
+    <name>Password</name>
     <title>
       <key>ru</key>
       <value>Пароль</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Password</value>
     </title>
     <id>6</id>
     <valueType>
@@ -1308,10 +1336,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПодтверждениеПароля</name>
+    <name>PasswordConfirmation</name>
     <title>
       <key>ru</key>
       <value>Подтверждение пароля</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Password confirmation</value>
     </title>
     <id>7</id>
     <valueType>
@@ -1326,10 +1358,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>РолиПользователя</name>
+    <name>UserRoles</name>
     <title>
       <key>ru</key>
       <value>Роли пользователя</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>User roles</value>
     </title>
     <id>8</id>
     <valueType>
@@ -1342,10 +1378,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
       <title>
         <key>ru</key>
         <value>Доступна</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Check</value>
       </title>
       <id>1</id>
       <valueType>
@@ -1359,10 +1399,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -1377,10 +1421,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
       </title>
       <id>3</id>
       <valueType>
@@ -1395,10 +1443,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Присвоена</name>
+      <name>Set</name>
       <title>
         <key>ru</key>
         <value>Присвоена</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Set</value>
       </title>
       <id>4</id>
       <valueType>
@@ -1413,10 +1465,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ЗащитаОтОпасныхДействий</name>
+    <name>UnsafeOperationProtection</name>
     <title>
       <key>ru</key>
       <value>Защита от опасных действий</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Unsafe operation protection</value>
     </title>
     <id>9</id>
     <valueType>
@@ -1430,7 +1486,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ПоказыватьВСпискеВыбора</name>
+    <name>ShowInSelectionList</name>
+    <title>
+      <key>en</key>
+      <value>Show in the selection list</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Показывать в списке выбора</value>
@@ -1447,10 +1507,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ИдентификаторПользователяИБ</name>
+    <name>DBUserID</name>
     <title>
       <key>ru</key>
       <value>Идентификатор пользователя ИБ</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>DBUser ID</value>
     </title>
     <id>11</id>
     <valueType>
@@ -1464,10 +1528,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Идентификатор</name>
+    <name>UUID</name>
     <title>
       <key>ru</key>
       <value>Идентификатор</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>UUID</value>
     </title>
     <id>12</id>
     <valueType>
@@ -1502,10 +1570,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>ЗаписатьОбъект</name>
+    <name>WriteObject</name>
     <title>
       <key>ru</key>
       <value>ОК</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Write object</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -1517,13 +1589,17 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ЗаписатьОбъект</name>
+        <name>WriteObject</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ИзменитьПароль</name>
+    <name>ChangePassword</name>
+    <title>
+      <key>en</key>
+      <value>Change password</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Изменить пароль</value>
@@ -1538,13 +1614,17 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ИзменитьПароль</name>
+        <name>ChangePassword</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>_ПоказатьТолькоДоступные</name>
+    <name>_ShowOnlyAvailable</name>
+    <title>
+      <key>en</key>
+      <value>Only available</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Только доступные</value>
@@ -1559,7 +1639,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>_ПоказатьТолькоДоступные</name>
+        <name>_ShowOnlyAvailable</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
