@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <title>
+    <key>en</key>
+    <value>Forms scale variant selection</value>
+  </title>
+  <title>
     <key>ru</key>
     <value>Выбор масштаба отображения форм</value>
   </title>
   <items xsi:type="form:FormField">
-    <name>ИмяПользователя</name>
+    <name>UserName</name>
     <id>6</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -14,11 +18,11 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ИмяПользователя</segments>
+        <segments>UserName</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
-      <name>ИмяПользователяРасширеннаяПодсказка</name>
+      <name>UserNameExtendedTooltip</name>
       <id>8</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -33,7 +37,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>ИмяПользователяКонтекстноеМеню</name>
+      <name>UserNameContextMenu</name>
       <id>7</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -67,7 +71,7 @@
     </userVisible>
     <dataPath xsi:type="form:MultiLanguageDataPath">
       <paths xsi:type="form:DataPath">
-        <segments>ВариантОтображения</segments>
+        <segments>ScaleVariant</segments>
       </paths>
     </dataPath>
     <extendedTooltip>
@@ -126,7 +130,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:Button">
-    <name>УстановитьМасштабОтображения</name>
+    <name>SetScaleVariant</name>
     <id>4</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -134,7 +138,7 @@
       <common>true</common>
     </userVisible>
     <extendedTooltip>
-      <name>УстановитьМасштабОтображенияРасширеннаяПодсказка</name>
+      <name>SetScaleVariantExtendedTooltip</name>
       <id>5</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -149,7 +153,7 @@
       </extInfo>
     </extendedTooltip>
     <type>UsualButton</type>
-    <commandName>Form.Command.УстановитьМасштабОтображения</commandName>
+    <commandName>Form.Command.SetScaleVariant</commandName>
     <representation>Auto</representation>
     <autoMaxWidth>true</autoMaxWidth>
     <autoMaxHeight>true</autoMaxHeight>
@@ -168,7 +172,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoUrl>true</autoUrl>
   <group>Vertical</group>
@@ -179,7 +183,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
+    <title>
+      <key>en</key>
+      <value>Object</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ConfigurationNavigator</types>
@@ -193,7 +201,11 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ВариантОтображения</name>
+    <name>ScaleVariant</name>
+    <title>
+      <key>en</key>
+      <value>Scale variant</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Вариант отображения</value>
@@ -211,7 +223,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ИмяПользователя</name>
+    <name>UserName</name>
+    <title>
+      <key>en</key>
+      <value>User name	</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Имя пользователя</value>
@@ -229,10 +245,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>УстановитьМасштабОтображения</name>
+    <name>SetScaleVariant</name>
     <title>
       <key>ru</key>
       <value>Установить масштаб отображения...</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Set scale variant</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -247,7 +267,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УстановитьМасштабОтображения</name>
+        <name>SetScaleVariant</name>
       </handler>
     </action>
     <representation>TextPicture</representation>

@@ -1,57 +1,59 @@
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
-	СписокЗначений = Элементы.ИмяПользователя.СписокВыбора;
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+		ValueList = Items.UserName.ChoiceList;
 
-	Если ПравоДоступа("АдминистрированиеДанных", Метаданные) Тогда
-		Для Каждого Элем Из ПользователиИнформационнойБазы.ПолучитьПользователей() Цикл
-			СписокЗначений.Добавить(Элем.Имя);
-		КонецЦикла;
-		СписокЗначений.СортироватьПоЗначению();
+	If AccessRight("DataAdministration", Metadata) Then
+		For Each Item In InfoBaseUsers.GetUsers() Do
+			ValueList.Add(Item.Name);
+		EndDo;
+		ValueList.SortByValue();
 	Иначе
-		СписокЗначений.Добавить(ИмяПользователя());
-		Элементы.ИмяПользователя.ТолькоПросмотр = Истина;
-	КонецЕсли;
+		ValueList.Add(UserName());
+		Items.UserName.ReadOnly = True;
+	EndIf;
 
-	ВариантОтображения = "Авто";
-	ИмяПользователя = ИмяПользователя();
-КонецПроцедуры
+	ScaleVariant = "Auto";
+	UserName = UserName();
+EndProcedure
 
-&НаКлиенте
-Процедура УстановитьМасштабОтображения(Команда)
-	Если Не ПустаяСтрока(ВариантОтображения) Тогда
-		ПоказатьВопрос(Новый ОписаниеОповещения("УстановитьМасштабОтображенияДалее", ЭтаФорма),
-			"Масштаб отображения форм будет изменен. Продолжить?", РежимДиалогаВопрос.ДаНетОтмена, 20);
-	КонецЕсли;
-КонецПроцедуры
 
-&НаКлиенте
-Процедура УстановитьМасштабОтображенияДалее(РезультатВопроса, ДопПараметры) Экспорт
-	Если РезультатВопроса = КодВозвратаДиалога.Да Тогда
-		Если УстановитьМасштабОтображенияНаСервере(ВариантОтображения, ИмяПользователя) Тогда
-			ПоказатьПредупреждение( , "Масштаб отображения форм изменен.
-									  |Чтобы изменения вступили в силу надо перезайти в 1С:Предприятие.", 20);
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure SetScaleVariant(Command)
+	If Not IsBlankString(ScaleVariant) Then
+		ShowQueryBox(New NotifyDescription("SetScaleVariantAfter", ThisForm),
+			"ru = 'Масштаб отображения форм будет изменен. Продолжить?';en = 'Forms scale variant will be changed. Continue?'", QuestionDialogMode.YesNoCancel, 20);
+	EndIf;
+EndProcedure
 
-&НаСервереБезКонтекста
-Функция УстановитьМасштабОтображенияНаСервере(ВариантОтображения, Знач ИмяПользователя)
-	Если ПустаяСтрока(ИмяПользователя) Тогда
-		ИмяПользователя = Неопределено;
-	КонецЕсли;
+&AtClient
+Procedure SetScaleVariantAfter(QuestionResult, AdditionalParameters) Export
+	If QuestionResult = DialogReturnCode.Yes Then
+		If SetScaleVariantAtServer(ScaleVariant, UserName) Then
+			ShowMessageBox( , "ru = 'Масштаб отображения форм изменен.
+							  |Чтобы изменения вступили в силу надо перезайти в 1С:Предприятие.';en = 'Forms scale variant has been changed
+							  | Restart application to apply changes.'", 20);
+		EndIf;
+	EndIf;
+EndProcedure
 
-	Попытка
-		Настройка = ХранилищеСистемныхНастроек.Загрузить("Общее/НастройкиКлиентскогоПриложения", "", , ИмяПользователя);
+&AtServerNoContext
+Function SetScaleVariantAtServer(ScaleVariant, Val UserName)
+	If IsBlankString(UserName) Then
+		UserName = Undefined;
+	EndIf;
 
-		Если Не ТипЗнч(Настройка) = Тип("НастройкиКлиентскогоПриложения") Тогда
-			Настройка = Новый НастройкиКлиентскогоПриложения;
-		КонецЕсли;
+	Try
+		Setting = SystemSettingsStorage.Load("Common/ClientSettings", "", , UserName);
 
-		Настройка.ВариантМасштабаФормКлиентскогоПриложения = ВариантМасштабаФормКлиентскогоПриложения[ВариантОтображения];
-		ХранилищеСистемныхНастроек.Сохранить("Общее/НастройкиКлиентскогоПриложения", "", Настройка, , ИмяПользователя);
-		Возврат Истина;
-	Исключение
-		Сообщить(ОписаниеОшибки());
-		Возврат Ложь;
-	КонецПопытки;
-КонецФункции
+		If Not TypeOf(Setting) = Type("ClientSettings") Then
+			Setting = New ClientSettings;
+		EndIf;
+
+		Setting.ClientApplicationFormScaleVariant = ClientApplicationFormScaleVariant[ScaleVariant];
+		SystemSettingsStorage.Save("Common/ClientSettings", "", Setting, , UserName);
+		Return True;
+	Except
+		Message(ErrorDescription());
+		Return False;
+	EndTry;
+EndFunction
