@@ -333,7 +333,7 @@ EndProcedure
 &AtClient
 Procedure _CreateDBUser(Command)
 	StructureOfParameters = New Structure("WorkMode", 1);
-	OpenForm(PathToForms + "UserForm", StructureOfParameters, , , , , ,
+	OpenForm(PathToForms + "InfoBaseUserForm", StructureOfParameters, , , , , ,
 		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
@@ -342,7 +342,7 @@ Procedure _CopyDBUser(Command)
 	CurrentData = Items.ObjectsTree.CurrentData;
 	If CurrentData <> Undefined And StrFind(CurrentData.FullName, "User.") = 1 Then
 		StructureOfParameters = New Structure("WorkMode, DBUserID", 2, CurrentData.ObjectPresentation);
-		OpenForm(PathToForms + "UserForm", StructureOfParameters, , , , , ,
+		OpenForm(PathToForms + "InfoBaseUserForm", StructureOfParameters, , , , , ,
 			FormWindowOpeningMode.LockOwnerWindow);
 	EndIf;
 EndProcedure
@@ -439,7 +439,7 @@ Procedure kShowObjectProperties(Command)
 		If CurrentData.NodeType = "MetadataObject" Then
 			If StrFind(CurrentData.FullName, "User.") = 1 Then
 				StructureOfParameters = New Structure("DBUserID", CurrentData.ObjectPresentation);
-				OpenForm(PathToForms + "UserForm", StructureOfParameters, , CurrentData.FullName, , , ,
+				OpenForm(PathToForms + "InfoBaseUserForm", StructureOfParameters, , CurrentData.FullName, , , ,
 					FormWindowOpeningMode.LockOwnerWindow);
 			Else
 				StructureOfParameters = New Structure("FullName, PathToForms, _StorageAddresses, DescriptionOfAccessRights",
@@ -469,7 +469,7 @@ Procedure kOpenListForm(Command)
 				If ObjectTypeMD = "User" Then
 					StandardProcessing = False;
 					StructureOfParameters = New Structure("DBUserID", CurrentData.ObjectPresentation);
-					OpenForm(PathToForms + "UserForm", StructureOfParameters, , CurrentData.FullName, , , ,
+					OpenForm(PathToForms + "InfoBaseUserForm", StructureOfParameters, , CurrentData.FullName, , , ,
 						FormWindowOpeningMode.LockOwnerWindow);
 					Return;
 				EndIf;
@@ -1565,7 +1565,7 @@ Procedure UsersWithAccessTableSelection(Item, SelectedRow, Field, StandardProces
 
 		If Not IsBlankString(pUserID) Then
 			pStructure = New Structure("WorkMode, DBUserID", 0, pUserID);
-			OpenForm(PathToForms + "UserForm", pStructure, , , , , ,
+			OpenForm(PathToForms + "InfoBaseUserForm", pStructure, , , , , ,
 				FormWindowOpeningMode.LockOwnerWindow);
 		EndIf;
 	EndIf;
@@ -1975,7 +1975,7 @@ Procedure _DBUserListSelection(Item, SelectedRow, Field, StandardProcessing)
 	CurrentData = _DBUserList.FindByID(SelectedRow);
 	If CurrentData <> Undefined Then
 		pStructure = New Structure("WorkMode, DBUserID", 0, CurrentData.UUID);
-		OpenForm(PathToForms + "UserForm", pStructure, , , , , ,
+		OpenForm(PathToForms + "InfoBaseUserForm", pStructure, , , , , ,
 			FormWindowOpeningMode.LockOwnerWindow);
 	EndIf;
 EndProcedure
@@ -1988,12 +1988,12 @@ Procedure _DBUserListBeforeAddRow(Item, Cancel, Copy, Parent, Group, Parameter)
 		CurrentData = Item.CurrentData;
 		If CurrentData <> Undefined Then
 			pStructure = New Structure("WorkMode, DBUserID", 2, CurrentData.UUID);
-			OpenForm(PathToForms + "UserForm", pStructure, , , , , ,
+			OpenForm(PathToForms + "InfoBaseUserForm", pStructure, , , , , ,
 				FormWindowOpeningMode.LockOwnerWindow);
 		EndIf;
 	Else
 		pStructure = New Structure("WorkMode", 1);
-		OpenForm(PathToForms + "UserForm", pStructure, , , , , ,
+		OpenForm(PathToForms + "InfoBaseUserForm", pStructure, , , , , ,
 			FormWindowOpeningMode.LockOwnerWindow);
 	EndIf;
 EndProcedure

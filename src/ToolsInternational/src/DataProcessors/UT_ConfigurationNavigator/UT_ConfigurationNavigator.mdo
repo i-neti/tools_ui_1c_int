@@ -74,7 +74,7 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="f1e04277-3f38-4549-ba5f-c9e162b0837e">
-    <name>UserForm</name>
+    <name>InfoBaseUserForm</name>
     <synonym>
       <key>ru</key>
       <value>Пользователь информационной базы</value>

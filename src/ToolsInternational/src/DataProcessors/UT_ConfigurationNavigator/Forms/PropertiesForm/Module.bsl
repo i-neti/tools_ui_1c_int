@@ -2543,7 +2543,7 @@ Procedure _OpenAccessRightsObject(Command)
 
 			If Not IsBlankString(pUserId) Then
 				pStruct = New Structure("WorkMode, DBUserID", 0, pUserId);
-				OpenForm(PathToForms + "UserForm", pStruct, , , , , ,
+				OpenForm(PathToForms + "InfoBaseUserForm", pStruct, , , , , ,
 					FormWindowOpeningMode.LockOwnerWindow);
 			EndIf;
 		EndIf;
