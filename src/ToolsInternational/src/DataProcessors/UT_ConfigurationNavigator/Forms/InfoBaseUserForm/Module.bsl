@@ -7,7 +7,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Endif;
 
 	If _WorkMode = 0 Then
-		UUID = Parameters.DBUserID;
+		ID = Parameters.DBUserID;
 		DBUserID = New UUID(Parameters.DBUserID);
 
 		Try
@@ -26,7 +26,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Title = "Creation";
 
 	ElsIf _WorkMode = 2 Then
-		UUID = Parameters.DBUserID;
+		ID = Parameters.DBUserID;
 		DBUserID = New UUID(Parameters.DBUserID);
 
 		Try

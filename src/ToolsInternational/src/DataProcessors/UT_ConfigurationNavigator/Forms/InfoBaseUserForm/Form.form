@@ -120,7 +120,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>UUID</segments>
+            <segments>ID</segments>
           </paths>
         </dataPath>
         <extendedTooltip>
@@ -1528,14 +1528,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>UUID</name>
+    <name>ID</name>
     <title>
       <key>ru</key>
       <value>Идентификатор</value>
     </title>
     <title>
       <key>en</key>
-      <value>UUID</value>
+      <value>ID</value>
     </title>
     <id>12</id>
     <valueType>
