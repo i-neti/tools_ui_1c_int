@@ -1,78 +1,78 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	УстановитьПривилегированныйРежим(True);
+	SetPrivilegedMode(True);
 
 	If Parameters.Property("WorkMode") Then
 		_WorkMode = Parameters.WorkMode;
 	Endif;
 
 	If _WorkMode = 0 Then
-		ID = Parameters.DBUserID;
+		UUID = Parameters.DBUserID;
 		DBUserID = New UUID(Parameters.DBUserID);
 
 		Try
-			ПользовательИБ = InfoBaseUsers.НайтиПоУникальномуИдентификатору(
+			InfoBaseUser = InfoBaseUsers.FindByUUID(
 				DBUserID);
-			If ПользовательИБ = Неопределено Then
-				Отказ = True;
+			If InfoBaseUser = Undefined Then
+				Cancel = True;
 			Endif;
-		Исключение
-			Отказ = True;
-		КонецПопытки;
+		Except
+			Cancel = True;
+		EndTry;
 
-	ИначеЕсли _WorkMode = 1 Then
-		ПользовательИБ = InfoBaseUsers.СоздатьПользователя();
-		Элементы.ChangePassword.Доступность = Ложь;
-		Заголовок = "Создание";
+	ElsIf _WorkMode = 1 Then
+		InfoBaseUser = InfoBaseUsers.CreateUser();
+		Items.ChangePassword.Enabled = False;
+		Title = "Creation";
 
-	ИначеЕсли _WorkMode = 2 Then
-		ID = Parameters.DBUserID;
+	ElsIf _WorkMode = 2 Then
+		UUID = Parameters.DBUserID;
 		DBUserID = New UUID(Parameters.DBUserID);
 
 		Try
-			ПользовательИБ = InfoBaseUsers.НайтиПоУникальномуИдентификатору(
+			InfoBaseUser = InfoBaseUsers.FindByUUID(
 				DBUserID);
-			If ПользовательИБ = Неопределено Then
-				Отказ = True;
+			If InfoBaseUser = Undefined Then
+				Cancel = True;
 			Endif;
-		Исключение
-			Отказ = True;
-		КонецПопытки;
+		Except
+			Cancel = True;
+		EndTry;
 
-		Элементы.ChangePassword.Доступность = Ложь;
-		Заголовок = "Создание";
-	Иначе
-		Отказ = True;
+		Items.ChangePassword.Enabled = False;
+		Title = "Creation";
+	Else
+		Cancel = True;
 	Endif;
 
-	If Не Отказ Then
-		ЗаполнитьЗначенияСвойств(ЭтаФорма, ПользовательИБ, , "Password");
+	If Not Cancel Then
+		FillPropertyValues(ThisForm, InfoBaseUser, , "Password");
 
-		Струк = вЗначениеСвойств(ПользовательИБ, "UnsafeOperationProtection");
-		If Струк.UnsafeOperationProtection <> Неопределено Then
-			UnsafeOperationProtection = ПользовательИБ.UnsafeOperationProtection.ПредупреждатьОбОпасныхДействиях;
-		Иначе
-			UnsafeOperationProtection = Ложь;
-			Элементы.UnsafeOperationProtection.ТолькоПросмотр = True;
+		Struct = vPropertiesValue(InfoBaseUser, "UnsafeOperationProtection");
+		If Struct.UnsafeOperationProtection <> Undefined Then
+			UnsafeOperationProtection = InfoBaseUser.UnsafeOperationProtection.UnsafeOperationWarnings;
+		Else
+			UnsafeOperationProtection = False;
+			Items.UnsafeOperationProtection.ReadOnly = True;
 		Endif;
 
-		If ПользовательИБ.ПарольУстановлен Then
+		If InfoBaseUser.PasswordIsSet Then
 			Password = "12345";
 			PasswordConfirmation = "54321";
 		Endif;
 
-		Для Каждого Элем Из Метаданные.Роли Цикл
-			НС = UserRoles.Добавить();
-			НС.Name = Элем.Name;
-			НС.Presentation = Элем.Представление();
-			If ПользовательИБ.Роли.Содержит(Элем) Then
-				НС.Check = True;
-				НС.Set = True;
+		For Each Item In MetaData.Roles Do
+			NewRow = UserRoles.Add();
+			NewRow.Name = Item.Name;
+			NewRow.Presentation = Item.Presentation();
+			If InfoBaseUser.Roles.Contains(Item) Then
+				NewRow.Check = True;
+				NewRow.Set = True;
 				If _WorkMode = 2 Then
-					НС.Set = Ложь;
+					NewRow.Set = False;
 				Endif;
 			Endif;
-		КонецЦикла;
+		EndDo;
 
 		UserRoles.Сортировать("Name");
 
@@ -80,84 +80,83 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 EndProcedure
 
+&AtServerNoContext
+Function vPropertiesValue(Val Object, PropertiesList)
+	Struct = New Structure(PropertiesList);
+	FillPropertyValues(Struct, Object);
 
-&НаСервереБезКонтекста
-Функция вЗначениеСвойств(Знач Объект, ПереченьСвойств)
-	Струк = New Структура(ПереченьСвойств);
-	ЗаполнитьЗначенияСвойств(Струк, Объект);
-
-	Возврат Струк;
-КонецФункции
+	Return Struct;
+EndFunction
 
 &AtServer
-Процедура ЗаписатьОбъектНаСервере()
+Procedure WriteObjectAtServer()
 	If _WorkMode = 0 Then
-		ПользовательИБ = InfoBaseUsers.НайтиПоУникальномуИдентификатору(DBUserID);
-	Иначе
-		ПользовательИБ = InfoBaseUsers.СоздатьПользователя();
-		ПользовательИБ.Password = Password;
+		InfoBaseUser = InfoBaseUsers.FindByUUID(DBUserID);
+	Else
+		InfoBaseUser = InfoBaseUsers.CreateUser();
+		InfoBaseUser.Password = Password;
 	Endif;
 
-	If Не Элементы.UnsafeOperationProtection.ТолькоПросмотр Then
-		ЗаполнитьЗначенияСвойств(ПользовательИБ, ЭтаФорма, , "Password, UnsafeOperationProtection");
-		ПользовательИБ.UnsafeOperationProtection.ПредупреждатьОбОпасныхДействиях = UnsafeOperationProtection;
-	Иначе
-		ЗаполнитьЗначенияСвойств(ПользовательИБ, ЭтаФорма, , "Password");
+	If Not Items.UnsafeOperationProtection.ReadOnly Then
+		FillPropertyValues(InfoBaseUser, ThisForm, , "Password, UnsafeOperationProtection");
+		InfoBaseUser.UnsafeOperationProtection.UnsafeOperationWarnings = UnsafeOperationProtection;
+	Else
+		FillPropertyValues(InfoBaseUser, ThisForm, , "Password");
 	Endif;
 
-	Для Каждого Стр Из UserRoles.НайтиСтроки(New Структура("Check, Set", True, Ложь)) Цикл
-		ПользовательИБ.Роли.Добавить(Метаданные.Роли[Стр.Name]);
-	КонецЦикла;
+	For each Row In UserRoles.FindRows(New Structure("Check, Set", True, False)) Do
+		InfoBaseUser.Roles.Add(MetaData.Roles[Row.Name]);
+	EndDo;
 
-	Для Каждого Стр Из UserRoles.НайтиСтроки(New Структура("Check, Set", Ложь, True)) Цикл
-		ПользовательИБ.Роли.Удалить(Метаданные.Роли[Стр.Name]);
-	КонецЦикла;
+	For each Row In UserRoles.FindRows(New Structure("Check, Set", False, True)) Do
+		InfoBaseUser.Roles.Delete(MetaData.Roles[Row.Name]);
+	EndDo;
 
-	ПользовательИБ.Записать();
-КонецПроцедуры
+	InfoBaseUser.Write();
+EndProcedure
 
-&НаКлиенте
-Процедура WriteObject(Команда)
+&AtClient
+Procedure WriteObject(Command)
 	If _WorkMode <> 0 Then
 		If Password <> PasswordConfirmation Then
-			ПоказатьПредупреждение( , "Password не совпадает с Подтверждением пароля!", 10);
-			Возврат;
+			ShowMessageBox( , "ru = 'Пароль не совпадает с Подтверждением пароля!';en = 'Password not match with  Password Confirmation!'", 10);
+			Return;
 		Endif;
 	Endif;
 
 	Try
-		ЗаписатьОбъектНаСервере();
-		Закрыть();
-	Исключение
-		Сообщить(ОписаниеОшибки());
-	КонецПопытки;
-КонецПроцедуры
+		WriteObjectAtServer();
+		Close();
+	Except
+		Message(ErrorDescription());
+	EndTry;
+EndProcedure
 
 &AtServer
-Процедура ИзменитьПарольНаСервере()
-	ПользовательИБ = InfoBaseUsers.НайтиПоУникальномуИдентификатору(DBUserID);
-	ПользовательИБ.Password = Password;
-	ПользовательИБ.Записать();
-КонецПроцедуры
+Procedure ChangePasswordAtServer()
+	InfoBaseUser = InfoBaseUsers.FindByUUID(DBUserID);
+	InfoBaseUser.Password = Password;
+	InfoBaseUser.Write();
+EndProcedure
 
-&НаКлиенте
-Процедура ChangePassword(Команда)
-	Если Password <> PasswordConfirmation Then
-		ПоказатьПредупреждение( , "Password не совпадает с Подтверждением пароля!", 10);
-		Возврат;
+&AtClient
+Procedure ChangePassword(Command)
+	If Password <> PasswordConfirmation Then
+		ShowMessageBox( , "ru = 'Пароль не совпадает с Подтверждением пароля!';en = 'Password not match with  Password Confirmation!'", 10);
+		Return;
 	Endif;
 
-	ИзменитьПарольНаСервере();
-КонецПроцедуры
+	ChangePasswordAtServer();
+EndProcedure
 
-&НаКлиенте
-Процедура _ShowOnlyAvailable(Команда)
-	ЭФ = Элементы.UserRoles_ShowOnlyAvailable;
-	ЭФ.Check = Не Эф.Check;
+&AtClient
+Procedure _ShowOnlyAvailable(Command)
+	Fi = Items.UserRoles_ShowOnlyAvailable;
+	Fi.Check = Not Fi.Check;
 
-	Если ЭФ.Check Then
-		Элементы.UserRoles.ОтборСтрок = New ФиксированнаяСтруктура(New Структура("Check", True));
-	Иначе
-		Элементы.UserRoles.ОтборСтрок = Неопределено;
+	If Fi.Check Then
+		Items.UserRoles.RowFilter = New FixedStructure(New Structure("Check", True));
+	Else
+		Items.UserRoles.RowFilter = Undefined;
 	Endif;
-КонецПроцедуры
+EndProcedure
