@@ -74,7 +74,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 			Endif;
 		EndDo;
 
-		UserRoles.Сортировать("Name");
+		UserRoles.Sort("Name");
 
 	Endif;
 	
