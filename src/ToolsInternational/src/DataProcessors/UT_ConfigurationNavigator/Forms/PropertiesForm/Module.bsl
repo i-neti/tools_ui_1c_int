@@ -2543,7 +2543,7 @@ Procedure _OpenAccessRightsObject(Command)
 
 			If Not IsBlankString(pUserId) Then
 				pStruct = New Structure("WorkMode, DBUserID", 0, pUserId);
-				OpenForm(PathToForms + "UserForm", pStruct, , , , , ,
+				OpenForm(PathToForms + "InfoBaseUserForm", pStruct, , , , , ,
 					FormWindowOpeningMode.LockOwnerWindow);
 			EndIf;
 		EndIf;
@@ -2584,33 +2584,33 @@ Function vGetDescriptionOfRestrictionsForAccessParameters()
 EndFunction
 
 &AtServerNoContext
-Function вПолучитьТаблицуРолиИПользователи()
-	__ТабРолиИПользователи = New ValueTable;
-	__ТабРолиИПользователи.Columns.Add("NameR", New TypeDescription("String"));
-	__ТабРолиИПользователи.Columns.Add("NameP", New TypeDescription("String"));
-	__ТабРолиИПользователи.Columns.Add("FullNameP", New TypeDescription("String"));
+Function vRolesAndUsersTable()
+	_TableRolesAndUsers = New ValueTable;
+	_TableRolesAndUsers.Columns.Add("NameR", New TypeDescription("String"));
+	_TableRolesAndUsers.Columns.Add("NameP", New TypeDescription("String"));
+	_TableRolesAndUsers.Columns.Add("FullNameP", New TypeDescription("String"));
 
-	For Each П In InfoBaseUsers.GetUsers() Do
-		For Each Р In П.Roles Do
-			NewLine = __ТабРолиИПользователи.Add();
-			NewLine.NameR = Р.Name;
-			NewLine.NameP = П.Name;
-			NewLine.FullNameP = П.FullName;
+	For Each Usr In InfoBaseUsers.GetUsers() Do
+		For Each Role In Usr.Roles Do
+			NewLine = _TableRolesAndUsers.Add();
+			NewLine.NameR = Role.Name;
+			NewLine.NameUsr = Usr.Name;
+			NewLine.FullNameUsr = Usr.FullName;
 		EndDo;
 	EndDo;
 
-	__ТабРолиИПользователи.Indexes.Add("NameR");
-	__ТабРолиИПользователи.Indexes.Add("NameP");
+	_TableRolesAndUsers.Indexes.Add("NameR");
+	_TableRolesAndUsers.Indexes.Add("NameUsr");
 
-	Return __ТабРолиИПользователи;
+	Return _TableRolesAndUsers;
 EndFunction
 
 &AtServerNoContext
-Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val DescriptionOfAccessRights)
+Function vGetAvailableObjectsForRole(Val pRole, Val pRight, Val DescriptionOfAccessRights)
 	pResult = New Structure("HasData, AvailableObjects, Users", False);
 
-	пРольМД = Metadata.FindByFullName(пРоль);
-	If пРоль = Undefined Then
+	pRoleMetadata = Metadata.FindByFullName(pRole);
+	If pRole = Undefined Then
 		Return pResult;
 	EndIf;
 
@@ -2618,31 +2618,31 @@ Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val Description
 	pResult.Insert("AvailableObjects", New Array);
 	pResult.Insert("Users", New Array);
 
-	For Each П In InfoBaseUsers.GetUsers() Do
-		For Each Р In П.Roles Do
-			If Р.Name = пРольМД.Name Then
+	For Each User In InfoBaseUsers.GetUsers() Do
+		For Each Р In User.Roles Do
+			If Р.Name = pRoleMetadata.Name Then
 				pStruct = New Structure("Name, FullName");
-				FillPropertyValues(pStruct, П);
+				FillPropertyValues(pStruct, User);
 				pResult.Users.Add(pStruct);
 			EndIf;
 		EndDo;
 	EndDo;
 
-	пСтрукОбъектыСОгрничением = New Structure;
-	пСтрукОбъектыСОгрничением.Insert("Catalog");
-	пСтрукОбъектыСОгрничением.Insert("Document");
+	pStructObjectsWithRestrictions = New Structure;
+	pStructObjectsWithRestrictions.Insert("Catalog");
+	pStructObjectsWithRestrictions.Insert("Document");
 
 	vRestrictedObjects = vGetDescriptionOfRestrictionsForAccessParameters();
 
-	пПоляРезультата = "RestrictionByCondition, Kind, Name, Presentation, FullName";
+	pResultFields = "RestrictionByCondition, Kind, Name, Presentation, FullName";
 
-	ТабПользователи = New ValueTable;
-	ТабПользователи.Columns.Add("Name", New TypeDescription("String"));
-	ТабПользователи.Columns.Add("FullName", New TypeDescription("String"));
+	UsersTable = New ValueTable;
+	UsersTable.Columns.Add("Name", New TypeDescription("String"));
+	UsersTable.Columns.Add("FullName", New TypeDescription("String"));
 
-	пТабОбъекты = New ValueTable;
-	пТабОбъекты.Columns.Add("FullName", New TypeDescription("String"));
-	пТабОбъекты.Columns.Add("MDObject", New TypeDescription("MetadataObject"));
+	pTabObjects = New ValueTable;
+	pTabObjects.Columns.Add("FullName", New TypeDescription("String"));
+	pTabObjects.Columns.Add("MDObject", New TypeDescription("MetadataObject"));
 
 	pStruct = New Structure("
 							 |SessionParameters,
@@ -2661,7 +2661,7 @@ Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val Description
 
 	For Each Itm In pStruct Do
 		For Each MDObject In Metadata[Itm.Key] Do
-			NewLine = пТабОбъекты.Add();
+			NewLine = pTabObjects.Add();
 			NewLine.FullName = MDObject.FullName();
 			NewLine.MDObject = MDObject;
 
@@ -2669,27 +2669,27 @@ Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val Description
 			FillPropertyValues(pStruct, MDObject);
 
 			If pStruct.Commands <> Undefined Then
-				For Each пКоманда In MDObject.Commands Do
-					NewLine = пТабОбъекты.Add();
-					NewLine.FullName = пКоманда.FullName();
-					NewLine.MDObject = пКоманда;
+				For Each pCommand In MDObject.Commands Do
+					NewLine = pTabObjects.Add();
+					NewLine.FullName = pCommand.FullName();
+					NewLine.MDObject = pCommand;
 				EndDo;
 			EndIf;
 		EndDo;
 	EndDo;
 
-	For Each Row In пТабОбъекты Do
-		pStruct = New Structure(пПоляРезультата);
+	For Each Row In pTabObjects Do
+		pStruct = New Structure(pResultFields);
 
-		пПолноеИмя = Row.MDObject.FullName();
-		If StrFind(пПолноеИмя, ".Command.") <> 0 Then
-			Поз1 = StrFind(пПолноеИмя, ".", SearchDirection.FromEnd);
-			pStruct.Kind = "ЧужаяКоманда";
-			pStruct.Name = Mid(пПолноеИмя, Поз1 + 1);
+		pFullName = Row.MDObject.FullName();
+		If StrFind(pFullName, ".Command.") <> 0 Then
+			Pos1 = StrFind(pFullName, ".", SearchDirection.FromEnd);
+			pStruct.Kind = "OtherCommand";
+			pStruct.Name = Mid(pFullName, Pos1 + 1);
 		Else
-			Поз1 = StrFind(пПолноеИмя, ".");
-			pStruct.Kind = Left(пПолноеИмя, Поз1 - 1);
-			pStruct.Name = Mid(пПолноеИмя, Поз1 + 1);
+			Pos1 = StrFind(pFullName, ".");
+			pStruct.Kind = Left(pFullName, Pos1 - 1);
+			pStruct.Name = Mid(pFullName, Pos1 + 1);
 		EndIf;
 
 		pRightsList = DescriptionOfAccessRights[pStruct.Kind];
@@ -2700,17 +2700,17 @@ Function vGetAvailableObjectsForRole(Val пРоль, Val pRight, Val Description
 			Continue;
 		EndIf;
 
-		If AccessRight(pRight, Row.MDObject, пРольМД) Then
+		If AccessRight(pRight, Row.MDObject, pRoleMetadata) Then
 
-			pStruct.FullName = пПолноеИмя;
+			pStruct.FullName = pFullName;
 			pStruct.Presentation = Row.MDObject.Presentation();
 
-			пПоле = vRestrictedObjects[pStruct.Kind];
-			If пПоле <> Undefined Then
-				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
+			pField = vRestrictedObjects[pStruct.Kind];
+			If pField <> Undefined Then
+				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, pField, pRoleMetadata).RestrictionByCondition;
 			ElsIf pStruct.Kind = "InformationRegister" And Row.MDObject.Dimensions.Count() <> 0 Then
-				пПоле = Row.MDObject.Dimensions[0].Name;
-				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, пПоле, пРольМД).RestrictionByCondition;
+				pField = Row.MDObject.Dimensions[0].Name;
+				pStruct.RestrictionByCondition = AccessParameters(pRight, Row.MDObject, pField, pRoleMetadata).RestrictionByCondition;
 			EndIf;
 
 			pResult.AvailableObjects.Add(pStruct);
@@ -2735,17 +2735,17 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 	ТабРоли.Columns.Add("Name", New TypeDescription("String"));
 	ТабРоли.Columns.Add("Synonym", New TypeDescription("String"));
 
-	ТабПользователи = New ValueTable;
-	ТабПользователи.Columns.Add("Name", New TypeDescription("String"));
-	ТабПользователи.Columns.Add("FullName", New TypeDescription("String"));
+	UsersTable = New ValueTable;
+	UsersTable.Columns.Add("Name", New TypeDescription("String"));
+	UsersTable.Columns.Add("FullName", New TypeDescription("String"));
 
 	If StrFind(FullName, ".Command.") <> 0 Then
-		ТипМД = "ЧужаяКоманда";
+		MDType = "OtherCommand";
 	Else
-		ТипМД = Left(FullName, StrFind(FullName, ".") - 1);
+		MDType = Left(FullName, StrFind(FullName, ".") - 1);
 	EndIf;
 
-	If ТипМД <> "User" Then
+	If MDType <> "User" Then
 		MDObject = Metadata.FindByFullName(FullName);
 
 		If MDObject = Undefined Then
@@ -2753,9 +2753,9 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		EndIf;
 	EndIf;
 
-	If ТипМД = "InformationRegister" And MDObject.Dimensions.Count() <> 0 Then
-		пПоле = MDObject.Dimensions[0].Name;
-		vRestrictedObjects[ТипМД] = пПоле;
+	If MDType = "InformationRegister" And MDObject.Dimensions.Count() <> 0 Then
+		pField = MDObject.Dimensions[0].Name;
+		vRestrictedObjects[MDType] = pField;
 	EndIf;
 
 	ЭтоОбычныйРежим = True;
@@ -2769,9 +2769,9 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 				NewLine = ТабРоли.Add();
 				FillPropertyValues(NewLine, Itm);
 
-				пПоле = vRestrictedObjects[ТипМД];
-				If пПоле <> Undefined Then
-					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, пПоле, Itm).RestrictionByCondition;
+				pField = vRestrictedObjects[MDType];
+				If pField <> Undefined Then
+					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, pField, Itm).RestrictionByCondition;
 				EndIf;
 			EndIf;
 		EndDo;
@@ -2779,7 +2779,7 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		ТабРоли.Sort("Name");
 	EndIf;
 
-	__ТабРолиИПользователи = вПолучитьТаблицуРолиИПользователи();
+	_TableRolesAndUsers = vRolesAndUsersTable();
 
 	If ЭтоОбычныйРежим Then
 		StructureR = New Structure("NameR");
@@ -2787,17 +2787,17 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 
 		For Each Row In ТабРоли Do
 			StructureR.NameR = Row.Name;
-			For Each LineX In __ТабРолиИПользователи.FindRows(StructureR) Do
+			For Each LineX In _TableRolesAndUsers.FindRows(StructureR) Do
 				StructureP.Name = LineX.NameP;
-				If ТабПользователи.FindRows(StructureP).Count() = 0 Then
-					NewLine = ТабПользователи.Add();
+				If UsersTable.FindRows(StructureP).Count() = 0 Then
+					NewLine = UsersTable.Add();
 					NewLine.Name = LineX.NameP;
 					NewLine.FullName = LineX.FullNameP;
 				EndIf;
 			EndDo;
 		EndDo;
 
-		ТабПользователи.Sort("Name");
+		UsersTable.Sort("Name");
 	EndIf;
 
 	СтрукРезультат.HasData = True;
@@ -2810,7 +2810,7 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		СтрукРезультат.Roles.Add(Struc);
 	EndDo;
 
-	For Each Row In ТабПользователи Do
+	For Each Row In UsersTable Do
 		Struc = New Structure("Name, FullName");
 		FillPropertyValues(Struc, Row);
 		СтрукРезультат.Users.Add(Struc);
@@ -2866,7 +2866,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 		пРазделМД = Metadata[пЭлем.Key];
 
 		For Each MDObject In пРазделМД Do
-			пПолноеИмя = MDObject.FullName();
+			pFullName = MDObject.FullName();
 			пГдеНайдено = "";
 			пСчетчик = 0;
 
@@ -2879,14 +2879,14 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 				EndIf;
 				пСчетчик = пСчетчик + 1;
 
-				пСоотв[пПолноеИмя] = 1;
+				пСоотв[pFullName] = 1;
 			EndIf;
 
-			If пСоотв[пПолноеИмя] <> Undefined Then
+			If пСоотв[pFullName] <> Undefined Then
 				NewLine = пТабРезультат.Add();
 				NewLine.Name = MDObject.Name;
 				NewLine.Presentation = MDObject.Presentation();
-				NewLine.FullName = пПолноеИмя;
+				NewLine.FullName = pFullName;
 				NewLine.WhereFound = пГдеНайдено;
 			EndIf;
 		EndDo;
@@ -2925,7 +2925,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 		пЭтоРегистр = (StrFind(пЭлем.Key, "Регистры") = 1);
 
 		For Each MDObject In пРазделМД Do
-			пПолноеИмя = MDObject.FullName();
+			pFullName = MDObject.FullName();
 			пГдеНайдено = "";
 			пСчетчик = 0;
 
@@ -2941,16 +2941,16 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 							EndIf;
 							пСчетчик = пСчетчик + 1;
 
-							пСоотв[пПолноеИмя] = 1;
+							пСоотв[pFullName] = 1;
 						EndIf;
 					EndDo;
 				EndDo;
 
-				If пСоотв[пПолноеИмя] <> Undefined Then
+				If пСоотв[pFullName] <> Undefined Then
 					NewLine = пТабРезультат.Add();
 					NewLine.Name = MDObject.Name;
 					NewLine.Presentation = MDObject.Presentation();
-					NewLine.FullName = пПолноеИмя;
+					NewLine.FullName = pFullName;
 					NewLine.WhereFound = пГдеНайдено;
 				EndIf;
 
@@ -2964,7 +2964,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 						EndIf;
 						пСчетчик = пСчетчик + 1;
 
-						пСоотв[пПолноеИмя] = 1;
+						пСоотв[pFullName] = 1;
 					EndIf;
 				EndDo;
 
@@ -2979,7 +2979,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 							EndIf;
 							пСчетчик = пСчетчик + 1;
 
-							пСоотв[пПолноеИмя] = 1;
+							пСоотв[pFullName] = 1;
 						EndIf;
 					EndDo;
 				EndDo;
@@ -2993,7 +2993,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 						EndIf;
 						пСчетчик = пСчетчик + 1;
 
-						пСоотв[пПолноеИмя] = 1;
+						пСоотв[pFullName] = 1;
 					EndIf;
 				EndIf;
 
@@ -3006,16 +3006,16 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 						EndIf;
 						пСчетчик = пСчетчик + 1;
 
-						пСоотв[пПолноеИмя] = 1;
+						пСоотв[pFullName] = 1;
 					EndIf;
 				EndIf;
 			EndIf;
 
-			If пСоотв[пПолноеИмя] <> Undefined Then
+			If пСоотв[pFullName] <> Undefined Then
 				NewLine = пТабРезультат.Add();
 				NewLine.Name = MDObject.Name;
 				NewLine.Presentation = MDObject.Presentation();
-				NewLine.FullName = пПолноеИмя;
+				NewLine.FullName = pFullName;
 				NewLine.WhereFound = пГдеНайдено;
 			EndIf;
 		EndDo;
@@ -3195,15 +3195,15 @@ Function vGetConstant(Val FullName)
 		Return pResult;
 	EndIf;
 
-	пНеПоддерживаемыеТипы = New Array;
-	пНеПоддерживаемыеТипы.Add(Type("ValueStorage"));
-	пНеПоддерживаемыеТипы.Add(Type("BinaryData"));
-	пНеПоддерживаемыеТипы.Add(Type("TypeDescription"));
-	пНеПоддерживаемыеТипы.Add(Type("FixedArray"));
-	пНеПоддерживаемыеТипы.Add(Type("FixedStructure"));
-	пНеПоддерживаемыеТипы.Add(Type("FixedMap"));
+	pUnsupportedTypes = New Array;
+	pUnsupportedTypes.Add(Type("ValueStorage"));
+	pUnsupportedTypes.Add(Type("BinaryData"));
+	pUnsupportedTypes.Add(Type("TypeDescription"));
+	pUnsupportedTypes.Add(Type("FixedArray"));
+	pUnsupportedTypes.Add(Type("FixedStructure"));
+	pUnsupportedTypes.Add(Type("FixedMap"));
 
-	For Each Itm In пНеПоддерживаемыеТипы Do
+	For Each Itm In pUnsupportedTypes Do
 		If пОбъектМД.Type.ContainsType(Itm) Then
 			pResult.ReadOnly = True;
 			Break;
@@ -3211,10 +3211,10 @@ Function vGetConstant(Val FullName)
 	EndDo;
 
 	If False Then
-		пТипЗначения = TypeOf(pResult.Value);
-		If пТипЗначения = Type("FixedArray") Then
-			For Сч = 0 To pResult.Value.UBound() Do
-				pResult.Text = pResult.Text + Chars.LF + String(pResult.Value[Сч]);
+		pValueType = TypeOf(pResult.Value);
+		If pValueType = Type("FixedArray") Then
+			For Counter = 0 To pResult.Value.UBound() Do
+				pResult.Text = pResult.Text + Chars.LF + String(pResult.Value[Counter]);
 			EndDo;
 		EndIf;
 	EndIf;

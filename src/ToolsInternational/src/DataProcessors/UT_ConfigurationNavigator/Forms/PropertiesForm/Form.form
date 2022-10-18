@@ -8983,7 +8983,7 @@
     <name>kOpemListForm</name>
     <title>
       <key>en</key>
-      <value>Opem list form</value>
+      <value>Standart form ...</value>
     </title>
     <title>
       <key>ru</key>
@@ -9011,12 +9011,12 @@
   <formCommands>
     <name>kShowObjectProperties</name>
     <title>
-      <key>ru</key>
-      <value>Свойства объекта</value>
+      <key>en</key>
+      <value>Object properties</value>
     </title>
     <title>
-      <key>en</key>
-      <value>K show object properties</value>
+      <key>ru</key>
+      <value>Свойства объекта</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -9040,12 +9040,12 @@
   <formCommands>
     <name>kOpemListFormAdditional</name>
     <title>
-      <key>ru</key>
-      <value>Динамический список</value>
+      <key>en</key>
+      <value>Dynamic list</value>
     </title>
     <title>
-      <key>en</key>
-      <value>K opem list form additional</value>
+      <key>ru</key>
+      <value>Динамический список</value>
     </title>
     <id>3</id>
     <toolTip>

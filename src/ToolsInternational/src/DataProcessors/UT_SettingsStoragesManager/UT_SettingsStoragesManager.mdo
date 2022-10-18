@@ -7,22 +7,22 @@
   <name>UT_SettingsStoragesManager</name>
   <synonym>
     <key>en</key>
-    <value>{} УИ_МенеджерХранилищНастроек</value>
+    <value>Settings storages manager (UT)</value>
   </synonym>
   <synonym>
     <key>ru</key>
     <value>Менеджер хранилищ настроек [УИ]</value>
   </synonym>
-  <defaultForm>DataProcessor.UT_SettingsStoragesManager.Form.Форма</defaultForm>
+  <defaultForm>DataProcessor.UT_SettingsStoragesManager.Form.Form</defaultForm>
   <extendedPresentation>
     <key>ru</key>
     <value>Менеджер хранилищ настроек</value>
   </extendedPresentation>
   <forms uuid="0c8a0125-1025-4c77-961c-06a3af759ff8">
-    <name>Форма</name>
+    <name>Form</name>
     <synonym>
       <key>ru</key>
-      <value>Форма</value>
+      <value>Form</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
