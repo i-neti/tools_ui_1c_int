@@ -9,10 +9,10 @@
     <value>Запуск сеанса 1С</value>
   </title>
   <items xsi:type="form:FormGroup">
-    <name>ПараметрыЗапуска</name>
+    <name>RunParameters</name>
     <id>1</id>
     <items xsi:type="form:FormField">
-      <name>Сервер</name>
+      <name>Server</name>
       <id>3</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -21,11 +21,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Сервер</segments>
+          <segments>Server</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>СерверРасширеннаяПодсказка</name>
+        <name>ServerExtendedTooltip</name>
         <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -40,7 +40,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СерверКонтекстноеМеню</name>
+        <name>ServerContextMenu</name>
         <id>4</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -64,7 +64,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>БазаДанных</name>
+      <name>InfoBase</name>
       <id>6</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -73,11 +73,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>БазаДанных</segments>
+          <segments>InfoBase</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>БазаДанныхРасширеннаяПодсказка</name>
+        <name>InfoBaseExtendedTooltip</name>
         <id>8</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -92,7 +92,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>БазаДанныхКонтекстноеМеню</name>
+        <name>InfoBaseContextMenu</name>
         <id>7</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -116,7 +116,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>РежимЗапуска</name>
+      <name>RunMode</name>
       <id>17</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -125,11 +125,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>РежимЗапуска</segments>
+          <segments>RunMode</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>РежимЗапускаРасширеннаяПодсказка</name>
+        <name>RunModeExtendedTooltip</name>
         <id>19</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -144,7 +144,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>РежимЗапускаКонтекстноеМеню</name>
+        <name>RunModeContextMenu</name>
         <id>18</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -204,7 +204,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>ДопПараметры</name>
+      <name>AdditionalParameters</name>
       <id>9</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -213,11 +213,11 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>ДопПараметры</segments>
+          <segments>AdditionalParameters</segments>
         </paths>
       </dataPath>
       <extendedTooltip>
-        <name>ДопПараметрыРасширеннаяПодсказка</name>
+        <name>AdditionalParametersExtendedTooltip</name>
         <id>11</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -232,7 +232,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>ДопПараметрыКонтекстноеМеню</name>
+        <name>AdditionalParametersContextMenu</name>
         <id>10</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -256,15 +256,19 @@
       </extInfo>
     </items>
     <items xsi:type="form:Decoration">
-      <name>Декорация1</name>
+      <name>Decoration1</name>
       <id>23</id>
+      <title>
+        <key>en</key>
+        <value>Decoration1</value>
+      </title>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>Декорация1РасширеннаяПодсказка</name>
+        <name>Decoration1ExtendedTooltip</name>
         <id>25</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -279,7 +283,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>Декорация1КонтекстноеМеню</name>
+        <name>Decoration1ContextMenu</name>
         <id>24</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -300,7 +304,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>Стартер1С</name>
+      <name>Starter1C</name>
       <id>14</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -309,7 +313,7 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>Стартер1С</segments>
+          <segments>Starter1C</segments>
         </paths>
       </dataPath>
       <toolTip>
@@ -317,7 +321,7 @@
         <value>Полный путь к файлу 1cestart.exe (можно задать вручную)</value>
       </toolTip>
       <extendedTooltip>
-        <name>Стартер1СРасширеннаяПодсказка</name>
+        <name>Starter1CExtendedTooltip</name>
         <id>16</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -332,7 +336,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>Стартер1СКонтекстноеМеню</name>
+        <name>Starter1CContextMenu</name>
         <id>15</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -349,7 +353,7 @@
       <extInfo xsi:type="form:InputFieldExtInfo">
         <handlers>
           <event>StartChoice</event>
-          <name>Стартер1СStartChoice</name>
+          <name>Starter1СStartChoice</name>
         </handlers>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -361,7 +365,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormField">
-      <name>СтрокаКоманды</name>
+      <name>CommandLine</name>
       <id>20</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -370,7 +374,7 @@
       </userVisible>
       <dataPath xsi:type="form:MultiLanguageDataPath">
         <paths xsi:type="form:DataPath">
-          <segments>СтрокаКоманды</segments>
+          <segments>CommandLine</segments>
         </paths>
       </dataPath>
       <toolTip>
@@ -378,7 +382,7 @@
         <value>Результирующая строка команды запуска 1С</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтрокаКомандыРасширеннаяПодсказка</name>
+        <name>CommandLineExtendedTooltip</name>
         <id>22</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -393,7 +397,7 @@
         </extInfo>
       </extendedTooltip>
       <contextMenu>
-        <name>СтрокаКомандыКонтекстноеМеню</name>
+        <name>CommandLineContextMenu</name>
         <id>21</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -418,7 +422,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:Button">
-      <name>СформироватьСтрокуКоманды</name>
+      <name>GenerateCommandLine</name>
       <id>29</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -426,7 +430,7 @@
         <common>true</common>
       </userVisible>
       <extendedTooltip>
-        <name>СформироватьСтрокуКомандыРасширеннаяПодсказка</name>
+        <name>GenerateCommandLineExtendedTooltip</name>
         <id>30</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -441,7 +445,7 @@
         </extInfo>
       </extendedTooltip>
       <type>Hyperlink</type>
-      <commandName>Form.Command.СформироватьСтрокуКоманды</commandName>
+      <commandName>Form.Command.GenerateCommandLine</commandName>
       <representation>Auto</representation>
       <autoMaxWidth>true</autoMaxWidth>
       <autoMaxHeight>true</autoMaxHeight>
@@ -457,13 +461,17 @@
       <key>ru</key>
       <value>Параметры запуска</value>
     </title>
+    <title>
+      <key>en</key>
+      <value>Run parameters</value>
+    </title>
     <toolTip>
       <key>ru</key>
       <value>Параметры запуска</value>
     </toolTip>
     <width>50</width>
     <extendedTooltip>
-      <name>ПараметрыЗапускаРасширеннаяПодсказка</name>
+      <name>RunParametersExtendedTooltip</name>
       <id>2</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -489,7 +497,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:Decoration">
-    <name>Декорация2</name>
+    <name>Decoration2</name>
     <id>26</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -497,7 +505,7 @@
       <common>true</common>
     </userVisible>
     <extendedTooltip>
-      <name>Декорация2РасширеннаяПодсказка</name>
+      <name>Decoration2ExtendedTooltip</name>
       <id>28</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -512,7 +520,7 @@
       </extInfo>
     </extendedTooltip>
     <contextMenu>
-      <name>Декорация2КонтекстноеМеню</name>
+      <name>Decoration2ContextMenu</name>
       <id>27</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -533,7 +541,7 @@
     </extInfo>
   </items>
   <items xsi:type="form:Button">
-    <name>Запустить1С</name>
+    <name>Run1C</name>
     <id>12</id>
     <visible>true</visible>
     <enabled>true</enabled>
@@ -541,7 +549,7 @@
       <common>true</common>
     </userVisible>
     <extendedTooltip>
-      <name>Запустить1СРасширеннаяПодсказка</name>
+      <name>Run1CExtendedTooltip</name>
       <id>13</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -556,7 +564,7 @@
       </extInfo>
     </extendedTooltip>
     <type>UsualButton</type>
-    <commandName>Form.Command.Запустить1С</commandName>
+    <commandName>Form.Command.Run1C</commandName>
     <representation>Auto</representation>
     <autoMaxWidth>true</autoMaxWidth>
     <autoMaxHeight>true</autoMaxHeight>
@@ -586,7 +594,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
+    <title>
+      <key>en</key>
+      <value>Object</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_ConfigurationNavigator</types>
@@ -600,10 +612,14 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>Сервер</name>
+    <name>Server</name>
     <title>
       <key>ru</key>
       <value>Сервер 1С</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Server</value>
     </title>
     <id>2</id>
     <valueType>
@@ -618,10 +634,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>БазаДанных</name>
+    <name>InfoBase</name>
     <title>
       <key>ru</key>
       <value>База данных</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Info base</value>
     </title>
     <id>3</id>
     <valueType>
@@ -636,10 +656,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>ДопПараметры</name>
+    <name>AdditionalParameters</name>
     <title>
       <key>ru</key>
       <value>Доп. параметры</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Additional parameters</value>
     </title>
     <id>4</id>
     <valueType>
@@ -654,7 +678,11 @@
     </edit>
   </attributes>
   <attributes>
-    <name>Стартер1С</name>
+    <name>Starter1C</name>
+    <title>
+      <key>en</key>
+      <value>Starter 1C</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Стартер1С</value>
@@ -672,10 +700,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>РежимЗапуска</name>
+    <name>RunMode</name>
     <title>
       <key>ru</key>
       <value>Режим запуска</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Run mode</value>
     </title>
     <id>6</id>
     <valueType>
@@ -692,10 +724,14 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СтрокаКоманды</name>
+    <name>CommandLine</name>
     <title>
       <key>ru</key>
       <value>Строка команды</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Command line</value>
     </title>
     <id>7</id>
     <valueType>
@@ -710,7 +746,11 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>Запустить1С</name>
+    <name>Run1C</name>
+    <title>
+      <key>en</key>
+      <value>Run 1C</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Запустить1С</value>
@@ -728,17 +768,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Запустить1С</name>
+        <name>Run1C</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СформироватьСтрокуКоманды</name>
+    <name>GenerateCommandLine</name>
     <title>
       <key>ru</key>
       <value>Сформировать строку команды</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Generate command line</value>
     </title>
     <id>2</id>
     <toolTip>

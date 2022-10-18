@@ -1,127 +1,126 @@
-#Область ПоддержкаСтарыхВерсийПлатформы
+#Region PlatfromOldVersionsSupport
 
-&НаКлиентеНаСервереБезКонтекста
-Функция вСтрНайти(Строка, Подстрока, НаправлениеПоиска = 1, Знач НачальнаяПозиция = Неопределено, НомерВхождения = 1)
-	Возврат Найти(Строка, Подстрока);
-КонецФункции
+&AtClientAtServerNoContext
+Function vStrFind(Line, SearchSubstring, SearchDirection = 1, Val StartIndex = Undefined, EntryNumber = 1)
+	Return Find(Line, SearchSubstring);
+EndFunction
 
-&НаКлиентеНаСервереБезКонтекста
-Функция вСтрШаблон(Шаблон, П1 = Неопределено, П2 = Неопределено)
-	Результат = Шаблон;
-	Если П1 <> Неопределено Тогда
-		Результат = СтрЗаменить(Результат, "%1", П1);
-	КонецЕсли;
-	Если П2 <> Неопределено Тогда
-		Результат = СтрЗаменить(Результат, "%2", П2);
-	КонецЕсли;
+&AtClientAtServerNoContext
+Function vStrTemplate(Template, V1 = Undefined, V2 = Undefined)
+	Result = Template;
+	If V1 <> Undefined Then
+		Result = StrReplace(Result, "%1", V1);
+	EndIf;
+	If V2 <> Undefined Then
+		Result = StrReplace(Result, "%2", V2);
+	EndIf;
 
-	Возврат Результат;
-КонецФункции
+	Return Result;
+EndFunction
 
-#КонецОбласти
+#EndRegion
 &AtClient
 Procedure OnOpen(Cancel)
-		Сервер = "SRV:3541";
-	БазаДанных = "TEST";
+	Server = "SRV:3541";
+	InfoBase = "TEST";
 
-	РежимЗапуска = 4;
+	RunMode = 4;
 
-	Папка1С = КаталогПрограммы();
+	Dir1C = BinDir();
 
-	Поз = СтрНайти(Папка1С, "\", НаправлениеПоиска.СКонца, , 3);
-	Если Поз <> 0 Тогда
-		Папка1С = Лев(Папка1С, Поз);
-		Стартер1С = Папка1С + "common\1cestart.exe";
-	КонецЕсли;
+	Position = StrFind(Dir1C, "\", SearchDirection.FromEnd, , 3);
+	If Position <> 0 Then
+		Dir1C = Left(Dir1C, Position);
+		Starter1C = Dir1C + "common\1cestart.exe";
+	EndIf;
 
 EndProcedure
-&НаКлиенте
-Процедура Запустить1С(Команда)
-	СтрокаКоманды = вСформироватьСтрокуКоманды();
-	Если Не ПустаяСтрока(СтрокаКоманды) Тогда
-		Попытка
-			НачатьЗапускПриложения(Новый ОписаниеОповещения("вПослеЗапускаПриложения", ЭтаФорма), СтрокаКоманды);
-		Исключение
-			Сообщить(ОписаниеОшибки());
-		КонецПопытки;
-	КонецЕсли;
-КонецПроцедуры
-
-&НаКлиенте
-Процедура вПослеЗапускаПриложения(КодВозврата, ДопПарам = Неопределено) Экспорт
-	// фиктивная процедура для совместимости разных версий платформы
-КонецПроцедуры
+&AtClient
+Procedure Run1C(Command)
+	CommandLine = vGenerateCommandLine();
+	If Not IsBlankString(CommandLine) Then
+		Try
+			BeginRunningApplication(New NotifyDescription("vAfterRunApplication", ThisForm), CommandLine);
+		Except
+			Message(ErrorDescription());
+		EndTry;
+	EndIf;
+EndProcedure
 
 &AtClient
-Procedure Стартер1СStartChoice(Item, ChoiceData, StandardProcessing)
-		СтандартнаяОбработка = Ложь;
-
-	Диалог = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.Открытие);
-
-	Диалог.Заголовок = "Путь к стартеру 1С";
-	Диалог.Фильтр = "Стартер 1С|1cestart.exe";
-	Диалог.ПроверятьСуществованиеФайла = Истина;
-	Если ПустаяСтрока(Стартер1С) Тогда
-		Диалог.Каталог = КаталогПрограммы();
-	Иначе
-		Диалог.Каталог = вКаталогФайла(Стартер1С);
-		Диалог.ПолноеИмяФайла = Стартер1С;
-	КонецЕсли;
-	Диалог.Показать(Новый ОписаниеОповещения("Стартер1СНачалоВыбораДалее", ЭтаФорма));
-	
+Procedure vAfterRunApplication(CodeReturn, AdditionalParameters = Undefined) Export
+	// fake procedure for compatible with different versions of 1C Platform
 EndProcedure
 
-&НаКлиенте
-Процедура Стартер1СНачалоВыбораДалее(ВыбранныеФайлы, ДопПараметры = Неопределено) Экспорт
-	Если ВыбранныеФайлы <> Неопределено Тогда
-		Стартер1С = ВыбранныеФайлы[0];
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure Starter1СStartChoice(Item, ChoiceData, StandardProcessing)
+			StandardProcessing = False;
 
-&НаКлиенте
-Функция вКаталогФайла(ПолноеИмяФайла)
-	Поз = СтрНайти(ПолноеИмяФайла, "\", НаправлениеПоиска.СКонца, , 1);
-	Если Поз = 0 Тогда
-		Возврат ПолноеИмяФайла;
+	Dialog = New FileDialog(FileDialogMode.Open);
+
+	Dialog.Title = "ru = 'Путь к стартеру 1С';en = 'Path to 1C starter'";
+	Dialog.Filter = "ru = 'Стартер 1С|1cestart.exe';en = 'Starter 1С|1cestart.exe'";
+	Dialog.CheckFileExist = True;
+	If IsBlankString(Starter1C) Then
+		Dialog.Directory = BinDir();
 	Иначе
-		Возврат Лев(ПолноеИмяФайла, Поз);
-	КонецЕсли;
-КонецФункции
+		Dialog.Directory = vFileDirectory(Starter1C);
+		Dialog.FullFileName = Starter1C;
+	EndIf;
+	Dialog.Show(New NotifyDescription("Starter1СStartChoiceAfter", ThisForm));
+EndProcedure
 
-&НаКлиенте
-Функция вСформироватьСтрокуКоманды()
-	Если ПустаяСтрока(Стартер1С) Тогда
-		Сообщить("Не задан Стратер1С");
-		Возврат "";
-	ИначеЕсли ПустаяСтрока(Сервер) Тогда
-		Сообщить("Не задан сервер приложений 1С");
-		Возврат "";
-	ИначеЕсли ПустаяСтрока(БазаДанных) Тогда
-		Сообщить("Не задана база данных на сервере приложений 1С");
-		Возврат "";
-	КонецЕсли;
+&AtClient
+Procedure Starter1СStartChoiceAfter(SelectedFiles, AdditionalParameters = Undefined) Export
+	If SelectedFiles <> Undefined Then
+		Starter1C = SelectedFiles[0];
+	EndIf;
+EndProcedure
 
-	СтрокаЗапуска = Стартер1С;
+&AtClient
+Function vFileDirectory(FullFileName)
+	Position = StrFind(FullFileName, "\", SearchDirection.FromEnd, , 1);
+	If Position = 0 Then
+		Return FullFileName;
+	Else
+		Return Left(FullFileName, Position);
+	EndIf;
+EndFunction
 
-	Если РежимЗапуска = 1 Тогда
-		СтрокаЗапуска = СтрокаЗапуска + " DESIGNER";
-	ИначеЕсли РежимЗапуска = 2 Тогда
-		СтрокаЗапуска = СтрокаЗапуска + " ENTERPRISE /RunModeOrdinaryApplication";
-	ИначеЕсли РежимЗапуска = 3 Тогда
-		СтрокаЗапуска = СтрокаЗапуска + " ENTERPRISE /RunModeManagedApplication";
-	ИначеЕсли РежимЗапуска = 4 Тогда
-		СтрокаЗапуска = СтрокаЗапуска + " ENTERPRISE";
-	КонецЕсли;
+&AtClient
+Function vGenerateCommandLine()
+	If IsBlankString(Starter1C) Then
+		Message("ru = 'Не задан Стартер 1С';en = 'Starter 1C is not set'");
+		Return "";
+	ElsIf IsBlankString(Server) Then
+		Message("ru = 'Не задан сервер приложений 1С';en = '1C application server is not specified'");
+		Return "";
+	ElsIf IsBlankString(InfoBase) Then
+		Message("ru = 'Не задана база данных на сервере приложений 1С';en = 'Infobase is not specified on the 1C application server'");
+		Return "";
+	EndIf;
 
-	СтрокаЗапуска = вСтрШаблон(СтрокаЗапуска + " /S %1\%2", Сервер, БазаДанных);
-	Если Не ПустаяСтрока(ДопПараметры) Тогда
-		СтрокаЗапуска = СтрокаЗапуска + " " + ДопПараметры;
-	КонецЕсли;
+	RunString = Starter1C;
 
-	Возврат СтрокаЗапуска;
-КонецФункции
+	If RunMode = 1 Then
+		RunString = RunString + " DESIGNER";
+	ElsIf RunMode = 2 Then
+		RunString = RunString + " ENTERPRISE /RunModeOrdinaryApplication";
+	ElsIf RunMode = 3 Then
+		RunString = RunString + " ENTERPRISE /RunModeManagedApplication";
+	ElsIf RunMode = 4 Then
+		RunString = RunString + " ENTERPRISE";
+	EndIf;
 
-&НаКлиенте
-Процедура СформироватьСтрокуКоманды(Команда)
-	СтрокаКоманды = вСформироватьСтрокуКоманды();
-КонецПроцедуры
+	RunString = vStrTemplate(RunString + " /S %1\%2", Server, InfoBase);
+	If Not IsBlankString(AdditionalParameters) Then
+		RunString = RunString + " " + AdditionalParameters;
+	EndIf;
+
+	Return RunString;
+EndFunction
+
+&AtClient
+Procedure GenerateCommandLine(Command)
+	CommandLine = vGenerateCommandLine();
+EndProcedure
