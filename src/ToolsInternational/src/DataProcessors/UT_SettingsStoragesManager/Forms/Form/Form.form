@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>Страницы</name>
+    <name>PagesItem</name>
     <id>249</id>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаОсновное</name>
+      <name>PageMain</name>
       <id>251</id>
       <items xsi:type="form:FormGroup">
         <name>ГруппаДействия</name>
@@ -142,7 +142,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ВладелецНастроек</segments>
+                  <segments>SettingsOwner</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
@@ -209,7 +209,7 @@
               </userVisible>
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <paths xsi:type="form:DataPath">
-                  <segments>ТекстОтбораПоХранилищамНастроек</segments>
+                  <segments>TextOfFilterBySettingsStorages</segments>
                 </paths>
               </dataPath>
               <titleLocation>None</titleLocation>
@@ -290,7 +290,7 @@
                 </extInfo>
               </extendedTooltip>
               <type>UsualButton</type>
-              <commandName>Form.Command.ОбновитьНастройкиВладельца</commandName>
+              <commandName>Form.Command.UpdateOwnerSettings</commandName>
               <representation>Picture</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
@@ -353,7 +353,7 @@
                     <common>true</common>
                   </userVisible>
                   <dataPath xsi:type="form:DataPath">
-                    <segments>ДеревоКонфигурации</segments>
+                    <segments>ConfigurationTree</segments>
                   </dataPath>
                   <titleLocation>None</titleLocation>
                   <excludedCommands>Add</excludedCommands>
@@ -384,7 +384,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.Пометка</segments>
+                          <segments>ConfigurationTree.Check</segments>
                         </paths>
                       </dataPath>
                       <handlers>
@@ -433,7 +433,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.Картинка</segments>
+                          <segments>ConfigurationTree.Picture</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>None</titleLocation>
@@ -473,7 +473,6 @@
                         <autoMaxHeight>true</autoMaxHeight>
                         <horizontalStretch>true</horizontalStretch>
                         <verticalStretch>true</verticalStretch>
-                        <valuesPicture xsi:type="form:FormPicture"/>
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
@@ -486,7 +485,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.ПредставлениеИмя</segments>
+                          <segments>ConfigurationTree.PresentationName</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -539,7 +538,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.КоличествоНастроек</segments>
+                          <segments>ConfigurationTree.SettingsCount</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -628,7 +627,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.Пометка</segments>
+                          <segments>ConfigurationTree.Check</segments>
                         </paths>
                       </dataPath>
                       <handlers>
@@ -677,7 +676,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.Картинка</segments>
+                          <segments>ConfigurationTree.Picture</segments>
                         </paths>
                       </dataPath>
                       <titleLocation>None</titleLocation>
@@ -717,7 +716,6 @@
                         <autoMaxHeight>true</autoMaxHeight>
                         <horizontalStretch>true</horizontalStretch>
                         <verticalStretch>true</verticalStretch>
-                        <valuesPicture xsi:type="form:FormPicture"/>
                       </extInfo>
                     </items>
                     <items xsi:type="form:FormField">
@@ -730,7 +728,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.ПредставлениеСиноним</segments>
+                          <segments>ConfigurationTree.PresentationSynonym</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -783,7 +781,7 @@
                       </userVisible>
                       <dataPath xsi:type="form:MultiLanguageDataPath">
                         <paths xsi:type="form:DataPath">
-                          <segments>ДеревоКонфигурации.КоличествоНастроек</segments>
+                          <segments>ConfigurationTree.SettingsCount</segments>
                         </paths>
                       </dataPath>
                       <extendedTooltip>
@@ -884,7 +882,7 @@
                           <horizontalAlign>Left</horizontalAlign>
                         </extInfo>
                       </extendedTooltip>
-                      <commandName>Form.Command.ПоказатьВыбранныеНастройки</commandName>
+                      <commandName>Form.Command.ShowSelectedSettings</commandName>
                       <representation>PictureAndText</representation>
                       <autoMaxWidth>true</autoMaxWidth>
                       <autoMaxHeight>true</autoMaxHeight>
@@ -1111,7 +1109,7 @@
                     <common>true</common>
                   </userVisible>
                   <dataPath xsi:type="form:DataPath">
-                    <segments>ТаблицаНастроек</segments>
+                    <segments>SettingsTable</segments>
                   </dataPath>
                   <titleLocation>None</titleLocation>
                   <excludedCommands>Add</excludedCommands>
@@ -1140,7 +1138,7 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>ТаблицаНастроек.КлючОбъекта</segments>
+                        <segments>SettingsTable.ObjectKey</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
@@ -1212,7 +1210,7 @@
                           <horizontalAlign>Left</horizontalAlign>
                         </extInfo>
                       </extendedTooltip>
-                      <commandName>Form.Command.ОтменитьВыборНастройки</commandName>
+                      <commandName>Form.Command.DeselectSetting</commandName>
                       <representation>PictureAndText</representation>
                       <autoMaxWidth>true</autoMaxWidth>
                       <autoMaxHeight>true</autoMaxHeight>
@@ -1472,7 +1470,7 @@
                   <common>true</common>
                 </userVisible>
                 <dataPath xsi:type="form:DataPath">
-                  <segments>ТаблицаНастроек</segments>
+                  <segments>SettingsTable</segments>
                 </dataPath>
                 <titleLocation>None</titleLocation>
                 <excludedCommands>Add</excludedCommands>
@@ -1501,7 +1499,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.Пометка</segments>
+                      <segments>SettingsTable.Check</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>None</titleLocation>
@@ -1555,7 +1553,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.ИмяХранилищаНастроек</segments>
+                      <segments>SettingsTable.SettingsStorageName</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1609,7 +1607,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.КлючОбъекта</segments>
+                      <segments>SettingsTable.ObjectKey</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1662,7 +1660,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.КлючНастроек</segments>
+                      <segments>SettingsTable.SettingsKey</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1715,7 +1713,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.Представление</segments>
+                      <segments>SettingsTable.Presentation</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -1772,7 +1770,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>ТаблицаНастроек.НастройкиПр</segments>
+                      <segments>SettingsTable.SettingsAdditional</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -2117,7 +2115,7 @@
                 <common>true</common>
               </userVisible>
               <dataPath xsi:type="form:DataPath">
-                <segments>Пользователи</segments>
+                <segments>Users</segments>
               </dataPath>
               <titleLocation>None</titleLocation>
               <excludedCommands>Add</excludedCommands>
@@ -2145,7 +2143,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Пользователи.Пометка</segments>
+                      <segments>Users.Check</segments>
                     </paths>
                   </dataPath>
                   <titleLocation>None</titleLocation>
@@ -2195,7 +2193,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Пользователи.Картинка</segments>
+                      <segments>Users.Picture</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -2245,7 +2243,7 @@
                   </userVisible>
                   <dataPath xsi:type="form:MultiLanguageDataPath">
                     <paths xsi:type="form:DataPath">
-                      <segments>Пользователи.Имя</segments>
+                      <segments>Users.Name</segments>
                     </paths>
                   </dataPath>
                   <extendedTooltip>
@@ -2340,7 +2338,7 @@
                       <horizontalAlign>Left</horizontalAlign>
                     </extInfo>
                   </extendedTooltip>
-                  <commandName>Form.Command.ПоказатьВыбранныхПользователей</commandName>
+                  <commandName>Form.Command.ShowSelectedUsers</commandName>
                   <representation>PictureAndText</representation>
                   <autoMaxWidth>true</autoMaxWidth>
                   <autoMaxHeight>true</autoMaxHeight>
@@ -2697,12 +2695,16 @@
         <key>ru</key>
         <value>Основное</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Page main</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Страница основное</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницаОсновноеРасширеннаяПодсказка</name>
+        <name>PageMainExtendedTooltip</name>
         <id>252</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -2723,7 +2725,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>СтраницаДополнительно</name>
+      <name>PageAdditional</name>
       <id>253</id>
       <items xsi:type="form:FormField">
         <name>ВариантПредставленияОбъектовКонфигурации</name>
@@ -2735,7 +2737,7 @@
         </userVisible>
         <dataPath xsi:type="form:MultiLanguageDataPath">
           <paths xsi:type="form:DataPath">
-            <segments>ВариантПредставленияОбъектовКонфигурации</segments>
+            <segments>ConfigurationObjectsRepresentationVariant</segments>
           </paths>
         </dataPath>
         <handlers>
@@ -2803,12 +2805,16 @@
         <key>ru</key>
         <value>Дополнительно</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Page additional</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Дополнительно</value>
       </toolTip>
       <extendedTooltip>
-        <name>СтраницаДополнительноРасширеннаяПодсказка</name>
+        <name>PageAdditionalExtendedTooltip</name>
         <id>254</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -2833,6 +2839,10 @@
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Pages</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Страницы</value>
     </title>
@@ -2841,7 +2851,7 @@
       <value>Страницы</value>
     </toolTip>
     <extendedTooltip>
-      <name>СтраницыРасширеннаяПодсказка</name>
+      <name>PagesItemExtendedTooltip</name>
       <id>250</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -2862,16 +2872,16 @@
     </extInfo>
   </items>
   <items xsi:type="form:FormGroup">
-    <name>ГруппаОсновное</name>
+    <name>GroupMain</name>
     <id>286</id>
     <items xsi:type="form:FormGroup">
-      <name>СтраницыФильтры</name>
+      <name>PagesFilters</name>
       <id>288</id>
       <items xsi:type="form:FormGroup">
-        <name>СтраницаПользователи</name>
+        <name>PageUsers</name>
         <id>290</id>
         <items xsi:type="form:Table">
-          <name>Пользователи</name>
+          <name>Users</name>
           <id>305</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2879,7 +2889,7 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>Пользователи</segments>
+            <segments>Users</segments>
           </dataPath>
           <titleLocation>None</titleLocation>
           <items xsi:type="form:FormGroup">
@@ -2896,10 +2906,10 @@
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <activeLanguage>1</activeLanguage>
                 <paths xsi:type="form:DataPath">
-                  <segments>Пользователи.Пометка</segments>
+                  <segments>Users.Check</segments>
                 </paths>
                 <paths xsi:type="form:DataPath">
-                  <segments>Пользователи.Пометка</segments>
+                  <segments>Users.Check</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -2943,10 +2953,10 @@
               <dataPath xsi:type="form:MultiLanguageDataPath">
                 <activeLanguage>1</activeLanguage>
                 <paths xsi:type="form:DataPath">
-                  <segments>Пользователи.ПолноеИмя</segments>
+                  <segments>Users.FullName</segments>
                 </paths>
                 <paths xsi:type="form:DataPath">
-                  <segments>Пользователи.ПолноеИмя</segments>
+                  <segments>Users.FullName</segments>
                 </paths>
               </dataPath>
               <extendedTooltip>
@@ -3019,7 +3029,7 @@
             </extInfo>
           </items>
           <autoCommandBar>
-            <name>ПользователиКоманднаяПанель</name>
+            <name>UsersCommandBar</name>
             <id>306</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3034,10 +3044,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>ПользователиСтрокаПоиска</name>
+            <name>UsersSearchString</name>
             <id>309</id>
             <extendedTooltip>
-              <name>ПользователиСтрокаПоискаРасширеннаяПодсказка</name>
+              <name>UsersSearchStringExtendedTooltip</name>
               <id>311</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3052,7 +3062,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ПользователиСтрокаПоискаКонтекстноеМеню</name>
+              <name>UsersSearchStringContextMenu</name>
               <id>310</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3071,10 +3081,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>ПользователиСостояниеПросмотра</name>
+            <name>UsersViewStatus</name>
             <id>315</id>
             <extendedTooltip>
-              <name>ПользователиСостояниеПросмотраРасширеннаяПодсказка</name>
+              <name>UsersViewStatusExtendedTooltip</name>
               <id>317</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3089,7 +3099,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ПользователиСостояниеПросмотраКонтекстноеМеню</name>
+              <name>UsersViewStatusContextMenu</name>
               <id>316</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3110,10 +3120,10 @@
             <userVisible>
               <common>true</common>
             </userVisible>
-            <name>ПользователиУправлениеПоиском</name>
+            <name>UsersSearchControl</name>
             <id>312</id>
             <extendedTooltip>
-              <name>ПользователиУправлениеПоискомРасширеннаяПодсказка</name>
+              <name>UsersSearchControlExtendedTooltip</name>
               <id>314</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3128,7 +3138,7 @@
               </extInfo>
             </extendedTooltip>
             <contextMenu>
-              <name>ПользователиУправлениеПоискомКонтекстноеМеню</name>
+              <name>UsersSearchControlContextMenu</name>
               <id>313</id>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -3143,7 +3153,7 @@
             </extInfo>
           </searchControlAddition>
           <extendedTooltip>
-            <name>ПользователиРасширеннаяПодсказка</name>
+            <name>UsersExtendedTooltip</name>
             <id>308</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3158,7 +3168,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ПользователиКонтекстноеМеню</name>
+            <name>UsersContextMenu</name>
             <id>307</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -3189,11 +3199,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Users</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Пользователи</value>
         </title>
         <extendedTooltip>
-          <name>СтраницаПользователиРасширеннаяПодсказка</name>
+          <name>PageUsersExtendedTooltip</name>
           <id>291</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -3222,8 +3236,12 @@
         <key>ru</key>
         <value>Страницы фильтры</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Pages filters</value>
+      </title>
       <extendedTooltip>
-        <name>СтраницыФильтрыРасширеннаяПодсказка</name>
+        <name>PagesFiltersExtendedTooltip</name>
         <id>289</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -3248,8 +3266,12 @@
     <userVisible>
       <common>true</common>
     </userVisible>
+    <title>
+      <key>en</key>
+      <value>Group main</value>
+    </title>
     <extendedTooltip>
-      <name>ГруппаОсновноеРасширеннаяПодсказка</name>
+      <name>GroupMainExtendedTooltip</name>
       <id>287</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -3286,11 +3308,11 @@
   </autoCommandBar>
   <handlers>
     <event>OnOpen</event>
-    <name>ПриОткрытии</name>
+    <name>OnOpen</name>
   </handlers>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <autoTitle>true</autoTitle>
@@ -3301,7 +3323,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
+    <title>
+      <key>en</key>
+      <value>Object</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataProcessorObject.UT_SettingsStoragesManager</types>
@@ -3315,10 +3341,14 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>Пользователи</name>
+    <name>Users</name>
     <title>
       <key>ru</key>
       <value>Пользователи</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Users</value>
     </title>
     <id>2</id>
     <valueType>
@@ -3331,10 +3361,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
       <title>
         <key>ru</key>
         <value>Пометка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Check</value>
       </title>
       <id>1</id>
       <valueType>
@@ -3348,10 +3382,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Имя</name>
+      <name>Name</name>
       <title>
         <key>ru</key>
         <value>Имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Name</value>
       </title>
       <id>2</id>
       <valueType>
@@ -3366,10 +3404,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Картинка</name>
+      <name>Picture</name>
       <title>
         <key>ru</key>
         <value>Картинка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Picture</value>
       </title>
       <id>3</id>
       <valueType>
@@ -3386,10 +3428,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПолноеИмя</name>
+      <name>FullName</name>
       <title>
         <key>ru</key>
         <value>Полное имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Full name</value>
       </title>
       <id>19</id>
       <valueType>
@@ -3404,10 +3450,14 @@
       </edit>
     </columns>
     <columns>
-      <name>УникальныйИдентификатор</name>
+      <name>UUID</name>
       <title>
         <key>ru</key>
         <value>Уникальный идентификатор</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>UUID</value>
       </title>
       <id>20</id>
       <valueType>
@@ -3423,10 +3473,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ВладелецНастроек</name>
+    <name>SettingsOwner</name>
     <title>
       <key>ru</key>
       <value>Владелец настроек</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Settings owner</value>
     </title>
     <id>4</id>
     <valueType>
@@ -3440,14 +3494,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ВладелецНастроек</segments>
+      <segments>SettingsOwner</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ДеревоКонфигурации</name>
+    <name>ConfigurationTree</name>
     <title>
       <key>ru</key>
       <value>Дерево конфигурации</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Configuration tree</value>
     </title>
     <id>5</id>
     <valueType>
@@ -3460,10 +3518,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>ПредставлениеИмя</name>
+      <name>PresentationName</name>
       <title>
         <key>ru</key>
         <value>Представление имя</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation name</value>
       </title>
       <id>1</id>
       <valueType>
@@ -3478,10 +3540,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Путь</name>
+      <name>Path</name>
       <title>
         <key>ru</key>
         <value>Путь</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Path</value>
       </title>
       <id>2</id>
       <valueType>
@@ -3496,10 +3562,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Порядок</name>
+      <name>Order</name>
       <title>
         <key>ru</key>
         <value>Порядок</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Order</value>
       </title>
       <id>3</id>
       <valueType>
@@ -3516,10 +3586,14 @@
       </edit>
     </columns>
     <columns>
-      <name>КлассОбъектовМетаданных</name>
+      <name>MetadataObjectsClass</name>
       <title>
         <key>ru</key>
         <value>Класс объектов метаданных</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Metadata objects class</value>
       </title>
       <id>4</id>
       <valueType>
@@ -3534,10 +3608,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных</name>
+      <name>GeneratePresentationOfChildRowsFromMetadataSynonyms</name>
       <title>
         <key>ru</key>
         <value>Формировать представление подчиненных строк из синонима метаданных</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Generate presentation of child rows from metadata synonyms</value>
       </title>
       <id>6</id>
       <valueType>
@@ -3551,10 +3629,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ОтсутствуетВКонфигурации</name>
+      <name>MissingInConfiguration</name>
       <title>
         <key>ru</key>
         <value>Отсутствует в конфигурации</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Missing in configuration</value>
       </title>
       <id>7</id>
       <valueType>
@@ -3568,10 +3650,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ПредставлениеСиноним</name>
+      <name>PresentationSynonym</name>
       <title>
         <key>ru</key>
         <value>Представление синоним</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation synonym</value>
       </title>
       <id>8</id>
       <valueType>
@@ -3586,10 +3672,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Картинка</name>
+      <name>Picture</name>
       <title>
         <key>ru</key>
         <value>Картинка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Picture</value>
       </title>
       <id>9</id>
       <valueType>
@@ -3606,10 +3696,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
       <title>
         <key>ru</key>
         <value>Пометка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Check</value>
       </title>
       <id>10</id>
       <valueType>
@@ -3626,10 +3720,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора</name>
+      <name>FilterID</name>
       <title>
         <key>ru</key>
         <value>Идентификатор отбора</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Filter ID</value>
       </title>
       <id>5</id>
       <valueType>
@@ -3647,10 +3745,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Уровень</name>
+      <name>Level</name>
       <title>
         <key>ru</key>
         <value>Уровень</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Level</value>
       </title>
       <id>11</id>
       <valueType>
@@ -3667,10 +3769,14 @@
       </edit>
     </columns>
     <columns>
-      <name>КоличествоНастроек</name>
+      <name>SettingsCount</name>
       <title>
         <key>ru</key>
         <value>Количество настроек</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Settings count</value>
       </title>
       <id>12</id>
       <valueType>
@@ -3688,10 +3794,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ВариантПредставленияОбъектовКонфигурации</name>
+    <name>ConfigurationObjectsRepresentationVariant</name>
     <title>
       <key>ru</key>
       <value>Вариант представления объектов конфигурации</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Configuration objects representation variant</value>
     </title>
     <id>6</id>
     <valueType>
@@ -3707,14 +3817,18 @@
       <common>true</common>
     </edit>
     <settingsSavedData xsi:type="form:DataPath">
-      <segments>ВариантПредставленияОбъектовКонфигурации</segments>
+      <segments>ConfigurationObjectsRepresentationVariant</segments>
     </settingsSavedData>
   </attributes>
   <attributes>
-    <name>ТаблицаНастроек</name>
+    <name>SettingsTable</name>
     <title>
       <key>ru</key>
       <value>Таблица настроек</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Settings table</value>
     </title>
     <id>7</id>
     <valueType>
@@ -3727,10 +3841,14 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>КлючОбъекта</name>
+      <name>ObjectKey</name>
       <title>
         <key>ru</key>
         <value>Ключ объекта</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Object key</value>
       </title>
       <id>1</id>
       <valueType>
@@ -3745,10 +3863,14 @@
       </edit>
     </columns>
     <columns>
-      <name>КлючНастроек</name>
+      <name>SettingsKey</name>
       <title>
         <key>ru</key>
         <value>Ключ настроек</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Settings key</value>
       </title>
       <id>2</id>
       <valueType>
@@ -3763,10 +3885,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Представление</name>
+      <name>Presentation</name>
       <title>
         <key>ru</key>
         <value>Представление</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Presentation</value>
       </title>
       <id>3</id>
       <valueType>
@@ -3781,10 +3907,14 @@
       </edit>
     </columns>
     <columns>
-      <name>Пометка</name>
+      <name>Check</name>
       <title>
         <key>ru</key>
         <value>Пометка</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Check</value>
       </title>
       <id>5</id>
       <valueType>
@@ -3798,7 +3928,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора1</name>
+      <name>FilterId1</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 1</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификатор отбора1</value>
@@ -3819,7 +3953,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора2</name>
+      <name>FilterId2</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 2</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3840,7 +3978,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора3</name>
+      <name>FilterId3</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 3</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3861,7 +4003,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора4</name>
+      <name>FilterId4</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 4</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3882,7 +4028,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора5</name>
+      <name>FilterId5</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 5</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3903,7 +4053,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора6</name>
+      <name>FilterId6</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 6</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3924,7 +4078,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора7</name>
+      <name>FilterId7</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 7</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3945,7 +4103,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора8</name>
+      <name>FilterId8</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 8</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3966,7 +4128,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора9</name>
+      <name>FilterId9</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 9</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -3987,7 +4153,11 @@
       </edit>
     </columns>
     <columns>
-      <name>ИдентификаторОтбора0</name>
+      <name>FilterId0</name>
+      <title>
+        <key>en</key>
+        <value>Filter id 0</value>
+      </title>
       <title>
         <key>ru</key>
         <value>Идентификтор отбора1</value>
@@ -4008,10 +4178,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ИмяХранилищаНастроек</name>
+      <name>SettingsStorageName</name>
       <title>
         <key>ru</key>
         <value>Имя хранилища настроек</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Settings storage name</value>
       </title>
       <id>16</id>
       <valueType>
@@ -4026,10 +4200,14 @@
       </edit>
     </columns>
     <columns>
-      <name>НастройкиПр</name>
+      <name>SettingsAdditional</name>
       <title>
         <key>ru</key>
         <value>Настройки пр</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Settings additional</value>
       </title>
       <id>17</id>
       <valueType>
@@ -4045,10 +4223,14 @@
     </columns>
   </attributes>
   <attributes>
-    <name>ОтборПоХранилищамНастроек</name>
+    <name>FilterBySettingsStorages</name>
     <title>
       <key>ru</key>
       <value>Отбор по хранилищам настроек</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Filter by settings storages</value>
     </title>
     <id>8</id>
     <valueType>
@@ -4068,10 +4250,14 @@
     </extInfo>
   </attributes>
   <attributes>
-    <name>ТекстОтбораПоХранилищамНастроек</name>
+    <name>TextOfFilterBySettingsStorages</name>
     <title>
       <key>ru</key>
       <value>Текст отбора по хранилищам настроек</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Text of filter by settings storages</value>
     </title>
     <id>9</id>
     <valueType>
@@ -4086,10 +4272,14 @@
     </edit>
   </attributes>
   <formCommands>
-    <name>ОбновитьНастройкиВладельца</name>
+    <name>UpdateOwnerSettings</name>
     <title>
       <key>ru</key>
       <value>Обновить настройки владельца</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Update owner settings</value>
     </title>
     <id>1</id>
     <toolTip>
@@ -4104,17 +4294,21 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОбновитьНастройкиВладельца</name>
+        <name>UpdateOwnerSettings</name>
       </handler>
     </action>
     <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ПоказатьВыбранныеНастройки</name>
+    <name>ShowSelectedSettings</name>
     <title>
       <key>ru</key>
       <value>Показать выбранные настройки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show selected settings</value>
     </title>
     <id>2</id>
     <toolTip>
@@ -4126,16 +4320,20 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПоказатьВыбранныеНастройки</name>
+        <name>ShowSelectedSettings</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ОтменитьВыборНастройки</name>
+    <name>DeselectSetting</name>
     <title>
       <key>ru</key>
       <value>Отменить выбор настройки</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Deselect setting</value>
     </title>
     <id>3</id>
     <toolTip>
@@ -4150,7 +4348,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ОтменитьВыборНастройки</name>
+        <name>DeselectSetting</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -4180,10 +4378,14 @@
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ПоказатьВыбранныхПользователей</name>
+    <name>ShowSelectedUsers</name>
     <title>
       <key>ru</key>
       <value>Показать выбранных пользователей</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Show selected users</value>
     </title>
     <id>5</id>
     <toolTip>
