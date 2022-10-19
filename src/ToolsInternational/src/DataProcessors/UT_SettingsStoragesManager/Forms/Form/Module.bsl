@@ -26,7 +26,7 @@ Procedure OnOpen(Cancel)
 	// Управление внешним видом формы
 	ОбновитьОтображениеЭлементов();
 
-	Items.ТаблицаВыбранныхНастроек.RowFilter = New FixedStructure("Check", True);
+	Items.SelectedSettingsTable.RowFilter = New FixedStructure("Check", True);
 
 EndProcedure
 
@@ -65,7 +65,7 @@ Procedure ДеревоКонфигурацииПриАктивизацииСтр
 		Return;
 	EndIf;
 
-	Items.ТаблицаНастроек.RowFilter = ?(ТекДанные.ИдентификаторОтбора = 0, Undefined,
+	Items.SettingsTable.RowFilter = ?(ТекДанные.ИдентификаторОтбора = 0, Undefined,
 		New FixedStructure("ИдентификаторОтбора" + ТекДанные.Level, ТекДанные.ИдентификаторОтбора));
 
 EndProcedure
@@ -73,7 +73,7 @@ EndProcedure
 &AtClient
 Procedure DeselectSetting(Command)
 
-	For Each ВыделеннаяСтрока In Items.ТаблицаВыбранныхНастроек.SelectedRows Do
+	For Each ВыделеннаяСтрока In Items.SelectedSettingsTable.SelectedRows Do
 
 		String = SettingsTable.FindByID(ВыделеннаяСтрока);
 		If String <> Undefined Then
@@ -122,7 +122,7 @@ Procedure ТаблицаНастроекНастройкиОткрытие(Item,
 
 	StandardProcessing = False;
 
-	ТекДанные = Items.ТаблицаНастроек.CurrentData;
+	ТекДанные = Items.SettingsTable.CurrentData;
 	If ТекДанные = Undefined Then
 		Return;
 	EndIf;
@@ -134,7 +134,7 @@ EndProcedure
 
 &AtClient
 Procedure ShowSelectedSettings(Command)
-	Items.ДеревоКонфигурацииПоказатьВыбранныеНастройки.Check = Not Items.ДеревоКонфигурацииПоказатьВыбранныеНастройки.Check;
+	Items.ConfigurationTreeShowSelectedSettings.Check = Not Items.ConfigurationTreeShowSelectedSettings.Check;
 	ОбновитьОтображениеЭлементов("ShowSelectedSettings");
 EndProcedure
 
@@ -150,7 +150,7 @@ EndProcedure
 
 &AtClient
 Procedure ShowSelectedUsers(Command)
-	Items.ТаблицаПользователиПоказатьВыбранныхПользователей.Check = Not Items.ТаблицаПользователиПоказатьВыбранныхПользователей.Check;
+	Items.CancelSearchShowSelectedUsers.Check = Not Items.CancelSearchShowSelectedUsers.Check;
 	ОбновитьОтображениеЭлементов("ShowSelectedUsers");
 EndProcedure
 
@@ -169,7 +169,7 @@ Procedure ТаблицаПользователиПометкаПриИзмене
 EndProcedure
 
 &AtClient
-Procedure УдалитьВыбранныеНастройки(Command)
+Procedure DeleteSelectedSettings(Command)
 	
 	// Проверки
 	ЕстьОшибка = False;
@@ -192,7 +192,7 @@ Procedure УдалитьВыбранныеНастройки(Command)
 EndProcedure
 
 &AtClient
-Procedure СкопироватьВыбранныеНастройки(Command)
+Procedure CopySelectedSettings(Command)
 	
 	// Проверки
 	ЕстьОшибка = False;
@@ -327,20 +327,20 @@ Procedure ОбновитьОтображениеЭлементов(Элемен�
 	EndIf;
 
 	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ConfigurationObjectsRepresentationVariant") <> Undefined Then
-		Items.ДеревоКонфигурацииПоИмени.Visible = (ConfigurationObjectsRepresentationVariant = 0);
-		Items.ДеревоКонфигурацииПоСинониму.Visible = (ConfigurationObjectsRepresentationVariant = 1);
+		Items.ConfigurationTreeByName.Visible = (ConfigurationObjectsRepresentationVariant = 0);
+		Items.ConfigurationTreeBySynonym.Visible = (ConfigurationObjectsRepresentationVariant = 1);
 	EndIf;
 
 	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ShowSelectedSettings") <> Undefined Then
-		Items.ГруппаВыбранныеНастройки.Visible = Items.ДеревоКонфигурацииПоказатьВыбранныеНастройки.Check;
-		Items.ДеревоКонфигурацииПоказатьВыбранныеНастройки.Title = ?(Items.ГруппаВыбранныеНастройки.Visible,
+		Items.GroupSelectedSettings.Visible = Items.ConfigurationTreeShowSelectedSettings.Check;
+		Items.ConfigurationTreeShowSelectedSettings.Title = ?(Items.GroupSelectedSettings.Visible,
 			NStr("ru = 'Hide выбранные настройки'"), NStr("ru = 'Show выбранные настройки'"));
 	EndIf;
 
 	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ShowSelectedUsers") <> Undefined Then
-		Items.Users.RowFilter = ?(Items.ТаблицаПользователиПоказатьВыбранныхПользователей.Check,
+		Items.Users.RowFilter = ?(Items.CancelSearchShowSelectedUsers.Check,
 			New FixedStructure("Check", True), Undefined);
-		Items.ТаблицаПользователиПоказатьВыбранныхПользователей.Title = ?(
+		Items.CancelSearchShowSelectedUsers.Title = ?(
 			Items.Users.RowFilter <> Undefined, NStr("ru = 'Show всех'"), NStr(
 			"ru = 'Show выбранных'"));
 	EndIf;	
