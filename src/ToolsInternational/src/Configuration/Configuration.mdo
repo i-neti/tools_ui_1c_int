@@ -148,7 +148,6 @@
   <dataProcessors>DataProcessor.UT_HTMLEditor</dataProcessors>
   <dataProcessors>DataProcessor.UT_HTTPRequestConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_JobsConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_JSONDataConversion</dataProcessors>
   <dataProcessors>DataProcessor.UT_JSONEditor</dataProcessors>
   <dataProcessors>DataProcessor.UT_LicenseInformation1C</dataProcessors>
   <dataProcessors>DataProcessor.UT_MarkedObjectsDeletion</dataProcessors>
