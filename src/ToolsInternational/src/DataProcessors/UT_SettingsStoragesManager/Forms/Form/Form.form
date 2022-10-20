@@ -4428,7 +4428,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалитьВыбранныеНастройки</name>
+        <name>DeleteSelectedSettings</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -4453,7 +4453,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПоказатьВыбранныхПользователей</name>
+        <name>ShowSelectedUsers</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -4481,7 +4481,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>СкопироватьВыбранныеНастройки</name>
+        <name>CopySelectedSettings</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>

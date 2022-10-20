@@ -3,13 +3,13 @@
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
-	FilterBySettingsStorages.Add("FormDataSettingsStorage", NStr("ru = 'Хранилище настроек данных форм'"));
-	FilterBySettingsStorages.Add("CommonSettingsStorage", NStr("ru = 'Хранилище общих настроек'"));
+	FilterBySettingsStorages.Add("FormDataSettingsStorage", NStr("ru = 'Хранилище настроек данных форм';en = 'Form data settings storage'"));
+	FilterBySettingsStorages.Add("CommonSettingsStorage", NStr("ru = 'Хранилище общих настроек';en = 'Common settings storage'"));
 	FilterBySettingsStorages.Add("DynamicListsUserSettingsStorage", NStr(
-		"ru = 'Хранилище пользовательских настроек динамических списков'"));
+		"ru = 'Хранилище пользовательских настроек динамических списков';en = 'Dynamic lists user settings storage'"));
 	FilterBySettingsStorages.Add("ReportsUserSettingsStorage", NStr(
-		"ru = 'Хранилище пользовательских настроек отчетов'"));
-	FilterBySettingsStorages.Add("SystemSettingsStorage", NStr("ru = 'Хранилище системных настроек'"));
+		"ru = 'Хранилище пользовательских настроек отчетов';en = 'Reports user settings storage'"));
+	FilterBySettingsStorages.Add("SystemSettingsStorage", NStr("ru = 'Хранилище системных настроек';en = 'System settings storage'"));
 
 	UpdateUsersTable();
 	
@@ -87,22 +87,22 @@ Procedure SettingsTableCheckOnChange(Item)
 		Return;
 	EndIf;
 
-	ПараметрыОтбора = New Structure;
-	ПараметрыОтбора.Insert("FilterID" + TreeRow.Level, TreeRow.FilterID);
-	НайденныеСтроки = SettingsTable.FindRows(ПараметрыОтбора);
-	If НайденныеСтроки <> Undefined Then
-		ВсегоНастроек = НайденныеСтроки.Count();
+	FilterParameters = New Structure;
+	FilterParameters.Insert("FilterID" + TreeRow.Level, TreeRow.FilterID);
+	FoundedRows = SettingsTable.FindRows(FilterParameters);
+	If FoundedRows <> Undefined Then
+		SettingsCount = FoundedRows.Count();
 	EndIf;
 
-	ПараметрыОтбора.Insert("Check", True);
-	НайденныеСтроки = SettingsTable.FindRows(ПараметрыОтбора);
-	If НайденныеСтроки <> Undefined Then
-		КолПометок = НайденныеСтроки.Count();
+	FilterParameters.Insert("Check", True);
+	FoundedRows = SettingsTable.FindRows(FilterParameters);
+	If FoundedRows <> Undefined Then
+		ChecksCount = FoundedRows.Count();
 	EndIf;
 
-	If КолПометок = 0 Then
+	If ChecksCount = 0 Then
 		TreeRow.Check = 0;
-	ElsIf КолПометок <> ВсегоНастроек Then
+	ElsIf ChecksCount <> SettingsCount Then
 		TreeRow.Check = 2;
 	Else
 		TreeRow.Check = 1;
@@ -120,7 +120,7 @@ Procedure SettingsTableSettingsAdditionalOpening(Item, StandardProcessing)
 		Return;
 	EndIf;
 
-	ПросмотрНастроекНаСервере(CurrentData.SettingsStorageName, CurrentData.ObjectKey, CurrentData.SettingsKey,
+	ViewSettingsAtServer(CurrentData.SettingsStorageName, CurrentData.ObjectKey, CurrentData.SettingsKey,
 		SettingsOwner);
 EndProcedure
 
@@ -161,16 +161,16 @@ EndProcedure
 &AtClient
 Procedure DeleteSelectedSettings(Command)
 	
-	// Проверки
-	ЕстьОшибка = False;
+	// Checks
+	HaveError = False;
 	Filter = New Structure("Check", True);
-	НайденныеСтроки = SettingsTable.FindRows(Filter);
-	If НайденныеСтроки.Count() = 0 Then
-		UT_CommonClientServer.MessageToUser(NStr("ru = 'Not выбраны настройки для удаления'"), , , ,
-			ЕстьОшибка);
+	FoundedRows = SettingsTable.FindRows(Filter);
+	If FoundedRows.Count() = 0 Then
+		UT_CommonClientServer.MessageToUser(NStr("ru = 'Не выбраны настройки для удаления'"), , , ,
+			HaveError);
 	EndIf;
 
-	If ЕстьОшибка Then
+	If HaveError Then
 		Return;
 	EndIf;
 
@@ -185,20 +185,20 @@ EndProcedure
 Procedure CopySelectedSettings(Command)
 	
 	// Проверки
-	ЕстьОшибка = False;
+	HaveError = False;
 	Filter = New Structure("Check", True);
-	НайденныеСтроки = SettingsTable.FindRows(Filter);
-	If НайденныеСтроки.Count() = 0 Then
+	FoundedRows = SettingsTable.FindRows(Filter);
+	If FoundedRows.Count() = 0 Then
 		UT_CommonClientServer.MessageToUser(NStr("ru = 'Not выбраны настройки для копирования'"), , , ,
-			ЕстьОшибка);
+			HaveError);
 	EndIf;
-	НайденныеСтроки = Users.FindRows(Filter);
-	If НайденныеСтроки.Count() = 0 Then
+	FoundedRows = Users.FindRows(Filter);
+	If FoundedRows.Count() = 0 Then
 		UT_CommonClientServer.MessageToUser(NStr("ru = 'Not указаны пользователи (кому копировать)'"),
-			, , , ЕстьОшибка);
+			, , , HaveError);
 	EndIf;
 
-	If ЕстьОшибка Then
+	If HaveError Then
 		Return;
 	EndIf;
 
@@ -376,12 +376,12 @@ Procedure UpdateOwnerSettingsAtServer()
 	For Each ЭлементСписка In FilterBySettingsStorages Do
 		If ЭлементСписка.Check Or IsBlankString(TextOfFilterBySettingsStorages) Then
 
-			ИмяХранилищаНастроек = ЭлементСписка.Value;
-			Выборка = Eval(ИмяХранилищаНастроек).StartChoosing(Filter);
-			AdditionalParameters.SettingsStorageName = ИмяХранилищаНастроек;
+			SettingsStorageName = ЭлементСписка.Value;
+			Выборка = Eval(SettingsStorageName).StartChoosing(Filter);
+			AdditionalParameters.SettingsStorageName = SettingsStorageName;
 				
 				// FillType дерева
-			ДополнитьДеревоНастроек(Выборка, ИмяХранилищаНастроек, AdditionalParameters);
+			ДополнитьДеревоНастроек(Выборка, SettingsStorageName, AdditionalParameters);
 
 		EndIf;
 	EndDo; 
@@ -393,7 +393,7 @@ Procedure UpdateOwnerSettingsAtServer()
 EndProcedure
 
 &AtServer
-Procedure ДополнитьДеревоНастроек(Выборка, ИмяХранилищаНастроек, AdditionalParameters)
+Procedure ДополнитьДеревоНастроек(Выборка, SettingsStorageName, AdditionalParameters)
 
 	СтрокаДереваКонфигурация = AdditionalParameters.СтрокаДереваКонфигурация;
 	СтрокаДереваПрочее = AdditionalParameters.СтрокаДереваПрочее;
@@ -794,10 +794,10 @@ EndProcedure
 
 &AtServer
 Procedure УдалитьВыбранныеНастройкиНаСервере()
-	ПараметрыОтбора = New Structure;
-	ПараметрыОтбора.Insert("Check", True);
-	НайденныеСтроки = SettingsTable.FindRows(ПараметрыОтбора);
-	For Each String In НайденныеСтроки Do
+	FilterParameters = New Structure;
+	FilterParameters.Insert("Check", True);
+	FoundedRows = SettingsTable.FindRows(FilterParameters);
+	For Each String In FoundedRows Do
 		ХрНастроек = Eval(String.SettingsStorageName);
 		ХрНастроек.Delete(String.ObjectKey, String.SettingsKey, SettingsOwner);
 	EndDo;
@@ -839,14 +839,14 @@ Procedure СкопироватьВыбранныеНастройкиНаСерв
 EndProcedure
 
 &AtServer
-Procedure ПросмотрНастроекНаСервере(ИмяХранилищаНастроек, ObjectKey, SettingsKey, UserName)
+Procedure ViewSettingsAtServer(SettingsStorageName, ObjectKey, SettingsKey, UserName)
 
 	Filter = New Structure;
 	Filter.Insert("ObjectKey", ObjectKey);
 	Filter.Insert("SettingsKey", SettingsKey);
 	Filter.Insert("User", UserName);
 
-	Выборка = Eval(ИмяХранилищаНастроек).StartChoosing(Filter);
+	Выборка = Eval(SettingsStorageName).StartChoosing(Filter);
 	Выборка.Next();
 
 	СодержимоеНастроек = Выборка.Settings;
@@ -868,11 +868,11 @@ Procedure УстановитьПометкуПодчиненныхЭлемент
 	// Set пометку
 	ЭлементДерева.Check = Check;
 
-	ПараметрыОтбора = New Structure;
-	ПараметрыОтбора.Insert("FilterID" + ЭлементДерева.Level, ЭлементДерева.FilterID);
-	ПараметрыОтбора.Insert("Check", Not Check);
-	НайденныеСтроки = SettingsTable.FindRows(ПараметрыОтбора);
-	For Each String In НайденныеСтроки Do
+	FilterParameters = New Structure;
+	FilterParameters.Insert("FilterID" + ЭлементДерева.Level, ЭлементДерева.FilterID);
+	FilterParameters.Insert("Check", Not Check);
+	FoundedRows = SettingsTable.FindRows(FilterParameters);
+	For Each String In FoundedRows Do
 		String.Check = (Check = 1);
 	EndDo; 
 	
