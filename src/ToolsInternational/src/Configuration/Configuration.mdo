@@ -165,6 +165,5 @@
   <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConsoleComparisonData</dataProcessors>
-  <dataProcessors>DataProcessor.УИ_КонструкторРегулярныхВыражений</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
 </mdclass:Configuration>
