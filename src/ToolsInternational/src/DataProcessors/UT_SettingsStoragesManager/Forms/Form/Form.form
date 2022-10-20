@@ -152,7 +152,7 @@
               <titleLocation>None</titleLocation>
               <handlers>
                 <event>OnChange</event>
-                <name>ВладелецНастроекПриИзменении</name>
+                <name>SettingsOwnerOnChange</name>
               </handlers>
               <extendedTooltip>
                 <name>SettingsOwnerExtendedTooltip</name>
@@ -187,7 +187,7 @@
               <extInfo xsi:type="form:InputFieldExtInfo">
                 <handlers>
                   <event>Clearing</event>
-                  <name>ВладелецНастроекОчистка</name>
+                  <name>SettingsOwnerClearing</name>
                 </handlers>
                 <autoMaxHeight>true</autoMaxHeight>
                 <horizontalStretch>false</horizontalStretch>
@@ -249,12 +249,12 @@
               <showInFooter>true</showInFooter>
               <extInfo xsi:type="form:InputFieldExtInfo">
                 <handlers>
-                  <event>StartChoice</event>
-                  <name>ТекстОтбораПоХранилищамНастроекНачалоВыбора</name>
+                  <event>Clearing</event>
+                  <name>TextOfFilterBySettingsStoragesClearing</name>
                 </handlers>
                 <handlers>
-                  <event>Clearing</event>
-                  <name>ТекстОтбораПоХранилищамНастроекОчистка</name>
+                  <event>StartChoice</event>
+                  <name>TextOfFilterBySettingsStoragesStartChoice</name>
                 </handlers>
                 <autoMaxWidth>true</autoMaxWidth>
                 <autoMaxHeight>true</autoMaxHeight>
@@ -397,7 +397,7 @@
                       </dataPath>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ДеревоКонфигурацииПометкаПриИзменении</name>
+                        <name>ConfigurationTreeCheckOnChange</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ConfigurationTreeCheckExtendedTooltip</name>
@@ -644,7 +644,7 @@
                       </dataPath>
                       <handlers>
                         <event>OnChange</event>
-                        <name>ДеревоКонфигурацииПометкаПриИзменении</name>
+                        <name>ConfigurationTreeCheckOnChange</name>
                       </handlers>
                       <extendedTooltip>
                         <name>ConfigurationTreeCheck1ExtendedTooltip</name>
@@ -915,7 +915,7 @@
                   </autoCommandBar>
                   <handlers>
                     <event>OnActivateRow</event>
-                    <name>ДеревоКонфигурацииПриАктивизацииСтроки</name>
+                    <name>ConfigurationTreeOnActivateRow</name>
                   </handlers>
                   <searchStringAddition>
                     <visible>true</visible>
@@ -1529,7 +1529,7 @@
                   <titleLocation>None</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ТаблицаНастроекПометкаПриИзменении</name>
+                    <name>SettingsTableCheckOnChange</name>
                   </handlers>
                   <extendedTooltip>
                     <name>SettingsTableCheckExtendedTooltip</name>
@@ -1829,12 +1829,8 @@
                   <showInFooter>true</showInFooter>
                   <extInfo xsi:type="form:InputFieldExtInfo">
                     <handlers>
-                      <event>StartChoice</event>
-                      <name>ТаблицаНастроекНастройкиНачалоВыбора</name>
-                    </handlers>
-                    <handlers>
                       <event>Opening</event>
-                      <name>ТаблицаНастроекНастройкиОткрытие</name>
+                      <name>SettingsTableSettingsAdditionalOpening</name>
                     </handlers>
                     <autoMaxWidth>true</autoMaxWidth>
                     <autoMaxHeight>true</autoMaxHeight>
@@ -2185,7 +2181,7 @@
                   <titleLocation>None</titleLocation>
                   <handlers>
                     <event>OnChange</event>
-                    <name>ТаблицаПользователиПометкаПриИзменении</name>
+                    <name>UsersTableCheckOnChange</name>
                   </handlers>
                   <extendedTooltip>
                     <name>UsersTableCheckExtendedTooltip</name>
@@ -2794,7 +2790,7 @@
         </dataPath>
         <handlers>
           <event>OnChange</event>
-          <name>ВариантПредставленияОбъектовКонфигурацииПриИзменении</name>
+          <name>ConfigurationObjectsRepresentationVariantOnChange</name>
         </handlers>
         <extendedTooltip>
           <name>ConfigurationObjectsRepresentationVariantExtendedTooltip</name>
@@ -4432,7 +4428,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>УдалитьВыбранныеНастройки</name>
+        <name>DeleteSelectedSettings</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -4457,7 +4453,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>ПоказатьВыбранныхПользователей</name>
+        <name>ShowSelectedUsers</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
@@ -4485,7 +4481,7 @@
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>СкопироватьВыбранныеНастройки</name>
+        <name>CopySelectedSettings</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
