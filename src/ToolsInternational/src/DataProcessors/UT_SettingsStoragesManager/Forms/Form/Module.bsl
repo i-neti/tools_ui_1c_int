@@ -166,7 +166,7 @@ Procedure DeleteSelectedSettings(Command)
 	Filter = New Structure("Check", True);
 	FoundedRows = SettingsTable.FindRows(Filter);
 	If FoundedRows.Count() = 0 Then
-		UT_CommonClientServer.MessageToUser(NStr("ru = 'Не выбраны настройки для удаления'"), , , ,
+		UT_CommonClientServer.MessageToUser(NStr("ru = 'Не выбраны настройки для удаления';en = 'Not selected settings to delete'"), , , ,
 			HaveError);
 	EndIf;
 
@@ -175,26 +175,26 @@ Procedure DeleteSelectedSettings(Command)
 	EndIf;
 
 	ShowQueryBox(
-		New NotifyDescription("ВопросУдалитьНастройкиЗавершение", ThisForm), StrTemplate(NStr(
-		"ru = 'Delete выбранные настройки у пользователя %1?'"), SettingsOwner), QuestionDialogMode.YesNo, ,
-		DialogReturnCode.None, NStr("ru = 'Attention!'"));
+		New NotifyDescription("QueryDeleteSettingsEnd", ThisForm), StrTemplate(NStr(
+		"ru = 'Удалить выбранные настройки у пользователя %1?';en = 'Delete selected settings for user %1?'"), SettingsOwner), QuestionDialogMode.YesNo, ,
+		DialogReturnCode.None, NStr("ru = 'Внимание!';en = 'Attention!'"));
 
 EndProcedure
 
 &AtClient
 Procedure CopySelectedSettings(Command)
 	
-	// Проверки
+	// Checks
 	HaveError = False;
 	Filter = New Structure("Check", True);
 	FoundedRows = SettingsTable.FindRows(Filter);
 	If FoundedRows.Count() = 0 Then
-		UT_CommonClientServer.MessageToUser(NStr("ru = 'Not выбраны настройки для копирования'"), , , ,
+		UT_CommonClientServer.MessageToUser(NStr("ru = 'Не выбраны настройки для копирования';en = 'Settings for copying not selected'"), , , ,
 			HaveError);
 	EndIf;
 	FoundedRows = Users.FindRows(Filter);
 	If FoundedRows.Count() = 0 Then
-		UT_CommonClientServer.MessageToUser(NStr("ru = 'Not указаны пользователи (кому копировать)'"),
+		UT_CommonClientServer.MessageToUser(NStr("ru = 'Не указаны пользователи (кому копировать)';en = 'Users are not specified (to whom to copy)'"),
 			, , , HaveError);
 	EndIf;
 
@@ -203,9 +203,9 @@ Procedure CopySelectedSettings(Command)
 	EndIf;
 
 	ShowQueryBox(
-		New NotifyDescription("ВопросСкопироватьНастройкиЗавершение", ThisForm), NStr(
-		"ru = 'Copy выбранные настройки выбранным пользователям?'"), QuestionDialogMode.YesNo, ,
-		DialogReturnCode.None, NStr("ru = 'Attention!'"));
+		New NotifyDescription("QueryCopySettingsEnd", ThisForm), NStr(
+		"ru = 'Копировать выбранные настройки выбранным пользователям?';en = 'Copy selected settings to selected users?'"), QuestionDialogMode.YesNo, ,
+		DialogReturnCode.None, NStr("ru = 'Внимание!';en = 'Attention!'"));
 
 EndProcedure
 
@@ -213,7 +213,7 @@ EndProcedure
 Procedure TextOfFilterBySettingsStoragesStartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing = False;
 	FilterBySettingsStorages.ShowCheckItems(
-		New NotifyDescription("ИзменениеОтбораПоХранилищамНастроекЗавершение", ThisForm));
+		New NotifyDescription("ChangingFilterBySettingsStoragesEnd", ThisForm));
 EndProcedure
 
 &AtClient
@@ -229,53 +229,51 @@ Procedure Attachable_ExecuteToolsCommonCommand(Command)
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
 
-
-
 #EndRegion
 
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#Region ОбработкиЗавершения
+#Region ProcessingNotifyEnd
 
 &AtClient
-Procedure ВопросУдалитьНастройкиЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure QueryDeleteSettingsEnd(QuestionResult, AdditionalParameters) Export
 
-	If РезультатВопроса = DialogReturnCode.None Then
+	If QuestionResult = DialogReturnCode.None Then
 		Return;
 	EndIf;
 
-	УдалитьВыбранныеНастройкиНаСервере();
+	DeleteSelectedSettingsAtServer();
 
 	UpdateOwnerSettings(Undefined);
 
 EndProcedure
 
 &AtClient
-Procedure ВопросСкопироватьНастройкиЗавершение(РезультатВопроса, AdditionalParameters) Export
+Procedure QueryCopySettingsEnd(QuestionResult, AdditionalParameters) Export
 
-	If РезультатВопроса = DialogReturnCode.None Then
+	If QuestionResult = DialogReturnCode.None Then
 		Return;
 	EndIf;
 
-	СкопироватьВыбранныеНастройкиНаСервере();
+	CopySelectedSettingsAtServer();
 
-	ShowMessageBox( , NStr("ru = 'Copy настроек выполнено'"));
+	ShowMessageBox( , NStr("ru = 'Копирование настроек выполнено';en = 'Copying settings is done'"));
 
 EndProcedure
 
 &AtClient
-Procedure ИзменениеОтбораПоХранилищамНастроекЗавершение(List, AdditionalParameters) Export
+Procedure ChangingFilterBySettingsStoragesEnd(List, AdditionalParameters) Export
 
 	If List = Undefined Then
 		Return;
 	EndIf;
 
 	TextOfFilterBySettingsStorages = "";
-	For Each ЭлементСписка In List Do
-		If ЭлементСписка.Check Then
+	For Each ListItem In List Do
+		If ListItem.Check Then
 			TextOfFilterBySettingsStorages = TextOfFilterBySettingsStorages + ?(TextOfFilterBySettingsStorages = "",
-				"", "; ") + ЭлементСписка.Presentation;
+				"", "; ") + ListItem.Presentation;
 		EndIf;
 	EndDo;
 
@@ -297,47 +295,47 @@ Procedure UpdateUsersTable()
 
 	IbUsers=InfoBaseUsers.GetUsers();
 	For Each IBUser In IbUsers Do
-		НС=Users.Add();
-		НС.Name=IBUser.Name;
-		НС.FullName=IBUser.FullName;
-		НС.Picture=0;
-		НС.UUID=IBUser.UUID;
+		NewRow=Users.Add();
+		NewRow.Name=IBUser.Name;
+		NewRow.FullName=IBUser.FullName;
+		NewRow.Picture=0;
+		NewRow.UUID=IBUser.UUID;
 
 	EndDo;
 
 EndProcedure
 
 &AtClient
-Procedure UpdateItemsPresentation(ЭлементыУправления = Undefined)
+Procedure UpdateItemsPresentation(FormItems = Undefined)
 
-	// Подготовить массив имен ЭУ, отображение которых надо обновить
-	МассивЭУ = New Array;
-	If TypeOf(ЭлементыУправления) = Type("String") Then
-		МассивЭУ = StrSplit(ЭлементыУправления, ",");
+	// Prepare array  names  of form items , the representation of which needs to be updated
+	FormItemsArray = New Array;
+	If TypeOf(FormItems) = Type("String") Then
+		FormItemsArray = StrSplit(FormItems, ",");
 	EndIf;
 
-	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ConfigurationObjectsRepresentationVariant") <> Undefined Then
+	If FormItemsArray.Count() = 0 Or FormItemsArray.Find("ConfigurationObjectsRepresentationVariant") <> Undefined Then
 		Items.ConfigurationTreeByName.Visible = (ConfigurationObjectsRepresentationVariant = 0);
 		Items.ConfigurationTreeBySynonym.Visible = (ConfigurationObjectsRepresentationVariant = 1);
 	EndIf;
 
-	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ShowSelectedSettings") <> Undefined Then
+	If FormItemsArray.Count() = 0 Or FormItemsArray.Find("ShowSelectedSettings") <> Undefined Then
 		Items.GroupSelectedSettings.Visible = Items.ConfigurationTreeShowSelectedSettings.Check;
 		Items.ConfigurationTreeShowSelectedSettings.Title = ?(Items.GroupSelectedSettings.Visible,
-			NStr("ru = 'Hide выбранные настройки'"), NStr("ru = 'Show выбранные настройки'"));
+			NStr("ru = 'Скрыть выбранные настройки';en = 'Hide selected settings'"), NStr("ru = 'Показать выбранные настройки';en = 'Show selected settings'"));
 	EndIf;
 
-	If МассивЭУ.Count() = 0 Or МассивЭУ.Find("ShowSelectedUsers") <> Undefined Then
+	If FormItemsArray.Count() = 0 Or FormItemsArray.Find("ShowSelectedUsers") <> Undefined Then
 		Items.Users.RowFilter = ?(Items.CancelSearchShowSelectedUsers.Check,
 			New FixedStructure("Check", True), Undefined);
 		Items.CancelSearchShowSelectedUsers.Title = ?(
-			Items.Users.RowFilter <> Undefined, NStr("ru = 'Show всех'"), NStr(
-			"ru = 'Show выбранных'"));
+			Items.Users.RowFilter <> Undefined, NStr("ru = 'Показать всех';en = 'Show all'"), NStr(
+			"ru = 'Показать выбранных';en = 'Show selected'"));
 	EndIf;	
 	
-	//If МассивЭУ.Count() = 0 Then
-	// В условии описываюся свойства элементов,
-	// которые обновляются независимо от переданного параметра ЭлементыУправления
+	//If FormItemsArray.Count() = 0 Then
+	//The condition describes the properties of the elements,
+	// which are updated independently of the passed FormItems parameter
 	//EndIf;
 
 EndProcedure
@@ -345,88 +343,88 @@ EndProcedure
 &AtServer
 Procedure UpdateOwnerSettingsAtServer()
 
-	// Инициализитовать дерево конфигурации и очистить его
-	ДЗ = FormAttributeToValue("ConfigurationTree");
-	ДЗ.Rows.Clear();
-	// Инициализитовать таблицу настроек и очистить его
-	ТЗ = FormAttributeToValue("SettingsTable");
-	ТЗ.Clear();
+	// Initialize configuration tree  and clear it
+	ValuesTree = FormAttributeToValue("ConfigurationTree");
+	ValuesTree.Rows.Clear();
+	// Initialize settings table and clear it
+	ValueTable = FormAttributeToValue("SettingsTable");
+	ValueTable.Clear();
 	
-	// Create строку для корня конфигурации
-	СтрокаДереваКонфигурация = ДЗ.Rows.Add();
-	СтрокаДереваКонфигурация.PresentationName = Metadata.Name + NStr("ru = ' (All настройки)'");
-	СтрокаДереваКонфигурация.PresentationSynonym = Metadata.Synonym + NStr("ru = ' (All настройки)'");
-	СтрокаДереваКонфигурация.Order = 0;
-	//СтрокаДереваКонфигурация.Picture = 0;
-	СтрокаДереваПрочее = СтрокаДереваКонфигурация.Rows.Add();
-	СтрокаДереваПрочее.PresentationName = NStr("ru = 'Прочее'");
-	СтрокаДереваПрочее.PresentationSynonym = СтрокаДереваПрочее.PresentationName;
-	СтрокаДереваПрочее.Order = 900;
-	СтрокаДереваПрочее.Path = "Прочее";
-	СтрокаДереваПрочее.FilterID = 1;
-	//СтрокаДереваПрочее.Picture = 0;
+	// Create row for configuration tree
+	ConfigurationTreeRow = ValuesTree.Rows.Add();
+	ConfigurationTreeRow.PresentationName = Metadata.Name + NStr("ru = ' (Все настройки)';en = ' (All settings)'");
+	ConfigurationTreeRow.PresentationSynonym = Metadata.Synonym + NStr("ru = ' (Все настройки)';en = ' (All settings)'");
+	ConfigurationTreeRow.Order = 0;
+	//ConfigurationTreeRow.Picture = 0;
+	TreeRowOther = ConfigurationTreeRow.Rows.Add();
+	TreeRowOther.PresentationName = NStr("ru = 'Прочее';en = 'Other'");
+	TreeRowOther.PresentationSynonym = TreeRowOther.PresentationName;
+	TreeRowOther.Order = 900;
+	TreeRowOther.Path = "Other";
+	TreeRowOther.FilterID = 1;
+	//TreeRowOther.Picture = 0;
 	
-	// Parameters для создания веток дерева
-	AdditionalParameters = ИнициализироватьПараметрыДляСозданияДереваКонфигурации(ТЗ);
-	AdditionalParameters.Insert("СтрокаДереваКонфигурация", СтрокаДереваКонфигурация);
-	AdditionalParameters.Insert("СтрокаДереваПрочее", СтрокаДереваПрочее);
+	// Parameters for create tree nodes
+	AdditionalParameters = InitializeParametersForCreateConfigurationTree(ValueTable);
+	AdditionalParameters.Insert("ConfigurationTreeRow", ConfigurationTreeRow);
+	AdditionalParameters.Insert("TreeRowOther", TreeRowOther);
 	
-	// Get настроки пользователя
+	// Get user settings
 	Filter = New Structure("User", SettingsOwner);
-	For Each ЭлементСписка In FilterBySettingsStorages Do
-		If ЭлементСписка.Check Or IsBlankString(TextOfFilterBySettingsStorages) Then
+	For Each ListItem In FilterBySettingsStorages Do
+		If ListItem.Check Or IsBlankString(TextOfFilterBySettingsStorages) Then
 
-			SettingsStorageName = ЭлементСписка.Value;
-			Выборка = Eval(SettingsStorageName).StartChoosing(Filter);
+			SettingsStorageName = ListItem.Value;
+			Selection = Eval(SettingsStorageName).Select(Filter);
 			AdditionalParameters.SettingsStorageName = SettingsStorageName;
 				
-				// FillType дерева
-			ДополнитьДеревоНастроек(Выборка, SettingsStorageName, AdditionalParameters);
+				// filing tree
+			ExtendSettingsTree(Selection, SettingsStorageName, AdditionalParameters);
 
 		EndIf;
 	EndDo; 
 		
-	// Send значения на форму
-	ValueToFormAttribute(ДЗ, "ConfigurationTree");
-	ValueToFormAttribute(AdditionalParameters.ТаблицаЗначенийНастроек, "SettingsTable");
+	// Send values to form 
+	ValueToFormAttribute(ValuesTree, "ConfigurationTree");
+	ValueToFormAttribute(AdditionalParameters.SettingsValueTable, "SettingsTable");
 
 EndProcedure
 
 &AtServer
-Procedure ДополнитьДеревоНастроек(Выборка, SettingsStorageName, AdditionalParameters)
+Procedure ExtendSettingsTree(Selection, SettingsStorageName, AdditionalParameters)
 
-	СтрокаДереваКонфигурация = AdditionalParameters.СтрокаДереваКонфигурация;
-	СтрокаДереваПрочее = AdditionalParameters.СтрокаДереваПрочее;
+	ConfigurationTreeRow = AdditionalParameters.ConfigurationTreeRow;
+	TreeRowOther = AdditionalParameters.TreeRowOther;
 	
-	// Do по настройкам пользователя
-	While Выборка.Next() Do
+	// Do for user settings
+	While Selection.Next() Do
 		
-		// Разложить ObjectKey в Array(10)
-		МассивКлюч = StrSplit(Выборка.ObjectKey, "/", True);
-		КоличествоЭлементовВМассиве = МассивКлюч.Count();
-		For Ин = КоличествоЭлементовВМассиве To 9 Do
-			МассивКлюч.Add("");
+		// Decompose ObjectKey to Array(10)
+		KeysArray = StrSplit(Selection.ObjectKey, "/", True);
+		ItemsCountInArray = KeysArray.Count();
+		For Index = ItemsCountInArray To 9 Do
+			KeysArray.Add("");
 		EndDo;
 		
-		// Разложить Key объекта настроек в Array(10)
-		ПутьОбъектаКонфигурации = ?(МассивКлюч[0] = "Общее" And МассивКлюч[1] = "TableSearchHistory", МассивКлюч[2],
-			МассивКлюч[0]);
-		МассивПуть = StrSplit(ПутьОбъектаКонфигурации, ".", True);
-		КоличествоЭлементовВМассиве = МассивПуть.Count();
-		For Ин = КоличествоЭлементовВМассиве To 9 Do
-			МассивПуть.Add("");
+		// Decompose settings object Key  to Array(10)
+		ConfigurationObjectPath = ?(KeysArray[0] = "Common" And KeysArray[1] = "TableSearchHistory", KeysArray[2],
+			KeysArray[0]);
+		PathArray = StrSplit(ConfigurationObjectPath, ".", True);
+		ItemsCountInArray = PathArray.Count();
+		For Index = ItemsCountInArray To 9 Do
+			PathArray.Add("");
 		EndDo;
 		
-		// Run рекурсивного создания строк дерева настроек
-		AdditionalParameters.Insert("СтрокаДереваКонфигурация", СтрокаДереваКонфигурация);
-		AdditionalParameters.Insert("МассивПуть", МассивПуть);
-		AdditionalParameters.Insert("ВыборкаНастроек", Выборка);
-		ПроверяемоеСвойство = StrReplace(МассивПуть[0], " ", "");
+		// Run recursive creation of settings tree row
+		AdditionalParameters.Insert("ConfigurationTreeRow", ConfigurationTreeRow);
+		AdditionalParameters.Insert("PathArray", PathArray);
+		AdditionalParameters.Insert("SettingsSelections", Selection);
+		CheckedProperty = StrReplace(PathArray[0], " ", "");
 		Try
-			If AdditionalParameters.ПредопределенныеВеткиКонфигурации.Property(ПроверяемоеСвойство) Then
-				СоздатьВеткуКонфигурации(СтрокаДереваКонфигурация, AdditionalParameters);
+			If AdditionalParameters.PredefinedConfigurationBranches.Property(CheckedProperty) Then
+				CreateConfigurationBranch(ConfigurationTreeRow, AdditionalParameters);
 			Else
-				СоздатьВеткуКонфигурации(СтрокаДереваПрочее, AdditionalParameters);
+				CreateConfigurationBranch(TreeRowOther, AdditionalParameters);
 			EndIf;
 		Except
 		EndTry;
@@ -435,403 +433,403 @@ Procedure ДополнитьДеревоНастроек(Выборка, Setting
 EndProcedure
 
 &AtServer
-Function ИнициализироватьПараметрыДляСозданияДереваКонфигурации(ТаблицаЗначенийНастроек)
+Function InitializeParametersForCreateConfigurationTree(SettingsValueTable)
 
 	AdditionalParameters = New Structure;
 	AdditionalParameters.Insert("SettingsStorageName", "");
-	AdditionalParameters.Insert("ТаблицаЗначенийНастроек", ТаблицаЗначенийНастроек);
-	AdditionalParameters.Insert("НомерКартинки", 0);
-	AdditionalParameters.Insert("СчетчикИдентификаторовОтбора", 2);
-	AdditionalParameters.Insert("ПредопределенныеВеткиКонфигурации", New Structure);
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Общие", "Общие");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Подсистема", "Подсистема");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("SettingsStorage", "SettingsStorage");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ExchangePlan", "ExchangePlan");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ОбщаяФорма", "ОбщаяФорма");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Constant", "Constant");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Catalog", "Catalog");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Document", "Document");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("DocumentJournal", "DocumentJournal");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Enum", "Enum");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Report", "Report");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ExternalReport", "ExternalReport");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Processing", "Processing");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ExternalDataProcessor", "ExternalDataProcessor");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ChartOfCharacteristicTypes",
+	AdditionalParameters.Insert("SettingsValueTable", SettingsValueTable);
+	AdditionalParameters.Insert("PictureNumber", 0);
+	AdditionalParameters.Insert("FilterIDCounter", 2);
+	AdditionalParameters.Insert("PredefinedConfigurationBranches", New Structure);
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Common", "Common");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Subsystem", "Subsystem");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("SettingsStorage", "SettingsStorage");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ExchangePlan", "ExchangePlan");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("CommonForm", "CommonForm");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Constant", "Constant");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Catalog", "Catalog");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Document", "Document");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("DocumentJournal", "DocumentJournal");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Enum", "Enum");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Report", "Report");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ExternalReport", "ExternalReport");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Processing", "Processing");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ExternalDataProcessor", "ExternalDataProcessor");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ChartOfCharacteristicTypes",
 		"ChartOfCharacteristicTypes");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ChartOfAccounts", "ChartOfAccounts");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ChartOfCalculationTypes", "ChartOfCalculationTypes");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("InformationRegister", "InformationRegister");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("AccumulationRegister", "AccumulationRegister");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("AccountingRegister", "AccountingRegister");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("CalculationRegister", "CalculationRegister");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("BusinessProcess", "BusinessProcess");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("Task", "Task");
-	AdditionalParameters.ПредопределенныеВеткиКонфигурации.Insert("ExternalDataSource", "ExternalDataSource");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ChartOfAccounts", "ChartOfAccounts");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ChartOfCalculationTypes", "ChartOfCalculationTypes");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("InformationRegister", "InformationRegister");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("AccumulationRegister", "AccumulationRegister");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("AccountingRegister", "AccountingRegister");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("CalculationRegister", "CalculationRegister");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("BusinessProcess", "BusinessProcess");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("Task", "Task");
+	AdditionalParameters.PredefinedConfigurationBranches.Insert("ExternalDataSource", "ExternalDataSource");
 
 	Return AdditionalParameters;
 
 EndFunction
 
 &AtServer
-Procedure СоздатьВеткуКонфигурации(СтрокаРодитель, AdditionalParameters, Level = 0)
+Procedure CreateConfigurationBranch(ParentRow, AdditionalParameters, Level = 0)
 	
-	// Дополнить "Path" настройки, чтобы дерево было похоже на дерево конфигурации в конфигураторе 1С
-	If Level = 0 And (AdditionalParameters.МассивПуть[Level] = "ОбщаяФорма"
-		Or AdditionalParameters.МассивПуть[Level] = "SettingsStorage"
-		Or AdditionalParameters.МассивПуть[Level] = "ExchangePlan" Or AdditionalParameters.МассивПуть[Level]
-		= "Подсистема") Then
-		AdditionalParameters.МассивПуть.Insert(0, "Общие");
+	// add setting "Path" , to make the tree look like the configuration tree in the 1C Designer
+	If Level = 0 And (AdditionalParameters.PathArray[Level] = "CommonForm"
+		Or AdditionalParameters.PathArray[Level] = "SettingsStorage"
+		Or AdditionalParameters.PathArray[Level] = "ExchangePlan" Or AdditionalParameters.PathArray[Level]
+		= "Subsystem") Then
+		AdditionalParameters.PathArray.Insert(0, "Common");
 	EndIf; 
 	
-	// ПутьПоиска, нужен для того, чтобы не дублировалить ветки дерева настроек
-	ПутьПоиска = ?(Level = 0, "", СтрокаРодитель.Path + ".") + AdditionalParameters.МассивПуть[Level];
+	// SearchPath, it is needed so that the branches of the settings tree are not duplicated
+	SearchPath = ?(Level = 0, "", ParentRow.Path + ".") + AdditionalParameters.PathArray[Level];
 	
-	// Find существующую ветку
-	TreeRow = СтрокаРодитель.Rows.Find(ПутьПоиска, "Path", False);
+	// Find exist branch
+	TreeRow = ParentRow.Rows.Find(SearchPath, "Path", False);
 	If TreeRow = Undefined Then		
 		
-		// Not нашли. Create новую ветку
-		TreeRow = СтрокаРодитель.Rows.Add();
-		TreeRow.Path = ПутьПоиска;
+		// Not found. Create new branch
+		TreeRow = ParentRow.Rows.Add();
+		TreeRow.Path = SearchPath;
 		TreeRow.Level = Level;
-		TreeRow.FilterID = AdditionalParameters.СчетчикИдентификаторовОтбора;
-		AdditionalParameters.СчетчикИдентификаторовОтбора = AdditionalParameters.СчетчикИдентификаторовОтбора + 1;
-		// Fill колонки строки дерева
-		ЗаполнитьСтрокуДереваКонфигурации(TreeRow, AdditionalParameters, Level);
+		TreeRow.FilterID = AdditionalParameters.FilterIDCounter;
+		AdditionalParameters.FilterIDCounter = AdditionalParameters.FilterIDCounter + 1;
+		// Fill tree rows columns
+		FillConfigurationTreeRow(TreeRow, AdditionalParameters, Level);
 
 	EndIf;
 
-	If AdditionalParameters.МассивПуть[Level + 1] <> "" And Level < 3 Then
-		// Рекурсия
-		СоздатьВеткуКонфигурации(TreeRow, AdditionalParameters, Level + 1);
+	If AdditionalParameters.PathArray[Level + 1] <> "" And Level < 3 Then
+		// Recursion
+		CreateConfigurationBranch(TreeRow, AdditionalParameters, Level + 1);
 
 	Else
-		// Add строку в таблицу настроек текущей строки дерева
-		СтрокаТаблицыНастроек = AdditionalParameters.ТаблицаЗначенийНастроек.Add();
-		СтрокаТаблицыНастроек.SettingsStorageName = AdditionalParameters.SettingsStorageName;
-		СтрокаТаблицыНастроек.SettingsAdditional = AdditionalParameters.ВыборкаНастроек.Settings;
-		FillPropertyValues(СтрокаТаблицыНастроек, AdditionalParameters.ВыборкаНастроек);
-		УстановитьИдентификаторОтбора(СтрокаТаблицыНастроек, TreeRow);
+		// Add row to settings table of current tree row
+		SettingsTableRow = AdditionalParameters.SettingsValueTable.Add();
+		SettingsTableRow.SettingsStorageName = AdditionalParameters.SettingsStorageName;
+		SettingsTableRow.SettingsAdditional = AdditionalParameters.SettingsSelections.Settings;
+		FillPropertyValues(SettingsTableRow, AdditionalParameters.SettingsSelections);
+		SetFilterID(SettingsTableRow, TreeRow);
 
 	EndIf; 
 		
-	// Sort уровня дерева взависимости от варианта отображения представления. Либо по имени, либо по синониму
-	СтрокаРодитель.Rows.Sort(
+	// Sort tree level  depending on the display option of the view. Either by name or by synonym
+	ParentRow.Rows.Sort(
 		?(ConfigurationObjectsRepresentationVariant = 0, "Order, PresentationName", "Order, PresentationSynonym"));
 
 EndProcedure
 
 &AtServer
-Function ЗаполнитьСтрокуДереваКонфигурации(TreeRow, AdditionalParameters, IndexOf)
+Function FillConfigurationTreeRow(TreeRow, AdditionalParameters, IndexOf)
 	
-	// Values по умолчанию
-	TreeRow.PresentationName = AdditionalParameters.МассивПуть[IndexOf];
-	TreeRow.PresentationSynonym = AdditionalParameters.МассивПуть[IndexOf];
+	// Values by default
+	TreeRow.PresentationName = AdditionalParameters.PathArray[IndexOf];
+	TreeRow.PresentationSynonym = AdditionalParameters.PathArray[IndexOf];
 	TreeRow.Order = 999;
 
-	If AdditionalParameters.МассивПуть[IndexOf] = AdditionalParameters.ПредопределенныеВеткиКонфигурации.Общие Then
-		TreeRow.PresentationName = "Общие";
+	If AdditionalParameters.PathArray[IndexOf] = AdditionalParameters.PredefinedConfigurationBranches.Common Then
+		TreeRow.PresentationName = "Common";
 		TreeRow.Order = 10;
 		//TreeRow.Picture = 0;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Подсистема Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Subsystem Then
 		TreeRow.PresentationName = "Subsystems";
 		TreeRow.PresentationSynonym = "Subsystems";
-		TreeRow.КлассОбъектовМетаданных = "Подсистема";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Subsystem";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 20;
 		//TreeRow.Picture = 0;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.SettingsStorage Then
-		TreeRow.PresentationName = "Хранилища настроек";
-		TreeRow.PresentationSynonym = "Хранилища настроек";
-		TreeRow.КлассОбъектовМетаданных = "SettingsStorage";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.SettingsStorage Then
+		TreeRow.PresentationName = "Settings storages";
+		TreeRow.PresentationSynonym = "Settings storage";
+		TreeRow.MetadataObjectsClass = "SettingsStorage";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 21;
 		//TreeRow.Picture = 0;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ExchangePlan Then
-		TreeRow.PresentationName = "Планы обмена";
-		TreeRow.PresentationSynonym = "Планы обмена";
-		TreeRow.КлассОбъектовМетаданных = "ExchangePlan";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ExchangePlan Then
+		TreeRow.PresentationName = "Exchange plans";
+		TreeRow.PresentationSynonym = "Exchange plans";
+		TreeRow.MetadataObjectsClass = "ExchangePlan";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 22;
 		//TreeRow.Picture = 0;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ОбщаяФорма Then
-		TreeRow.PresentationName = "Общие формы";
-		TreeRow.PresentationSynonym = "Общие формы";
-		TreeRow.КлассОбъектовМетаданных = "ОбщаяФорма";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.CommonForm Then
+		TreeRow.PresentationName = "Common forms";
+		TreeRow.PresentationSynonym = "Common forms";
+		TreeRow.MetadataObjectsClass = "CommonForm";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 23;
 		TreeRow.Picture = 1;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Constant Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Constant Then
 		TreeRow.PresentationName = "Constants";
 		TreeRow.PresentationSynonym = "Constants";
-		TreeRow.КлассОбъектовМетаданных = "Constant";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Constant";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 30;
 		//TreeRow.Picture = 0;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Catalog Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Catalog Then
 		TreeRow.PresentationName = "Catalogs";
 		TreeRow.PresentationSynonym = "Catalogs";
-		TreeRow.КлассОбъектовМетаданных = "Catalog";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Catalog";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 31;
 		TreeRow.Picture = 2;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Document Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Document Then
 		TreeRow.PresentationName = "Documents";
 		TreeRow.PresentationSynonym = "Documents";
-		TreeRow.КлассОбъектовМетаданных = "Document";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Document";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 32;
 		TreeRow.Picture = 3;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.DocumentJournal Then
-		TreeRow.PresentationName = "Журналы документов";
-		TreeRow.PresentationSynonym = "Журналы документов";
-		TreeRow.КлассОбъектовМетаданных = "DocumentJournal";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.DocumentJournal Then
+		TreeRow.PresentationName = "Document journals";
+		TreeRow.PresentationSynonym = "Document journals";
+		TreeRow.MetadataObjectsClass = "DocumentJournal";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 33;
 		TreeRow.Picture = 4;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Enum Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Enum Then
 		TreeRow.PresentationName = "Enums";
 		TreeRow.PresentationSynonym = "Enums";
-		TreeRow.КлассОбъектовМетаданных = "Enum";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Enum";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 34;
 		//TreeRow.Picture = 3;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Report Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Report Then
 		TreeRow.PresentationName = "Reports";
 		TreeRow.PresentationSynonym = "Reports";
-		TreeRow.КлассОбъектовМетаданных = "Report";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Report";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 35;
 		TreeRow.Picture = 5;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ExternalReport Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ExternalReport Then
 		TreeRow.PresentationName = "ExternalReports";
 		TreeRow.PresentationSynonym = "ExternalReports";
 		TreeRow.Order = 36;
 		TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Processing Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Processing Then
 		TreeRow.PresentationName = "DataProcessors";
 		TreeRow.PresentationSynonym = "DataProcessors";
-		TreeRow.КлассОбъектовМетаданных = "Processing";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "DataProcessor";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 37;
 		TreeRow.Picture = 7;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ExternalDataProcessor Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ExternalDataProcessor Then
 		TreeRow.PresentationName = "ExternalDataProcessors";
 		TreeRow.PresentationSynonym = "ExternalDataProcessors";
 		TreeRow.Order = 38;
 		TreeRow.Picture = 8;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ChartOfCharacteristicTypes Then
-		TreeRow.PresentationName = "Планы видов характеристик";
-		TreeRow.PresentationSynonym = "Планы видов характеристик";
-		TreeRow.КлассОбъектовМетаданных = "ChartOfCharacteristicTypes";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ChartOfCharacteristicTypes Then
+		TreeRow.PresentationName = "Chart of characteristic types";
+		TreeRow.PresentationSynonym = "Chart of characteristic types";
+		TreeRow.MetadataObjectsClass = "ChartOfCharacteristicTypes";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 39;
 		TreeRow.Picture = 9;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ChartOfAccounts Then
-		TreeRow.PresentationName = "Планы счетов";
-		TreeRow.PresentationSynonym = "Планы счетов";
-		TreeRow.КлассОбъектовМетаданных = "ChartOfAccounts";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ChartOfAccounts Then
+		TreeRow.PresentationName = "Chart of accounts";
+		TreeRow.PresentationSynonym = "Chart of accounts";
+		TreeRow.MetadataObjectsClass = "ChartOfAccounts";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 40;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ChartOfCalculationTypes Then
-		TreeRow.PresentationName = "Планы видов расчета";
-		TreeRow.PresentationSynonym = "Планы видов расчета";
-		TreeRow.КлассОбъектовМетаданных = "ChartOfCalculationTypes";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ChartOfCalculationTypes Then
+		TreeRow.PresentationName = "Chart of calculation types";
+		TreeRow.PresentationSynonym = "Chart of calculation types";
+		TreeRow.MetadataObjectsClass = "ChartOfCalculationTypes";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 41;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.InformationRegister Then
-		TreeRow.PresentationName = "Регистры сведений";
-		TreeRow.PresentationSynonym = "Регистры сведений";
-		TreeRow.КлассОбъектовМетаданных = "InformationRegister";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.InformationRegister Then
+		TreeRow.PresentationName = "Information registers";
+		TreeRow.PresentationSynonym = "Information registers";
+		TreeRow.MetadataObjectsClass = "InformationRegister";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 42;
 		TreeRow.Picture = 10;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.AccumulationRegister Then
-		TreeRow.PresentationName = "Регистры накопления";
-		TreeRow.PresentationSynonym = "Регистры накопления";
-		TreeRow.КлассОбъектовМетаданных = "AccumulationRegister";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.AccumulationRegister Then
+		TreeRow.PresentationName = "Accumulation register";
+		TreeRow.PresentationSynonym = "Accumulation registers";
+		TreeRow.MetadataObjectsClass = "AccumulationRegister";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 43;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.AccountingRegister Then
-		TreeRow.PresentationName = "Регистры бухгалтерии";
-		TreeRow.PresentationSynonym = "Регистры бухгалтерии";
-		TreeRow.КлассОбъектовМетаданных = "AccountingRegister";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.AccountingRegister Then
+		TreeRow.PresentationName = "Accounting registers";
+		TreeRow.PresentationSynonym = "Accounting registers";
+		TreeRow.MetadataObjectsClass = "AccountingRegister";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 44;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.CalculationRegister Then
-		TreeRow.PresentationName = "Регистры расчета";
-		TreeRow.PresentationSynonym = "Регистры расчета";
-		TreeRow.КлассОбъектовМетаданных = "CalculationRegister";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.CalculationRegister Then
+		TreeRow.PresentationName = "Calculation registers";
+		TreeRow.PresentationSynonym = "Calculation registers";
+		TreeRow.MetadataObjectsClass = "CalculationRegister";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 45;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.BusinessProcess Then
-		TreeRow.PresentationName = "Бизнес-процессы";
-		TreeRow.PresentationSynonym = "Бизнес-процессы";
-		TreeRow.КлассОбъектовМетаданных = "BusinessProcess";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.BusinessProcess Then
+		TreeRow.PresentationName = "Business-processes";
+		TreeRow.PresentationSynonym = "Business-processes";
+		TreeRow.MetadataObjectsClass = "BusinessProcess";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 46;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.Task Then
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.Task Then
 		TreeRow.PresentationName = "Tasks";
 		TreeRow.PresentationSynonym = "Tasks";
-		TreeRow.КлассОбъектовМетаданных = "Task";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+		TreeRow.MetadataObjectsClass = "Task";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 47;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf]
-		= AdditionalParameters.ПредопределенныеВеткиКонфигурации.ExternalDataSource Then
-		TreeRow.PresentationName = "Внешние источники данных";
-		TreeRow.PresentationSynonym = "Внешние источники данных";
-		TreeRow.КлассОбъектовМетаданных = "ExternalDataSource";
-		TreeRow.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных = True;
+	ElsIf AdditionalParameters.PathArray[IndexOf]
+		= AdditionalParameters.PredefinedConfigurationBranches.ExternalDataSource Then
+		TreeRow.PresentationName = "External data sources";
+		TreeRow.PresentationSynonym = "External data sources";
+		TreeRow.MetadataObjectsClass = "ExternalDataSource";
+		TreeRow.GeneratePresentationOfChildRowsFromMetadataSynonyms = True;
 		TreeRow.Order = 48;
 		//TreeRow.Picture = 6;
 
-	ElsIf AdditionalParameters.МассивПуть[IndexOf] = "Form" Then
+	ElsIf AdditionalParameters.PathArray[IndexOf] = "Form" Then
 		TreeRow.PresentationName = "Forms";
 		TreeRow.PresentationSynonym = "Forms";
 		TreeRow.Picture = 1;
 
 	Else
-		TreeRow.Picture = AdditionalParameters.НомерКартинки;
+		TreeRow.Picture = AdditionalParameters.PictureNumber;
 
 	EndIf;
 
-	AdditionalParameters.НомерКартинки = TreeRow.Picture;
+	AdditionalParameters.PictureNumber = TreeRow.Picture;
 	
-	// FillType колонок дерева PresentationSynonym, ОтсутствуетВКонфигурации
-	If IndexOf > 0 And TreeRow.Parent.ФормироватьПредставлениеПодчиненныхСтрокИзСинонимаМетаданных Then
-		ОбъектМетаданных = Metadata.FindByFullName(TreeRow.Parent.КлассОбъектовМетаданных + "."
-			+ AdditionalParameters.МассивПуть[IndexOf]);
-		If ОбъектМетаданных = Undefined Then
-			TreeRow.ОтсутствуетВКонфигурации = True;
-			УстановитьОтсутствуетВКонфигурации(TreeRow);
+	// Fill columns   PresentationSynonym, MissingInConfiguration of tree
+	If IndexOf > 0 And TreeRow.Parent.GeneratePresentationOfChildRowsFromMetadataSynonyms Then
+		MetadataObject = Metadata.FindByFullName(TreeRow.Parent.MetadataObjectsClass + "."
+			+ AdditionalParameters.PathArray[IndexOf]);
+		If MetadataObject = Undefined Then
+			TreeRow.MissingInConfiguration = True;
+			SetMissingInConfiguration(TreeRow);
 		Else
-			TreeRow.PresentationSynonym = ОбъектМетаданных.Synonym;
+			TreeRow.PresentationSynonym = MetadataObject.Synonym;
 		EndIf;
 	EndIf;
 
 EndFunction
 
 &AtServer
-Procedure УстановитьИдентификаторОтбора(СтрокаТаблицыНастроек, TreeRow)
+Procedure SetFilterID(SettingsTableRow, TreeRow)
 
-	СтрокаТаблицыНастроек["FilterID" + TreeRow.Level] = TreeRow.FilterID;
+	SettingsTableRow["FilterID" + TreeRow.Level] = TreeRow.FilterID;
 
 	TreeRow.SettingsCount = TreeRow.SettingsCount + 1;
 
-	СтрокаРодитель = TreeRow.Parent;
-	If СтрокаРодитель.Parent <> Undefined Then
-		// Рекурсия
-		УстановитьИдентификаторОтбора(СтрокаТаблицыНастроек, СтрокаРодитель);
+	ParentRow = TreeRow.Parent;
+	If ParentRow.Parent <> Undefined Then
+		// Recursion
+		SetFilterID(SettingsTableRow, ParentRow);
 	EndIf;
 
 EndProcedure
 
 &AtServer
-Procedure УстановитьОтсутствуетВКонфигурации(TreeRow)
+Procedure SetMissingInConfiguration(TreeRow)
 
-	TreeRow.ОтсутствуетВКонфигурации = True;
+	TreeRow.MissingInConfiguration = True;
 
-	СтрокаРодитель = TreeRow.Parent;
-	If СтрокаРодитель.Parent <> Undefined Then
-		// Рекурсия
-		УстановитьОтсутствуетВКонфигурации(СтрокаРодитель);
+	ParentRow = TreeRow.Parent;
+	If ParentRow.Parent <> Undefined Then
+		// Recursion
+		SetMissingInConfiguration(ParentRow);
 	EndIf;
 
 EndProcedure
 
 &AtServer
-Procedure УдалитьВыбранныеНастройкиНаСервере()
+Procedure DeleteSelectedSettingsAtServer()
 	FilterParameters = New Structure;
 	FilterParameters.Insert("Check", True);
 	FoundedRows = SettingsTable.FindRows(FilterParameters);
 	For Each String In FoundedRows Do
-		ХрНастроек = Eval(String.SettingsStorageName);
-		ХрНастроек.Delete(String.ObjectKey, String.SettingsKey, SettingsOwner);
+		SettingsStorage = Eval(String.SettingsStorageName);
+		SettingsStorage.Delete(String.ObjectKey, String.SettingsKey, SettingsOwner);
 	EndDo;
 
 EndProcedure
 
 &AtServer
-Procedure СкопироватьВыбранныеНастройкиНаСервере()
+Procedure CopySelectedSettingsAtServer()
 
 	Filter = New Structure("Check", True);
 
-	ВыбранныеПользователи = Users.FindRows(Filter);
+	SelectedUsers = Users.FindRows(Filter);
 
-	ВыбранныеНастроки = SettingsTable.FindRows(Filter);
+	SelectedSettings = SettingsTable.FindRows(Filter);
 
-	For Each СтрокаПользователь In ВыбранныеПользователи Do
-		For Each СтрокаНастройка In ВыбранныеНастроки Do
+	For Each RowUser In SelectedUsers Do
+		For Each SettingRow In SelectedSettings Do
 
-			ХрНастроек = Eval(СтрокаНастройка.SettingsStorageName);
+			SettingsStorage = Eval(SettingRow.SettingsStorageName);
 
 			Filter = New Structure;
-			Filter.Insert("ObjectKey", СтрокаНастройка.ObjectKey);
-			Filter.Insert("SettingsKey", СтрокаНастройка.SettingsKey);
-			Filter.Insert("User", СтрокаПользователь.Name);
+			Filter.Insert("ObjectKey", SettingRow.ObjectKey);
+			Filter.Insert("SettingsKey", SettingRow.SettingsKey);
+			Filter.Insert("User", RowUser.Name);
 			
 			
-			// Get настроки для копирования. Выборка ВыборкаНастроекИсточника должен содержать один элемент
-			ВыборкаНастроекИсточника = ХрНастроек.StartChoosing(Filter);
-			ВыборкаНастроекИсточника.Next();
+			// Get settings for copying  Selection SourceSettingsSelection must have one item
+			SourceSettingsSelection = SettingsStorage.Select(Filter);
+			SourceSettingsSelection.Next();
 			
-			// Copy настройки новому пользователю
-			ХрНастроек.Save(
-				СтрокаНастройка.ObjectKey, СтрокаНастройка.SettingsKey, ВыборкаНастроекИсточника.Settings,
-				СтрокаНастройка.Presentation, СтрокаПользователь.Name);
+			// Copy setting to new user
+			SettingsStorage.Save(
+				SettingRow.ObjectKey, SettingRow.SettingsKey, SourceSettingsSelection.Settings,
+				SettingRow.Presentation, RowUser.Name);
 
 		EndDo;
 	EndDo;
@@ -846,10 +844,10 @@ Procedure ViewSettingsAtServer(SettingsStorageName, ObjectKey, SettingsKey, User
 	Filter.Insert("SettingsKey", SettingsKey);
 	Filter.Insert("User", UserName);
 
-	Выборка = Eval(SettingsStorageName).StartChoosing(Filter);
-	Выборка.Next();
+	Selection = Eval(SettingsStorageName).Select(Filter);
+	Selection.Next();
 
-	СодержимоеНастроек = Выборка.Settings;
+	SettingsContent = Selection.Settings;
 
 EndProcedure
 
@@ -858,57 +856,57 @@ EndProcedure
 /////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////
 
-#Region Прочее
+#Region Other
 
-#Region Управление_пометками
+#Region Checks_Management
 
 &AtClient
-Procedure УстановитьПометкуПодчиненныхЭлементов(ЭлементДерева, Check)
+Procedure SetCheckForChilds(TreeItem, Check)
 	
-	// Set пометку
-	ЭлементДерева.Check = Check;
+	// Set check
+	TreeItem.Check = Check;
 
 	FilterParameters = New Structure;
-	FilterParameters.Insert("FilterID" + ЭлементДерева.Level, ЭлементДерева.FilterID);
+	FilterParameters.Insert("FilterID" + TreeItem.Level, TreeItem.FilterID);
 	FilterParameters.Insert("Check", Not Check);
 	FoundedRows = SettingsTable.FindRows(FilterParameters);
 	For Each String In FoundedRows Do
 		String.Check = (Check = 1);
 	EndDo; 
 	
-	// Рекурсивная установка пометки у подчиненных строк дерева
-	For Each ПодчиненныйЭлемент In ЭлементДерева.GetItems() Do
-		УстановитьПометкуПодчиненныхЭлементов(ПодчиненныйЭлемент, Check);
+	// Recursive set of check for child tree rows
+	For Each Child In TreeItem.GetItems() Do
+		SetCheckForChilds(Child, Check);
 	EndDo;
 
 EndProcedure
 
 &AtClient
-Procedure УстановитьПометкуРодительскихЭлементов(ЭлементДерева, Check)
+Procedure SetCheckForParents(TreeItem, Check)
 	
-	// Set пометку
-	ЭлементДерева.Check = Check;	
+	// Set check
+	TreeItem.Check = Check;	
 	
-	// Рекурсивная установка пометки у родительских строк дерева
-	ЭлементРодитель = ЭлементДерева.GetParent();
-	If Not ЭлементРодитель = Undefined Then
+	//  Recursive set of check of parent tree rows
+	ParentItem = TreeItem.GetParent();
+	If Not ParentItem = Undefined Then
 		
-		// Считаем количесвто помеченных элементов в подчиненном уровне
-		КоличествоПомеченныхЭлеметов = 0;
-		КоличествоСерыхЭлеметов = 0;
-		ПодчиненныеЭлементыРодителя = ЭлементРодитель.GetItems();
-		For Each ПодчиненныйЭлемент In ПодчиненныеЭлементыРодителя Do
-			КоличествоПомеченныхЭлеметов = КоличествоПомеченныхЭлеметов + ?(ПодчиненныйЭлемент.Check = 1, 1, 0);
-			КоличествоСерыхЭлеметов = КоличествоСерыхЭлеметов + ?(ПодчиненныйЭлемент.Check = 2, 1, 0);
+		// Calculate count of cheked items at child level
+		CheckedItemsCount = 0;
+		GreyItemsCount = 0;
+		ParentChildItems = ParentItem.GetItems();
+		For Each Child In ParentChildItems Do
+			CheckedItemsCount = CheckedItemsCount + ?(Child.Check = 1, 1, 0);
+			GreyItemsCount = GreyItemsCount + ?(Child.Check = 2, 1, 0);
 		EndDo;
 		
-		// Устанавливаем пометки
-		If КоличествоПомеченныхЭлеметов = 0 And КоличествоСерыхЭлеметов = 0 Then
-			УстановитьПометкуРодительскихЭлементов(ЭлементРодитель, 0);
-		ElsIf КоличествоПомеченныхЭлеметов = ПодчиненныеЭлементыРодителя.Count() Then
-			УстановитьПометкуРодительскихЭлементов(ЭлементРодитель, 1);
+		// Set checks
+		If CheckedItemsCount = 0 And GreyItemsCount = 0 Then
+			SetCheckForParents(ParentItem, 0);
+		ElsIf CheckedItemsCount = ParentChildItems.Count() Then
+			SetCheckForParents(ParentItem, 1);
 		Else
-			УстановитьПометкуРодительскихЭлементов(ЭлементРодитель, 2);
+			SetCheckForParents(ParentItem, 2);
 		EndIf;
 
 	EndIf;
@@ -916,19 +914,19 @@ Procedure УстановитьПометкуРодительскихЭлемен
 EndProcedure
 
 &AtClient
-Procedure CheckManagement(ЭлементДерева, ОтсекатьСеруюПометку = True)
+Procedure CheckManagement(TreeItem, CutGreyCheck = True)
 
-	If ЭлементДерева = Undefined Then
+	If TreeItem = Undefined Then
 		Return;
 	EndIf;
 	
-	// отсечем серую пометку, считаем что сняли пометку
-	If ОтсекатьСеруюПометку And ЭлементДерева.Check = 2 Then
-		ЭлементДерева.Check = 0;
+	// Cut grey check, think that off check
+	If CutGreyCheck And TreeItem.Check = 2 Then
+		TreeItem.Check = 0;
 	EndIf;
 
-	УстановитьПометкуПодчиненныхЭлементов(ЭлементДерева, ЭлементДерева.Check);
-	УстановитьПометкуРодительскихЭлементов(ЭлементДерева, ЭлементДерева.Check);
+	SetCheckForChilds(TreeItem, TreeItem.Check);
+	SetCheckForParents(TreeItem, TreeItem.Check);
 
 EndProcedure
 
