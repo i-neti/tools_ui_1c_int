@@ -58,7 +58,6 @@ The code is open, you can copy and distribute to anyone, but also with open sour
 - **Loading/Uploading XML with filters** - Transferring information between two similar databases. Fork of https://infostart.ru/public/1149722/ [Author's permission](http://forum.infostart.ru/forum15/topic229143/message2372663/#message2372663)
 - **Configuration Navigator**- This data processor replases  standart command "All Functions" and contains additional administrative functions. Fork of https://infostart.ru/public/931586/. [Author's permission](http://forum.infostart.ru/forum9/topic202659/message2375904/#message2375904)
 - **File manager** - Data processor for convenient work with files between the client and the server.Support file Transfer, View, delete of files. Currently contains synchronous calls. Fork of  https://infostart.ru/public/1027326/. [Author's permission](https://github.com/cpr1c/tools_ui_1c/issues/108)
-- **Regular Expressions Constructor**-  allows you to build complex structured expressions based on a parametric description, test them, and as a result get the 1C program code. Currently it only works on Windows. Fork of https://infostart.ru/public/592108/. [Author's permission](http://forum.infostart.ru/forum9/topic167495/message2389269/#message2389269)
 - **Web Services Console** -data processor for reading and executing web services on the 1C: Enterprise 8.3 platform. Analog of SoapUI. Allows you to perform a web service operation and display the result as xml or a tree. Fork of  https://github.com/ghostaz/WSReader2.git. [GPL3 License](https://github.com/ghostaz/WSReader2/blob/master/LICENSE)
 - **Data comparsion console**- it is used to compare data obtained from different data sources: 1C 8, 1C 7.7 information databases, SQL databases, CSV/TXT/DBF/XLS/DOC/XML format files, JSON strings, manually filled tabular document. Fork of https://infostart.ru/public/581794. [Author's permission](http://forum.infostart.ru/forum9/topic165873/message2373325/#message2373325)
 - **Information about 1C licenses**-this is GUI for  1C licensing utilities  (RING). Fork of  https://infostart.ru/public/1124442/. [Author's permission](http://forum.infostart.ru/forum9/topic226186/message2389245/#message2389245).  Должна быть установлена утилита ring и ее модули license
@@ -68,7 +67,6 @@ The code is open, you can copy and distribute to anyone, but also with open sour
 - **Universal data exchange in XML format (with filters and direct download via HTTP service** - Unloading and loading according to the exchange rules. Fork of the standard data processor from 1С и https://infostart.ru/public/1176839/. [Author's permission](https://github.com/cpr1c/tools_ui_1c/issues/139). Added the ability to apply filters to unloaded objects, and direct uploading to the database via the http service of Universal Tools.  
 - **Data Composition System Editor**- Analogue Data Composition Schema wizard for thin client. Currently, it does not support editing layouts and nested schemas.
 - **Object comparison** - Comparison attribute to attribute of  reference objects with output to tabular document. Fork of https://infostart.ru/public/1240803/. [Author's permission](https://github.com/cpr1c/tools_ui_1c/issues/246)
-- **1C Serialization Library**- A set of procedures and functions for serialization/deserialization of 1C data and DCS (Data Composition System) objects into simple data structures (Structure, Map, array). Fork of https://github.com/arkuznetsov/SerLib1C. [MPL-2.0 License](https://github.com/arkuznetsov/SerLib1C/blob/master/LICENSE)
 - **Connector: handy HTTP-client for 1C:Enterprise 8 platform** - Python world has a very popular library working with HTTP requests  - [Requests](http://docs.python-requests.org/en/master) (author: Kenneth Reitz). The library allows you to send HTTP requests extremely easily. Literally a single line of your code can receive or send data, not caring about making URL, encoding data etc. **Connector** is "Requests" for 1C world. Fork of https://github.com/vbondarevsky/Connector/blob/master/README-EN.md. [Apache-2.0 License](https://github.com/vbondarevsky/Connector/blob/master/LICENSE)
 
 # Integration with Standart Sybsystems Liblary (SSL)
@@ -92,22 +90,6 @@ Example:
 
 `Result = HTTPConnector.GetJson("https://api.github.com/events");`
 
-## 1C Serialization Library
-
-Available from API of data processor **UT_JSONDataConversion**. For a detailed description of the methods, see the library page https://github.com/arkuznetsov/SerLib1C
-
-Initialization:
-
-`Сериализатор1С = Обработки.УИ_ПреобразованиеДанныхJSON.Создать()` 
- 
-Example: 
- 
-```bsl
-СериализаторJSON=Обработки.УИ_ПреобразованиеДанныхJSON.Создать();
-
-СтруктураИстории=СериализаторJSON.ЗначениеВСтруктуру(ДанныеСохранения);
-СериализуемаяСтрокаJSON=СериализаторJSON.ЗаписатьОписаниеОбъектаВJSON(СтруктураИстории);
-``` 
 ## Working with the OS clipboard
 
 Available from API of module **UT_ClipboardClient**. Description of methods in the code. Synchronous and asynchronous operation modes are supported. https://github.com/cpr1c/clipboard_1c
@@ -117,17 +99,6 @@ Example of use:
 ```bsl
 УИ_БуферОбменаКлиент.КопироватьСтрокуВБуфер("Моя строка для копирования в буфер обмена");
 ``` 
-
-## Working with regular expressions
-
-Доступна программно через модуль **УИ_РегулярныеВыраженияКлиентСервер**. Описание методов в коде. Поддерживается синхронный и асинхронный режим работы. https://github.com/cpr1c/RegEx1C_cfe
-
-
-Example of use: 
-```bsl
-УИ_РегулярныеВыраженияКлиентСервер.Совпадает("Hello world", "([A-Za-z]+)\s+([a-z]+)"); //Истина
-``` 
-
  
 ## Retrieving the virtual table structure of a query or temporary table manager
 
