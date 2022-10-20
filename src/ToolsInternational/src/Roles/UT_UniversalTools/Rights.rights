@@ -55,17 +55,6 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.UT_JSONDataConversion</name>
-		<right>
-			<name>Use</name>
-			<value>true</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>true</value>
-		</right>
-	</object>
-	<object>
 		<name>DataProcessor.UT_JobsConsole</name>
 		<right>
 			<name>Use</name>
@@ -120,17 +109,6 @@
 	</object>
 	<object>
 		<name>DataProcessor.UT_GroupProcessingCatalogsAndDocuments</name>
-		<right>
-			<name>Use</name>
-			<value>true</value>
-		</right>
-		<right>
-			<name>View</name>
-			<value>true</value>
-		</right>
-	</object>
-	<object>
-		<name>DataProcessor.УИ_КонструкторРегулярныхВыражений</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>
