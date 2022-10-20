@@ -92,22 +92,6 @@ Example:
 
 `Result = HTTPConnector.GetJson("https://api.github.com/events");`
 
-## 1C Serialization Library
-
-Available from API of data processor **UT_JSONDataConversion**. For a detailed description of the methods, see the library page https://github.com/arkuznetsov/SerLib1C
-
-Initialization:
-
-`Сериализатор1С = Обработки.УИ_ПреобразованиеДанныхJSON.Создать()` 
- 
-Example: 
- 
-```bsl
-СериализаторJSON=Обработки.УИ_ПреобразованиеДанныхJSON.Создать();
-
-СтруктураИстории=СериализаторJSON.ЗначениеВСтруктуру(ДанныеСохранения);
-СериализуемаяСтрокаJSON=СериализаторJSON.ЗаписатьОписаниеОбъектаВJSON(СтруктураИстории);
-``` 
 ## Working with the OS clipboard
 
 Available from API of module **UT_ClipboardClient**. Description of methods in the code. Synchronous and asynchronous operation modes are supported. https://github.com/cpr1c/clipboard_1c
@@ -117,17 +101,6 @@ Example of use:
 ```bsl
 УИ_БуферОбменаКлиент.КопироватьСтрокуВБуфер("Моя строка для копирования в буфер обмена");
 ``` 
-
-## Working with regular expressions
-
-Доступна программно через модуль **УИ_РегулярныеВыраженияКлиентСервер**. Описание методов в коде. Поддерживается синхронный и асинхронный режим работы. https://github.com/cpr1c/RegEx1C_cfe
-
-
-Example of use: 
-```bsl
-УИ_РегулярныеВыраженияКлиентСервер.Совпадает("Hello world", "([A-Za-z]+)\s+([a-z]+)"); //Истина
-``` 
-
  
 ## Retrieving the virtual table structure of a query or temporary table manager
 
