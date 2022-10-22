@@ -462,15 +462,15 @@ Procedure EditValueTable(ValueTableAsString, FormOwner, OnEndNotifyDescription) 
 		OnEndNotifyDescription);
 EndProcedure
 
-Процедура РедактироватьТабличныйДокумент(ТабличныйДокумент, ЗаголовокФормы,
-	ОписаниеОповещенияОЗавершении = Неопределено) Экспорт
+Procedure EditSpreadsheetDocument(SpreadsheetDocument, FormTitle,
+	CompletionNotifyDescription = Undefined) export
 	
-	ПараметрыОткрытия = Новый Структура;
-	ПараметрыОткрытия.Вставить("ИмяДокумента", ЗаголовокФормы);
-	ПараметрыОткрытия.Вставить("ТабличныйДокумент", ТабличныйДокумент);
+	OpeningParameters = New Structure;
+	OpeningParameters.Insert("DocumentName", FormTitle);
+	OpeningParameters.Insert("SpreadsheetDocument", SpreadsheetDocument);
 
-	ОткрытьФорму("ОбщаяФорма.УИ_РедактированиеТабличногоДокумента", ПараметрыОткрытия);
-КонецПроцедуры
+	OpenForm("CommonForm.UT_SpreadsheetDocumentEditor", OpeningParameters);
+EndProcedure
 
 #EndRegion
 
