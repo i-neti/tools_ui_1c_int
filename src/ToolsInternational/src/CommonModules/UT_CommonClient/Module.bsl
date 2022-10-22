@@ -466,6 +466,10 @@ EndProcedure
 
 #Region FormItemsEvents
 
+Procedure FormFieldClear(Form, Item,StandardProcessing) Export
+	Item.TypeRestriction = New TypeDescription;
+EndProcedure
+
 Procedure FormFieldValueStartChoice(Form, Item, Value, StandardProcessing,
 	EmptyTypeNotifyDescription = Undefined, TypesSet = Undefined) Export
 
@@ -501,52 +505,52 @@ Procedure FormFieldValueStartChoice(Form, Item, Value, StandardProcessing,
 	EndIf;
 EndProcedure
 
-Процедура ПолеФормыНачалоВыбораЗначенияЗавершениеВыбораТипа(Результат, ДополнительныеПараметры) Экспорт
-	Если Результат = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-	ДополнительныеПараметры.Элемент.ОграничениеТипа = Результат.Описание;
+Procedure FormFieldValueStartChoiceTypeChoiceEnd(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	AdditionalParameters.Item.TypeRestriction = Result.Description;
 
-	Если Результат.Описание.Типы().Количество() = 0 Тогда
-		Возврат;
-	КонецЕсли;
+	If Result.Description.Types().Count() = 0 Then
+		Return;
+	EndIf;
 
-	ТипЗначения = Результат.Описание.Типы()[0];
-	ПустоеЗначениеТипа = Неопределено;
-	ОткрыватьФормуВыбора = Ложь;
+	ValueType = Result.Description.Types()[0];
+	EmptyTypeValue = Undefined;
+	OpenChoiceForm = False;
 	
-	Если ТипЗначения = Тип("Число") Тогда
-		ПустоеЗначениеТипа = 0;
-	ИначеЕсли ТипЗначения = Тип("Строка") Тогда 
-		ПустоеЗначениеТипа = "";
-	ИначеЕсли ТипЗначения = Тип("Дата") Тогда 
-		ПустоеЗначениеТипа = '00010101';
-	ИначеЕсли ТипЗначения = Тип("Булево") Тогда 
-		ПустоеЗначениеТипа = Ложь;
-	Иначе
-		ПустоеЗначениеТипа = Новый (ТипЗначения);
-		ОткрыватьФормуВыбора = Истина;
-	КонецЕсли;
+	If ValueType = Type("Number") Then
+		EmptyTypeValue = 0;
+	ElsIf ValueType = Type("String") Then 
+		EmptyTypeValue = "";
+	ElsIf ValueType = Type("Date") Then 
+		EmptyTypeValue = '00010101';
+	ElsIf ValueType = Type("Boolean") Then 
+		EmptyTypeValue = False;
+	Else
+		EmptyTypeValue = New (ValueType);
+		OpenChoiceForm = True;
+	EndIf;
 
-	Если ТипЗнч(ДополнительныеПараметры.ОповещениеОВыбореПустогоЗначения) = Тип("ОписаниеОповещения") Тогда
-		ВыполнитьОбработкуОповещения(ДополнительныеПараметры.ОповещениеОВыбореПустогоЗначения, ПустоеЗначениеТипа);
-	КонецЕсли;
+	IF TypeOf(AdditionalParameters.EmptyTypeNotifyDescription) = Type("NotifyDescription") Then
+		ExecuteNotifyProcessing(AdditionalParameters.EmptyTypeNotifyDescription, EmptyTypeValue);
+	EndIf;
 
-	Если Не ОткрыватьФормуВыбора Тогда
-		Возврат;
-	КонецЕсли;
+	If Not OpenChoiceForm Then
+		Return;
+	EndIf;
 	
-	ИмяОбъекта = УИ_ОбщегоНазначения.ИмяТаблицыПоСсылке(ПустоеЗначениеТипа);
-	Если Результат.ИспользоватьДинамическийСписокДляВыбораСсылочногоЗначения Тогда
-		ПараметрыФормы = Новый Структура;
-		ПараметрыФормы.Вставить("ИмяОбъектаМетаданных", ИмяОбъекта);
-		ПараметрыФормы.Вставить("РежимВыбора", Истина);
+	ObjectName = UT_Common.TableNameByRef(EmptyTypeValue);
+	If Result.UseDynamicListForRefValueChoice Then
+		FormParameters = New Structure;
+		FormParameters.Insert("MetadataObjectName", ObjectName);
+		FormParameters.Insert("ChoiceMode", True);
 		
-		ОткрытьФорму("Обработка.УИ_ДинамическийСписок.Форма", ПараметрыФормы, ДополнительныеПараметры.Элемент);	
-	Иначе
-		ОткрытьФорму(ИмяОбъекта + ".ФормаВыбора", , ДополнительныеПараметры.Элемент);
-	КонецЕсли;
-КонецПроцедуры
+		OpenForm("DataProcessor.UT_DynamicList.Form", FormParameters, AdditionalParameters.Item);	
+	Else
+		OpenForm(ObjectName + ".ChoiceForm", , AdditionalParameters.Item);
+	EndIf;
+EndProcedure
 
 Procedure FormFieldFileNameStartChoice (FileDescriptionStructure, Item, ChoiseData, StandardProcessing,
 	DialogMode, OnEndNotifyDescription) Export
@@ -1026,7 +1030,7 @@ Procedure ReadMainSessionFileVariablesToApplicationParametersOnEndGettingUserDat
 	FileVariablesStructure=SessionFileVariablesStructure();
 	FileVariablesStructure.Insert("UserDataWorkDir", DirectoryName);
 
-	ExecuteNotifyProcessing(AdditionalParameters.OnEndNotifyDescription, Истина);
+	ExecuteNotifyProcessing(AdditionalParameters.OnEndNotifyDescription, True);
 EndProcedure
 
 #EndRegion
