@@ -3743,10 +3743,14 @@
       </edit>
     </columns>
     <columns>
-      <name>УникальныйИдентификаторТочкиПодключения</name>
+      <name>UniqueConnectionPointIdentifier</name>
       <title>
         <key>ru</key>
         <value>Уникальный идентификатор точки подключения</value>
+      </title>
+      <title>
+        <key>en</key>
+        <value>Unique connection point identifier</value>
       </title>
       <id>3</id>
       <valueType>

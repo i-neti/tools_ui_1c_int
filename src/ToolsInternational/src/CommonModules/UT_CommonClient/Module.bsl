@@ -276,7 +276,7 @@ EndProcedure
 
 Procedure OpenTextEditingForm(Text, OnCloseNotifyDescription, Title = "",
 	WindowOpeningMode = Undefined) Export
-	FormParameters = New Структура;
+	FormParameters = New Structure;
 	FormParameters.Insert("Text", Text);
 	FormParameters.Insert("Title", Title);
 
@@ -466,15 +466,87 @@ EndProcedure
 
 #Region FormItemsEvents
 
-Procedure FormFieldValueStartChoice (Value, StandardProcessing, OnEndNotifyDescription,
-	ValueType = Undefined, AvailableValues = Undefined) Export
-	CurrentValueType=TypeOf(Value);
+Procedure FormFieldValueStartChoice(Form, Item, Value, StandardProcessing,
+	EmptyTypeNotifyDescription = Undefined, TypesSet = Undefined) Export
 
-	If CurrentValueType = Тип("ValueList") Then
-		StandardProcessing=False;
-		
+	IF Value = Undefined Then
+		StandardProcessing = False;
+
+		FormParameters=New Structure;
+		FormParameters.Insert("CompositeTypeAvailable", False);
+		FormParameters.Insert("ChoiceMode", True);
+		IF TypesSet = Undefined Then
+			FormParameters.Insert("TypesSet", "Refs,Primitive,UUID");
+		Else
+			FormParameters.Insert("TypesSet", TypesSet);
+		Endif;
+
+		NotifyAdditionalParameters = New Structure;
+		NotifyAdditionalParameters.Insert("Form", Form);
+		NotifyAdditionalParameters.Insert("Item", Item);
+		NotifyAdditionalParameters.Insert("EmptyTypeNotifyDescription", EmptyTypeNotifyDescription);
+
+		OpenForm("CommonForm.UT_ValueTypeEditor", FormParameters, Item, , , ,
+			New NotifyDescription("FormFieldValueStartChoiceTypeChoiceEnd", ThisObject,
+			NotifyAdditionalParameters), FormWindowOpeningMode.LockOwnerWindow);
+
+	ElsIf Item.TypeRestriction <> New TypeDescription Then
+		NewValue = Item.TypeRestriction.AdjustValue(Value);
+		If NewValue <> Value Then
+			Types = New Array;
+			Types.Add(TypeOf(Value));
+			Item.TypeRestriction = New TypeDescription(Types);
+		EndIf;
+		//OpenForm("Catalog._DemoBankAccounts.ChoiceForm", , Item);
 	EndIf;
 EndProcedure
+
+Процедура ПолеФормыНачалоВыбораЗначенияЗавершениеВыбораТипа(Результат, ДополнительныеПараметры) Экспорт
+	Если Результат = Неопределено Тогда
+		Возврат;
+	КонецЕсли;
+	ДополнительныеПараметры.Элемент.ОграничениеТипа = Результат.Описание;
+
+	Если Результат.Описание.Типы().Количество() = 0 Тогда
+		Возврат;
+	КонецЕсли;
+
+	ТипЗначения = Результат.Описание.Типы()[0];
+	ПустоеЗначениеТипа = Неопределено;
+	ОткрыватьФормуВыбора = Ложь;
+	
+	Если ТипЗначения = Тип("Число") Тогда
+		ПустоеЗначениеТипа = 0;
+	ИначеЕсли ТипЗначения = Тип("Строка") Тогда 
+		ПустоеЗначениеТипа = "";
+	ИначеЕсли ТипЗначения = Тип("Дата") Тогда 
+		ПустоеЗначениеТипа = '00010101';
+	ИначеЕсли ТипЗначения = Тип("Булево") Тогда 
+		ПустоеЗначениеТипа = Ложь;
+	Иначе
+		ПустоеЗначениеТипа = Новый (ТипЗначения);
+		ОткрыватьФормуВыбора = Истина;
+	КонецЕсли;
+
+	Если ТипЗнч(ДополнительныеПараметры.ОповещениеОВыбореПустогоЗначения) = Тип("ОписаниеОповещения") Тогда
+		ВыполнитьОбработкуОповещения(ДополнительныеПараметры.ОповещениеОВыбореПустогоЗначения, ПустоеЗначениеТипа);
+	КонецЕсли;
+
+	Если Не ОткрыватьФормуВыбора Тогда
+		Возврат;
+	КонецЕсли;
+	
+	ИмяОбъекта = УИ_ОбщегоНазначения.ИмяТаблицыПоСсылке(ПустоеЗначениеТипа);
+	Если Результат.ИспользоватьДинамическийСписокДляВыбораСсылочногоЗначения Тогда
+		ПараметрыФормы = Новый Структура;
+		ПараметрыФормы.Вставить("ИмяОбъектаМетаданных", ИмяОбъекта);
+		ПараметрыФормы.Вставить("РежимВыбора", Истина);
+		
+		ОткрытьФорму("Обработка.УИ_ДинамическийСписок.Форма", ПараметрыФормы, ДополнительныеПараметры.Элемент);	
+	Иначе
+		ОткрытьФорму(ИмяОбъекта + ".ФормаВыбора", , ДополнительныеПараметры.Элемент);
+	КонецЕсли;
+КонецПроцедуры
 
 Procedure FormFieldFileNameStartChoice (FileDescriptionStructure, Item, ChoiseData, StandardProcessing,
 	DialogMode, OnEndNotifyDescription) Export
