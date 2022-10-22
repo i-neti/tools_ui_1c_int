@@ -212,7 +212,7 @@ EndFunction
 
 #Region Debug
 
-Procedure OpenDebuggingConsole(DebuggingObjectType, DebuggingData, ConsoleFormUnique = Undefined) Экспорт
+Procedure OpenDebuggingConsole(DebuggingObjectType, DebuggingData, ConsoleFormUnique = Undefined) Export
 	If Upper(DebuggingObjectType) = "QUERY" Then
 		ConsoleFormName = "DataProcessor.UT_QueryConsole.Form";
 	ElsIf Upper(DebuggingObjectType) = "DATACOMPOSITIONSCHEMA" Then
@@ -360,12 +360,12 @@ EndProcedure
 
 Procedure AskQuestionToDeveloper() Export
 	BeginRunningApplication(ApplicationRunEmptyNotifyDescription(),
-		"https://github.com/i-neti/tools_ui_1c_international/issues");
+		"https://github.com/i-neti/tools_ui_1c_int/issues");
 
 EndProcedure
 
 Procedure OpenAboutPage() Export
-	BeginRunningApplication(ApplicationRunEmptyNotifyDescription(), "https://github.com/i-neti/tools_ui_1c_international");
+	BeginRunningApplication(ApplicationRunEmptyNotifyDescription(), "https://github.com/i-neti/tools_ui_1c_int");
 
 EndProcedure
 
@@ -384,6 +384,34 @@ Procedure OpenNewToolForm(SourceForm)
 	OpenForm(SourceForm.FormName, , , New UUID, , , , FormWindowOpeningMode.Independent);
 EndProcedure
 
+Procedure CompareSpreadsheetDocumentsFiles(FilePath1, FilePath2, LeftTitle = "Left", RightTitle = "Right") Export
+
+	FilesToBePlaced = New Array;
+	FilesToBePlaced.Add(New TransferableFileDescription(FilePath1));
+	FilesToBePlaced.Add(New TransferableFileDescription(FilePath2));
+	PlacedFiles = New Array;
+	If Not PutFiles(FilesToBePlaced, PlacedFiles, , False) Then
+		Return;
+	EndIf;
+	LeftSpreadsheetDocument  = PlacedFiles[0].Location;
+	RightSpreadsheetDocument = PlacedFiles[1].Location;
+
+	CompareSpreadsheetDocuments(LeftSpreadsheetDocument, RightSpreadsheetDocument, LeftTitle, RightTitle);
+
+EndProcedure
+
+Procedure CompareSpreadsheetDocuments(SpreadsheetDocumentAddressInTempStorage1,
+	SpreadsheetDocumentAddressInTempStorage2, LeftTitle = "Left", RightTitle = "Right") Export
+
+	SpreadsheetDocumentsStructure = New Structure("Left, Right", SpreadsheetDocumentAddressInTempStorage1,
+		SpreadsheetDocumentAddressInTempStorage2);
+	SpreadsheetDocumentsAddress = PutToTempStorage(SpreadsheetDocumentsStructure, Undefined);
+
+	FormOpenParameters = New Structure("SpreadsheetDocumentsAddress, LeftTitle, RightTitle",
+		SpreadsheetDocumentsAddress, LeftTitle, RightTitle);
+	OpenForm("CommonForm.UT_SpreadsheetDocumentsComparison", FormOpenParameters, ThisObject);
+
+EndProcedure
 #Region ToolsAttachableCommandMethods
 
 Procedure Attachable_ExecuteToolsCommonCommand(Form, Command) Export
@@ -397,7 +425,7 @@ EndProcedure
 
 #Region SSLCommands
 
-Procedure AddObjectsToComparison(ObjectsArray, Context) Экспорт
+Procedure AddObjectsToComparison(ObjectsArray, Context) Export
 	UT_CommonClientServer.AddObjectsArrayToCompare(ObjectsArray);
 EndProcedure
 
@@ -434,24 +462,30 @@ EndProcedure
 // Procedure - Edit type
 //
 // Parameters:
-//  DataType					 - 	 - Current value type
+//  DataType					 - TypesDescription , Undefined -  Current value type
 //  StartMode					 - Number - type editor start mode
 // 0- selection of stored types
 // 1- type for query
 // 2- type for field DCS
 // 3- type for parameter DCS 
+// 4-Reference types without composite types
 //  StandardProcessing			 - Boolean - StartChoise event standard processing
 //  FormOwner					 - 	 - 
 //  OnEndNotifyDescription	 - 	 - 
 //
-Procedure EditType(DataType, StartMode, StandardProcessing, FormOwner, OnEndNotifyDescription) Export
+Procedure EditType(DataType, StartMode, StandardProcessing, FormOwner, OnEndNotifyDescription,
+	TypesSet=Undefined) Export
 	StandardProcessing=False;
 
 	FormParameters=New Structure;
 	FormParameters.Insert("DataType", DataType);
-	FormParameters.Insert("StartMode", StartMode);
-	OpenForm("CommonForm.UT_ValueTypeEditor", FormParameters, FormOwner, , , ,
-		OnEndNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+	If TypesSet = Undefined Then
+		FormParameters.Insert("StartMode", StartMode);
+	Else
+		FormParameters.Insert("TypesSet", TypesSet);
+	EndIf;
+	OpenForm("CommonForm.UT_ValueTypeEditor", FormParameters, FormOwner, , , , OnEndNotifyDescription,
+		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
 Procedure EditValueTable(ValueTableAsString, FormOwner, OnEndNotifyDescription) Export
@@ -752,7 +786,7 @@ EndFunction
 // 	SavedDataUrl - String- The address in the temporary storage with the stored value. The stored data will be additionally implemented using a JSON serializer.
 // 	OnEndNotifyDescription- NotifyDescription- Notify description after data saved to file
 Procedure SaveConsoleDataToFile(ConsoleName, SaveAs, SavedFilesDescriptionStructure,
-	SavedDataUrl, OnEndNotifyDescription) Экспорт
+	SavedDataUrl, OnEndNotifyDescription) Export
 
 	NotifyAdditionalParameters=New Structure;
 	NotifyAdditionalParameters.Insert("SaveAs", SaveAs);
