@@ -19,6 +19,13 @@ EndFunction
 Function AttributeNameCodeEditorFormCodeEditors() Export
 	Return CodeEditorItemsPrefix()+"_CodeEditorsList";
 EndFunction
+// Attribute Name Code Editor Initial Initialization Passed.
+// 
+// Return :
+// String 
+Function AttributeNameCodeEditorInitialInitializationPassed() Export
+	Return CodeEditorItemsPrefix()+"_InitialInitializationPassed";
+EndFunction
 
 Function AttributeNameCodeEditorFormEditors(EditorID) Export
 	Return CodeEditorItemsPrefix()+"_FormEditors";
@@ -42,6 +49,26 @@ Function CodeEditorUsesHTMLField(EditorType) Export
 	Return EditorType = Variants.Ace
 		Or EditorType = Variants.Monaco;
 EndFunction
+
+// Initial Initialization of Code editors passed
+// 
+// Parameters:
+//  Form - ClientApplicationForm
+// 
+// Return:
+//  Boolean
+Function CodeEditorsInitialInitializationPassed(Form) Export
+	Return Form[AttributeNameCodeEditorInitialInitializationPassed()];
+EndFunction 
+
+// Set Flag Code Editors Initial Initialization Passed.
+// 
+// Parameters:
+//  Form - ClientApplicationForm
+//  InitializationPassed - Булево
+Procedure SetFlagCodeEditorsInitialInitializationPassed(Form, InitializationPassed) Export
+	Form[AttributeNameCodeEditorInitialInitializationPassed()] = InitializationPassed;
+EndProcedure
 
 Function EditorIDByFormItem(Form, Item) Export
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
@@ -81,6 +108,19 @@ EndFunction
 
 Function FormCodeEditorType(Form) Export
 	Return Form[UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor()];
+EndFunction
+// New Text Cache Of Editor.
+// 
+// Return:
+//  Structure - New Text Cache Of Editor:
+// * Text - String -
+// * OriginalText - String -
+Function NewTextCacheOfEditor() Export
+	Structure = New Structure;
+	Structure.Insert("Text", "");
+	Structure.Insert("OriginalText", "");
+	
+	Return Structure;
 EndFunction
 
 #EndRegion
@@ -125,6 +165,8 @@ Function  MonacoEditorParametersByDefault() Export
 	EditorSettings.Insert("HideLineNumbers", False);
 	EditorSettings.Insert("DisplaySpacesAndTabs", False);
 	EditorSettings.Insert("SourceFilesDirectories", New Array);
+	EditorSettings.Insert("CodeTemplatesFiles", New Array);
+	EditorSettings.Insert("UseStandartCodeTemplates", True);
 	
 	Return EditorSettings;
 EndFunction
