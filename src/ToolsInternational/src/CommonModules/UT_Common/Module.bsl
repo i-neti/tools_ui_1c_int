@@ -4875,42 +4875,39 @@ Procedure FormDataSettingsStorageDelete(ObjectKey, SettingsKey, Username) Export
 	
 EndProcedure
 
-// Сохраняет в фоне настройку в хранилище системных настроек, как метод платформы Сохранить
-// объекта СтандартноеХранилищеНастроекМенеджер, но с поддержкой длины ключа настроек
-// более 128 символов путем хеширования части, которая превышает 96 символов.
-// Если нет права СохранениеДанныхПользователя, сохранение пропускается без ошибки.
+//// Saves in background mode setting to the system settings storage as the Save method of 
+// StandardSettingsStorageManager object. Setting keys exceeding 128 characters are supported by 
+// hashing the key part that exceeds 96 characters.
+// If the SaveUserData right is not granted, data save fails and no error is raised.
+// Parameters:
+//   ProcedureParameters - Structure -
+//  					* ObjectKey       - String           - see the Syntax Assistant.
+//  					* SettingsKey      - String           - see the Syntax Assistant.
+//  					* Settings         - AnyType     - see the Syntax Assistant.
+//  					* SettingsDetails  - SettingsDetails - see the Syntax Assistant.
+//  					* Username   - String           - see the Syntax Assistant.
+//  					* UpdateCachedValues - Boolean - execute platform method with same name.
+//   ResultAddress - String - temp storage address, to save procedure executuon result. required;
+//   AdditionalResultAddress - String - if in ExecutionParameters set parameter AdditionalResult, that contains the address of an additional temporary
+// storage in which to place the result of the procedure. Optional.
 //
-// Параметры:
-//   ПараметрыПроцедуры - Структура -
-//  					* КлючОбъекта       - Строка           - см. синтакс-помощник платформы.
-//  					* КлючНастроек      - Строка           - см. синтакс-помощник платформы.
-//  					* Настройки         - Произвольный     - см. синтакс-помощник платформы.
-//  					* ОписаниеНастроек  - ОписаниеНастроек - см. синтакс-помощник платформы.
-//  					* ИмяПользователя   - Строка           - см. синтакс-помощник платформы.
-//  					* ОбновитьПовторноИспользуемыеЗначения - Булево - выполнить одноименный метод платформы.
-//   АдресРезультата - Строка - адрес временного хранилища, в которое нужно
-//						поместить результат работы процедуры. Обязательно;
-//   АдресДополнительногоРезультата - Строка - если в ПараметрыВыполнения установлен 
-//						параметр ДополнительныйРезультат, то содержит адрес дополнительного временного
-//						хранилища, в которое нужно поместить результат работы процедуры. Опционально.
-//
-Процедура SystemSettingsStorageSaveInBackground(ПараметрыПроцедуры, АдресРезультата, 
-												АдресДополнительногоРезультата = Неопределено) Экспорт
+Procedure SystemSettingsStorageSaveInBackground(ProcedureParameters, ResultAddress, 
+												AdditionalResultAddress = Undefined) Export
 	
-	Перем КлючОбъекта, КлючНастроек, Настройки, ОписаниеНастроек, ИмяПользователя;
-	ОбновитьПовторноИспользуемыеЗначения = Ложь;
+	Var ObjectKey, SettingsKey, Settings, SettingsDetails, Username;
+	UpdateCachedValues = False;
 	
-	ПараметрыПроцедуры.Свойство("КлючОбъекта", КлючОбъекта);
-	ПараметрыПроцедуры.Свойство("КлючНастроек", КлючНастроек);
-	ПараметрыПроцедуры.Свойство("Настройки", Настройки);
-	ПараметрыПроцедуры.Свойство("ОписаниеНастроек", ОписаниеНастроек);
-	ПараметрыПроцедуры.Свойство("ИмяПользователя", ИмяПользователя);
-	ПараметрыПроцедуры.Свойство("ОбновитьПовторноИспользуемыеЗначения", ОбновитьПовторноИспользуемыеЗначения);
+	ProcedureParameters.Property("ObjectKey", ObjectKey);
+	ProcedureParameters.Property("SettingsKey", SettingsKey);
+	ProcedureParameters.Property("Settings", Settings);
+	ProcedureParameters.Property("SettingsDetails", SettingsDetails);
+	ProcedureParameters.Property("Username", Username);
+	ProcedureParameters.Property("UpdateCachedValues", UpdateCachedValues);
 	
-	SystemSettingsStorageSave(КлючОбъекта, КлючНастроек, Настройки, ОписаниеНастроек,
-									ИмяПользователя, ОбновитьПовторноИспользуемыеЗначения);
+	SystemSettingsStorageSave(ObjectKey, SettingsKey, Settings, SettingsDetails,
+									Username, UpdateCachedValues);
 	
-КонецПроцедуры
+EndProcedure
 #EndRegion
 
 #Region Algorithms
@@ -4937,11 +4934,11 @@ Function GetRefCatalogAlgorithms(Algorithm) Export
 			Try
 				CodeNumber = Number(Right(Algorithm, 5));
 				FoundedByCode = Catalogs.UT_Algorithms.FindByCode(CodeNumber);
-				Если FoundedByCode = Undefined Then
+				If FoundedByCode = Undefined Then
 					Return Undefined;
-				Иначе
+				Else
 					Return FoundedByCode;
-				КонецЕсли;
+				EndIf;
 			Except
 				Return Undefined;
 			EndTry;
