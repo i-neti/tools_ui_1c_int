@@ -1451,6 +1451,58 @@ Function mWriteJSON(DataStructure) Export
 EndFunction // WriteJSON(
 #EndRegion
 
+// Returns a string of illegal file name characters.
+// See the list of symbols on https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words.
+// Returns:
+//   String - of  Prohibited Chars
+//
+Function GetProhibitedCharsInFileName() Export
+
+	InvalidChars = """/\[]:;|=?*<>";
+	InvalidChars = InvalidChars + Chars.Tab + Chars.LF;
+	Return InvalidChars;
+
+EndFunction
+
+// Checks whether the file name contains illegal characters.
+//
+// Parameters:
+//  FileName  - String - file name.
+//
+// Returns:
+//   Array   - 
+//              
+Function FindProhibitedCharsInFileName(FileName) Export
+
+	InvalidChars = GetProhibitedCharsInFileName();
+	
+	FoundProhibitedCharsArray = New Array;
+	
+	For CharPosition = 1 To StrLen(InvalidChars) Do
+		CharToCheck = Mid(InvalidChars,CharPosition,1);
+		If StrFind(FileName,CharToCheck) <> 0 Then
+			FoundProhibitedCharsArray.Add(CharToCheck);
+		EndIf;
+	EndDo;
+	
+	Return FoundProhibitedCharsArray;
+
+EndFunction
+
+// Replaces illegal characters in a file name to legal characters.
+//
+// Parameters:
+//  FileName     - String - an input file name.
+//  ReplaceWith  - String - the string to substitute an illegal character.
+//
+// Returns:
+//   String - 
+//
+Function ReplaceProhibitedCharsInFileName(Val FileName, ReplaceWith = " ") Export
+	
+	Return TrimAll(StrConcat(StrSplit(FileName, GetProhibitedCharsInFileName(), True), ReplaceWith));
+
+EndFunction
 // Returns 1C:Enterprise current version.
 //
 Function CurrentAppVersion() Export

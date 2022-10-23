@@ -1073,6 +1073,20 @@ Function HasRightToUseUniversalTools() Export
 	Return AccessRight("View", Metadata.Subsystems.UT_UniversalTools);
 EndFunction
 
+Function IsWebClient() Export
+	SessionParametersInStorage =UT_CommonServerCall.CommonSettingsStorageLoad(
+		UT_CommonClientServer.ObjectKeyInSettingsStorage(),
+		UT_CommonClientServer.SessionParametersSettingsKey());
+	
+	IsWebClient = False;
+	If Type(SessionParametersInStorage) = Type("Structure") Then
+		If SessionParametersInStorage.Property("IsWebClient") Then
+			IsWebClient = SessionParametersInStorage.IsWebClient;
+		EndIf;
+	EndIf;
+
+	Return IsWebClient;	
+EndFunction
 
 #Region WorkWithUniversalToolsForm
 
@@ -4553,6 +4567,30 @@ Function DateTypeDetails(DateParts) Export
 
 EndFunction
 
+// Return reference create date.
+//
+// Parameters:
+//  Reference - AnyRef - reference to Infobase item,  for which you want to get the result of the function
+// 
+// Return Value:
+//  Date - reference creation date .
+//
+Function ReferenceCreationDate(Reference) Export
+	
+	UUID = Reference.UUID();
+	String16 = Mid(UUID, 16, 3) + Mid(UUID, 10, 4) + Mid(UUID, 1, 8);
+	Digits = StrLen(String16);
+	NumberOfSeconds = 0;
+	For Position = 1 To Digits Do
+		NumberOfSeconds = NumberOfSeconds + СтрНайти("123456789abcdef", Mid(String16, Position, 1)) * Pow(16, Digits - Position);
+	EndDo;
+	NumberOfSeconds = NumberOfSeconds / 10000000;
+	
+	Return Date(1582, 10, 15, 00, 00, 00) + NumberOfSeconds + StandardTimeOffset() + DaylightTimeOffset();
+		
+EndFunction
+
+
 #EndRegion
 
 #Region SettingsStorage
@@ -4837,6 +4875,42 @@ Procedure FormDataSettingsStorageDelete(ObjectKey, SettingsKey, Username) Export
 	
 EndProcedure
 
+// Сохраняет в фоне настройку в хранилище системных настроек, как метод платформы Сохранить
+// объекта СтандартноеХранилищеНастроекМенеджер, но с поддержкой длины ключа настроек
+// более 128 символов путем хеширования части, которая превышает 96 символов.
+// Если нет права СохранениеДанныхПользователя, сохранение пропускается без ошибки.
+//
+// Параметры:
+//   ПараметрыПроцедуры - Структура -
+//  					* КлючОбъекта       - Строка           - см. синтакс-помощник платформы.
+//  					* КлючНастроек      - Строка           - см. синтакс-помощник платформы.
+//  					* Настройки         - Произвольный     - см. синтакс-помощник платформы.
+//  					* ОписаниеНастроек  - ОписаниеНастроек - см. синтакс-помощник платформы.
+//  					* ИмяПользователя   - Строка           - см. синтакс-помощник платформы.
+//  					* ОбновитьПовторноИспользуемыеЗначения - Булево - выполнить одноименный метод платформы.
+//   АдресРезультата - Строка - адрес временного хранилища, в которое нужно
+//						поместить результат работы процедуры. Обязательно;
+//   АдресДополнительногоРезультата - Строка - если в ПараметрыВыполнения установлен 
+//						параметр ДополнительныйРезультат, то содержит адрес дополнительного временного
+//						хранилища, в которое нужно поместить результат работы процедуры. Опционально.
+//
+Процедура SystemSettingsStorageSaveInBackground(ПараметрыПроцедуры, АдресРезультата, 
+												АдресДополнительногоРезультата = Неопределено) Экспорт
+	
+	Перем КлючОбъекта, КлючНастроек, Настройки, ОписаниеНастроек, ИмяПользователя;
+	ОбновитьПовторноИспользуемыеЗначения = Ложь;
+	
+	ПараметрыПроцедуры.Свойство("КлючОбъекта", КлючОбъекта);
+	ПараметрыПроцедуры.Свойство("КлючНастроек", КлючНастроек);
+	ПараметрыПроцедуры.Свойство("Настройки", Настройки);
+	ПараметрыПроцедуры.Свойство("ОписаниеНастроек", ОписаниеНастроек);
+	ПараметрыПроцедуры.Свойство("ИмяПользователя", ИмяПользователя);
+	ПараметрыПроцедуры.Свойство("ОбновитьПовторноИспользуемыеЗначения", ОбновитьПовторноИспользуемыеЗначения);
+	
+	SystemSettingsStorageSave(КлючОбъекта, КлючНастроек, Настройки, ОписаниеНастроек,
+									ИмяПользователя, ОбновитьПовторноИспользуемыеЗначения);
+	
+КонецПроцедуры
 #EndRegion
 
 #Region Algorithms
