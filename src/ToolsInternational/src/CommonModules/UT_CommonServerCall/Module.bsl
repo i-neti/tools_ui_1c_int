@@ -469,10 +469,27 @@ EndFunction
 Function SaveDebuggingDataToCatalog(DebuggingObjectType, DebuggingData) Export
 	SettingsKey=DebuggingObjectType + "/" + UserName() + "/" + Format(CurrentDate(), "DF=yyyyMMddHHmmss;");
 	DebuggingDataObjectData=UT_CommonClientServer.DebuggingDataObjectDataKeyInSettingsStorage();
+      If TransactionActive() Then
+		ProcedureParameters = New Structure;
+		ProcedureParameters.Insert("ObjectKey", DebuggingDataObjectData);
+		ProcedureParameters.Insert("SettingsKey", SettingsKey);
+		ProcedureParameters.Insert("Settings", DebuggingData);
 
-	UT_Common.SystemSettingsStorageSave(DebuggingDataObjectData, SettingsKey, DebuggingData);
+		ExecutionParameters = UT_TimeConsumingOperations.BackgroundExecutionParameters(Undefined);
+		ExecutionParameters.Insert("RunInBackground", True);
+		
+		UT_TimeConsumingOperations.ExecuteInBackground("UT_Common.SystemSettingsStorageSaveInBackground", 
+												ProcedureParameters, 
+												ExecutionParameters);
+		Message = NSTR("ru = 'Запись будет выполнена в фоне. Ключ настроек';en = 'Write procedure will be executed in background mode. Settings key '") + SettingsKey;
+	Else
+		UT_Common.SystemSettingsStorageSave(DebuggingDataObjectData, SettingsKey, DebuggingData);
+		Message = NSTR("ru = 'Запись выполнена успешно. Ключ настроек ';en = 'Writing was completed successfully. Settings Key'") + SettingsKey;
+	EndIf;
+	Return Message;
+	//UT_Common.SystemSettingsStorageSave(DebuggingDataObjectData, SettingsKey, DebuggingData);
 
-	Return "Data Saved successfully. Settings Key " + SettingsKey;
+	//Return "Data Saved successfully. Settings Key " + SettingsKey;
 EndFunction
 
 Function DebuggingObjectDataStructureFromDebugDataCatalog(DataPath) Export

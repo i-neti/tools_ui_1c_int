@@ -82,7 +82,8 @@ EndProcedure
 Function AllFormEditorsInitialized(FormEditors)
 	Result = True;
 	For Each KeyValue In FormEditors Do
-		If Not KeyValue.Value.Initialized Then
+		If Not KeyValue.Value.Initialized 
+			And KeyValue.Value.Visible Then
 			Result = False;
 			Break;
 		EndIf;
@@ -291,7 +292,66 @@ Function EditorCodeTextItemForm(Form, Item) Export
 
 	Return EditorCodeText(Form, EditorID);
 EndFunction
+// Return code editor original text.
+// for editors other than monaco returns an empty string
+// 
+// Parameters:
+//  Form - ClientApplicationForm -
+//  EditorID - String - string of ID
+// 
+// Return Value :
+//  String
+Function CodeEditorOriginalText(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+
+	EditorParameters = FormEditors[EditorID];
+	If Not EditorParameters.Initialized Then
+		If Not EditorParameters.Visible
+			And EditorParameters.EditorTextCache <> Undefined Then
+				
+			Return EditorParameters.EditorTextCache.OriginalText;
+		EndIf;
+	
+		Return "";
+	Endif;
+	
+	If EditorType = EditorsTypes.Monaco Then
+		HTMLDocument=Form.Элементы[EditorParameters.EditorField].Document.defaultView;
+		Return HTMLDocument.getOriginalText();
+	Else 
+		Return "";
+	EndIf;
+	
+EndFunction
+
+/// Return code editor original text.
+// for editors other than monaco returns an empty string
+// 
+// Parameters:
+//  Form - ClientApplicationForm -
+//  Item - FormField - Editor Item Form
+// 
+// Return 
+//  String
+Function CodeEditorOriginalTextFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return "";
+	EndIf;
+
+	Return CodeEditorOriginalText(Form, EditorID);
+	
+EndFunction
+// Return current selection borders at editor.
+// Parameters:
+//  Form - ClientApplicationForm -
+//  EditorID - String - string of ID
+// 
+// Return Value :
+//  SelectionBounds
 Function EditorSelectionBorders(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -304,7 +364,10 @@ Function EditorSelectionBorders(Form, EditorID) Export
 	EditorSettings = FormEditors[EditorID];
 
 	SelectionBounds = NewSelectionBorders();
-
+	If Not EditorSettings.Initialized Then
+		Return SelectionBounds;
+	EndIf	;
+		
 	If EditorType = EditorsTypes.Text Then
 		EditorItem = Form.Items[EditorSettings.EditorField];
 
@@ -331,7 +394,13 @@ Function EditorSelectionBorders(Form, EditorID) Export
 	Return SelectionBounds;
 
 EndFunction
-
+// Return editor selection borders by form item.
+// Parameters:
+//  Form - ClientApplicationForm -
+//  Item - FormField - Editor Item Form
+// 
+// Return 
+//  NewSelectionBorders()
 Function EditorSelectionBordersFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -473,7 +542,14 @@ Procedure SaveConfigurationModulesToFiles(CompletionNotifyDescription, CurrentDi
 		NotificationAdditionalParameters));
 
 EndProcedure
-
+// Return selected text of editor.
+// 
+// Parameters:
+//  Form - ClientApplicationForm -
+//  EditorID - String - ID Of Editor
+// 
+// Return value:
+//  String - Editor selected text
 Function EditorSelectedText(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -483,7 +559,9 @@ Function EditorSelectedText(Form, EditorID) Export
 		Return "";
 	EndIf;
 	EditorSettings = FormEditors[EditorID];
-
+	If Not EditorSettings.Initialized Then
+		Return "";
+	EndIf;
 	CodeText="";
 
 	If EditorType = EditorsTypes.Text Then
@@ -499,7 +577,14 @@ Function EditorSelectedText(Form, EditorID) Export
 	Return TrimAll(CodeText);
 
 EndFunction
-
+// Return editor form item selected text 
+// 
+// Parameters:
+//  Form - ClientApplicationForm -
+//  Item - FormField - Editor Item Form
+// 
+// Return 
+//  String - editor selected text 
 Function EditorSelectedTextFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -1725,8 +1810,7 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 			For Each TabularSectionKeyValue In MetadataObjectDescription.TabularSections Do
 
 				TabularSection = TabularSectionKeyValue.Value;
-				AttributesDescription.Insert(TabularSection.Name, New Structure("name", "TS: "
-					+ TabularSection.Synonym));
+				
 
 				TabularSectionDescription = New Structure;
 
@@ -1744,7 +1828,7 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 					EndDo;
 				EndIf;
 
-				TabularSectionsDescription.Insert(TabularSection.Name, TabularSectionDescription);
+				TabularSectionsDescription.Insert(TabularSection.Name, New Structure("properties",TabularSectionDescription));
 
 			EndDo;
 
@@ -1754,9 +1838,6 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 			For Each TabularSectionKeyValue In MetadataObjectDescription.StandardTabularSections Do
 
 				TabularSection = TabularSectionKeyValue.Value;
-				AttributesDescription.Insert(TabularSection.Name, New Structure("name", "ТЧ: "
-					+ TabularSection.Synonym));
-
 				TabularSectionDescription = New Structure;
 
 				If TabularSection.Property("StandardAttributes") Then
@@ -1773,7 +1854,7 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 					EndDo;
 				EndIf;
 
-				TabularSectionsDescription.Insert(TabularSection.Name, TabularSectionDescription);
+				TabularSectionsDescription.Insert(TabularSection.Name,New Structure("properties", TabularSectionDescription));
 
 			EndDo;
 

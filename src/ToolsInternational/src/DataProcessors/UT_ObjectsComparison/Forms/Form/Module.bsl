@@ -72,6 +72,12 @@ Procedure AddToTree(VT, ObjectRef)
 	Rows.Sort("Attribute", True);
 EndProcedure
 
+&AtClient
+Procedure ObjectsValueClearing(Item, StandardProcessing)
+	//TODO: Insert the handler content
+EndProcedure
+
+
 &AtServerNoContext
 Procedure ClearTree(VT, Rows = Undefined) 
 	

@@ -1073,6 +1073,20 @@ Function HasRightToUseUniversalTools() Export
 	Return AccessRight("View", Metadata.Subsystems.UT_UniversalTools);
 EndFunction
 
+Function IsWebClient() Export
+	SessionParametersInStorage =UT_CommonServerCall.CommonSettingsStorageLoad(
+		UT_CommonClientServer.ObjectKeyInSettingsStorage(),
+		UT_CommonClientServer.SessionParametersSettingsKey());
+	
+	IsWebClient = False;
+	If Type(SessionParametersInStorage) = Type("Structure") Then
+		If SessionParametersInStorage.Property("IsWebClient") Then
+			IsWebClient = SessionParametersInStorage.IsWebClient;
+		EndIf;
+	EndIf;
+
+	Return IsWebClient;	
+EndFunction
 
 #Region WorkWithUniversalToolsForm
 
@@ -4553,6 +4567,30 @@ Function DateTypeDetails(DateParts) Export
 
 EndFunction
 
+// Return reference create date.
+//
+// Parameters:
+//  Reference - AnyRef - reference to Infobase item,  for which you want to get the result of the function
+// 
+// Return Value:
+//  Date - reference creation date .
+//
+Function ReferenceCreationDate(Reference) Export
+	
+	UUID = Reference.UUID();
+	String16 = Mid(UUID, 16, 3) + Mid(UUID, 10, 4) + Mid(UUID, 1, 8);
+	Digits = StrLen(String16);
+	NumberOfSeconds = 0;
+	For Position = 1 To Digits Do
+		NumberOfSeconds = NumberOfSeconds + СтрНайти("123456789abcdef", Mid(String16, Position, 1)) * Pow(16, Digits - Position);
+	EndDo;
+	NumberOfSeconds = NumberOfSeconds / 10000000;
+	
+	Return Date(1582, 10, 15, 00, 00, 00) + NumberOfSeconds + StandardTimeOffset() + DaylightTimeOffset();
+		
+EndFunction
+
+
 #EndRegion
 
 #Region SettingsStorage
@@ -4837,6 +4875,39 @@ Procedure FormDataSettingsStorageDelete(ObjectKey, SettingsKey, Username) Export
 	
 EndProcedure
 
+//// Saves in background mode setting to the system settings storage as the Save method of 
+// StandardSettingsStorageManager object. Setting keys exceeding 128 characters are supported by 
+// hashing the key part that exceeds 96 characters.
+// If the SaveUserData right is not granted, data save fails and no error is raised.
+// Parameters:
+//   ProcedureParameters - Structure -
+//  					* ObjectKey       - String           - see the Syntax Assistant.
+//  					* SettingsKey      - String           - see the Syntax Assistant.
+//  					* Settings         - AnyType     - see the Syntax Assistant.
+//  					* SettingsDetails  - SettingsDetails - see the Syntax Assistant.
+//  					* Username   - String           - see the Syntax Assistant.
+//  					* UpdateCachedValues - Boolean - execute platform method with same name.
+//   ResultAddress - String - temp storage address, to save procedure executuon result. required;
+//   AdditionalResultAddress - String - if in ExecutionParameters set parameter AdditionalResult, that contains the address of an additional temporary
+// storage in which to place the result of the procedure. Optional.
+//
+Procedure SystemSettingsStorageSaveInBackground(ProcedureParameters, ResultAddress, 
+												AdditionalResultAddress = Undefined) Export
+	
+	Var ObjectKey, SettingsKey, Settings, SettingsDetails, Username;
+	UpdateCachedValues = False;
+	
+	ProcedureParameters.Property("ObjectKey", ObjectKey);
+	ProcedureParameters.Property("SettingsKey", SettingsKey);
+	ProcedureParameters.Property("Settings", Settings);
+	ProcedureParameters.Property("SettingsDetails", SettingsDetails);
+	ProcedureParameters.Property("Username", Username);
+	ProcedureParameters.Property("UpdateCachedValues", UpdateCachedValues);
+	
+	SystemSettingsStorageSave(ObjectKey, SettingsKey, Settings, SettingsDetails,
+									Username, UpdateCachedValues);
+	
+EndProcedure
 #EndRegion
 
 #Region Algorithms
@@ -4863,11 +4934,11 @@ Function GetRefCatalogAlgorithms(Algorithm) Export
 			Try
 				CodeNumber = Number(Right(Algorithm, 5));
 				FoundedByCode = Catalogs.UT_Algorithms.FindByCode(CodeNumber);
-				Если FoundedByCode = Undefined Then
+				If FoundedByCode = Undefined Then
 					Return Undefined;
-				Иначе
+				Else
 					Return FoundedByCode;
-				КонецЕсли;
+				EndIf;
 			Except
 				Return Undefined;
 			EndTry;

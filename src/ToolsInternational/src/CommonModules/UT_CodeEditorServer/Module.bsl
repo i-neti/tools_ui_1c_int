@@ -1,7 +1,11 @@
 #Region Public
 
 #Region FormItemsCreate
-
+// Form on create at server.
+// 
+// Parameters:
+//  Form - ClientApplicationForm
+//  EditorType - String - Editor type, to add to form details at UT_CodeEditorClientServer.CodeEditorVariants()
 Procedure FormOnCreateAtServer(Form, EditorType = Undefined) Export
 	If EditorType = Undefined Then
 		EditorSettings = CodeEditorCurrentSettings();
@@ -33,13 +37,17 @@ Procedure FormOnCreateAtServer(Form, EditorType = Undefined) Export
 	AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
 	AttributeNameLibraryURL=UT_CodeEditorClientServer.AttributeNameCodeEditorLibraryURL();
 	AttributeNameCodeEditorFormCodeEditors = UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors();
+	AttributeNameCodeEditorInitialInitializationPassed = UT_CodeEditorClientServer.AttributeNameCodeEditorInitialInitializationPassed();
 	
 	AttributesArray=New Array;
 	AttributesArray.Add(New FormAttribute(AttributeNameEditorType, New TypeDescription("String", , New StringQualifiers(20,
 		AllowedLength.Variable)), "", "", True));
 	AttributesArray.Add(New FormAttribute(AttributeNameLibraryURL, New TypeDescription("String", , New StringQualifiers(0,
-		AllowedLength.Variable)), "", "", True));
-	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorFormCodeEditors, New TypeDescription, "", "", True));
+	AllowedLength.Variable)), "", "", True));
+	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorFormCodeEditors, New TypeDescription, "", "", True));	
+	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorInitialInitializationPassed, New TypeDescription("Boolean"),
+		"", "", Истина));
+
 		
 	Form.ChangeAttributes(AttributesArray);
 	
@@ -48,6 +56,15 @@ Procedure FormOnCreateAtServer(Form, EditorType = Undefined) Export
 	Form[AttributeNameCodeEditorFormCodeEditors] = New Structure;
 EndProcedure
 
+// Create code editor items.
+// 
+// Parameters:
+//  Form - ClientApplicationForm-
+//  EditorID - String - The unique identifier of the editor within the form. Must comply with the rules for naming variables
+//  EditorField - FormField - Editor Field
+//  EditorEvents - Undefined, Structure - Names of form procedures for processing editor events. List of supported events in method UT_CodeEditorServer.NewEditorEventsParameters
+//  EditorLanguage - String -Code editor language . By default "bsl". 
+//  CommandBarGroup - FormGroup - Command bar group to add  buttons . Still in development
 Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Undefined, EditorLanguage = "bsl",
 	CommandBarGroup = Undefined) Export
 	//AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
@@ -78,7 +95,9 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Unde
 			EditorField.SetAction("OnChange",EditorData.EditorEvents.OnChange);
 		Endif;	
 	EndIf;
-
+	
+	EditorData.Insert("Visible", True);
+	EditorData.Insert("EditorTextCache", Undefined);
 	EditorData.Insert("EditorLanguage", EditorLanguage);
 	EditorData.Insert("EditorField", EditorField.Name);
 	EditorData.Insert("AttributeName", EditorField.DataPath);
@@ -101,26 +120,30 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Unde
 	EndIf;
 	
 //Buttons
-//	1 - Конструктор запроса
-//2 - конструктор форматной строки
-//3 - Редактор запроса
-//4 - форматировать текст
-//6- Проверить синтаксис
-//7 - Выполнить
-//8 - Добавить комментарий
-//9 - Удалить комментарий
-//10 - Добавить закладку
-//11 - Удалить закладку
-//12 - Следующая закладка
-//13 - Добавить перенос строки
-//14 - Удалить перенос строки
-//15 - Переход к строке
-//16 - Вставить предопределенное значение
-//17 - Добавить макроколонку
-//18 - Сохранить как обработку
+//1 - Query wizard
+//2 - Format string wizard
+//3 - Query editor
+//4 - format text
+//6- Check Syntax
+//7 - Execute
+//8 - Add Comment
+//9 - Delete Comment
+//10 - Add Bookmark
+//11 - Delete Bookmark
+//12 - Next Bookmark
+//13 - Add Line Break 
+//14 - Delete Line Break 
+////15 - Go to to Line
+//16 - Insert predefined value
+////17 - Add Macrocolumn
+ //18 - Save as dataprocessors
 
 EndProcedure
-
+// new parameters of editor events .
+// 
+// return:
+//  Structure - new parameters of editor events .:
+// * OnChange - String -
 Function NewEditorEventsParameters() Export
 	EditorEvents = New Structure;
 	EditorEvents.Insert("OnChange", "");
