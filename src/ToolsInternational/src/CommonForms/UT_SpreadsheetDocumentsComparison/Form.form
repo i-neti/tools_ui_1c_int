@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>ГруппаТабличныеДокументы</name>
+    <name>SpreadsheetDocumentsGroup</name>
     <id>132</id>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаЛевыйТабличныйДокумент</name>
+      <name>LeftSpreadsheetDocumentGroup</name>
       <id>134</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаКоманднаяПанельЛевогоТабличногоДокумента</name>
+        <name>LeftSpreadsheetDocumentCommandBarGroup</name>
         <id>112</id>
         <items xsi:type="form:Button">
-          <name>ПредыдущееИзменениеЛевый</name>
+          <name>PreviousChangeLeft</name>
           <id>114</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -18,7 +18,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>ПредыдущееИзменениеЛевыйРасширеннаяПодсказка</name>
+            <name>PreviousChangeLeftExtendedTooltip</name>
             <id>115</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -32,7 +32,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command.ПредыдущееИзменениеЛевый</commandName>
+          <commandName>Form.Command.PreviousChangeLeft</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -43,7 +43,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>СледующееИзменениеЛевый</name>
+          <name>NextChangeLeft</name>
           <id>116</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -51,7 +51,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>СледующееИзменениеЛевыйРасширеннаяПодсказка</name>
+            <name>NextChangeLeftExtendedTooltip</name>
             <id>117</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -65,7 +65,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command.СледующееИзменениеЛевый</commandName>
+          <commandName>Form.Command.NextChangeLeft</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -81,12 +81,16 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Command bar of left spreadsheet document</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Командная панель левого табличного документа</value>
         </title>
         <enableContentChange>true</enableContentChange>
         <extendedTooltip>
-          <name>ГруппаКоманднаяПанельЛевогоТабличногоДокументаРасширеннаяПодсказка</name>
+          <name>LeftSpreadsheetDocumentCommandBarGroupExtendedTooltip</name>
           <id>113</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -106,7 +110,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ТабличныйДокументЛевый</name>
+        <name>SpreadsheetDocumentLeft</name>
         <id>77</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -114,7 +118,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>ТабличныйДокументЛевый</segments>
+          <segments>SpreadsheetDocumentLeft</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <handlers>
@@ -122,7 +126,7 @@
           <name>ТабличныйДокументЛевыйПриАктивизации</name>
         </handlers>
         <extendedTooltip>
-          <name>ТабличныйДокументЛевыйРасширеннаяПодсказка</name>
+          <name>SpreadsheetDocumentLeftExtendedTooltip</name>
           <id>79</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -137,7 +141,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ТабличныйДокументЛевыйКонтекстноеМеню</name>
+          <name>SpreadsheetDocumentLeftContextMenu</name>
           <id>78</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -175,11 +179,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Version</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Версия №</value>
       </title>
       <extendedTooltip>
-        <name>ГруппаЛевыйТабличныйДокументРасширеннаяПодсказка</name>
+        <name>LeftSpreadsheetDocumentGroupExtendedTooltip</name>
         <id>135</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -205,13 +213,13 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ГруппаПравыйТабличныйДокумент</name>
+      <name>RightSpreadsheetDocumentGroup</name>
       <id>136</id>
       <items xsi:type="form:FormGroup">
-        <name>ГруппаКоманднаяПанельПравогоТабличногоДокумента</name>
+        <name>RightSpreadsheetDocumentCommandBarGroup</name>
         <id>118</id>
         <items xsi:type="form:Button">
-          <name>ПредыдущееИзменениеПравый</name>
+          <name>PreviousChangeRight</name>
           <id>128</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -219,7 +227,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>ПредыдущееИзменениеПравыйРасширеннаяПодсказка</name>
+            <name>PreviousChangeRightExtendedTooltip</name>
             <id>129</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -233,7 +241,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command.ПредыдущееИзменениеПравый</commandName>
+          <commandName>Form.Command.PreviousChangeRight</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -244,7 +252,7 @@
           <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <items xsi:type="form:Button">
-          <name>СледующееИзменениеПравый</name>
+          <name>NextChangeRight</name>
           <id>130</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -252,7 +260,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>СледующееИзменениеПравыйРасширеннаяПодсказка</name>
+            <name>NextChangeRightExtendedTooltip</name>
             <id>131</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -266,7 +274,7 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <commandName>Form.Command.СледующееИзменениеПравый</commandName>
+          <commandName>Form.Command.NextChangeRight</commandName>
           <representation>Auto</representation>
           <autoMaxWidth>true</autoMaxWidth>
           <autoMaxHeight>true</autoMaxHeight>
@@ -282,11 +290,15 @@
           <common>true</common>
         </userVisible>
         <title>
+          <key>en</key>
+          <value>Command bar of right spreadsheet document</value>
+        </title>
+        <title>
           <key>ru</key>
           <value>Командная панель правого табличного документа</value>
         </title>
         <extendedTooltip>
-          <name>ГруппаКоманднаяПанельПравогоТабличногоДокументаРасширеннаяПодсказка</name>
+          <name>RightSpreadsheetDocumentCommandBarGroupExtendedTooltip</name>
           <id>119</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -306,7 +318,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormField">
-        <name>ТабличныйДокументПравый</name>
+        <name>SpreadsheetDocumentRight</name>
         <id>80</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -314,7 +326,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>ТабличныйДокументПравый</segments>
+          <segments>SpreadsheetDocumentRight</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <handlers>
@@ -322,7 +334,7 @@
           <name>ТабличныйДокументПравыйПриАктивизации</name>
         </handlers>
         <extendedTooltip>
-          <name>ТабличныйДокументПравыйРасширеннаяПодсказка</name>
+          <name>SpreadsheetDocumentRightExtendedTooltip</name>
           <id>82</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -337,7 +349,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ТабличныйДокументПравыйКонтекстноеМеню</name>
+          <name>SpreadsheetDocumentRightContextMenu</name>
           <id>81</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -375,11 +387,15 @@
         <common>true</common>
       </userVisible>
       <title>
+        <key>en</key>
+        <value>Version</value>
+      </title>
+      <title>
         <key>ru</key>
         <value>Версия №</value>
       </title>
       <extendedTooltip>
-        <name>ГруппаПравыйТабличныйДокументРасширеннаяПодсказка</name>
+        <name>RightSpreadsheetDocumentGroupExtendedTooltip</name>
         <id>137</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -410,11 +426,15 @@
       <common>true</common>
     </userVisible>
     <title>
+      <key>en</key>
+      <value>Spreadsheet documents</value>
+    </title>
+    <title>
       <key>ru</key>
       <value>Табличные документы</value>
     </title>
     <extendedTooltip>
-      <name>ГруппаТабличныеДокументыРасширеннаяПодсказка</name>
+      <name>SpreadsheetDocumentsGroupExtendedTooltip</name>
       <id>133</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -451,7 +471,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoTitle>true</autoTitle>
   <autoUrl>true</autoUrl>
@@ -462,7 +482,7 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>Объект</name>
+    <name>Object</name>
     <id>1</id>
     <valueType>
       <types>String</types>
@@ -477,7 +497,11 @@
     <main>true</main>
   </attributes>
   <attributes>
-    <name>ТабличныйДокументЛевый</name>
+    <name>SpreadsheetDocumentLeft</name>
+    <title>
+      <key>en</key>
+      <value>Spreadsheet document left</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Табличный документ левый</value>
@@ -495,7 +519,11 @@
     <extInfo xsi:type="form:SpreadsheetDocumentExtInfo"/>
   </attributes>
   <attributes>
-    <name>ТабличныйДокументПравый</name>
+    <name>SpreadsheetDocumentRight</name>
+    <title>
+      <key>en</key>
+      <value>Spreadsheet document right</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Табличный документ правый</value>
@@ -513,7 +541,7 @@
     <extInfo xsi:type="form:SpreadsheetDocumentExtInfo"/>
   </attributes>
   <attributes>
-    <name>БлокировкаОбработкиАктивизации</name>
+    <name>DisableOnActivateHandler</name>
     <id>9</id>
     <valueType>
       <types>Boolean</types>
@@ -526,7 +554,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СоответствиеСтрокЛевый</name>
+    <name>RowsMapLeft</name>
     <id>11</id>
     <valueType/>
     <view>
@@ -537,7 +565,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СоответствиеСтрокПравый</name>
+    <name>RowsMapRight</name>
     <id>12</id>
     <valueType/>
     <view>
@@ -548,7 +576,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СоответствиеСтолбцовЛевый</name>
+    <name>ColumnsMapLeft</name>
     <id>13</id>
     <valueType/>
     <view>
@@ -559,7 +587,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>СоответствиеСтолбцовПравый</name>
+    <name>ColumnsMapRight</name>
     <id>14</id>
     <valueType/>
     <view>
@@ -570,7 +598,7 @@
     </edit>
   </attributes>
   <attributes>
-    <name>РазличияЯчеекЛевый</name>
+    <name>CellDifferencesLeft</name>
     <id>15</id>
     <valueType>
       <types>ValueTable</types>
@@ -582,7 +610,11 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>НомерСтроки</name>
+      <name>RowNumber</name>
+      <title>
+        <key>ru</key>
+        <value>Row number</value>
+      </title>
       <id>1</id>
       <valueType>
         <types>Number</types>
@@ -598,7 +630,7 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерСтолбца</name>
+      <name>ColumnNumber</name>
       <id>2</id>
       <valueType>
         <types>Number</types>
@@ -615,7 +647,7 @@
     </columns>
   </attributes>
   <attributes>
-    <name>РазличияЯчеекПравый</name>
+    <name>CellDifferencesRight</name>
     <id>16</id>
     <valueType>
       <types>ValueTable</types>
@@ -627,7 +659,7 @@
       <common>true</common>
     </edit>
     <columns>
-      <name>НомерСтроки</name>
+      <name>LineNumber</name>
       <id>1</id>
       <valueType>
         <types>Number</types>
@@ -643,7 +675,7 @@
       </edit>
     </columns>
     <columns>
-      <name>НомерСтолбца</name>
+      <name>ColumnNumber</name>
       <id>2</id>
       <valueType>
         <types>Number</types>
@@ -660,13 +692,21 @@
     </columns>
   </attributes>
   <formCommands>
-    <name>ПредыдущееИзменениеЛевый</name>
+    <name>PreviousChangeLeft</name>
+    <title>
+      <key>en</key>
+      <value>Previous change</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Предыдущее изменение</value>
     </title>
     <id>6</id>
     <toolTip>
+      <key>en</key>
+      <value>Previous change</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Предыдущее изменение</value>
     </toolTip>
@@ -675,19 +715,27 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>КомандаПредыдущееИзменениеЛевый</name>
+        <name>PreviousChangeLeftCommand</name>
       </handler>
     </action>
     <currentRowUse>DontUse</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СледующееИзменениеЛевый</name>
+    <name>NextChangeLeft</name>
+    <title>
+      <key>en</key>
+      <value>Next change</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Следующее изменение</value>
     </title>
     <id>7</id>
     <toolTip>
+      <key>en</key>
+      <value>Next change</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Следующее изменение</value>
     </toolTip>
@@ -696,19 +744,27 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>КомандаСледующееИзменениеЛевый</name>
+        <name>NextChangeLeftCommand</name>
       </handler>
     </action>
     <currentRowUse>DontUse</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>ПредыдущееИзменениеПравый</name>
+    <name>PreviousChangeRight</name>
+    <title>
+      <key>en</key>
+      <value>Previous change</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Предыдущее изменение</value>
     </title>
     <id>10</id>
     <toolTip>
+      <key>en</key>
+      <value>Previous change</value>
+    </toolTip>
+    <toolTip>
       <key>ru</key>
       <value>Предыдущее изменение</value>
     </toolTip>
@@ -717,18 +773,26 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>КомандаПредыдущееИзменениеПравый</name>
+        <name>PreviousChangeRightCommand</name>
       </handler>
     </action>
     <currentRowUse>DontUse</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>СледующееИзменениеПравый</name>
+    <name>NextChangeRight</name>
+    <title>
+      <key>en</key>
+      <value>Next change</value>
+    </title>
     <title>
       <key>ru</key>
       <value>Следующее изменение</value>
     </title>
     <id>11</id>
+    <toolTip>
+      <key>en</key>
+      <value>Next change</value>
+    </toolTip>
     <toolTip>
       <key>ru</key>
       <value>Следующее изменение</value>
@@ -738,7 +802,7 @@
     </use>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>КомандаСледующееИзменениеПравый</name>
+        <name>NextChangeRightCommand</name>
       </handler>
     </action>
     <currentRowUse>DontUse</currentRowUse>
