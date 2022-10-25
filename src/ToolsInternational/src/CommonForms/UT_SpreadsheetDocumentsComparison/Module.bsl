@@ -1,614 +1,610 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2022, ООО 1С-Софт
-// Все права защищены. Эта программа и сопроводительные материалы предоставляются 
-// в соответствии с условиями лицензии Attribution 4.0 International (CC BY 4.0)
-// Текст лицензии доступен по ссылке:
+// Copyright (c) 2019, 1C-Soft LLC
+// All Rights reserved. This application and supporting materials are provided under the terms of 
+// Attribution 4.0 International license (CC BY 4.0)
+// The license text is available at:
 // https://creativecommons.org/licenses/by/4.0/legalcode
+// Translated by Neti Company
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#Область ОбработчикиСобытийФормы
+#Region EventHandlers
 
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	Если ОбщегоНазначения.ЭтоМобильныйКлиент() Тогда
-		Отказ = Истина;
-		ВызватьИсключение НСтр("ru = 'Операция не доступна в мобильном клиенте, используйте тонкий клиент.'");
-	КонецЕсли;
+	SpreadsheetDocumentsToCompare = GetFromTempStorage(Parameters.SpreadsheetDocumentsAddress);
+	SpreadsheetDocumentLeft = PrepareSpreadsheetDocument(SpreadsheetDocumentsToCompare.Left);
+	SpreadsheetDocumentRight = PrepareSpreadsheetDocument(SpreadsheetDocumentsToCompare.Right);
 	
-	ТабличныеДокументыДляСравнения = ПолучитьИзВременногоХранилища(Параметры.АдресТабличныхДокументов);
-	ТабличныйДокументЛевый = ПодготовитьТабличныйДокумент(ТабличныеДокументыДляСравнения.Левый);
-	ТабличныйДокументПравый = ПодготовитьТабличныйДокумент(ТабличныеДокументыДляСравнения.Правый);
+	Items.LeftSpreadsheetDocumentGroup.Title = Parameters.TitleLeft;
+	Items.RightSpreadsheetDocumentGroup.Title = Parameters.TitleRight;
 	
-	Элементы.ГруппаЛевыйТабличныйДокумент.Заголовок = Параметры.ЗаголовокЛевый;
-	Элементы.ГруппаПравыйТабличныйДокумент.Заголовок = Параметры.ЗаголовокПравый;
+	CompareAtServer();
 	
-	СравнитьНаСервере();
-	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыТабличныйДокументЛевый
+#Region SpreadsheetDocumentLeftFormTableItemsEventHandlers
 
-&НаКлиенте
-Процедура ТабличныйДокументЛевыйПриАктивизации(Элемент)
+&AtClient
+Procedure SpreadsheetDocumentLeftOnActivateArea(Item)
 	
-	Если БлокировкаОбработкиАктивизации = Истина Тогда
-		Возврат;
-	КонецЕсли;
+	If DisableOnActivateHandler = True Then
+		Return;
+	EndIf;
 	
-	Источник = Новый Структура("Объект, Элемент", ТабличныйДокументЛевый, Элементы.ТабличныйДокументЛевый);
-	Приемник = Новый Структура("Объект, Элемент", ТабличныйДокументПравый, Элементы.ТабличныйДокументПравый);
+	Source = New Structure("Object, Item", SpreadsheetDocumentLeft, Items.SpreadsheetDocumentLeft);
+	Destination = New Structure("Object, Item", SpreadsheetDocumentRight, Items.SpreadsheetDocumentRight);
 	
-	СоответствияИсточник = Новый Структура("Строки, Столбцы", СоответствиеСтрокЛевый, СоответствиеСтолбцовЛевый);
-	СоответствияПриемник = Новый Структура("Строки, Столбцы", СоответствиеСтрокПравый, СоответствиеСтолбцовПравый);
+	MatchesSource = New Structure("Rows, Columns", RowsMapLeft, ColumnsMapLeft);
+	MatchesDestination = New Structure("Rows, Columns", RowsMapRight, ColumnsMapRight);
 	
-	ОбработатьАктивизациюОбласти(Источник, Приемник, СоответствияИсточник, СоответствияПриемник);
+	ProcessAreaActivation(Source, Destination, MatchesSource, MatchesDestination);
 	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыТабличныйДокументПравый
+#Region SpreadsheetDocumentRightFormTableItemsEventHandlers
 
-&НаКлиенте
-Процедура ТабличныйДокументПравыйПриАктивизации(Элемент)
+&AtClient
+Procedure SpreadsheetDocumentRightOnActivateArea(Item)
 	
-	Если БлокировкаОбработкиАктивизации = Истина Тогда
-		Возврат;
-	КонецЕсли;
+	If DisableOnActivateHandler = True Then
+		Return;
+	EndIf;
 		
-	Источник = Новый Структура("Объект, Элемент", ТабличныйДокументПравый, Элементы.ТабличныйДокументПравый);
-	Приемник = Новый Структура("Объект, Элемент", ТабличныйДокументЛевый, Элементы.ТабличныйДокументЛевый);
+	Source = New Structure("Object, Item", SpreadsheetDocumentRight, Items.SpreadsheetDocumentRight);
+	Destination = New Structure("Object, Item", SpreadsheetDocumentLeft, Items.SpreadsheetDocumentLeft);
 	
-	СоответствияИсточник = Новый Структура("Строки, Столбцы", СоответствиеСтрокПравый, СоответствиеСтолбцовПравый);
-	СоответствияПриемник = Новый Структура("Строки, Столбцы", СоответствиеСтрокЛевый, СоответствиеСтолбцовЛевый);
+	MatchesSource = New Structure("Rows, Columns", RowsMapRight, ColumnsMapRight);
+	MatchesDestination = New Structure("Rows, Columns", RowsMapLeft, ColumnsMapLeft);
 	
-	ОбработатьАктивизациюОбласти(Источник, Приемник, СоответствияИсточник, СоответствияПриемник);
+	ProcessAreaActivation(Source, Destination, MatchesSource, MatchesDestination);
 	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиКомандФормы
+#Region FormCommandHandlers
 
-&НаКлиенте
-Процедура КомандаПредыдущееИзменениеЛевый(Команда)
+&AtClient
+Procedure PreviousChangeLeftCommand(Command)
 	
-	ПредыдущееИзменение(Элементы.ТабличныйДокументЛевый, ТабличныйДокументЛевый, РазличияЯчеекЛевый);
+	PreviousChange(Items.SpreadsheetDocumentLeft, SpreadsheetDocumentLeft, CellDifferencesLeft);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура КомандаПредыдущееИзменениеПравый(Команда)
+&AtClient
+Procedure PreviousChangeRightCommand(Command)
 	
-	ПредыдущееИзменение(Элементы.ТабличныйДокументПравый, ТабличныйДокументПравый, РазличияЯчеекПравый);
+	PreviousChange(Items.SpreadsheetDocumentRight, SpreadsheetDocumentRight, CellDifferencesRight);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура КомандаСледующееИзменениеЛевый(Команда)
+&AtClient
+Procedure NextChangeLeftCommand(Command)
 	
-	СледующееИзменение(Элементы.ТабличныйДокументЛевый, ТабличныйДокументЛевый, РазличияЯчеекЛевый);
+	NextChange(Items.SpreadsheetDocumentLeft, SpreadsheetDocumentLeft, CellDifferencesLeft);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура КомандаСледующееИзменениеПравый(Команда)
+&AtClient
+Procedure NextChangeRightCommand(Command)
 	
-	СледующееИзменение(Элементы.ТабличныйДокументПравый, ТабличныйДокументПравый, РазличияЯчеекПравый);
+	NextChange(Items.SpreadsheetDocumentRight, SpreadsheetDocumentRight, CellDifferencesRight);
 	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область СлужебныеПроцедурыИФункции
+#Region Private
 
-&НаСервере
-Процедура СравнитьНаСервере()
+&AtServer
+Procedure CompareAtServer()
 
-	БлокировкаОбработкиАктивизации = Истина;
+	DisableOnActivateHandler = True;
 			
-	СоответствиеСтрокЛевый = Новый СписокЗначений;
-	СоответствиеСтрокПравый = Новый СписокЗначений;
+	RowsMapLeft = New ValueList;
+	RowsMapRight = New ValueList;
 	
-	СоответствиеСтолбцовЛевый = Новый СписокЗначений;
-	СоответствиеСтолбцовПравый = Новый СписокЗначений;
+	ColumnsMapLeft = New ValueList;
+	ColumnsMapRight = New ValueList;
 	
-	РазличияЯчеекЛевый.Очистить();
-	РазличияЯчеекПравый.Очистить();
+	CellDifferencesLeft.Clear();
+	CellDifferencesRight.Clear();
 	
-	ВыполнитьСравнение();
+	Compare();
 	
-	БлокировкаОбработкиАктивизации = Ложь;
+	DisableOnActivateHandler = False;
 	
-КонецПроцедуры	
+EndProcedure	
 
-&НаСервере
-Процедура ВыполнитьСравнение()
+&AtServer
+Procedure Compare()
 	
-	#Область Сравнение
+	#Region Comparison
 	
-	// Тексты из ячеек табличных документов выгружается в таблицы значений.
-	ТаблицаЛевогоДокумента = ПрочитатьТабличныйДокумент(ТабличныйДокументЛевый);
-	ТаблицаПравогоДокумента = ПрочитатьТабличныйДокумент(ТабличныйДокументПравый);
+	// Exporting text from spreadsheet document cells to the value tables.
+	LeftDocumentTable = ReadSpreadsheetDocument(SpreadsheetDocumentLeft);
+	RightDocumentTable = ReadSpreadsheetDocument(SpreadsheetDocumentRight);
 	
-	// Сравниваются табличные документы по строкам и подбираются соответствия строк.
-	Соответствия = СформироватьСоответствия(ТаблицаЛевогоДокумента, ТаблицаПравогоДокумента, Истина);
-	СоответствиеСтрокЛевый = Соответствия[0];
-	СоответствиеСтрокПравый = Соответствия[1];
+	// Comparing the spreadsheet documents by rows and selecting the matching rows.
+	Matches = GenerateMatches(LeftDocumentTable, RightDocumentTable, True);
+	RowsMapLeft = Matches[0];
+	RowsMapRight = Matches[1];
 	
-	// Сравниваются табличные документы по столбцам и подбираются соответствия столбцов.
-	Соответствия = СформироватьСоответствия(ТаблицаЛевогоДокумента, ТаблицаПравогоДокумента, Ложь);
-	СоответствиеСтолбцовЛевый = Соответствия[0];
-	СоответствиеСтолбцовПравый = Соответствия[1];
+	// Comparing the spreadsheet documents by columns and selecting the matching columns.
+	Matches = GenerateMatches(LeftDocumentTable, RightDocumentTable, False);
+	ColumnsMapLeft = Matches[0];
+	ColumnsMapRight = Matches[1];
 	
-	ТаблицаЛевогоДокумента = Неопределено;
-	ТаблицаПравогоДокумента = Неопределено;
+	LeftDocumentTable = Undefined;
+	RightDocumentTable = Undefined;
 	
-	#КонецОбласти
+	#EndRegion
 	
-	#Область ГрафическоеОтображениеРазличий
+	#Region DifferencesView
 	
-	ЦветОбластиУдаленнойФон		= WebЦвета.СветлоРозовый;
+	DeletedAreaColorBackground		= WebColors.LightPink;
 	//@skip-check new-color
-	ЦветОбластиДобавленнойФон	= Новый Цвет(204, 255, 204);
-	ЦветОбластиИзмененнойФон	= WebЦвета.ЦианСветлый;
-	ЦветОбластиИзмененнойТекст	= WebЦвета.Синий;
+	AddedAreaColorBackground	= New Color(204, 255, 204);
+	ChangedAreaColorBackground	= WebColors.LightCyan;
+	ChangedAreaColorText	= WebColors.Blue;
 		
 	
-	ВысотаЛевойТаблицы = ТабличныйДокументЛевый.ВысотаТаблицы;
-	ШиринаЛевойТаблицы = ТабличныйДокументЛевый.ШиринаТаблицы;
+	LeftTableHeight = SpreadsheetDocumentLeft.TableHeight;
+	LeftTableWidth = SpreadsheetDocumentLeft.TableWidth;
 	
-	ВысотаПравойТаблицы = ТабличныйДокументПравый.ВысотаТаблицы;
-	ШиринаПравойТаблицы = ТабличныйДокументПравый.ШиринаТаблицы;
+	RightTableHeight = SpreadsheetDocumentRight.TableHeight;
+	RightTableWidth = SpreadsheetDocumentRight.TableWidth;
 
-	// Строки которые были удалены из левого табличного документа.
-	Для НомерСтроки = 1 По СоответствиеСтрокЛевый.Количество()-1 Цикл
+	// Rows that were deleted from the left spreadsheet document.
+	For RowNumber = 1 To RowsMapLeft.Count()-1 Do
 		
-		Если СоответствиеСтрокЛевый[НомерСтроки].Значение = Неопределено Тогда
+		If RowsMapLeft[RowNumber].Value = Undefined Then
 			
-			Область = ТабличныйДокументЛевый.Область(НомерСтроки, 1, НомерСтроки, ШиринаЛевойТаблицы);
-			Область.ЦветФона = ЦветОбластиУдаленнойФон;
+			Area = SpreadsheetDocumentLeft.Area(RowNumber, 1, RowNumber, LeftTableWidth);
+			Area.BackColor = DeletedAreaColorBackground;
 			
-			НоваяСтрокаРазличий = РазличияЯчеекЛевый.Добавить();
-			НоваяСтрокаРазличий.НомерСтроки = НомерСтроки;
-			НоваяСтрокаРазличий.НомерСтолбца = 0;
+			NewDifferenceRow = CellDifferencesLeft.Add();
+			NewDifferenceRow.RowNumber = RowNumber;
+			NewDifferenceRow.ColumnNumber = 0;
 			
-		КонецЕсли;
+		EndIf;
 		
-	КонецЦикла;
+	EndDo;
 	
-	// Столбцы которые были удалены из левого табличного документа.
-	Для НомерСтолбца = 1 По СоответствиеСтолбцовЛевый.Количество()-1 Цикл
+	// Columns that were deleted from the left spreadsheet document.
+	For ColumnNumber = 1 To ColumnsMapLeft.Count()-1 Do
 		
-		Если СоответствиеСтолбцовЛевый[НомерСтолбца].Значение = Неопределено Тогда
+		If ColumnsMapLeft[ColumnNumber].Value = Undefined Then
 			
-			Область = ТабличныйДокументЛевый.Область(1, НомерСтолбца, ВысотаЛевойТаблицы, НомерСтолбца);
-			Область.ЦветФона = ЦветОбластиУдаленнойФон;
+			Area = SpreadsheetDocumentLeft.Area(1, ColumnNumber, LeftTableHeight, ColumnNumber);
+			Area.BackColor = DeletedAreaColorBackground;
 			
-			НоваяСтрокаРазличий = РазличияЯчеекЛевый.Добавить();
-			НоваяСтрокаРазличий.НомерСтроки = 0;
-			НоваяСтрокаРазличий.НомерСтолбца = НомерСтолбца;
+			NewDifferenceRow = CellDifferencesLeft.Add();
+			NewDifferenceRow.RowNumber = 0;
+			NewDifferenceRow.ColumnNumber = ColumnNumber;
 			
-		КонецЕсли;
+		EndIf;
 		
-	КонецЦикла;
+	EndDo;
 	
-	// Строки которые были добавлены в правый табличный документ.
-	Для НомерСтроки = 1 По СоответствиеСтрокПравый.Количество()-1 Цикл
+	// Rows that were added to the right spreadsheet document.
+	For RowNumber = 1 To RowsMapRight.Count()-1 Do
 		
-		Если СоответствиеСтрокПравый[НомерСтроки].Значение = Неопределено Тогда
+		If RowsMapRight[RowNumber].Value = Undefined Then
 			
-			Область = ТабличныйДокументПравый.Область(НомерСтроки, 1, НомерСтроки, ШиринаПравойТаблицы);
-			Область.ЦветФона = ЦветОбластиДобавленнойФон;
+			Area = SpreadsheetDocumentRight.Area(RowNumber, 1, RowNumber, RightTableWidth);
+			Area.BackColor = AddedAreaColorBackground;
 			
-			НоваяСтрокаРазличий = РазличияЯчеекПравый.Добавить();
-			НоваяСтрокаРазличий.НомерСтроки = НомерСтроки;
-			НоваяСтрокаРазличий.НомерСтолбца = 0;
+			NewDifferenceRow = CellDifferencesRight.Add();
+			NewDifferenceRow.RowNumber = RowNumber;
+			NewDifferenceRow.ColumnNumber = 0;
 			
-		КонецЕсли;
+		EndIf;
 		
-	КонецЦикла;
+	EndDo;
 	
-	// Столбцы которые были добавлены в правый табличный документ.
-	Для НомерСтолбца = 1 По СоответствиеСтолбцовПравый.Количество()-1 Цикл
+	// Columns that were added to the right spreadsheet document.
+	For ColumnNumber = 1 To ColumnsMapRight.Count()-1 Do
 		
-		Если СоответствиеСтолбцовПравый[НомерСтолбца].Значение = Неопределено Тогда
+		If ColumnsMapRight[ColumnNumber].Value = Undefined Then
 			
-			Область = ТабличныйДокументПравый.Область(1, НомерСтолбца, ВысотаПравойТаблицы, НомерСтолбца);
-			Область.ЦветФона = ЦветОбластиДобавленнойФон;
+			Area = SpreadsheetDocumentRight.Area(1, ColumnNumber, RightTableHeight, ColumnNumber);
+			Area.BackColor = AddedAreaColorBackground;
 			
-			НоваяСтрокаРазличий = РазличияЯчеекПравый.Добавить();
-			НоваяСтрокаРазличий.НомерСтроки = 0;
-			НоваяСтрокаРазличий.НомерСтолбца = НомерСтолбца;
+			NewDifferenceRow = CellDifferencesRight.Add();
+			NewDifferenceRow.RowNumber = 0;
+			NewDifferenceRow.ColumnNumber = ColumnNumber;
 			
-		КонецЕсли;
+		EndIf;
 		
-	КонецЦикла;
+	EndDo;
 	
-	// Ячейки которые были изменены.
-	Для НомерСтроки1 = 1 По СоответствиеСтрокЛевый.Количество()-1 Цикл
+	// Cells that were modified.
+	For RowNumber1 = 1 To RowsMapLeft.Count()-1 Do
 		
-		НомерСтроки2 = СоответствиеСтрокЛевый[НомерСтроки1].Значение;
-		Если НомерСтроки2 = Неопределено Тогда
-			Продолжить;
-		КонецЕсли;
+		RowNumber2 = RowsMapLeft[RowNumber1].Value;
+		If RowNumber2 = Undefined Then
+			Continue;
+		EndIf;
 		
-		Для НомерСтолбца1 = 1 По СоответствиеСтолбцовЛевый.Количество()-1 Цикл
+		For ColumnNumber1 = 1 To ColumnsMapLeft.Count()-1 Do
 			
-			НомерСтолбца2 = СоответствиеСтолбцовЛевый[НомерСтолбца1].Значение;
-			Если НомерСтолбца2 = Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
+			ColumnNumber2 = ColumnsMapLeft[ColumnNumber1].Value;
+			If ColumnNumber2 = Undefined Then
+				Continue;
+			EndIf;
 			
-			Область1 = ТабличныйДокументЛевый.Область(НомерСтроки1, НомерСтолбца1, НомерСтроки1, НомерСтолбца1);
-			Область2 = ТабличныйДокументПравый.Область(НомерСтроки2, НомерСтолбца2, НомерСтроки2, НомерСтолбца2);
+			Area1 = SpreadsheetDocumentLeft.Area(RowNumber1, ColumnNumber1, RowNumber1, ColumnNumber1);
+			Area2 = SpreadsheetDocumentRight.Area(RowNumber2, ColumnNumber2, RowNumber2, ColumnNumber2);
 			
-			Если НЕ СравнитьОбласти(Область1, Область2) Тогда
+			If Not CompareAreas(Area1, Area2) Then
 				
-				Область1 = ТабличныйДокументЛевый.Область(НомерСтроки1, НомерСтолбца1);
-				Область2 = ТабличныйДокументПравый.Область(НомерСтроки2, НомерСтолбца2);
+				Area1 = SpreadsheetDocumentLeft.Area(RowNumber1, ColumnNumber1);
+				Area2 = SpreadsheetDocumentRight.Area(RowNumber2, ColumnNumber2);
 				
-				Область1.ЦветТекста = ЦветОбластиИзмененнойТекст;
-				Область2.ЦветТекста = ЦветОбластиИзмененнойТекст;
+				Area1.TextColor = ChangedAreaColorText;
+				Area2.TextColor = ChangedAreaColorText;
 				
-				Область1.ЦветФона = ЦветОбластиИзмененнойФон;
-				Область2.ЦветФона = ЦветОбластиИзмененнойФон;
+				Area1.BackColor = ChangedAreaColorBackground;
+				Area2.BackColor = ChangedAreaColorBackground;
 				
 				
-				НоваяСтрокаРазличий = РазличияЯчеекЛевый.Добавить();
-				НоваяСтрокаРазличий.НомерСтроки = НомерСтроки1;
-				НоваяСтрокаРазличий.НомерСтолбца = НомерСтолбца1;
+				NewDifferenceRow = CellDifferencesLeft.Add();
+				NewDifferenceRow.RowNumber = RowNumber1;
+				NewDifferenceRow.ColumnNumber = ColumnNumber1;
 				
-				НоваяСтрокаРазличий = РазличияЯчеекПравый.Добавить();
-				НоваяСтрокаРазличий.НомерСтроки = НомерСтроки2;
-				НоваяСтрокаРазличий.НомерСтолбца = НомерСтолбца2;
+				NewDifferenceRow = CellDifferencesRight.Add();
+				NewDifferenceRow.RowNumber = RowNumber2;
+				NewDifferenceRow.ColumnNumber = ColumnNumber2;
 				
-			КонецЕсли;
+			EndIf;
 			
-		КонецЦикла;
+		EndDo;
 		
-	КонецЦикла;
+	EndDo;
 	
-	РазличияЯчеекЛевый.Сортировать("НомерСтроки, НомерСтолбца");
-	РазличияЯчеекПравый.Сортировать("НомерСтроки, НомерСтолбца");
+	CellDifferencesLeft.Sort("RowNumber, ColumnNumber");
+	CellDifferencesRight.Sort("RowNumber, ColumnNumber");
 	
-	#КонецОбласти
+	#EndRegion
 	
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Функция СравнитьОбласти(Область1, Область2)
+&AtServer
+Function CompareAreas(Area1, Area2)
 	
-	Если Область1.Текст <> Область2.Текст Тогда
-		Возврат Ложь;
-	КонецЕсли;
+	If Area1.Text <> Area2.Text Then
+		Return False;
+	EndIf;
 	
-	Если Область1.Примечание.Текст <> Область2.Примечание.Текст Тогда
-		Возврат Ложь;
-	КонецЕсли;
+	If Area1.Comment.Text <> Area2.Comment.Text Then
+		Return False;
+	EndIf;
 	
-	Возврат Истина;
+	Return True;
 	
-КонецФункции
+EndFunction
 
-&НаСервере
-Функция ПрочитатьТабличныйДокумент(ТабличныйДокументИсточник)
+&AtServer
+Function ReadSpreadsheetDocument(SourceSpreadsheetDocument)
 	
-	КоличествоСтолбцов = ТабличныйДокументИсточник.ШиринаТаблицы;
+	ColumnsCount = SourceSpreadsheetDocument.TableWidth;
 	
-	Если КоличествоСтолбцов = 0 Тогда
-		Возврат Новый ТаблицаЗначений;
-	КонецЕсли;
+	If ColumnsCount = 0 Then
+		Return New ValueTable;
+	EndIf;
 	
-	ТабличныйДокумент = Новый ТабличныйДокумент;
-	Для НомерСтолбца = 1 По КоличествоСтолбцов Цикл
-		ТабличныйДокумент.Область(1, НомерСтолбца, 1, НомерСтолбца).Текст = "Номер_" + Формат(НомерСтолбца,"ЧГ=0");
-	КонецЦикла;
+	SpreadsheetDocument = New SpreadsheetDocument;
+	For ColumnNumber = 1 To ColumnsCount Do
+		SpreadsheetDocument.Area(1, ColumnNumber, 1, ColumnNumber).Text = NStr("ru = 'Номер_'; en = 'Number_'") + Format(ColumnNumber,"NG=0");
+	EndDo;
 	
-	ТабличныйДокумент.Вывести(ТабличныйДокументИсточник);
+	SpreadsheetDocument.Put(SourceSpreadsheetDocument);
 	
-	Построитель = Новый ПостроительЗапроса;
+	Builder = New QueryBuilder;
 	
-	Построитель.ИсточникДанных = Новый ОписаниеИсточникаДанных(ТабличныйДокумент.Область());
-	Построитель.Выполнить();
-	ТаблицаЗначенийРезультат = Построитель.Результат.Выгрузить();
+	Builder.DataSource = New DataSourceDescription(SpreadsheetDocument.Area());
+	Builder.Execute();
+	ValueTableResult = Builder.Result.Unload();
 	
-	Возврат ТаблицаЗначенийРезультат;
+	Return ValueTableResult;
 	
-КонецФункции
+EndFunction
 
-&НаСервере
-Функция СформироватьСоответствия(ТаблицаЛевая, ТаблицаПравая, ПоСтрокам)
+&AtServer
+Function GenerateMatches(LeftTable, RightTable, ByRows)
 	
-	ДанныеИзТаблицыЛевая = ПолучитьДанныеДляСравнения(ТаблицаЛевая, ПоСтрокам);
+	DataFromLeftTable = GetDataForComparison(LeftTable, ByRows);
 	
-	ДанныеИзТаблицыПравая = ПолучитьДанныеДляСравнения(ТаблицаПравая, ПоСтрокам);
+	DataFromRightTable = GetDataForComparison(RightTable, ByRows);
 	
-	Если ПоСтрокам Тогда
-		РезультатСоответствияЛевая = Новый СписокЗначений;
-		РезультатСоответствияЛевая.ЗагрузитьЗначения(Новый Массив(ТаблицаЛевая.Количество()+1));
+	If ByRows Then
+		MatchResultLeft = New ValueList;
+		MatchResultLeft.LoadValues(New Array(LeftTable.Count()+1));
 		
-		РезультатСоответствияПравая = Новый СписокЗначений;
-		РезультатСоответствияПравая.ЗагрузитьЗначения(Новый Массив(ТаблицаПравая.Количество()+1));		
+		MatchResultRight = New ValueList;
+		MatchResultRight.LoadValues(New Array(RightTable.Count()+1));		
 		
-	Иначе
-		РезультатСоответствияЛевая = Новый СписокЗначений;
-		РезультатСоответствияЛевая.ЗагрузитьЗначения(Новый Массив(ТаблицаЛевая.Колонки.Количество()+1));
+	Else
+		MatchResultLeft = New ValueList;
+		MatchResultLeft.LoadValues(New Array(LeftTable.Columns.Count()+1));
 		
-		РезультатСоответствияПравая = Новый СписокЗначений;
-		РезультатСоответствияПравая.ЗагрузитьЗначения(Новый Массив(ТаблицаПравая.Колонки.Количество()+1));
+		MatchResultRight = New ValueList;
+		MatchResultRight.LoadValues(New Array(RightTable.Columns.Count()+1));
 		
-	КонецЕсли;
+	EndIf;
 	
-	ТекстЗапроса = "";
+	QueryText = "";
 	
-	ТекстЗапроса = ТекстЗапроса + "	ВЫБРАТЬ * ПОМЕСТИТЬ ТаблицаЛевая 
-								|	ИЗ &ДанныеИзТаблицыЛевая КАК ДанныеИзТаблицыЛевая;" + Символы.ПС;
+	QueryText = QueryText + "	SELECT * INTO LeftTable 
+								|	FROM &DataFromLeftTable AS DataFromLeftTable;" + Chars.LF;
 								
-	ТекстЗапроса = ТекстЗапроса + "	ВЫБРАТЬ * ПОМЕСТИТЬ ТаблицаПравая
-								|	ИЗ &ДанныеИзТаблицыПравая КАК ДанныеИзТаблицыПравая;" + Символы.ПС;
+	QueryText = QueryText + "	SELECT * INTO RightTable
+								|	FROM &DataFromRightTable AS DataFromRightTable;" + Chars.LF;
 		
-	ТекстЗапроса = ТекстЗапроса + "ВЫБРАТЬ
-		|	ТаблицаЛевая.Номер КАК НомерЭлементаЛевая,
-		|	ТаблицаПравая.Номер КАК НомерЭлементаПравая,
-		|	ВЫБОР
-		|		КОГДА ТаблицаПравая.Номер - ТаблицаЛевая.Номер < 0
-		|			ТОГДА ТаблицаЛевая.Номер - ТаблицаПравая.Номер
-		|		ИНАЧЕ ТаблицаПравая.Номер - ТаблицаЛевая.Номер
-		|	КОНЕЦ КАК РасстояниеОтНачала,
-		|	ВЫБОР
-		|		КОГДА &КоличествоСтрокПравая - ТаблицаПравая.Номер - (&КоличествоСтрокЛевая - ТаблицаЛевая.Номер) < 0
-		|			ТОГДА &КоличествоСтрокЛевая - ТаблицаЛевая.Номер - (&КоличествоСтрокПравая - ТаблицаПравая.Номер)
-		|		ИНАЧЕ  &КоличествоСтрокПравая - ТаблицаПравая.Номер - (&КоличествоСтрокЛевая - ТаблицаЛевая.Номер)
-		|	КОНЕЦ КАК РасстояниеОтКонца,
-		|	СУММА(ВЫБОР
-		|			КОГДА ТаблицаЛевая.Значение <> """"
-		|				ТОГДА ВЫБОР
-		|						КОГДА ТаблицаЛевая.Количество < ТаблицаПравая.Количество
-		|							ТОГДА ТаблицаЛевая.Количество
-		|						ИНАЧЕ ТаблицаПравая.Количество
-		|					КОНЕЦ
-		|			ИНАЧЕ 0
-		|		КОНЕЦ) КАК КоличествоСовпаденийЗначений,
-		|	СУММА(ВЫБОР
-		|			КОГДА ТаблицаЛевая.Количество < ТаблицаПравая.Количество
-		|				ТОГДА ТаблицаЛевая.Количество
-		|			ИНАЧЕ ТаблицаПравая.Количество
-		|		КОНЕЦ) КАК КоличествоСовпаденийВсего
-		|ПОМЕСТИТЬ ДанныеСвернуто
-		|ИЗ
-		|	ТаблицаЛевая КАК ТаблицаЛевая
-		|		ВНУТРЕННЕЕ СОЕДИНЕНИЕ ТаблицаПравая КАК ТаблицаПравая
-		|		ПО ТаблицаЛевая.Значение = ТаблицаПравая.Значение
+	QueryText = QueryText + "SELECT
+		|	LeftTable.Number AS ItemNumberLeft,
+		|	RightTable.Number AS ItemNumberRight,
+		|	CASE
+		|		WHEN RightTable.Number - LeftTable.Number < 0
+		|			THEN LeftTable.Number - RightTable.Number
+		|		ELSE RightTable.Number - LeftTable.Number
+		|	END AS DistanceFromBeginning,
+		|	CASE
+		|		WHEN &RowCountRight - RightTable.Number - (&RowCountLeft - LeftTable.Number) < 0
+		|			THEN &RowCountLeft - LeftTable.Number - (&RowCountRight - RightTable.Number)
+		|		ELSE  &RowCountRight - RightTable.Number - (&RowCountLeft - LeftTable.Number)
+		|	END AS DistanceFromEnd,
+		|	SUM(CASE
+		|			WHEN LeftTable.Value <> """"
+		|				THEN CASE
+		|						WHEN LeftTable.Count < RightTable.Count
+		|							THEN LeftTable.Count
+		|						ELSE RightTable.Count
+		|					END
+		|			ELSE 0
+		|		END) AS ValueMatchesCount,
+		|	SUM(CASE
+		|			WHEN LeftTable.Count < RightTable.Count
+		|				THEN LeftTable.Count
+		|			ELSE RightTable.Count
+		|		END) AS TotalMatchesCount
+		|INTO DataCollapsed
+		|FROM
+		|	LeftTable AS LeftTable
+		|		INNER JOIN RightTable AS RightTable
+		|		ON LeftTable.Value = RightTable.Value
 		|
-		|СГРУППИРОВАТЬ ПО
-		|	ТаблицаЛевая.Номер,
-		|	ТаблицаПравая.Номер
+		|GROUP BY
+		|	LeftTable.Number,
+		|	RightTable.Number
 		|;
 		|
 		|////////////////////////////////////////////////////////////////////////////////
-		|ВЫБРАТЬ
-		|	ДанныеСвернуто.НомерЭлементаЛевая КАК НомерЭлементаЛевая,
-		|	ДанныеСвернуто.НомерЭлементаПравая КАК НомерЭлементаПравая,
-		|	ДанныеСвернуто.КоличествоСовпаденийЗначений КАК КоличествоСовпаденийЗначений,
-		|	ДанныеСвернуто.КоличествоСовпаденийВсего КАК КоличествоСовпаденийВсего,
-		|	ВЫБОР
-		|		КОГДА ДанныеСвернуто.РасстояниеОтНачала < ДанныеСвернуто.РасстояниеОтКонца
-		|			ТОГДА ДанныеСвернуто.РасстояниеОтНачала
-		|		ИНАЧЕ ДанныеСвернуто.РасстояниеОтКонца
-		|	КОНЕЦ КАК МинимальноеРасстояние
-		|ИЗ
-		|	ДанныеСвернуто КАК ДанныеСвернуто
+		|SELECT
+		|	DataCollapsed.ItemNumberLeft AS ItemNumberLeft,
+		|	DataCollapsed.ItemNumberRight AS ItemNumberRight,
+		|	DataCollapsed.ValueMatchesCount AS ValueMatchesCount,
+		|	DataCollapsed.TotalMatchesCount AS TotalMatchesCount,
+		|	CASE
+		|		WHEN DataCollapsed.DistanceFromBeginning < DataCollapsed.DistanceFromEnd
+		|			THEN DataCollapsed.DistanceFromBeginning
+		|		ELSE DataCollapsed.DistanceFromEnd
+		|	END AS MinDistance
+		|FROM
+		|	DataCollapsed AS DataCollapsed
 		|
-		|УПОРЯДОЧИТЬ ПО
-		|	КоличествоСовпаденийЗначений УБЫВ,
-		|	КоличествоСовпаденийВсего УБЫВ,
-		|	МинимальноеРасстояние,
-		|	НомерЭлементаЛевая,
-		|	НомерЭлементаПравая";
+		|ORDER BY
+		|	ValueMatchesCount DESC,
+		|	TotalMatchesCount DESC,
+		|	MinDistance,
+		|	ItemNumberLeft,
+		|	ItemNumberRight";
 
-	Запрос = Новый Запрос(ТекстЗапроса);
-	Запрос.УстановитьПараметр("ДанныеИзТаблицыЛевая", ДанныеИзТаблицыЛевая);
-	Запрос.УстановитьПараметр("ДанныеИзТаблицыПравая", ДанныеИзТаблицыПравая);
-	Запрос.УстановитьПараметр("КоличествоСтрокЛевая", ТаблицаЛевая.Количество());
-	Запрос.УстановитьПараметр("КоличествоСтрокПравая", ТаблицаПравая.Количество());
+	Query = New Query(QueryText);
+	Query.SetParameter("DataFromLeftTable", DataFromLeftTable);
+	Query.SetParameter("DataFromRightTable", DataFromRightTable);
+	Query.SetParameter("RowCountLeft", LeftTable.Count());
+	Query.SetParameter("RowCountRight", RightTable.Count());
 	
-	Выборка = Запрос.Выполнить().Выбрать();
+	Selection = Query.Execute().Select();
 	
-	Пока Выборка.Следующий() Цикл
-		Если РезультатСоответствияЛевая[Выборка.НомерЭлементаЛевая].Значение = Неопределено
-			И РезультатСоответствияПравая[Выборка.НомерЭлементаПравая].Значение = Неопределено Тогда
-				РезультатСоответствияЛевая[Выборка.НомерЭлементаЛевая].Значение = Выборка.НомерЭлементаПравая;
-				РезультатСоответствияПравая[Выборка.НомерЭлементаПравая].Значение = Выборка.НомерЭлементаЛевая;
-		КонецЕсли;
-	КонецЦикла;
+	While Selection.Next() Do
+		If MatchResultLeft[Selection.ItemNumberLeft].Value = Undefined
+			AND MatchResultRight[Selection.ItemNumberRight].Value = Undefined Then
+				MatchResultLeft[Selection.ItemNumberLeft].Value = Selection.ItemNumberRight;
+				MatchResultRight[Selection.ItemNumberRight].Value = Selection.ItemNumberLeft;
+		EndIf;
+	EndDo;
 	
-	Результат = Новый Массив;
-	Результат.Добавить(РезультатСоответствияЛевая);
-	Результат.Добавить(РезультатСоответствияПравая);
+	Result = New Array;
+	Result.Add(MatchResultLeft);
+	Result.Add(MatchResultRight);
 	
-	Возврат Результат;
+	Return Result;
 
-КонецФункции
+EndFunction
 
-&НаСервере
-Функция ПолучитьДанныеДляСравнения(ТаблицаЗначенийИсточник, ПоСтрокам)
+&AtServer
+Function GetDataForComparison(SourceValueTable, ByRows)
 	
-	МаксимальныйРазмерСтрок = Новый КвалификаторыСтроки(100);
+	MaxRowSize = New StringQualifiers(100);
 	
-	Результат = Новый ТаблицаЗначений;
-	Результат.Колонки.Добавить("Номер",		Новый ОписаниеТипов("Число"));
-	Результат.Колонки.Добавить("Значение",	Новый ОписаниеТипов("Строка", , МаксимальныйРазмерСтрок));
+	Result = New ValueTable;
+	Result.Columns.Add("Number",		New TypeDescription("Number"));
+	Result.Columns.Add("Value",	New TypeDescription("String", , MaxRowSize));
 	
-	Граница1 = ?(ПоСтрокам, ТаблицаЗначенийИсточник.Количество(),
-							ТаблицаЗначенийИсточник.Колонки.Количество()) - 1;
+	Boundary1 = ?(ByRows, SourceValueTable.Count(),
+							SourceValueTable.Columns.Count()) - 1;
 		
-	Граница2 = ?(ПоСтрокам, ТаблицаЗначенийИсточник.Колонки.Количество(),
-							ТаблицаЗначенийИсточник.Количество()) - 1;
+	Boundary2 = ?(ByRows, SourceValueTable.Columns.Count(),
+							SourceValueTable.Count()) - 1;
 		
-	Для Индекс1 = 0 По Граница1 Цикл
+	For Index1 = 0 To Boundary1 Do
 		
-		Для Индекс2 = 0 По Граница2 Цикл
+		For Index2 = 0 To Boundary2 Do
 			
-			НоваяСтрока = Результат.Добавить();
-			НоваяСтрока.Номер = Индекс1+1;
-			НоваяСтрока.Значение = ?(ПоСтрокам, ТаблицаЗначенийИсточник[Индекс1][Индекс2],
-												ТаблицаЗначенийИсточник[Индекс2][Индекс1]);
+			NewRow = Result.Add();
+			NewRow.Number = Index1+1;
+			NewRow.Value = ?(ByRows, SourceValueTable[Index1][Index2],
+												SourceValueTable[Index2][Index1]);
 			
-		КонецЦикла;
+		EndDo;
 		
-	КонецЦикла;
+	EndDo;
 
-	Результат.Колонки.Добавить("Количество", Новый ОписаниеТипов("Число"));
-	Результат.ЗаполнитьЗначения(1, "Количество");
+	Result.Columns.Add("Count", New TypeDescription("Number"));
+	Result.FillValues(1, "Count");
 	
-	Результат.Свернуть("Номер, Значение", "Количество");
+	Result.GroupBy("Number, Value", "Count");
 	
-	Возврат Результат;
+	Return Result;
 		
-КонецФункции
+EndFunction
 
 
-&НаКлиенте
-Процедура ОбработатьАктивизациюОбласти(ТабДокИсточник, ТабДокПриемник, СоответствияИсточник, СоответствияПриемник)
+&AtClient
+Procedure ProcessAreaActivation(SourceSpreadDoc, DestinationSpreadDoc, MatchesSource, MatchesDestination)
 	
-	БлокировкаОбработкиАктивизации = Истина;
+	DisableOnActivateHandler = True;
 	
-	ТекОбласть = ТабДокИсточник.Элемент.ТекущаяОбласть;
+	CurArea = SourceSpreadDoc.Item.CurrentArea;
 	
-	Если ТекОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Таблица Тогда
+	If CurArea.AreaType = SpreadsheetDocumentCellAreaType.Table Then
 		
-		ВыбраннаяОбласть = ТабДокПриемник.Область();
+		SelectedArea = DestinationSpreadDoc.Area();
 		
-	Иначе
+	Else
 	
-		Если ТекОбласть.Низ < СоответствияИсточник.Строки.Количество() Тогда
-			НомерСтроки = СоответствияИсточник.Строки[ТекОбласть.Низ].Значение;
-		Иначе
-			НомерСтроки = ТекОбласть.Низ 
-							- СоответствияИсточник.Строки.Количество()
-								+ СоответствияПриемник.Строки.Количество();
-		КонецЕсли;
+		If CurArea.Bottom < MatchesSource.Rows.Count() Then
+			RowNumber = MatchesSource.Rows[CurArea.Bottom].Value;
+		Else
+			RowNumber = CurArea.Bottom 
+							- MatchesSource.Rows.Count()
+								+ MatchesDestination.Rows.Count();
+		EndIf;
 		
-		Если ТекОбласть.Лево < СоответствияИсточник.Столбцы.Количество() Тогда
-			НомерСтолбца = СоответствияИсточник.Столбцы[ТекОбласть.Лево].Значение;
-		Иначе
-			НомерСтолбца = ТекОбласть.Лево
-							- СоответствияИсточник.Столбцы.Количество()
-								+ СоответствияПриемник.Столбцы.Количество();
-		КонецЕсли;
+		If CurArea.Left < MatchesSource.Columns.Count() Then
+			ColumnNumber = MatchesSource.Columns[CurArea.Left].Value;
+		Else
+			ColumnNumber = CurArea.Left
+							- MatchesSource.Columns.Count()
+								+ MatchesDestination.Columns.Count();
+		EndIf;
 		
 		
-		ВыбраннаяОбласть = Неопределено;
+		SelectedArea = Undefined;
 		
-		Если ТекОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Прямоугольник Тогда
+		If CurArea.AreaType = SpreadsheetDocumentCellAreaType.Rectangle Then
 					
-			Если НомерСтроки <> Неопределено И НомерСтолбца <> Неопределено Тогда
-				ВыбраннаяОбласть = ТабДокПриемник.Объект.Область(НомерСтроки, НомерСтолбца);
-			КонецЕсли;
+			If RowNumber <> Undefined And ColumnNumber <> Undefined Then
+				SelectedArea = DestinationSpreadDoc.Object.Area(RowNumber, ColumnNumber);
+			EndIf;
 					
-		ИначеЕсли ТекОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Строки Тогда
+		ElsIf CurArea.AreaType = SpreadsheetDocumentCellAreaType.Rows Then
 			
-			Если НомерСтроки <> Неопределено Тогда
-				ВыбраннаяОбласть = ТабДокПриемник.Объект.Область(НомерСтроки, 0, НомерСтроки, 0);
-			КонецЕсли;
+			If RowNumber <> Undefined Then
+				SelectedArea = DestinationSpreadDoc.Object.Area(RowNumber, 0, RowNumber, 0);
+			EndIf;
 			
-		ИначеЕсли ТекОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Колонки Тогда
+		ElsIf CurArea.AreaType = SpreadsheetDocumentCellAreaType.Columns Then
 			
-			Если НомерСтолбца <> Неопределено Тогда
-				ВыбраннаяОбласть = ТабДокПриемник.Объект.Область(0, НомерСтолбца, 0, НомерСтолбца);
-			КонецЕсли;
+			If ColumnNumber <> Undefined Then
+				SelectedArea = DestinationSpreadDoc.Object.Area(0, ColumnNumber, 0, ColumnNumber);
+			EndIf;
 			
-		Иначе		
+		Else		
 			
-			Возврат;
+			Return;
 			
-		КонецЕсли;
+		EndIf;
 		
-	КонецЕсли;
+	EndIf;
 	
-	ТабДокПриемник.Элемент.ТекущаяОбласть = ВыбраннаяОбласть;
+	DestinationSpreadDoc.Item.CurrentArea = SelectedArea;
 	
-	БлокировкаОбработкиАктивизации = Ложь;
+	DisableOnActivateHandler = False;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПредыдущееИзменение(ЭлементФормы, РеквизитФормы, ТаблицаРазличий)
+&AtClient
+Procedure PreviousChange(FormItem, FormAttribute, DifferenceTable)
 	
-	Перем Индекс;
+	Var Index;
 	
-	ТекЯчейка = ЭлементФормы.ТекущаяОбласть;
-	НомерСтроки = ТекЯчейка.Верх;
-	НомерСтолбца = ТекЯчейка.Лево;
-	Для Каждого ТекСтрока Из ТаблицаРазличий Цикл
-		Если ТекСтрока.НомерСтроки < НомерСтроки 
-			ИЛИ ТекСтрока.НомерСтроки = НомерСтроки И ТекСтрока.НомерСтолбца < НомерСтолбца Тогда
-			Индекс = ТаблицаРазличий.Индекс(ТекСтрока);
-		ИначеЕсли ТекСтрока.НомерСтроки >= НомерСтроки И ТекСтрока.НомерСтолбца > НомерСтолбца Тогда
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+	CurCell = FormItem.CurrentArea;
+	RowNumber = CurCell.Top;
+	ColumnNumber = CurCell.Left;
+	For Each curRow In DifferenceTable Do
+		If curRow.RowNumber < RowNumber 
+			Or curRow.RowNumber = RowNumber And curRow.ColumnNumber < ColumnNumber Then
+			Index = DifferenceTable.IndexOf(curRow);
+		ElsIf curRow.RowNumber >= RowNumber And curRow.ColumnNumber > ColumnNumber Then
+			Break;
+		EndIf;
+	EndDo;
 	
-	Если Индекс <> Неопределено Тогда
-		СтрокаРазличий = ТаблицаРазличий[Индекс];
-		НомерСтроки = СтрокаРазличий.НомерСтроки;
-		НомерСтолбца = СтрокаРазличий.НомерСтолбца;
-		ЭлементФормы.ТекущаяОбласть = РеквизитФормы.Область(НомерСтроки, НомерСтолбца, НомерСтроки, НомерСтолбца);
-	КонецЕсли;
+	If Index <> Undefined Then
+		DifferenceRow = DifferenceTable[Index];
+		RowNumber = DifferenceRow.RowNumber;
+		ColumnNumber = DifferenceRow.ColumnNumber;
+		FormItem.CurrentArea = FormAttribute.Area(RowNumber, ColumnNumber, RowNumber, ColumnNumber);
+	EndIf;
 	
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура СледующееИзменение(ЭлементФормы, РеквизитФормы, ТаблицаРазличий)
+&AtClient
+Procedure NextChange(FormItem, FormAttribute, DifferenceTable)
 	
-	Перем Индекс;
+	Var Index;
 	
-	ТекЯчейка = ЭлементФормы.ТекущаяОбласть;
-	НомерСтроки = ТекЯчейка.Верх;
-	НомерСтолбца = ТекЯчейка.Лево;
-	Для Каждого ТекСтрока Из ТаблицаРазличий Цикл
-		Если ТекСтрока.НомерСтроки = НомерСтроки И ТекСтрока.НомерСтолбца > НомерСтолбца 
-			ИЛИ ТекСтрока.НомерСтроки > НомерСтроки Тогда
-			Индекс = ТаблицаРазличий.Индекс(ТекСтрока);
-			Прервать;
-		КонецЕсли;
-	КонецЦикла;
+	CurCell = FormItem.CurrentArea;
+	RowNumber = CurCell.Top;
+	ColumnNumber = CurCell.Left;
+	For Each curRow In DifferenceTable Do
+		If curRow.RowNumber = RowNumber And curRow.ColumnNumber > ColumnNumber 
+			Or curRow.RowNumber > RowNumber Then
+			Index = DifferenceTable.IndexOf(curRow);
+			Break;
+		EndIf;
+	EndDo;
 	
-	Если Индекс <> Неопределено Тогда
-		СтрокаРазличий = ТаблицаРазличий[Индекс];
-		НомерСтроки = СтрокаРазличий.НомерСтроки;
-		НомерСтолбца = СтрокаРазличий.НомерСтолбца;
-		ЭлементФормы.ТекущаяОбласть = РеквизитФормы.Область(НомерСтроки, НомерСтолбца, НомерСтроки, НомерСтолбца);
-	КонецЕсли;
+	If Index <> Undefined Then
+		DifferenceRow = DifferenceTable[Index];
+		RowNumber = DifferenceRow.RowNumber;
+		ColumnNumber = DifferenceRow.ColumnNumber;
+		FormItem.CurrentArea = FormAttribute.Area(RowNumber, ColumnNumber, RowNumber, ColumnNumber);
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Функция ПодготовитьТабличныйДокумент(ТабличныйДокумент)
+&AtServer
+Function PrepareSpreadsheetDocument(SpreadsheetDocument)
 	
-	Если ТипЗнч(ТабличныйДокумент) = Тип("ТабличныйДокумент") Тогда
-		Возврат ТабличныйДокумент;
-	КонецЕсли;
+	If TypeOf(SpreadsheetDocument) = Type("SpreadsheetDocument") Then
+		Return SpreadsheetDocument;
+	EndIf;
 	
-	ДвоичныеДанные = ПолучитьИзВременногоХранилища(ТабличныйДокумент); // ДвоичныеДанные - 
-	Если ТипЗнч(ДвоичныеДанные) = Тип("ТабличныйДокумент") Тогда
-		Возврат ДвоичныеДанные;
-	КонецЕсли;
-	ИмяВременногоФайла = ПолучитьИмяВременногоФайла("mxl");
-	ДвоичныеДанные.Записать(ИмяВременногоФайла);
+	BinaryData = GetFromTempStorage(SpreadsheetDocument); 
+	If TypeOf(BinaryData) = Type("SpreadsheetDocument") Then
+		Return BinaryData;
+	EndIf;
+	TempFileName = GetTempFileName("mxl");
+	BinaryData.Write(TempFileName);
 	
-	Результат = Новый ТабличныйДокумент;
-	Результат.Прочитать(ИмяВременногоФайла);
+	Result = New SpreadsheetDocument;
+	Result.Read(TempFileName);
 	
-	УдалитьФайлы(ИмяВременногоФайла);
+	DeleteFiles(TempFileName);
 	
-	Возврат Результат;
+	Return Result;
 
-КонецФункции
+EndFunction
 
-#КонецОбласти
+#EndRegion
