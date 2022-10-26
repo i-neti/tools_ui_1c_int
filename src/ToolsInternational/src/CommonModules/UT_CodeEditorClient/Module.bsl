@@ -25,7 +25,7 @@ Procedure HTMLEditorFieldDocumentGenerated(Form, Item) Export
 	If Not AllFormEditorsInitialized(FormEditors) Then
 		Return;
 	EndIf;
-	Form.AttachIdleHandler("Attachable_CodeEditorDeferredInitializingEditors", 0.1, True);
+	Form.AttachIdleHandler("Attachable_CodeEditorDeferredInitializingEditors", 0.2, True);
 EndProcedure
 
 Procedure HTMLEditorFieldOnClick(Form, Item, EventData, StandardProcessing) Export
@@ -50,15 +50,18 @@ Procedure EditorEventsDeferProcessing(Form) Export
 		ElsIf CurrentEvent.EventName = "EVENT_FORMAT_CONSTRUCT" Then
 			OpenMonacoFormatStringWizard(CurrentEvent.EventData, AdditionalParameters);
 		ElsIf CurrentEvent.EventName = "EVENT_GET_METADATA" Then
-			MetadataNameArray = StrSplit(CurrentEvent.EventData, ".");
+			AdditionalParameters.Insert("EventData", CurrentEvent.EventData);
+			
+			MetadataName = CurrentEvent.EventData.MetadataName;
+			MetadataNameArray = StrSplit(MetadataName, ".");
 
 			If MetadataNameArray[0] = "module" Then
 				
-				SetModuleDescriptionForMonacoEditor(CurrentEvent.EventData, AdditionalParameters);
+				SetModuleDescriptionForMonacoEditor(MetadataName, AdditionalParameters);
 				
 			Else
 				
-				SetMetadataEditorForMonacoEditor(CurrentEvent.EventData, AdditionalParameters);
+				SetMetadataDescriptionForMonacoEditor(MetadataName, AdditionalParameters);
 				
 			EndIf;
 		Elsif CurrentEvent.EventName = "EVENT_CONTENT_CHANGED" Then
@@ -70,6 +73,8 @@ Procedure EditorEventsDeferProcessing(Form) Export
 				ExecuteNotifyProcessing(New NotifyDescription(EditorEvents.OnChange, Form,
 					AdditionalParameters), CurrentEvent.Item);
 			EndIf;
+		ElsIf CurrentEvent.EventName = "INSERT_MACRO_COLUMN" Then
+			InsertFormItemQueryEditorMacroColumn(Form, CurrentEvent.Item);
 
 		EndIf;
 	EndDo;
@@ -95,6 +100,10 @@ EndFunction
 Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorType, EditorTypes)
 	For Each KeyValue In FormEditors Do
 		EditorSettings = KeyValue.Value;
+		If Not EditorSettings.Initialized Then
+			Continue;
+		EndIf;
+		
 		EditorFormItem = Form.Item[EditorSettings.EditorField];
 
 		If EditorType = EditorTypes.Text Then
@@ -108,7 +117,6 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 			EndIf;
 		ElsIf EditorType = EditorTypes.Monaco Then
 			DocumentView = EditorFormItem.Document.defaultView;
-			DocumentView.setOption("autoResizeEditorLayout", True);
 
 			Info = New SystemInfo;
 			DocumentView.init(Info.AppVersion);
@@ -117,6 +125,8 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 
 				If EditorSettings.EditorLanguage = "bsl_query" Then
 					DocumentView.setOption("renderQueryDelimiters", True);
+					
+					DocumentView.addContextMenuItem(NStr("ru = 'Вставить макроколонку'; en = 'Insert macrocolumn'"), "INSERT_MACRO_COLUMN");
 				EndIf;
 			EndIf;
 			DocumentView.hideScrollX();
@@ -130,7 +140,11 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 				DocumentView.setLineHeight(EditorSettings.EditorSettings.LinesHeight);
 			EndIf;
 
-			DocumentView.disableKeyBinding(9);
+			DocumentView.disableKeyBinding(9);//esc
+//			DocumentView.disableKeyBinding(2081); //ctrl+c
+			DocumentView.setOption("generateDefinitionEvent", True);
+//			DocumentView.setOption("generateSnippetEvent", True);
+			DocumentView.setOption("autoResizeEditorLayout", True);
 			DocumentView.setOption("dragAndDrop", True);
 
 			EditorThemes = UT_CodeEditorClientServer.MonacoEditorThemeVariants();
@@ -150,11 +164,11 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 
 			ScriptVariants = UT_CodeEditorClientServer.MonacoEditorSyntaxLanguageVariants();
 			If EditorSettings.EditorSettings.ScriptVariant = ScriptVariants.English Then
-				DocumentView.switchLang();
+				DocumentView.switchLang("en");
 			ElsIf EditorSettings.EditorSettings.ScriptVariant = ScriptVariants.Auto Then
 				ScriptVariant = UT_ApplicationParameters["ConfigurationScriptVariant"];
 				If ScriptVariant = "English" Then
-					DocumentView.switchLang();
+					DocumentView.switchLang("en");
 				EndIf;
 			EndIf;
 
@@ -179,6 +193,16 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 			DocumentView.updateMetadata(UT_CommonClientServer.mWriteJSON(
 				GetMetadataObjectsListFromCollectionForMonacoEditor(
 				ConfigurationDescriptionForInitialization.CommonModules)), "commonModules.items");
+				
+			If Not EditorSettings.EditorSettings.Monaco.UseStandartCodeTemplates Then
+				DocumentView.clearSnippets();
+			EndIf;
+		EndIf;
+	
+		If EditorSettings.EditorTextCache <> Undefined Then
+			SetEditorText(Form, KeyValue.Key, EditorSettings.EditorTextCache.Text);
+			SetEditorOriginalText(Form, KeyValue.Key, EditorSettings.EditorTextCache.OriginalText);
+			EditorSettings.EditorTextCache = Undefined;
 		EndIf;
 	EndDo;
 EndProcedure
@@ -189,19 +213,45 @@ Procedure CodeEditorDeferredInitializingEditors(Form) Export
 	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 
 	InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorType, EditorTypes);
-	Form.Attachable_CodeEditorInitializingCompletion();
-//	Form.Attachable_EditorFieldInitializingCompletion(UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item));
+	If Not UT_CodeEditorClientServer.CodeEditorsInitialInitializationPassed(Form) Then
+		Form.Attachable_CodeEditorInitializingCompletion();
+		UT_CodeEditorClientServer.SetFlagCodeEditorsInitialInitializationPassed(Form, True);
+	EndIf;
+
+	If EditorType = EditorTypes.Monaco Then
+		BeginLoadingCodeTemplatesToEditors(Form, FormEditors);
+	EndIf;
 EndProcedure
 
-Procedure SetFormItemEditorText(Form, Item, Text) Export
+#Region EditorInteraction
+
+// Sets a text of an editor by a form item.
+// 
+// Параметры:
+//  Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField -An editor form field.
+//  Text - String - An editor new text.
+//  SetOriginalText - Boolean - if True, an original text of an editor is also sets.
+//
+Procedure SetFormItemEditorText(Form, Item, Text, SetOriginalText = False) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
 		Return;
 	EndIf;
 
-	SetEditorText(Form, EditorID, Text);
+	SetEditorText(Form, EditorID, Text, SetOriginalText);
 EndProcedure
 
+// Sets a text of an editor by an editor ID.
+// 
+// Параметры:
+//  Parameters:
+//  Form - ClientApplicationForm - A form.
+//  EditorID - String - An editor ID.
+//  Text - String - An editor new text.
+//  SetOriginalText - Boolean - if True, an original text of an editor is also sets.
+//
 Procedure SetEditorText(Form, EditorID, Text, SetOriginalText = False) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -212,6 +262,10 @@ Procedure SetEditorText(Form, EditorID, Text, SetOriginalText = False) Export
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+	
 	If EditorType = EditorsTypes.Text Then
 		Form[EditorSettings.AttributeName] = Text;
 	ElsIf EditorType = EditorsTypes.Ace Then
@@ -219,13 +273,38 @@ Procedure SetEditorText(Form, EditorID, Text, SetOriginalText = False) Export
 		HTMLDocument.editor.setValue(Text, -1);
 	ElsIf EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		HTMLDocument.updateText(Text);
 		If SetOriginalText Then 
 			HTMLDocument.setOriginalText(Text);
 		EndIf;
-		HTMLDocument.updateText(Text);
 	EndIf;
 EndProcedure
 
+// Sets an original text of an editor by a form item.
+// Only for Monaco editor. 
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField -An editor form field.
+//  Text - String - An editor original text.
+//
+Procedure SetFormItemEditorOriginalText(Form, Item, Text) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	SetEditorOriginalText(Form, EditorID, Text);
+EndProcedure
+
+// Sets an original text of an editor by an editor ID.
+// Only for Monaco editor. 
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//  Text - String - An editor original text.
+//
 Procedure SetEditorOriginalText(Form, EditorID, Text) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -236,12 +315,22 @@ Procedure SetEditorOriginalText(Form, EditorID, Text) Export
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+	
 	If EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
 		HTMLDocument.setOriginalText(Text);
 	EndIf;
 EndProcedure
 
+// Sets an original text of an editor as equal to current editor.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String -An editor ID.
+//
 Procedure SetEditorOriginalTextEqualToCurrent(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -252,6 +341,10 @@ Procedure SetEditorOriginalTextEqualToCurrent(Form, EditorID) Export
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+	
 	If EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
 		CodeText = HTMLDocument.getText();
@@ -259,6 +352,15 @@ Procedure SetEditorOriginalTextEqualToCurrent(Form, EditorID) Export
 	Endif;
 EndProcedure
 
+// Returns a text of the editor code. 
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+// 
+// Return value:
+//  String - A form item editor code text.
+//
 Function EditorCodeText(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType    = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -268,6 +370,15 @@ Function EditorCodeText(Form, EditorID) Export
 		Return "";
 	EndIf;
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		If Not EditorSettings.Visible
+			And EditorSettings.EditorTextCache <> Undefined Then
+				
+			Return EditorSettings.EditorTextCache.Text;
+		EndIf;
+			
+		Return "";
+	EndIf;
 
 	CodeText="";
 
@@ -284,6 +395,15 @@ Function EditorCodeText(Form, EditorID) Export
 	Return TrimAll(CodeText);
 EndFunction
 
+// Returns a text of the editor code by the form item. 
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+// 
+// Return value:
+//  String - A form item editor code text.
+//
 Function EditorCodeTextItemForm(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -292,6 +412,7 @@ Function EditorCodeTextItemForm(Form, Item) Export
 
 	Return EditorCodeText(Form, EditorID);
 EndFunction
+
 // Return code editor original text.
 // for editors other than monaco returns an empty string
 // 
@@ -301,6 +422,7 @@ EndFunction
 // 
 // Return Value :
 //  String
+//
 Function CodeEditorOriginalText(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -345,6 +467,7 @@ Function CodeEditorOriginalTextFormItem(Form, Item) Export
 	Return CodeEditorOriginalText(Form, EditorID);
 	
 EndFunction
+
 // Return current selection borders at editor.
 // Parameters:
 //  Form - ClientApplicationForm -
@@ -352,6 +475,7 @@ EndFunction
 // 
 // Return Value :
 //  SelectionBounds
+//
 Function EditorSelectionBorders(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -394,6 +518,7 @@ Function EditorSelectionBorders(Form, EditorID) Export
 	Return SelectionBounds;
 
 EndFunction
+
 // Return editor selection borders by form item.
 // Parameters:
 //  Form - ClientApplicationForm -
@@ -401,6 +526,7 @@ EndFunction
 // 
 // Return 
 //  NewSelectionBorders()
+//
 Function EditorSelectionBordersFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -410,6 +536,16 @@ Function EditorSelectionBordersFormItem(Form, Item) Export
 	Return EditorSelectionBorders(Form, EditorID);
 EndFunction
 
+// Sets a selection borders for an editor.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//  RowBeginning - Number - Beginning of a row.
+//  ColumnBeginning - Number - Beginning of a column.
+//  RowEnd - Number - End of a row.
+//  ColumnEnd - Number - End of a column.
+//
 Procedure SetTextSelectionBorders(Form, EditorID, RowBeginning, ColumnBeginning, RowEnd, ColumnEnd) Export
 
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
@@ -421,6 +557,9 @@ Procedure SetTextSelectionBorders(Form, EditorID, RowBeginning, ColumnBeginning,
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
 
 	If EditorType = EditorsTypes.Text Then
 		EditorItem = Form.Items[EditorSettings.EditorField];
@@ -436,6 +575,16 @@ Procedure SetTextSelectionBorders(Form, EditorID, RowBeginning, ColumnBeginning,
 
 EndProcedure
 
+// Sets a selection borders for an editor by a form item.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+//  RowBeginning - Number - Beginning of a row.
+//  ColumnBeginning - Number - Beginning of a column.
+//  RowEnd - Number - End of a row.
+//  ColumnEnd - Number - End of a column.
+//
 Procedure SetTextSelectionBordersFormItem(Form, Item, RowBeginning, ColumnBeginning, LineEnd, ColumnEnd) Export
 
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
@@ -447,6 +596,13 @@ Procedure SetTextSelectionBordersFormItem(Form, Item, RowBeginning, ColumnBeginn
 
 EndProcedure
 
+// Inserts text into cursor location
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//  Text - String - A text to insert.
+//
 Procedure InsertTextInCursorLocation(Form, EditorID, Text) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -457,6 +613,9 @@ Procedure InsertTextInCursorLocation(Form, EditorID, Text) Export
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
 
 	If EditorType = EditorsTypes.Text Then
 		EditorItem = Form.Items[EditorSettings.EditorField];
@@ -470,6 +629,13 @@ Procedure InsertTextInCursorLocation(Form, EditorID, Text) Export
 	EndIf;
 EndProcedure
 
+// Inserts text into cursor location by form item
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form field.
+//  Text - String - A text to insert.
+//
 Procedure InsertTextInCursorLocationFormItem(Form, Item, Text) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -479,6 +645,393 @@ Procedure InsertTextInCursorLocationFormItem(Form, Item, Text) Export
 	InsertTextInCursorLocation(Form, EditorID, Text);
 
 EndProcedure
+
+// Return selected text of editor.
+// 
+// Parameters:
+//  Form - ClientApplicationForm -
+//  EditorID - String - ID Of Editor
+// 
+// Return value:
+//  String - Editor selected text
+//
+Function EditorSelectedText(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return "";
+	EndIf;
+	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return "";
+	EndIf;
+	CodeText="";
+
+	If EditorType = EditorsTypes.Text Then
+		CodeText = Form.Items[EditorSettings.EditorField].SelectedText;
+	ElsIf EditorType = EditorsTypes.Ace Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.editor.getCopyText();
+	ElsIf EditorType = EditorsTypes.Monaco Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.selectedText();
+	EndIf;
+
+	Return TrimAll(CodeText);
+
+EndFunction
+
+// Return editor form item selected text. 
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor item form.
+// 
+// Return 
+//  String - An editor selected text.
+// 
+Function EditorSelectedTextFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return "";
+	EndIf;
+
+	Return EditorSelectedText(Form, EditorID);
+
+EndFunction
+
+// Adds the comments for the selected lines.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//
+Procedure AddCommentsToEditorLines(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+
+	If EditorType = EditorsTypes.Text Then
+		CodeText = Form[EditorSettings.AttributeName];
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+
+		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
+		Form[EditorSettings.AttributeName] = CodeText;
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Ace Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.editor.getValue();
+
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
+		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
+
+		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
+
+		HTMLDocument.editor.setValue(CodeText, -1);
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
+			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Monaco Then
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.addComment();
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+
+	EndIf;
+
+EndProcedure
+
+// Adds the comments for the form item selected lines.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+//
+Procedure AddCommentsToEditorLinesFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	AddCommentsToEditorLines(Form, EditorID);
+EndProcedure
+
+// Deletes the comments in the selected lines.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//
+Procedure DeleteEditorLinesComments(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+
+	If EditorType = EditorsTypes.Текст Then
+		CodeText = Form[EditorSettings.AttributeName];
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
+		Form[EditorSettings.AttributeName] = CodeText;
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Ace Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.editor.getValue();
+
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
+		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
+
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
+
+		HTMLDocument.editor.setValue(CodeText, -1);
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
+			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Monaco Then
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.removeComment();
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+
+	EndIf;
+
+EndProcedure
+
+// Deletes the comments in the selected lines.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form field.
+//
+Procedure DeleteEditorLinesCommentsFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	DeleteEditorLinesComments(Form, EditorID);
+EndProcedure
+
+// Adds an editor line breaks.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//
+Procedure AddEditorLineBreaks(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+
+	If EditorType = EditorsTypes.Text Then
+		CodeText = Form[EditorSettings.AttributeName];
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+
+		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
+		Form[EditorSettings.AttributeName] = CodeText;
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Ace Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.editor.getValue();
+
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
+		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
+
+		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
+
+		HTMLDocument.editor.setValue(CodeText, -1);
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
+			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Monaco Then
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.addWordWrap();
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+
+	EndIf;
+
+EndProcedure
+
+// Adds a form item editor line breaks.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+//
+Procedure AddEditorLineBreaksFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	AddEditorLineBreaks(Form, EditorID);
+EndProcedure
+
+// Deletes an editor line breaks.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//
+Procedure DeleteEditorLineBreaks(Form, EditorID) Export
+	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	If Not AllFormEditorsInitialized(FormEditors) Then
+		Return;
+	EndIf;
+	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
+
+	If EditorType = EditorsTypes.Текст Then
+		CodeText = Form[EditorSettings.AttributeName];
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
+		Form[EditorSettings.AttributeName] = CodeText;
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Ace Then
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.editor.getValue();
+
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
+		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
+
+		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
+
+		HTMLDocument.editor.setValue(CodeText, -1);
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
+			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
+	ElsIf EditorType = EditorsTypes.Monaco Then
+		SelectionBorders = EditorSelectionBorders(Form, EditorID);
+		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		CodeText = HTMLDocument.removeWordWrap();
+
+		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
+			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
+
+	EndIf;
+
+EndProcedure
+
+// Deletes a form item editor line breaks.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+//
+Procedure DeleteEditorLineBreaksFormItem(Form, Item) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	DeleteEditorLineBreaks(Form, EditorID);
+EndProcedure
+
+// Sets new visibility for a code editor by an editor ID.
+// If a NewVisibility parameter is passed, then the specified visibility is set.
+// If a NewVisibility parameter is not passed, then the editor visibility is switched.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  EditorID - String - An editor ID.
+//  NewVisibility -  Boolean - (optional) an editor item new visibility.
+// 
+Procedure SwitchEditorVisibility(Form, EditorID, NewVisibility = Undefined) Export
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
+
+	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	EditorSettings = FormEditors[EditorID];
+	
+	Visible = NewVisibility;
+	If Visible = Undefined Then
+		Visible = Not EditorSettings.Visible;
+	EndIf;
+	If Not Visible Then
+		EditorTextCache = UT_CodeEditorClientServer.NewTextCacheOfEditor();
+		EditorTextCache.Text = EditorCodeText(Form, EditorID);
+		EditorTextCache.OriginalText = CodeEditorOriginalText(Form, EditorID);
+		
+		EditorSettings.EditorTextCache = EditorTextCache;
+	EndIf;
+	
+	EditorSettings.Visible = Visible;
+
+	If Not Visible And UT_CodeEditorClientServer.CodeEditorUsesHTMLField(EditorType) Then
+		EditorSettings.Initialized = False;
+	EndIf;
+	
+	
+	Form.Items[EditorSettings.EditorField].Visible = EditorSettings.Visible;
+	
+EndProcedure
+
+// Sets new visibility for a code editor by an editor form item.
+// If a NewVisibility parameter is passed, then the specified visibility is set.
+// If a NewVisibility parameter is not passed, then the editor visibility is switched.
+// 
+// Parameters:
+//  Form - ClientApplicationForm.
+//  Item - FormField - An editor form item.
+//  NewVisibility -  Boolean - (optional) an editor item new visibility.
+// 
+Procedure SwitchFormItemEditorVisibility(Form, Item, NewVisibility = Undefined) Export
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
+	If EditorID = Undefined Then
+		Return;
+	EndIf;
+
+	SwitchEditorVisibility(Form, EditorID, NewVisibility);
+	
+EndProcedure
+
+#EndRegion
 
 Procedure AddCodeEditorContext(Form, EditorID, AddedContext) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
@@ -490,6 +1043,9 @@ Procedure AddCodeEditorContext(Form, EditorID, AddedContext) Export
 	EndIf;
 
 	EditorSettings = FormEditors[EditorID];
+	If Not EditorSettings.Initialized Then
+		Return;
+	EndIf;
 
 	If EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
@@ -542,269 +1098,31 @@ Procedure SaveConfigurationModulesToFiles(CompletionNotifyDescription, CurrentDi
 		NotificationAdditionalParameters));
 
 EndProcedure
-// Return selected text of editor.
-// 
-// Parameters:
-//  Form - ClientApplicationForm -
-//  EditorID - String - ID Of Editor
-// 
-// Return value:
-//  String - Editor selected text
-Function EditorSelectedText(Form, EditorID) Export
-	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Not AllFormEditorsInitialized(FormEditors) Then
-		Return "";
-	EndIf;
-	EditorSettings = FormEditors[EditorID];
-	If Not EditorSettings.Initialized Then
-		Return "";
-	EndIf;
-	CodeText="";
-
-	If EditorType = EditorsTypes.Text Then
-		CodeText = Form.Items[EditorSettings.EditorField].SelectedText;
-	ElsIf EditorType = EditorsTypes.Ace Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.editor.getCopyText();
-	ElsIf EditorType = EditorsTypes.Monaco Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.selectedText();
-	EndIf;
-
-	Return TrimAll(CodeText);
-
-EndFunction
-// Return editor form item selected text 
-// 
-// Parameters:
-//  Form - ClientApplicationForm -
-//  Item - FormField - Editor Item Form
-// 
-// Return 
-//  String - editor selected text 
-Function EditorSelectedTextFormItem(Form, Item) Export
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
-	If EditorID = Undefined Then
-		Return "";
-	EndIf;
-
-	Return EditorSelectedText(Form, EditorID);
-
-EndFunction
-
-Procedure AddCommentsToEditorLines(Form, EditorID) Export
-	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
-
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Not AllFormEditorsInitialized(FormEditors) Then
-		Return;
-	EndIf;
-	EditorSettings = FormEditors[EditorID];
-
-	If EditorType = EditorsTypes.Text Then
-		CodeText = Form[EditorSettings.AttributeName];
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-
-		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
-		Form[EditorSettings.AttributeName] = CodeText;
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Ace Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.editor.getValue();
-
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
-		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
-
-		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
-
-		HTMLDocument.editor.setValue(CodeText, -1);
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
-			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Monaco Then
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.addComment();
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-
-	EndIf;
-
+Procedure InsertQueryEditorMacroColumn(Form, EditorID) Export
+	NotificationParameters = New Structure;
+	NotificationParameters.Insert("Form", Form);
+	NotificationParameters.Insert("EditorID", EditorID);
+	
+	SelectedText = EditorSelectedText(Form, EditorID);
+	FormParameters = New Structure;
+	FormParameters.Insert("QueryColumn", SelectedText);
+	OpenForm("DataProcessor.UT_QueryConsole.Form.MacroColumnChoice", FormParameters, Form, , , ,
+		New NotifyDescription("InsertQueryEditorMacroColumnCompletion", ThisObject, NotificationParameters),
+		FormWindowOpeningMode.LockOwnerWindow);
+	
 EndProcedure
 
-Procedure AddCommentsToEditorLinesFormItem(Form, Item) Export
+Procedure InsertFormItemQueryEditorMacroColumn(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
 		Return;
 	EndIf;
 
-	AddCommentsToEditorLines(Form, EditorID);
+	InsertQueryEditorMacroColumn(Form, EditorID);
+	
 EndProcedure
 
-Procedure DeleteEditorLinesComments(Form, EditorID) Export
-	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
-
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Not AllFormEditorsInitialized(FormEditors) Then
-		Return;
-	EndIf;
-	EditorSettings = FormEditors[EditorID];
-
-	If EditorType = EditorsTypes.Текст Then
-		CodeText = Form[EditorSettings.AttributeName];
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-
-		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
-		Form[EditorSettings.AttributeName] = CodeText;
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Ace Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.editor.getValue();
-
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
-		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
-
-		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "//");
-
-		HTMLDocument.editor.setValue(CodeText, -1);
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
-			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Monaco Then
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.removeComment();
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-
-	EndIf;
-
-EndProcedure
-
-Procedure DeleteEditorLinesCommentsFormItem(Form, Item) Export
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
-	If EditorID = Undefined Then
-		Return;
-	EndIf;
-
-	DeleteEditorLinesComments(Form, EditorID);
-EndProcedure
-Procedure AddEditorLineBreaks(Form, EditorID) Export
-	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
-
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Не AllFormEditorsInitialized(FormEditors) Then
-		Return;
-	EndIf;
-	EditorSettings = FormEditors[EditorID];
-
-	If EditorType = EditorsTypes.Text Then
-		CodeText = Form[EditorSettings.AttributeName];
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-
-		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
-		Form[EditorSettings.AttributeName] = CodeText;
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Ace Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.editor.getValue();
-
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
-		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
-
-		AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
-
-		HTMLDocument.editor.setValue(CodeText, -1);
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
-			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Monaco Then
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.addWordWrap();
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-
-	EndIf;
-
-EndProcedure
-
-Procedure AddEditorLineBreaksFormItem(Form, Item) Export
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
-	If EditorID = Undefined Then
-		Return;
-	EndIf;
-
-	AddEditorLineBreaks(Form, EditorID);
-EndProcedure
-
-Procedure DeleteEditorLineBreaks(Form, EditorID) Export
-	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
-	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
-
-	FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	If Not AllFormEditorsInitialized(FormEditors) Then
-		Return;
-	EndIf;
-	EditorSettings = FormEditors[EditorID];
-
-	If EditorType = EditorsTypes.Текст Then
-		CodeText = Form[EditorSettings.AttributeName];
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-
-		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
-		Form[EditorSettings.AttributeName] = CodeText;
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Ace Then
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.editor.getValue();
-
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		SelectionBorders.RowBeginning= SelectionBorders.RowBeginning + 1;
-		SelectionBorders.RowEnd = SelectionBorders.RowEnd + 1;
-
-		DeleteTextAdditionInLineBeginningBySelectionBorders(CodeText, SelectionBorders, "|");
-
-		HTMLDocument.editor.setValue(CodeText, -1);
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning - 1, SelectionBorders.ColumnBeginning
-			+ 2, SelectionBorders.RowEnd - 1, SelectionBorders.ColumnEnd + 2);
-	ElsIf EditorType = EditorsTypes.Monaco Then
-		SelectionBorders = EditorSelectionBorders(Form, EditorID);
-		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
-		CodeText = HTMLDocument.removeWordWrap();
-
-		SetTextSelectionBorders(Form, EditorID, SelectionBorders.RowBeginning, SelectionBorders.ColumnBeginning + 2,
-			SelectionBorders.RowEnd, SelectionBorders.ColumnEnd + 2);
-
-	EndIf;
-
-EndProcedure
-
-Procedure DeleteEditorLineBreaksFormItem(Form, Item) Export
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
-	If EditorID = Undefined Then
-		Return;
-	EndIf;
-
-	DeleteEditorLineBreaks(Form, EditorID);
-EndProcedure
 #EndRegion
 
 #Region Internal
@@ -1143,6 +1461,67 @@ Procedure SaveConfigurationModulesToFilesEnd(SaveOptions)
 		SaveOptions.Parameters.SourceDirectories);
 EndProcedure
 
+Procedure BeginLoadingCodeTemplatesToEditorsCompletion(Result, AddlParameters) Export
+	If Result.Count()=0 Then
+		Return;
+	EndIf;
+	
+	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(AddlParameters.Form);
+	EditorTypes = UT_CodeEditorClientServer.CodeEditorVariants();
+	FormEditors = AddlParameters.Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
+	
+	If EditorType<>EditorTypes.Monaco Then
+		Return;
+	EndIf;
+	
+	For Each EditorKeyValue In FormEditors Do
+		EditorSettings = EditorKeyValue.Value;
+		If Not EditorSettings.Initialized Then
+			Return;
+		EndIf;
+		EditorFormItem = AddlParameters.Form.Items[EditorSettings.EditorField];
+
+		DocumentView = EditorFormItem.Document.defaultView;
+//		DocumentView.clearSnippets();
+		For Each CurrTemplateText In Result Do
+			DocumentView.parseSnippets(CurrTemplateText, True);
+		EndDo;	
+	EndDo;
+EndProcedure
+
+Procedure BeginReadingCodeTemplateFileCompletion(AdditionalParameters) Export
+	TemplatesText = AdditionalParameters.TextDocument.GetText();
+	AdditionalParameters.TemplatesTexts.Add(TemplatesText);
+	
+	BeginReadingCodeTemplateFile(AdditionalParameters);
+EndProcedure
+
+Procedure BeginReadingCodeTemplateFileCheckingExistenceCompletion(Exists, AdditionalParameters) Export
+
+	If Exists Then
+		Text = New TextDocument();
+		
+		AdditionalParameters.Insert("TextDocument", Text);
+		NotifyDescription = New NotifyDescription("BeginReadingCodeTemplateFileCompletion", ThisObject,
+			AdditionalParameters);
+			
+		Text.BeginReading(NotifyDescription, AdditionalParameters.FileName);
+	Else
+		BeginReadingCodeTemplateFile(AdditionalParameters);
+	EndIf;
+	
+EndProcedure
+
+Procedure InsertQueryEditorMacroColumnCompletion(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	
+	UT_CodeEditorClient.InsertTextInCursorLocation(AdditionalParameters.Form,
+		AdditionalParameters.EditorID, Result);
+	
+EndProcedure
+
 #Region Monaco
 
 Procedure OnEndEditMonacoFormattedString(Text, AdditionalParameters) Export
@@ -1218,6 +1597,47 @@ EndProcedure
 #EndRegion
 
 #Region Private
+
+Procedure BeginLoadingCodeTemplatesToEditors(Form, FormEditors)
+	EditorSettings = Undefined;
+	For Each KeyValue In FormEditors Do
+		EditorSettings = KeyValue.Value.EditorSettings;
+		Break;
+	EndDo;
+	
+	If EditorSettings.Monaco.CodeTemplatesFiles.Count() = 0 Then
+		Return;
+	EndIf;
+	
+	AddlParameters = New Structure;
+	AddlParameters.Insert("CodeTemplatesFiles", EditorSettings.Monaco.CodeTemplatesFiles);
+	AddlParameters.Insert("TemplateTexts", New Array);
+	AddlParameters.Insert("ReadindFileIndex", 0);
+	AddlParameters.Insert("CompletingNotifyDescription",
+		New NotifyDescription("BeginLoadingCodeTemplatesToEditorsCompletion", ThisObject, New Structure("Form",
+		Form)));
+
+	BeginReadingCodeTemplateFile(AddlParameters);
+	
+EndProcedure
+
+Procedure BeginReadingCodeTemplateFile(AdditionalParameters)
+	If AdditionalParameters.CodeTemplatesFiles.Count() <= AdditionalParameters.ReadindFileIndex Then
+		ExecuteNotifyProcessing(AdditionalParameters.CompletingNotifyDescription,
+			AdditionalParameters.TemplateTexts);
+
+		Return;
+	EndIf;
+	
+	ReadingFileName = AdditionalParameters.CodeTemplatesFiles[AdditionalParameters.ReadindFileIndex];
+	AdditionalParameters.Insert("FileName", ReadingFileName);
+	AdditionalParameters.ReadindFileIndex = AdditionalParameters.ReadindFileIndex + 1;
+
+	File = New File(ReadingFileName);
+	File.BeginCheckingExistence(
+		New NotifyDescription("BeginReadingCodeTemplateFileCheckingExistenceCompletion",
+		ThisObject, AdditionalParameters));
+EndProcedure
 
 Procedure AddAdditionToTextAtLineBeginningBySelectionBorders(CodeText, SelectionBorders, Addition)
 	Text = New TextDocument;
@@ -1400,7 +1820,12 @@ Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing
 	
 	DataOfEventForProcessing = Undefined;
 	If Event.event = "EVENT_GET_METADATA" Then
-		DataOfEventForProcessing = Event.params;
+		DataOfEventForProcessing = New Structure;
+		DataOfEventForProcessing.Insert("MetadataName", Event.params.metadata);
+		DataOfEventForProcessing.Insert("EventSource", Event.params.trigger);
+		If DataOfEventForProcessing.EventSource = "snippet" Then
+			DataOfEventForProcessing.Insert("TemplateID", Event.params.snippet_guid);
+		EndIf;
 	ElsIf Event.event = "EVENT_QUERY_CONSTRUCT" Then 
 		QueryParameters = Event.params;
 		DocumentHTMLView = EventData.Document.defaultView;
@@ -1419,7 +1844,8 @@ Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing
 				QueryParameters = DocumentHTMLView.getQuery();
 			Endif;
 
-			If QueryParameters <> Undefined And ValueIsFilled(QueryParameters) Then
+			If QueryParameters <> Undefined And ?(TypeOf(QueryParameters) = Type("String"), ValueIsFilled(
+				QueryParameters), True) Then
 				DataOfEventForProcessing = New Structure;
 				DataOfEventForProcessing.Insert("isQueryMode", False);
 				DataOfEventForProcessing.Insert("startLineNumber", QueryParameters.range.startLineNumber);
@@ -1428,7 +1854,7 @@ Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing
 				DataOfEventForProcessing.Insert("endColumn", QueryParameters.range.endColumn);
 				DataOfEventForProcessing.Insert("text", QueryParameters.text);
 			Endif;
-
+		
 		EndIf;
 		
 	ElsIf Event.event = "EVENT_FORMAT_CONSTRUCT" Then 
@@ -1440,6 +1866,8 @@ Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing
 			DataOfEventForProcessing.Insert("endColumn", Event.params.range.endColumn);
 			DataOfEventForProcessing.Insert("text", Event.params.text);
 		Endif;
+	ElsIf Event.event = "EVENT_GET_DEFINITION" Then 
+		DataOfEventForProcessing = New Structure;
 	Endif;	
 	
 	EventForProcessing.EventData = DataOfEventForProcessing;
@@ -1606,7 +2034,7 @@ Procedure SetModuleDescriptionForMonacoEditorEndFileReading(AdditionalParameters
 
 EndProcedure
 
-Procedure SetMetadataEditorForMonacoEditor(UpdatedMetadataObject, AdditionalParameters)
+Procedure SetMetadataDescriptionForMonacoEditor(UpdatedMetadataObject, AdditionalParameters)
 
 	MetadataNamesArray = StrSplit(UpdatedMetadataObject, ".");
 
@@ -1636,12 +2064,11 @@ Procedure SetMetadataEditorForMonacoEditor(UpdatedMetadataObject, AdditionalPara
 	DocumentView.updateMetadata(UT_CommonClientServer.mWriteJSON(
 			UpdatedData), UpdatedEditorCollection);
 
+	If AdditionalParameters.EventData.EventSource = "snippet" Then
+		DocumentView.updateSnippetByGUID(AdditionalParameters.EventData.TemplateID);
+	EndIf;
 	DocumentView.triggerSuggestions();
 EndProcedure
-
-Function MonacoEditorObjectTypeBy1CObjectType(ObjectType)
-
-EndFunction
 
 Function MonacoEditorTypeBy1CTypeAsString(Type1COrString, ReferenceTypesMap)
 	If ReferenceTypesMap = Undefined Then
