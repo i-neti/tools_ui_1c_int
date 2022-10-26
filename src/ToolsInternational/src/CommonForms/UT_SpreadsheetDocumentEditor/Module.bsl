@@ -1,707 +1,707 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2022, ООО 1С-Софт
-// Все права защищены. Эта программа и сопроводительные материалы предоставляются 
-// в соответствии с условиями лицензии Attribution 4.0 International (CC BY 4.0)
-// Текст лицензии доступен по ссылке:
+// Copyright (c) 2022, 1C-Soft LLC
+// All Rights reserved. This application and supporting materials are provided under the terms of 
+// Attribution 4.0 International license (CC BY 4.0)
+// The license text is available at:
 // https://creativecommons.org/licenses/by/4.0/legalcode
+// Translated by Neti Company
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#Область ОбработчикиСобытийФормы
+#Region EventHandlers
 
-&НаСервере
-Процедура ПриСозданииНаСервере(Отказ, СтандартнаяОбработка)
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
-	Если Параметры.РежимОткрытияОкна <> Неопределено Тогда
-		РежимОткрытияОкна = Параметры.РежимОткрытияОкна;
-	КонецЕсли;
+	If Parameters.WindowOpeningMode <> Undefined Then
+		WindowOpeningMode = Parameters.WindowOpeningMode;
+	EndIf;
 	
-	Если Параметры.ТабличныйДокумент = Неопределено Тогда
-		Если Не ПустаяСтрока(Параметры.ИмяОбъектаМетаданныхМакета) Тогда
-			РедактированиеЗапрещено = Не Параметры.Редактирование;
-			ЗагрузитьТабличныйДокументИзМетаданных(Параметры.КодЯзыка);
-		КонецЕсли;
+	If Parameters.SpreadsheetDocument = Undefined Then
+		If Not IsBlankString(Parameters.TemplateMetadataObjectName) Then
+			EditingDenied = Not Parameters.Edit;
+			LoadSpreadsheetDocumentFromMetadata(Parameters.LanguageCode);
+		EndIf;
 		
-	ИначеЕсли ТипЗнч(Параметры.ТабличныйДокумент) = Тип("ТабличныйДокумент") Тогда
-		ТабличныйДокумент = Параметры.ТабличныйДокумент;
-	Иначе
-		ДвоичныеДанные = ПолучитьИзВременногоХранилища(Параметры.ТабличныйДокумент); // ДвоичныеДанные - 
-		ИмяВременногоФайла = ПолучитьИмяВременногоФайла("mxl");
-		ДвоичныеДанные.Записать(ИмяВременногоФайла);
-		ТабличныйДокумент.Прочитать(ИмяВременногоФайла);
-		УдалитьФайлы(ИмяВременногоФайла);
-	КонецЕсли;
+	ElsIf TypeOf(Parameters.SpreadsheetDocument) = Type("SpreadsheetDocument") Then
+		SpreadsheetDocument = Parameters.SpreadsheetDocument;
+	Else
+		BinaryData = GetFromTempStorage(Parameters.SpreadsheetDocument); // BinaryData - 
+		TempFileName = GetTempFileName("mxl");
+		BinaryData.Write(TempFileName);
+		SpreadsheetDocument.Read(TempFileName);
+		DeleteFiles(TempFileName);
+	EndIf;
 	
-	Элементы.ТабличныйДокумент.Редактирование = Параметры.Редактирование;
-	Элементы.ТабличныйДокумент.ОтображатьГруппировки = Истина;
+	Items.SpreadsheetDocument.Edit = Parameters.Edit;
+	Items.SpreadsheetDocument.ShowGroups = True;
 	
-	ЭтоМакет = Не ПустаяСтрока(Параметры.ИмяОбъектаМетаданныхМакета);
-	Элементы.Предупреждение.Видимость = ЭтоМакет И Параметры.Редактирование;
+	IsTemplate = Not IsBlankString(Parameters.TemplateMetadataObjectName);
+	Items.Warning.Visible = IsTemplate And Parameters.Edit;
 	
-	Элементы.РедактироватьВоВнешнейПрограмме.Видимость = Ложь;
+	Items.EditInExternalApplication.Visible = False;
 	
-	Если Не ПустаяСтрока(Параметры.ИмяДокумента) Тогда
-		ИмяДокумента = Параметры.ИмяДокумента;
-	КонецЕсли;
+	If Not IsBlankString(Parameters.DocumentName) Then
+		DocumentName = Parameters.DocumentName;
+	EndIf;
 	
-	Элементы.ТабличныйДокумент.ОтображатьИменаСтрокИКолонок = ТабличныйДокумент.Макет;
-	Элементы.ТабличныйДокумент.ОтображатьИменаЯчеек = ТабличныйДокумент.Макет;
+	Items.SpreadsheetDocument.ShowRowAndColumnNames = SpreadsheetDocument.Template;
+	Items.SpreadsheetDocument.ShowCellNames = SpreadsheetDocument.Template;
 	
-	Элементы.Перевести.Видимость = ДоступенАвтоматическийПеревод;
+	Items.Translate.Visible = AutoTranslationAvailable;
 	
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПриОткрытии(Отказ)
+&AtClient
+Procedure OnOpen(Cancel)
 	
-	Если Не ПустаяСтрока(Параметры.ПутьКФайлу) Тогда
-		Файл = Новый Файл(Параметры.ПутьКФайлу);
-		Если ПустаяСтрока(ИмяДокумента) Тогда
-			ИмяДокумента = Файл.ИмяБезРасширения;
-		КонецЕсли;
-		Файл.НачатьПолучениеТолькоЧтения(Новый ОписаниеОповещения("ПриЗавершенииПолученияТолькоЧтения", ЭтотОбъект));
-		Возврат;
-	КонецЕсли;
+	If Not IsBlankString(Parameters.FilePath) Then
+		File = New File(Parameters.FilePath);
+		If IsBlankString(DocumentName) Then
+			DocumentName = File.BaseName;
+		EndIf;
+		File.BeginGettingReadOnly(New NotifyDescription("OnCompleteGettingReadOnly", ThisObject));
+		Return;
+	EndIf;
 	
-	УстановитьНачальныеНастройкиФормы();
+	SetInitialFormSettings();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПередЗакрытием(Отказ, ЗавершениеРаботы, ТекстПредупреждения, СтандартнаяОбработка)
+&AtClient
+Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
 	
-	ОписаниеОповещения = Новый ОписаниеОповещения("ПодтвердитьИЗакрыть", ЭтотОбъект);
-	ТекстВопроса = УИ_СтроковыеФункцииКлиентСервер.ПодставитьПараметрыВСтроку(НСтр("ru = 'Сохранить изменения в %1?'"), ИмяДокумента);
-	УИ_ОбщегоНазначенияКлиент.ПоказатьВопросПользователю(ОписаниеОповещения, ТекстВопроса , РежимДиалогаВопрос.ДаНет);
+	NotifyDescription = New NotifyDescription("ConfirmAndClose", ThisObject);
+	QuestionText = UT_StringFunctionsClientServer.SubstituteParametersToString(NStr("ru = 'Сохранить изменения в %1?'; en = 'Do you want to save the changes you made to %1?'"), DocumentName);
+	UT_CommonClient.ShowQuestionToUser(NotifyDescription, QuestionText , QuestionDialogMode.YesNo);
 	
-	Если Модифицированность Или ЗавершениеРаботы Тогда
-		Возврат;
-	КонецЕсли;
+	If Modified Or Exit Then
+		Return;
+	EndIf;
 	
-	ОповеститьОЗаписиТабличногоДокумента();
+	NotifyWritingSpreadsheetDocument();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПодтвердитьИЗакрыть(Результат = Неопределено, ДополнительныеПараметры = Неопределено) Экспорт
-	Если Результат <> Неопределено И Результат <> КодВозвратаДиалога.Да Тогда
-		Возврат;
-	КонецЕсли;
-	ОписаниеОповещения = Новый ОписаниеОповещения("ЗакрытьФормуПослеЗаписиТабличногоДокумента", ЭтотОбъект);
-	ЗаписатьТабличныйДокумент(ОписаниеОповещения);
-КонецПроцедуры
+&AtClient
+Procedure ConfirmAndClose(Result = Undefined, AdditionalParameters = Undefined) Export
+	If Result <> Undefined And Result <> DialogReturnCode.Yes Then
+		Return;
+	EndIf;
+	NotifyDescription = New NotifyDescription("CloseFormAfterWriteSpreadsheetDocument", ThisObject);
+	WriteSpreadsheetDocument(NotifyDescription);
+EndProcedure
 
-&НаКлиенте
-Процедура ОбработкаОповещения(ИмяСобытия, Параметр, Источник)
-	Если ИмяСобытия = "ЗапросИменРедактируемыхТабличныхДокументов" И Источник <> ЭтотОбъект Тогда
-		ИменаДокументов = Параметр; // Массив -
-		ИменаДокументов.Добавить(ИмяДокумента);
-	ИначеЕсли ИмяСобытия = "ЗакрытиеФормыВладельца" И Источник = ВладелецФормы Тогда
-		Закрыть();
-		Если Открыта() Тогда
-			Параметр.Отказ = Истина;
-		КонецЕсли;
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure NotificationProcessing(EventName, Parameter, Source)
+	If EventName = "EditedSpreadsheetDocumentNamesRequest" And Source <> ThisObject Then
+		DocumentNames = Parameter; // Array -
+		DocumentNames.Add(DocumentName);
+	ElsIf EventName = "OwnerFormClosing" And Source = FormOwner Then
+		Close();
+		If IsOpen() Then
+			Parameter.Cancel = True;
+		EndIf;
+	EndIf;
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиСобытийЭлементовШапкиФормы
+#Region FormHeaderItemsEventHandlers
 
-&НаКлиенте
-Процедура ТабличныйДокументПриАктивизации(Элемент)
-	ОбновитьПометкиКнопокКоманднойПанели();
-	СинхронизироватьОбластьПросмотраМакетов();
-КонецПроцедуры
+&AtClient
+Procedure SpreadsheetDocumentOnActivate(Item)
+	UpdateCommandBarButtonMarks();
+	SynchronizeTemplateViewArea();
+EndProcedure
 
-&НаКлиенте
-Процедура ПоставляемыйМакетПриАктивизации(Элемент)
+&AtClient
+Procedure DistributedTemplateOnActivate(Item)
 	
-	СинхронизироватьОбластьПросмотраМакетов();
+	SynchronizeTemplateViewArea();
 	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиКомандФормы
+#Region FormCommandHandlers
 
-// Действия с документом
+// Document actions
 
-&НаКлиенте
-Процедура ЗаписатьИЗакрыть(Команда)
-	ОписаниеОповещения = Новый ОписаниеОповещения("ЗакрытьФормуПослеЗаписиТабличногоДокумента", ЭтотОбъект);
-	ЗаписатьТабличныйДокумент(ОписаниеОповещения);
-КонецПроцедуры
+&AtClient
+Procedure WriteAndClose(Command)
+	NotifyDescription = New NotifyDescription("CloseFormAfterWriteSpreadsheetDocument", ThisObject);
+	WriteSpreadsheetDocument(NotifyDescription);
+EndProcedure
 
-&НаКлиенте
-Процедура Записать(Команда)
-	ЗаписатьТабличныйДокумент();
-	ОповеститьОЗаписиТабличногоДокумента();
-КонецПроцедуры
+&AtClient
+Procedure Write(Command)
+	WriteSpreadsheetDocument();
+	NotifyWritingSpreadsheetDocument();
+EndProcedure
 
-&НаКлиенте
-Процедура Редактирование(Команда)
-	Элементы.ТабличныйДокумент.Редактирование = Не Элементы.ТабличныйДокумент.Редактирование;
-	НастроитьПредставлениеКоманд();
-	НастроитьОтображениеТабличногоДокумента();
-КонецПроцедуры
+&AtClient
+Procedure Edit(Command)
+	Items.SpreadsheetDocument.Edit = Not Items.SpreadsheetDocument.Edit;
+	SetUpCommandPresentation();
+	SetUpSpreadsheetDocumentRepresentation();
+EndProcedure
 
-&НаКлиенте
-Процедура РедактироватьВоВнешнейПрограмме(Команда)
-//	Если ОбщегоНазначенияКлиент.ПодсистемаСуществует("СтандартныеПодсистемы.Печать") Тогда
-//		ПараметрыОткрытия = Новый Структура;
-//		ПараметрыОткрытия.Вставить("ТабличныйДокумент", ТабличныйДокумент);
-//		ПараметрыОткрытия.Вставить("ИмяОбъектаМетаданныхМакета", Параметры.ИмяОбъектаМетаданныхМакета);
-//		ПараметрыОткрытия.Вставить("ТипМакета", "MXL");
-//		ОписаниеОповещения = Новый ОписаниеОповещения("РедактироватьВоВнешнейПрограммеЗавершение", ЭтотОбъект);
-//		МодульУправлениеПечатьюКлиент = ОбщегоНазначенияКлиент.ОбщийМодуль("УправлениеПечатьюКлиент");
-//		МодульУправлениеПечатьюКлиент.РедактироватьМакетВоВнешнейПрограмме(ОписаниеОповещения, ПараметрыОткрытия, ЭтотОбъект);
-//	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure EditInExternalApplication(Command)
+//	If CommonClient.SubsystemExists("StandardSubsystems.Print") Then
+//		OpeningParameters = New Structure;
+//		OpeningParameters.Insert("SpreadsheetDocument", SpreadsheetDocument);
+//		OpeningParameters.Insert("TemplateMetadataObjectName", Parameters.TemplateMetadataObjectName);
+//		OpeningParameters.Insert("TemplateType", "MXL");
+//		NotifyDescription = New NotifyDescription("EditInExternalApplicationCompletion", ThisObject);
+//		PrintManagementClientModule = CommonClient.CommonModule("PrintManagementClient");
+//		PrintManagementClientModule.EditTemplateInExternalApplication(NotifyDescription, OpeningParameters, ThisObject);
+//	EndIf;
+EndProcedure
 
-// Форматирование
+// Format
 
-&НаКлиенте
-Процедура УвеличитьРазмерШрифта(Команда)
+&AtClient
+Procedure IncreaseFontSize(Command)
 	
-	Для Каждого Область Из СписокОбластейДляИзмененияШрифта() Цикл
-		Размер = Область.Шрифт.Размер;
-		Размер = Размер + ШагИзмененияРазмераШрифтаУвеличение(Размер);
-		Область.Шрифт = Новый Шрифт(Область.Шрифт,,Размер); // АПК:1345 - Применение стиля не требуется.
-	КонецЦикла;
+	For Each Area In AreaListForChangingFont() Do
+		Size = Area.Font.Size;
+		Size = Size + IncreaseFontSizeChangeStep(Size);
+		Area.Font = New Font(Area.Font,,Size);
+	EndDo;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура УменьшитьРазмерШрифта(Команда)
+&AtClient
+Procedure DecreaseFontSize(Command)
 	
-	Для Каждого Область Из СписокОбластейДляИзмененияШрифта() Цикл
-		Размер = Область.Шрифт.Размер;
-		Размер = Размер - ШагИзмененияРазмераШрифтаУменьшение(Размер);
-		Если Размер < 1 Тогда
-			Размер = 1;
-		КонецЕсли;
-		Область.Шрифт = Новый Шрифт(Область.Шрифт,,Размер); // АПК:1345 - Применение стиля не требуется.
-	КонецЦикла;
+	For Each Area In AreaListForChangingFont() Do
+		Size = Area.Font.Size;
+		Size = Size - DecreaseFontSizeChangeStep(Size);
+		If Size < 1 Then
+			Size = 1;
+		EndIf;
+		Area.Font = New Font(Area.Font,,Size);
+	EndDo;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура Зачеркивание(Команда)
+&AtClient
+Procedure Strikeout(Command)
 	
-	УстанавливаемоеЗначение = Неопределено;
-	Для Каждого Область Из СписокОбластейДляИзмененияШрифта() Цикл
-		Если УстанавливаемоеЗначение = Неопределено Тогда
-			УстанавливаемоеЗначение = Не Область.Шрифт.Зачеркивание = Истина;
-		КонецЕсли;
-		Область.Шрифт = Новый Шрифт(Область.Шрифт,,,,,,УстанавливаемоеЗначение); // АПК:1345 - Применение стиля не требуется.
-	КонецЦикла;
+	ValueToSet = Undefined;
+	For Each Area In AreaListForChangingFont() Do
+		If ValueToSet = Undefined Then
+			ValueToSet = Not Area.Font.Strikeout = True;
+		EndIf;
+		Area.Font = New Font(Area.Font,,,,,,ValueToSet);
+	EndDo;
 	
-	ОбновитьПометкиКнопокКоманднойПанели();
+	UpdateCommandBarButtonMarks();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура Перевести(Команда)
+&AtClient
+Procedure Translate(Command)
 	
-	ТекстВопроса = СтроковыеФункцииКлиентСервер.ПодставитьПараметрыВСтроку(
-		НСтр("ru = 'Выполнить автоматический перевод на %1 язык?'"), Элементы.Язык.Заголовок);
-	Кнопки = Новый СписокЗначений;
-	Кнопки.Добавить(КодВозвратаДиалога.Да, НСтр("ru = 'Выполнить перевод'"));
-	Кнопки.Добавить(КодВозвратаДиалога.Нет, НСтр("ru = 'Не выполнять'"));
+	QuestionText = UT_StringFunctionsClientServer.SubstituteParametersToString(
+		NStr("ru = 'Выполнить автоматический перевод на %1 язык?'; en = 'Do you want to automatically translate this template to %1 language?'"), Items.Language.Title);
+	Buttons = New ValueList;
+	Buttons.Add(DialogReturnCode.Yes, NStr("ru = 'Выполнить перевод'; en = 'Translate'"));
+	Buttons.Add(DialogReturnCode.No, NStr("ru = 'Не выполнять'; en = 'Do not translate'"));
 	
-	ОписаниеОповещения = Новый ОписаниеОповещения("ПриОтветеНаВопросОПереводеМакета", ЭтотОбъект);
-	ПоказатьВопрос(ОписаниеОповещения, ТекстВопроса, Кнопки);
+	NotifyDescription = New NotifyDescription("OnAnswerTemplateTranslationQuestion", ThisObject);
+	ShowQueryBox(NotifyDescription, QuestionText, Buttons);
 	
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
 
-#Область СлужебныеПроцедурыИФункции
+#Region Private
 
-&НаСервере
-Процедура ЗагрузитьТабличныйДокументИзМетаданных(Знач КодЯзыка = Неопределено)
+&AtServer
+Procedure LoadSpreadsheetDocumentFromMetadata(Val LanguageCode = Undefined)
 	
-	ТребуетсяПеревод = Ложь;
+	TranslationRequired = False;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура НастроитьОтображениеТабличногоДокумента()
-	Элементы.ТабличныйДокумент.ОтображатьЗаголовки = Элементы.ТабличныйДокумент.Редактирование;
-	Элементы.ТабличныйДокумент.ОтображатьСетку = Элементы.ТабличныйДокумент.Редактирование;
-КонецПроцедуры
+&AtClient
+Procedure SetUpSpreadsheetDocumentRepresentation()
+	Items.SpreadsheetDocument.ShowHeaders = Items.SpreadsheetDocument.Edit;
+	Items.SpreadsheetDocument.ShowGrid = Items.SpreadsheetDocument.Edit;
+EndProcedure
 
-&НаКлиенте
-Процедура ОбновитьПометкиКнопокКоманднойПанели();
+&AtClient
+Procedure UpdateCommandBarButtonMarks();
 	
-#Если Не ВебКлиент И НЕ МобильныйКлиент Тогда
-	Область = Элементы.ТабличныйДокумент.ТекущаяОбласть;
-	Если ТипЗнч(Область) <> Тип("ОбластьЯчеекТабличногоДокумента") Тогда
-		Возврат;
-	КонецЕсли;
+#If Not WebClient And Not MobileClient Then
+	Area = Items.SpreadsheetDocument.CurrentArea;
+	If TypeOf(Area) <> Type("SpreadsheetDocumentRange") Then
+		Return;
+	EndIf;
 	
-	// Шрифт
-	Шрифт = Область.Шрифт;
-	Элементы.ТабличныйДокументЖирный.Пометка = Шрифт <> Неопределено И Шрифт.Полужирный = Истина;
-	Элементы.ТабличныйДокументНаклонный.Пометка = Шрифт <> Неопределено И Шрифт.Наклонный = Истина;
-	Элементы.ТабличныйДокументПодчеркивание.Пометка = Шрифт <> Неопределено И Шрифт.Подчеркивание = Истина;
-	Элементы.Зачеркивание.Пометка = Шрифт <> Неопределено И Шрифт.Зачеркивание = Истина;
+	// Font
+	Font = Area.Font;
+	Items.SpreadsheetDocumentBold.Check = Font <> Undefined AND Font.Bold = True;
+	Items.SpreadsheetDocumentItalic.Check = Font <> Undefined AND Font.Italic = True;
+	Items.SpreadsheetDocumentUnderline.Check = Font <> Undefined AND Font.Underline = True;
+	Items.Strikeout.Check = Font <> Undefined AND Font.Strikeout = True;
 	
-	// Горизонтальное положение
-	Элементы.ТабличныйДокументВыровнятьВлево.Пометка = Область.ГоризонтальноеПоложение = ГоризонтальноеПоложение.Лево;
-	Элементы.ТабличныйДокументВыровнятьПоЦентру.Пометка = Область.ГоризонтальноеПоложение = ГоризонтальноеПоложение.Центр;
-	Элементы.ТабличныйДокументВыровнятьВправо.Пометка = Область.ГоризонтальноеПоложение = ГоризонтальноеПоложение.Право;
-	Элементы.ТабличныйДокументВыровнятьПоШирине.Пометка = Область.ГоризонтальноеПоложение = ГоризонтальноеПоложение.ПоШирине;
+	// Horizontal alighment
+	Items.SpreadsheetDocumentAlignLeft.Check = Area.HorizontalAlign = HorizontalAlign.Left;
+	Items.SpreadsheetDocumentAlignCenter.Check = Area.HorizontalAlign = HorizontalAlign.Center;
+	Items.SpreadsheetDocumentAlignRight.Check = Area.HorizontalAlign = HorizontalAlign.Right;
+	Items.SpreadsheetDocumentJustify.Check = Area.HorizontalAlign = HorizontalAlign.Justify;
 	
-#КонецЕсли
+#EndIf
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Функция ШагИзмененияРазмераШрифтаУвеличение(Размер)
-	Если Размер = -1 Тогда
-		Возврат 10;
-	КонецЕсли;
+&AtClient
+Function IncreaseFontSizeChangeStep(Size)
+	If Size = -1 Then
+		Return 10;
+	EndIf;
 	
-	Если Размер < 10 Тогда
-		Возврат 1;
-	ИначеЕсли 10 <= Размер И  Размер < 20 Тогда
-		Возврат 2;
-	ИначеЕсли 20 <= Размер И  Размер < 48 Тогда
-		Возврат 4;
-	ИначеЕсли 48 <= Размер И  Размер < 72 Тогда
-		Возврат 6;
-	ИначеЕсли 72 <= Размер И  Размер < 96 Тогда
-		Возврат 8;
-	Иначе
-		Возврат Окр(Размер / 10);
-	КонецЕсли;
-КонецФункции
+	If Size < 10 Then
+		Return 1;
+	ElsIf 10 <= Size And  Size < 20 Then
+		Return 2;
+	ElsIf 20 <= Size And  Size < 48 Then
+		Return 4;
+	ElsIf 48 <= Size And  Size < 72 Then
+		Return 6;
+	ElsIf 72 <= Size And  Size < 96 Then
+		Return 8;
+	Else
+		Return Round(Size / 10);
+	EndIf;
+EndFunction
 
-&НаКлиенте
-Функция ШагИзмененияРазмераШрифтаУменьшение(Размер)
-	Если Размер = -1 Тогда
-		Возврат -8;
-	КонецЕсли;
+&AtClient
+Function DecreaseFontSizeChangeStep(Size)
+	If Size = -1 Then
+		Return -8;
+	EndIf;
 	
-	Если Размер <= 11 Тогда
-		Возврат 1;
-	ИначеЕсли 11 < Размер И Размер <= 23 Тогда
-		Возврат 2;
-	ИначеЕсли 23 < Размер И Размер <= 53 Тогда
-		Возврат 4;
-	ИначеЕсли 53 < Размер И Размер <= 79 Тогда
-		Возврат 6;
-	ИначеЕсли 79 < Размер И Размер <= 105 Тогда
-		Возврат 8;
-	Иначе
-		Возврат Окр(Размер / 11);
-	КонецЕсли;
-КонецФункции
+	If Size <= 11 Then
+		Return 1;
+	ElsIf 11 < Size And Size <= 23 Then
+		Return 2;
+	ElsIf 23 < Size And Size <= 53 Then
+		Return 4;
+	ElsIf 53 < Size And Size <= 79 Then
+		Return 6;
+	ElsIf 79 < Size And Size <= 105 Then
+		Return 8;
+	Else
+		Return Round(Size / 11);
+	EndIf;
+EndFunction
 
-// Возвращаемое значение:
-//   Массив из ОбластьЯчеекТабличногоДокумента
+// Returns:
+//   - Array of SpreadsheetDocumentRange
 //
-&НаКлиенте
-Функция СписокОбластейДляИзмененияШрифта()
+&AtClient
+Function AreaListForChangingFont()
 	
-	Результат = Новый Массив;
+	Result = New Array;
 	
-	Для Каждого ОбрабатываемаяОбласть Из Элементы.ТабличныйДокумент.ПолучитьВыделенныеОбласти() Цикл
-		Если ОбрабатываемаяОбласть.Шрифт <> Неопределено Тогда
-			Результат.Добавить(ОбрабатываемаяОбласть);
-			Продолжить;
-		КонецЕсли;
+	For Each AreaToProcess In Items.SpreadsheetDocument.GetSelectedAreas() Do
+		If AreaToProcess.Font <> Undefined Then
+			Result.Add(AreaToProcess);
+			Continue;
+		EndIf;
 		
-		ОбрабатываемаяОбластьВерх = ОбрабатываемаяОбласть.Верх;
-		ОбрабатываемаяОбластьНиз = ОбрабатываемаяОбласть.Низ;
-		ОбрабатываемаяОбластьЛево = ОбрабатываемаяОбласть.Лево;
-		ОбрабатываемаяОбластьПраво = ОбрабатываемаяОбласть.Право;
+		AreaToProcessTop = AreaToProcess.Top;
+		AreaToProcessBottom = AreaToProcess.Bottom;
+		AreaToProcessLeft = AreaToProcess.Left;
+		AreaToProcessRight = AreaToProcess.Right;
 		
-		Если ОбрабатываемаяОбластьВерх = 0 Тогда
-			ОбрабатываемаяОбластьВерх = 1;
-		КонецЕсли;
+		If AreaToProcessTop = 0 Then
+			AreaToProcessTop = 1;
+		EndIf;
 		
-		Если ОбрабатываемаяОбластьНиз = 0 Тогда
-			ОбрабатываемаяОбластьНиз = ТабличныйДокумент.ВысотаТаблицы;
-		КонецЕсли;
+		If AreaToProcessBottom = 0 Then
+			AreaToProcessBottom = SpreadsheetDocument.TableHeight;
+		EndIf;
 		
-		Если ОбрабатываемаяОбластьЛево = 0 Тогда
-			ОбрабатываемаяОбластьЛево = 1;
-		КонецЕсли;
+		If AreaToProcessLeft = 0 Then
+			AreaToProcessLeft = 1;
+		EndIf;
 		
-		Если ОбрабатываемаяОбластьПраво = 0 Тогда
-			ОбрабатываемаяОбластьПраво = ТабличныйДокумент.ШиринаТаблицы;
-		КонецЕсли;
+		If AreaToProcessRight = 0 Then
+			AreaToProcessRight = SpreadsheetDocument.TableWidth;
+		EndIf;
 		
-		Если ОбрабатываемаяОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Колонки Тогда
-			ОбрабатываемаяОбластьВерх = ОбрабатываемаяОбласть.Низ;
-			ОбрабатываемаяОбластьНиз = ТабличныйДокумент.ВысотаТаблицы;
-		КонецЕсли;
+		If AreaToProcess.AreaType = SpreadsheetDocumentCellAreaType.Columns Then
+			AreaToProcessTop = AreaToProcess.Bottom;
+			AreaToProcessBottom = SpreadsheetDocument.TableHeight;
+		EndIf;
 			
-		Для НомерКолонки = ОбрабатываемаяОбластьЛево По ОбрабатываемаяОбластьПраво Цикл
-			ШиринаКолонки = Неопределено;
-			Для НомерСтроки = ОбрабатываемаяОбластьВерх По ОбрабатываемаяОбластьНиз Цикл
-				Ячейка = ТабличныйДокумент.Область(НомерСтроки, НомерКолонки, НомерСтроки, НомерКолонки);
-				Если ОбрабатываемаяОбласть.ТипОбласти = ТипОбластиЯчеекТабличногоДокумента.Колонки Тогда
-					Если ШиринаКолонки = Неопределено Тогда
-						ШиринаКолонки = Ячейка.ШиринаКолонки;
-					КонецЕсли;
-					Если Ячейка.ШиринаКолонки <> ШиринаКолонки Тогда
-						Продолжить;
-					КонецЕсли;
-				КонецЕсли;
-				Если Ячейка.Шрифт <> Неопределено Тогда
-					Результат.Добавить(Ячейка);
-				КонецЕсли;
-			КонецЦикла;
-		КонецЦикла;
-	КонецЦикла;
+		For ColumnNumber = AreaToProcessLeft To AreaToProcessRight Do
+			ColumnWidth = Undefined;
+			For RowNumber = AreaToProcessTop To AreaToProcessBottom Do
+				Cell = SpreadsheetDocument.Area(RowNumber, ColumnNumber, RowNumber, ColumnNumber);
+				If AreaToProcess.AreaType = SpreadsheetDocumentCellAreaType.Columns Then
+					If ColumnWidth = Undefined Then
+						ColumnWidth = Cell.ColumnWidth;
+					EndIf;
+					If Cell.ColumnWidth <> ColumnWidth Then
+						Continue;
+					EndIf;
+				EndIf;
+				If Cell.Font <> Undefined Then
+					Result.Add(Cell);
+				EndIf;
+			EndDo;
+		EndDo;
+	EndDo;
 	
-	Возврат Результат;
+	Return Result;
 	
-КонецФункции
+EndFunction
 
-&НаКлиенте
-Процедура ЗакрытьФормуПослеЗаписиТабличногоДокумента(Закрывать, ДополнительныеПараметры) Экспорт
-	Если Закрывать Тогда
-		Закрыть();
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure CloseFormAfterWriteSpreadsheetDocument(Close, AdditionalParameters) Export
+	If Close Then
+		Close();
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура ЗаписатьТабличныйДокумент(ОбработчикЗавершения = Неопределено)
+&AtClient
+Procedure WriteSpreadsheetDocument(CompletionHandler = Undefined)
 	
-	Если ЭтоНовый() Или РедактированиеЗапрещено Тогда
-		НачатьДиалогСохраненияФайла(ОбработчикЗавершения);
-		Возврат;
-	КонецЕсли;
+	If IsNew() Or EditingDenied Then
+		StartFileSavingDialog(CompletionHandler);
+		Return;
+	EndIf;
 		
-	ЗаписатьТабличныйДокументИмяФайлаВыбрано(ОбработчикЗавершения);
+	WriteSpreadsheetDocumentFileNameSelected(CompletionHandler);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ЗаписатьТабличныйДокументИмяФайлаВыбрано(Знач ОбработчикЗавершения)
-	Если Не ПустаяСтрока(Параметры.ПутьКФайлу) Тогда
-		ТабличныйДокумент.НачатьЗапись(
-			Новый ОписаниеОповещения("ОбработатьРезультатЗаписиТабличногоДокумента", ЭтотОбъект, ОбработчикЗавершения),
-			Параметры.ПутьКФайлу);
-	Иначе
-		ПослеЗаписиТабличногоДокумента(ОбработчикЗавершения);
-	КонецЕсли;
-КонецПроцедуры
+&AtClient
+Procedure WriteSpreadsheetDocumentFileNameSelected(Val CompletionHandler)
+	If Not IsBlankString(Parameters.FilePath) Then
+		SpreadsheetDocument.BeginWriting(
+			New NotifyDescription("ProcessSpreadsheetDocumentWritingResult", ThisObject, CompletionHandler),
+			Parameters.FilePath);
+	Else
+		AfterWriteSpreadsheetDocument(CompletionHandler);
+	EndIf;
+EndProcedure
 
-&НаКлиенте
-Процедура ОбработатьРезультатЗаписиТабличногоДокумента(Результат, ОбработчикЗавершения) Экспорт 
-	Если Результат <> Истина Тогда 
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure ProcessSpreadsheetDocumentWritingResult(Result, CompletionHandler) Export 
+	If Result <> True Then 
+		Return;
+	EndIf;
 	
-	РедактированиеЗапрещено = Ложь;
-	ПослеЗаписиТабличногоДокумента(ОбработчикЗавершения);
-КонецПроцедуры
+	EditingDenied = False;
+	AfterWriteSpreadsheetDocument(CompletionHandler);
+EndProcedure
 
-&НаКлиенте
-Процедура ПослеЗаписиТабличногоДокумента(ОбработчикЗавершения)
-	ЗаписьВыполнена = Истина;
-	Модифицированность = Ложь;
-	УстановитьЗаголовок();
+&AtClient
+Procedure AfterWriteSpreadsheetDocument(CompletionHandler)
+	WritingCompleted = True;
+	Modified = False;
+	SetTitle();
 	
-	ВыполнитьОбработкуОповещения(ОбработчикЗавершения, Истина);
-КонецПроцедуры
+	ExecuteNotifyProcessing(CompletionHandler, True);
+EndProcedure
 
-&НаКлиенте
-Процедура НачатьДиалогСохраненияФайла(Знач ОбработчикЗавершения)
+&AtClient
+Procedure StartFileSavingDialog(Val CompletionHandler)
 	
-	Перем ДиалогСохраненияФайла, ОписаниеОповещения;
+	Var SaveFileDialog;
 	
-	ДиалогСохраненияФайла = Новый ДиалогВыбораФайла(РежимДиалогаВыбораФайла.Сохранение);
-	ДиалогСохраненияФайла.ПолноеИмяФайла = УИ_ОбщегоНазначенияКлиентСервер.ЗаменитьНедопустимыеСимволыВИмениФайла(
-		ИмяДокумента);
-	ДиалогСохраненияФайла.Фильтр = НСтр("ru = 'Табличный документ'") + " (*.mxl)|*.mxl";
+	SaveFileDialog = New FileDialog(FileDialogMode.Save);
+	SaveFileDialog.FullFileName = UT_CommonClientServer.ReplaceProhibitedCharsInFileName(
+		DocumentName);
+	SaveFileDialog.Filter = NStr("ru = 'Табличный документ'; en = 'Spreadsheet documents'") + " (*.mxl)|*.mxl";
+	SaveFileDialog.Show(CompletionHandler);
 	
-	ОписаниеОповещения = Новый ОписаниеОповещения("ПриЗавершенииДиалогаВыбораФайла", ЭтотОбъект, ОбработчикЗавершения);
-	ФайловаяСистемаКлиент.ПоказатьДиалогВыбора(ОписаниеОповещения, ДиалогСохраненияФайла);
-	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПриЗавершенииДиалогаВыбораФайла(ВыбранныеФайлы, ОбработчикЗавершения) Экспорт
+&AtClient
+Procedure OnCompleteFileSelectionDialog(SelectedFiles, CompletionHandler) Export
 	
-	Если ВыбранныеФайлы = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+	If SelectedFiles = Undefined Then
+		Return;
+	EndIf;
 	
-	ПолноеИмяФайла = ВыбранныеФайлы[0];
+	FullFileName = SelectedFiles[0];
 	
-	Параметры.ПутьКФайлу = ПолноеИмяФайла;
-	ИмяДокумента = Сред(ПолноеИмяФайла, СтрДлина(ОписаниеФайла(ПолноеИмяФайла).Путь) + 1);
-	Если НРег(Прав(ИмяДокумента, 4)) = ".mxl" Тогда
-		ИмяДокумента = Лев(ИмяДокумента, СтрДлина(ИмяДокумента) - 4);
-	КонецЕсли;
+	Parameters.FilePath = FullFileName;
+	DocumentName = Mid(FullFileName, StrLen(FileDetails(FullFileName).Path) + 1);
+	If Lower(Right(DocumentName, 4)) = ".mxl" Then
+		DocumentName = Left(DocumentName, StrLen(DocumentName) - 4);
+	EndIf;
 	
-	ЗаписатьТабличныйДокументИмяФайлаВыбрано(ОбработчикЗавершения);
+	WriteSpreadsheetDocumentFileNameSelected(CompletionHandler);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Функция ОписаниеФайла(ПолноеИмя)
+&AtClient
+Function FileDetails(FullName)
 	
-	ПозицияРазделителя = СтрНайти(ПолноеИмя, ПолучитьРазделительПути(), НаправлениеПоиска.СКонца);
+	SeparatorPosition = StrFind(FullName, GetPathSeparator(), SearchDirection.FromEnd);
 	
-	Имя = Сред(ПолноеИмя, ПозицияРазделителя + 1);
-	Путь = Лев(ПолноеИмя, ПозицияРазделителя);
+	Name = Mid(FullName, SeparatorPosition + 1);
+	Path = Left(FullName, SeparatorPosition);
 	
-	ПозицияРасширения = СтрНайти(Имя, ".", НаправлениеПоиска.СКонца);
+	ExtensionPosition = StrFind(Name, ".", SearchDirection.FromEnd);
 	
-	ИмяБезРасширения = Лев(Имя, ПозицияРасширения - 1);
-	Расширение = Сред(Имя, ПозицияРасширения + 1);
+	NameWithoutExtension = Left(Name, ExtensionPosition - 1);
+	Extension = Mid(Name, ExtensionPosition + 1);
 	
-	Результат = Новый Структура;
-	Результат.Вставить("ПолноеИмя", ПолноеИмя);
-	Результат.Вставить("Имя", Имя);
-	Результат.Вставить("Путь", Путь);
-	Результат.Вставить("ИмяБезРасширения", ИмяБезРасширения);
-	Результат.Вставить("Расширение", Расширение);
+	Result = New Structure;
+	Result.Insert("FullName", FullName);
+	Result.Insert("Name", Name);
+	Result.Insert("Path", Path);
+	Result.Insert("BaseName", NameWithoutExtension);
+	Result.Insert("Extension", Extension);
 	
-	Возврат Результат;
+	Return Result;
 	
-КонецФункции
+EndFunction
 	
-&НаКлиенте
-Функция ИмяНовогоДокумента()
-	Возврат НСтр("ru = 'Новый'");
-КонецФункции
+&AtClient
+Function NewDocumentName()
+	Return NStr("ru = 'Новый'; en = 'New'");
+EndFunction
 
-&НаКлиенте
-Процедура УстановитьЗаголовок()
+&AtClient
+Procedure SetTitle()
 	
-	Заголовок = ИмяДокумента;
-	Если ЭтоНовый() Тогда
-		Заголовок = Заголовок + " (" + НСтр("ru = 'создание'") + ")";
-	ИначеЕсли РедактированиеЗапрещено Тогда
-		Заголовок = Заголовок + " (" + НСтр("ru = 'только просмотр'") + ")";
-	КонецЕсли;
+	Title = DocumentName;
+	If IsNew() Then
+		Title = Title + " (" + NStr("ru = 'создание'; en = 'create'") + ")";
+	ElsIf EditingDenied Then
+		Title = Title + " (" + NStr("ru = 'только просмотр'; en = 'read-only'") + ")";
+	EndIf;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура НастроитьПредставлениеКоманд()
+&AtClient
+Procedure SetUpCommandPresentation()
 	
-	ДокументРедактируется = Элементы.ТабличныйДокумент.Редактирование;
-	Элементы.Редактирование.Пометка = ДокументРедактируется;
-	Элементы.КомандыРедактирования.Доступность = ДокументРедактируется;
-	Элементы.ЗаписатьИЗакрыть.Доступность = ДокументРедактируется Или Модифицированность;
-	Элементы.Записать.Доступность = ДокументРедактируется Или Модифицированность;
+	DocumentCanEdit = Items.SpreadsheetDocument.Edit;
+	Items.Edit.Check = DocumentCanEdit;
+	Items.EditingCommands.Enabled = DocumentCanEdit;
+	Items.WriteAndClose.Enabled = DocumentCanEdit Or Modified;
+	Items.Write.Enabled = DocumentCanEdit Or Modified;
 	
-	Если ДокументРедактируется И Не ПустаяСтрока(Параметры.ИмяОбъектаМетаданныхМакета) Тогда
-		Элементы.Предупреждение.Видимость = Истина;
-	КонецЕсли;
+	If DocumentCanEdit And Not IsBlankString(Parameters.TemplateMetadataObjectName) Then
+		Items.Warning.Visible = True;
+	EndIf;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Функция ЭтоНовый()
-	Возврат ПустаяСтрока(Параметры.ИмяОбъектаМетаданныхМакета) И ПустаяСтрока(Параметры.ПутьКФайлу);
-КонецФункции
+&AtClient
+Function IsNew()
+	Return IsBlankString(Parameters.TemplateMetadataObjectName) And IsBlankString(Parameters.FilePath);
+EndFunction
 
-&НаКлиенте
-Процедура РедактироватьВоВнешнейПрограммеЗавершение(ЗагруженныйТабличныйДокумент, ДополнительныеПараметры) Экспорт
-	Если ЗагруженныйТабличныйДокумент = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+&AtClient
+Procedure EditInExternalApplicationCompletion(ImportedSpreadsheetDocument, AdditionalParameters) Export
+	If ImportedSpreadsheetDocument = Undefined Then
+		Return;
+	EndIf;
 	
-	Модифицированность = Истина;
-	ОбновитьТабличныйДокумент(ЗагруженныйТабличныйДокумент);
-КонецПроцедуры
+	Modified = True;
+	UpdateSpreadsheetDocument(ImportedSpreadsheetDocument);
+EndProcedure
 
-&НаСервере
-Процедура ОбновитьТабличныйДокумент(ЗагруженныйТабличныйДокумент)
-	ТабличныйДокумент = ЗагруженныйТабличныйДокумент;
-КонецПроцедуры
+&AtServer
+Procedure UpdateSpreadsheetDocument(ImportedSpreadsheetDocument)
+	SpreadsheetDocument = ImportedSpreadsheetDocument;
+EndProcedure
 
 
-&НаКлиенте
-Процедура УстановитьНачальныеНастройкиФормы()
+&AtClient
+Procedure SetInitialFormSettings()
 	
-	Если Не ПустаяСтрока(Параметры.ПутьКФайлу) И Не РедактированиеЗапрещено Тогда
-		Элементы.ТабличныйДокумент.Редактирование = Истина;
-	КонецЕсли;
+	If Not IsBlankString(Parameters.FilePath) And Not EditingDenied Then
+		Items.SpreadsheetDocument.Edit = True;
+	EndIf;
 	
-	УстановитьИмяДокумента();
-	УстановитьЗаголовок();
-	НастроитьПредставлениеКоманд();
-	НастроитьОтображениеТабличногоДокумента();
+	SetDocumentName();
+	SetTitle();
+	SetUpCommandPresentation();
+	SetUpSpreadsheetDocumentRepresentation();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура УстановитьИмяДокумента()
+&AtClient
+Procedure SetDocumentName()
 
-	Если ПустаяСтрока(ИмяДокумента) Тогда
-		ИспользованныеИмена = Новый Массив;
-		Оповестить("ЗапросИменРедактируемыхТабличныхДокументов", ИспользованныеИмена, ЭтотОбъект);
+	If IsBlankString(DocumentName) Then
+		UsedNames = New Array;
+		Notify("EditedSpreadsheetDocumentNamesRequest", UsedNames, ThisObject);
 		
-		Индекс = 1;
-		Пока ИспользованныеИмена.Найти(ИмяНовогоДокумента() + Индекс) <> Неопределено Цикл
-			Индекс = Индекс + 1;
-		КонецЦикла;
+		Index = 1;
+		While UsedNames.Find(NewDocumentName() + Index) <> Undefined Do
+			Index = Index + 1;
+		EndDo;
 		
-		ИмяДокумента = ИмяНовогоДокумента() + Индекс;
-	КонецЕсли;
+		DocumentName = NewDocumentName() + Index;
+	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПриЗавершенииПолученияТолькоЧтения(ТолькоЧтение, ДополнительныеПараметры) Экспорт
+&AtClient
+Procedure OnCompleteGettingReadOnly(ReadOnly, AdditionalParameters) Export
 	
-	РедактированиеЗапрещено = ТолькоЧтение;
-	УстановитьНачальныеНастройкиФормы();
+	EditingDenied = ReadOnly;
+	SetInitialFormSettings();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура Подключаемый_ПереключитьЯзык(Команда)
+&AtClient
+Procedure Attachable_SwitchLanguage(Command)
 	
 
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура Подключаемый_ПриПереключенииЯзыка(КодЯзыка, ДополнительныеПараметры) Экспорт
+&AtClient
+Procedure Attachable_OnSwitchLanguage(LanguageCode, AdditionalParameters) Export
 	
-	ЗагрузитьТабличныйДокументИзМетаданных(КодЯзыка);
-	Если ТребуетсяПеревод И ДоступенАвтоматическийПеревод Тогда
-		ТекстВопроса = СтроковыеФункцииКлиентСервер.ПодставитьПараметрыВСтроку(
-			НСтр("ru = 'Макет еще не переведен на %1 язык.
-			|Выполнить автоматический перевод?'"), Элементы.Язык.Заголовок);
-		Кнопки = Новый СписокЗначений;
-		Кнопки.Добавить(КодВозвратаДиалога.Да, НСтр("ru = 'Выполнить перевод'"));
-		Кнопки.Добавить(КодВозвратаДиалога.Нет, НСтр("ru = 'Не выполнять'"));
+	LoadSpreadsheetDocumentFromMetadata(LanguageCode);
+	If TranslationRequired And AutoTranslationAvailable Then
+		QuestionText = UT_StringFunctionsClientServer.SubstituteParametersToString(
+			NStr("ru = 'Макет еще не переведен на %1 язык.
+			|Выполнить автоматический перевод?'; en = 'This template is not translated to %1 language yet.
+			|Do you want to automatically translate it?'"), Items.Language.Title);
+		Buttons = New ValueList;
+		Buttons.Add(DialogReturnCode.Yes, NStr("ru = 'Выполнить перевод'; en = 'Translate'"));
+		Buttons.Add(DialogReturnCode.No, NStr("ru = 'Не выполнять'; en = 'Do not translate'"));
 		
-		ОписаниеОповещения = Новый ОписаниеОповещения("ПриОтветеНаВопросОПереводеМакета", ЭтотОбъект);
-		ПоказатьВопрос(ОписаниеОповещения, ТекстВопроса, Кнопки);
-	КонецЕсли;
+		NotifyDescription = New NotifyDescription("OnAnswerTemplateTranslationQuestion", ThisObject);
+		ShowQueryBox(NotifyDescription, QuestionText, Buttons);
+	EndIf;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ПриОтветеНаВопросОПереводеМакета(Ответ, ДополнительныеПараметры) Экспорт
+&AtClient
+Procedure OnAnswerTemplateTranslationQuestion(Answer, AdditionalParameters) Export
 	
-	Если Ответ <> КодВозвратаДиалога.Да Тогда
-		Возврат;
-	КонецЕсли;
+	If Answer <> DialogReturnCode.Yes Then
+		Return;
+	EndIf;
 	
-	ПеревестиТекстыМакета();
+	TranslateTemplateTexts();
 	
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Процедура ПеревестиТекстыМакета()
+&AtServer
+Procedure TranslateTemplateTexts()
 	
 
-КонецПроцедуры
+EndProcedure
 
-&НаСервере
-Функция УбратьПараметрыИзТекста(Знач Текст)
+&AtServer
+Function DeleteParametersFromText(Val Text)
 	
-	НайденныеПараметры = Новый Массив;
+	FoundParameters = New Array;
 	
-	ЧастиСтроки = СтрРазделить(Текст, "[]", Истина);
-	Для Индекс = 1 По ЧастиСтроки.ВГраница() Цикл
-		НайденныеПараметры.Добавить("[" + ЧастиСтроки[Индекс] + "]");
-		Индекс = Индекс + 1;
-	КонецЦикла;
+	StringParts = StrSplit(Text, "[]", True);
+	For Index = 1 To StringParts.UBound() Do
+		FoundParameters.Add("[" + StringParts[Index] + "]");
+		Index = Index + 1;
+	EndDo;
 	
-	ОбработанныеПараметры = Новый Массив;
-	Счетчик = 0;
-	Для Каждого Параметр Из НайденныеПараметры Цикл
-		Если СтрНайти(Текст, Параметр) Тогда
-			Счетчик = Счетчик + 1;
-			Текст = СтрЗаменить(Текст, Параметр, ИдентификаторПараметра(Счетчик));
-			ОбработанныеПараметры.Добавить(Параметр);
-		КонецЕсли;
-	КонецЦикла;
+	ProcessedParameters = New Array;
+	Counter = 0;
+	For Each Parameter In FoundParameters Do
+		If StrFind(Text, Parameter) Then
+			Counter = Counter + 1;
+			Text = StrReplace(Text, Parameter, ParameterID(Counter));
+			ProcessedParameters.Add(Parameter);
+		EndIf;
+	EndDo;
 	
-	Результат = Новый Структура;
-	Результат.Вставить("Текст", Текст);
-	Результат.Вставить("Параметры", ОбработанныеПараметры);
+	Result = New Structure;
+	Result.Insert("Text", Text);
+	Result.Insert("Parameters", ProcessedParameters);
 	
-	Возврат Результат;
+	Return Result;
 	
-КонецФункции
+EndFunction
 
-&НаСервере
-Функция ВернутьПараметрыВТекст(Знач Текст, ОбработанныеПараметры)
+&AtServer
+Function ReturnParametersToText(Val Text, ProcessedParameters)
 	
-	Для Счетчик = 1 По ОбработанныеПараметры.Количество() Цикл
-		Текст = СтрЗаменить(Текст, ИдентификаторПараметра(Счетчик), "%" + XMLСтрока(Счетчик));
-	КонецЦикла;
+	For Counter = 1 To ProcessedParameters.Count() Do
+		Text = StrReplace(Text, ParameterID(Counter), "%" + XMLString(Counter));
+	EndDo;
 	
-	Возврат УИ_СтроковыеФункцииКлиентСервер.ПодставитьПараметрыВСтрокуИзМассива(Текст, ОбработанныеПараметры);
+	Return UT_StringFunctionsClientServer.SubstituteParametersToStringFromArray(Text, ProcessedParameters);
 	
-КонецФункции
+EndFunction
 
-// Последовательность символов, которая не должна меняться при переводе на любой язык.
-&НаСервере
-Функция ИдентификаторПараметра(Номер)
+// This sequence must not be changed when translated into any language.
+&AtServer
+Function ParameterID(Number)
 	
-	Возврат "{<" + XMLСтрока(Номер) + ">}"; 
+	Return "{<" + XMLString(Number) + ">}"; 
 	
-КонецФункции
+EndFunction
 
-&НаКлиенте
-Процедура ПоказатьСкрытьОригинал(Команда)
+&AtClient
+Procedure ShowHideOriginal(Command)
 	
-	Элементы.КнопкаПоказатьСкрытьОригинал.Пометка = Не Элементы.КнопкаПоказатьСкрытьОригинал.Пометка;
-	Элементы.ПоставляемыйМакет.Видимость = Элементы.КнопкаПоказатьСкрытьОригинал.Пометка;
-	Если Элементы.КнопкаПоказатьСкрытьОригинал.Пометка Тогда
-		Элементы.ТабличныйДокумент.ПоложениеЗаголовка = ПоложениеЗаголовкаЭлементаФормы.Авто;
-	Иначе
-		Элементы.ТабличныйДокумент.ПоложениеЗаголовка = ПоложениеЗаголовкаЭлементаФормы.Нет;
-	КонецЕсли;
+	Items.ShowHideOriginalButton.Check = Not Items.ShowHideOriginalButton.Check;
+	Items.DistributedTemplate.Visible = Items.ShowHideOriginalButton.Check;
+	If Items.ShowHideOriginalButton.Check Then
+		Items.SpreadsheetDocument.TitleLocation = FormItemTitleLocation.Auto;
+	Else
+		Items.SpreadsheetDocument.TitleLocation = FormItemTitleLocation.None;
+	EndIf;
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура СинхронизироватьОбластьПросмотраМакетов()
+&AtClient
+Procedure SynchronizeTemplateViewArea()
 	
-	Если Не Элементы.ПоставляемыйМакет.Видимость Тогда
-		Возврат;
-	КонецЕсли;
+	If Not Items.DistributedTemplate.Visible Then
+		Return;
+	EndIf;
 	
-	УправляемыйЭлемент =  Элементы.ПоставляемыйМакет;
-	Если ТекущийЭлемент <> Элементы.ТабличныйДокумент Тогда
-		УправляемыйЭлемент = Элементы.ТабличныйДокумент;
-	КонецЕсли;
+	ManagedItem =  Items.DistributedTemplate;
+	If CurrentItem <> Items.SpreadsheetDocument Then
+		ManagedItem = Items.SpreadsheetDocument;
+	EndIf;
 	
-	Область = ТекущийЭлемент.ТекущаяОбласть;
-	Если Область = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+	Area = CurrentItem.CurrentArea;
+	If Area = Undefined Then
+		Return;
+	EndIf;
 	
-	УправляемыйЭлемент.ТекущаяОбласть = ЭтотОбъект[ТекущийЭлемент.Имя].Область(
-		Область.Верх, Область.Лево, Область.Низ, Область.Право);
+	ManagedItem.CurrentArea = ThisObject[CurrentItem.Name].Area(
+		Area.Top, Area.Left, Area.Bottom, Area.Right);
 	
-КонецПроцедуры
+EndProcedure
 
-&НаКлиенте
-Процедура ОповеститьОЗаписиТабличногоДокумента()
+&AtClient
+Procedure NotifyWritingSpreadsheetDocument()
 	
-	ПараметрыОповещения = Новый Структура;
-	ПараметрыОповещения.Вставить("ПутьКФайлу", Параметры.ПутьКФайлу);
-	ПараметрыОповещения.Вставить("ИмяОбъектаМетаданныхМакета", Параметры.ИмяОбъектаМетаданныхМакета);
-	ПараметрыОповещения.Вставить("КодЯзыка", ТекущийЯзык);
+	NotifyParameters = New Structure;
+	NotifyParameters.Insert("FilePath", Parameters.FilePath);
+	NotifyParameters.Insert("TemplateMetadataObjectName", Parameters.TemplateMetadataObjectName);
+	NotifyParameters.Insert("LanguageCode", CurrentLanguage);
 	
-	Если ЗаписьВыполнена Тогда
-		ИмяСобытия = "Запись_ТабличныйДокумент";
-		ПараметрыОповещения.Вставить("ТабличныйДокумент", ТабличныйДокумент);
-	Иначе
-		ИмяСобытия = "ОтменаРедактированияТабличногоДокумента";
-	КонецЕсли;
-	Оповестить(ИмяСобытия, ПараметрыОповещения, ЭтотОбъект);
+	If WritingCompleted Then
+		EventName = "Write_SpreadsheetDocument";
+		NotifyParameters.Вставить("SpreadsheetDocument", SpreadsheetDocument);
+	Else
+		EventName = "UndoEditSpreadsheetDocument";
+	EndIf;
+	Notify(EventName, NotifyParameters, ThisObject);
 
-КонецПроцедуры
+EndProcedure
 
-#КонецОбласти
+#EndRegion
