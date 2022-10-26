@@ -17,7 +17,7 @@ Function AttributeNameCodeEditorLibraryURL() Export
 EndFunction
 
 Function AttributeNameCodeEditorFormCodeEditors() Export
-	Return CodeEditorItemsPrefix()+"_CodeEditorsList";
+	Return CodeEditorItemsPrefix()+"_FormEditorsList";
 EndFunction
 // Attribute Name Code Editor Initial Initialization Passed.
 // 
