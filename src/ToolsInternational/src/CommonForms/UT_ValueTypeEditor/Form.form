@@ -1033,6 +1033,107 @@
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
   </items>
+  <items xsi:type="form:FormGroup">
+    <name>ReferredValueChoiceFormSelectionGroup</name>
+    <id>62</id>
+    <items xsi:type="form:FormField">
+      <name>UseDynamicListForRefValueSelection</name>
+      <id>64</id>
+      <title>
+        <key>en</key>
+        <value>Referential value choice form</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Форма выбора ссылочного значения</value>
+      </title>
+      <visible>true</visible>
+      <enabled>true</enabled>
+      <userVisible>
+        <common>true</common>
+      </userVisible>
+      <dataPath xsi:type="form:DataPath">
+        <segments>UseDynamicListForRefValueSelection</segments>
+      </dataPath>
+      <extendedTooltip>
+        <name>UseDynamicListForRefValueSelectionExtendedTooltip</name>
+        <id>66</id>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <type>Label</type>
+        <autoMaxWidth>true</autoMaxWidth>
+        <autoMaxHeight>true</autoMaxHeight>
+        <extInfo xsi:type="form:LabelDecorationExtInfo">
+          <horizontalAlign>Left</horizontalAlign>
+        </extInfo>
+      </extendedTooltip>
+      <contextMenu>
+        <name>UseDynamicListForRefValueSelectionContextMenu</name>
+        <id>65</id>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <autoFill>true</autoFill>
+      </contextMenu>
+      <type>CheckBoxField</type>
+      <editMode>Enter</editMode>
+      <showInHeader>true</showInHeader>
+      <headerHorizontalAlign>Left</headerHorizontalAlign>
+      <showInFooter>true</showInFooter>
+      <extInfo xsi:type="form:CheckBoxFieldExtInfo">
+        <checkBoxType>Tumbler</checkBoxType>
+        <editFormat>
+          <key>en</key>
+          <value>BF='Standard form'; BT='Dynamic list'</value>
+        </editFormat>
+        <editFormat>
+          <key>ru</key>
+          <value>BF='Стандартная форма'; BT='Динамический список'</value>
+        </editFormat>
+      </extInfo>
+    </items>
+    <visible>true</visible>
+    <enabled>true</enabled>
+    <userVisible>
+      <common>true</common>
+    </userVisible>
+    <title>
+      <key>ru</key>
+      <value>Группа</value>
+    </title>
+    <title>
+      <key>en</key>
+      <value>Group</value>
+    </title>
+    <extendedTooltip>
+      <name>ReferredValueChoiceFormSelectionGroupExtendedTooltip</name>
+      <id>63</id>
+      <visible>true</visible>
+      <enabled>true</enabled>
+      <userVisible>
+        <common>true</common>
+      </userVisible>
+      <type>Label</type>
+      <autoMaxWidth>true</autoMaxWidth>
+      <autoMaxHeight>true</autoMaxHeight>
+      <extInfo xsi:type="form:LabelDecorationExtInfo">
+        <horizontalAlign>Left</horizontalAlign>
+      </extInfo>
+    </extendedTooltip>
+    <type>UsualGroup</type>
+    <extInfo xsi:type="form:UsualGroupExtInfo">
+      <group>HorizontalIfPossible</group>
+      <showLeftMargin>true</showLeftMargin>
+      <united>true</united>
+      <throughAlign>Auto</throughAlign>
+      <currentRowUse>Auto</currentRowUse>
+    </extInfo>
+  </items>
   <commandBarLocation>Bottom</commandBarLocation>
   <autoCommandBar>
     <name>ФормаКоманднаяПанель</name>
@@ -1332,6 +1433,27 @@
         <common>true</common>
       </edit>
     </columns>
+    <columns>
+      <name>Group</name>
+      <title>
+        <key>en</key>
+        <value>Group</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Групповой</value>
+      </title>
+      <id>17</id>
+      <valueType>
+        <types>Boolean</types>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
   </attributes>
   <attributes>
     <name>NumberLength</name>
@@ -1538,6 +1660,75 @@
     <edit>
       <common>true</common>
     </edit>
+  </attributes>
+  <attributes>
+    <name>CompositeDataTypeAvailable</name>
+    <title>
+      <key>en</key>
+      <value>Composite data type available</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Доступен составной тип</value>
+    </title>
+    <id>14</id>
+    <valueType>
+      <types>Boolean</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>UseDynamicListForRefValueSelection</name>
+    <title>
+      <key>en</key>
+      <value>Use dynamic list for referential value selection</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Использовать динамический список для выбора ссылочного значения</value>
+    </title>
+    <id>15</id>
+    <valueType>
+      <types>Boolean</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>TypesSet</name>
+    <title>
+      <key>en</key>
+      <value>Type set</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Набор типов</value>
+    </title>
+    <id>16</id>
+    <valueType>
+      <types>ValueList</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+    <extInfo xsi:type="form:ValueListExtInfo">
+      <itemValueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </itemValueType>
+    </extInfo>
   </attributes>
   <formCommands>
     <name>Apply</name>
