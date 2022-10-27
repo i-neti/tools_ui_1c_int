@@ -2,14 +2,119 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	WorkMode=Parameters.StartMode;
+	If Parameters.Property("StartMode") Then
+		ActionMode = Parameters.StartMode;
+	Else
+		ActionMode = -1;
+	EndIf;
 	
-	DataType=Parameters.DataType;
-	If TypeOf(DataType)=Type("TypeDescription") Then
-		InitialDataType=DataType;
+	//Types set can contain:
+	// Ref
+	// CompositeRef
+	// PrimitiveType
+	// Null
+	// ValueStorage
+	// ValueCollection 
+	// PointInTime
+	// Type
+	// Boundary
+	// UUID
+	// StandardPeriod
+	// SystemEnumeration
+	
+	TypesSet.Clear();
+	
+	If ActionMode = 0 Then
+		TypesSet.Add("REF");
+		TypesSet.Add("COMPOSITEREF");
+		TypesSet.Add("PRIMITIVETYPE");
+		TypesSet.Add("VALUESTORAGE");
+		TypesSet.Add("UUID");
+	ElsIf ActionMode = 1 Then 
+		TypesSet.Add("REF");
+		TypesSet.Add("COMPOSITEREF");
+		TypesSet.Add("PRIMITIVETYPE");
+		TypesSet.Add("VALUESTORAGE");
+		TypesSet.Add("UUID");
+		TypesSet.Add("VALUECOLLECTION");
+		TypesSet.Add("POINTINTIME");
+		TypesSet.Add("TYPE");
+		TypesSet.Add("BOUNDARY");
+		TypesSet.Add("NULL");
+	ElsIf ActionMode = 2 Then 
+		TypesSet.Add("REF");
+		TypesSet.Add("COMPOSITEREF");
+		TypesSet.Add("PRIMITIVETYPE");
+		TypesSet.Add("VALUESTORAGE");
+		TypesSet.Add("UUID");
+		TypesSet.Add("NULL");
+	ElsIf ActionMode = 3 Then 
+		TypesSet.Add("REF");
+		TypesSet.Add("COMPOSITEREF");
+		TypesSet.Add("PRIMITIVETYPE");
+		TypesSet.Add("VALUESTORAGE");
+		TypesSet.Add("UUID");
+		TypesSet.Add("NULL");
+		TypesSet.Add("STANDARDPERIOD");
+		TypesSet.Add("SYSTEMENUMERATION");
+	ElsIf Parameters.Property("TypesSet") Then
+		TempTypesSet = Parameters.TypesSet;
+		If TypeOf(TempTypesSet) = Type("String") Then
+			TempTypesArray = StrSplit(TempTypesSet, ",");
+			For Each CurrSet In TempTypesArray Do
+				TypesSet.Add(Upper(CurrSet));
+			EndDo;
+		ElsIf TypeOf(TempTypesSet) = Type("ValueList") Then
+			For Each CurrSet In TempTypesSet Do
+				TypesSet.Add(Upper(CurrSet.Value));
+			EndDo;
+
+		ElsIf TypeOf(TempTypesSet) = Type("Array") Then
+			For Each CurrSet In TempTypesSet Do
+				TypesSet.Add(Upper(CurrSet));
+			EndDo;
+		EndIf;
+	EndIf;
+		
+	If Parameters.Property("DataType") Then
+		DataType=Parameters.DataType;
+		If TypeOf(DataType) = Type("TypeDescription") Then
+			InitialDataType=DataType;
+		Else
+			InitialDataType=New TypeDescription;
+		EndIf;
 	Else
 		InitialDataType=New TypeDescription;
 	EndIf;
+	
+	CompositeDataType = InitialDataType.Types().Count() > 1;
+
+	If Parameters.Property("CompositeDataTypeAvailable") Then
+		CompositeDataTypeAvailable = Parameters.CompositeDataTypeAvailable;
+	Else
+		CompositeDataTypeAvailable = True;
+	EndIf;
+	
+	If Parameters.Property("ChoiceMode") Then
+		ChoiceMode = Parameters.ChoiceMode;
+		If ChoiceMode Then
+			CompositeDataTypeAvailable = False;
+		EndIf;
+	Else
+		ChoiceMode = False;
+	EndIf;
+	
+	If ChoiceMode Then
+		Title = NStr("ru = 'Выбор типа'; en = 'Type selection'");
+	EndIf;
+	
+	If Not CompositeDataTypeAvailable Then
+		CompositeDataType = False;
+		Items.CompositeDataType.Visible = False;
+	EndIf;
+	
+//	Items.TypesTreeSelected.Visible = Not ChoiceMode;
+	Items.ReferredValueChoiceFormSelectionGroup.Visible = ChoiceMode;
 	
 	FillQualifiersDataByOriginalDataType();
 	
@@ -50,7 +155,7 @@ Procedure StringLengthOnChange(Item)
 	If Not ValueIsFilled(StringLength) Then
 		UnlimitedStringLength=True;
 		AcceptableFixedStringLength=False;
-	Иначе
+	Else
 		UnlimitedStringLength=False;
 	EndIf;
 	Items.AcceptableFixedStringLength.Enabled=Not UnlimitedStringLength;
@@ -122,6 +227,12 @@ Procedure CompositeDataTypeOnChange(Item)
 	EndIf;
 EndProcedure
 
+&AtClient
+Procedure TypesTreeSelection(Item, RowSelected, Field, StandardProcessing)
+	If ChoiceMode Then
+
+	EndIf;
+EndProcedure
 
 #EndRegion
 
@@ -137,14 +248,14 @@ Procedure Apply(Command)
 	For Each Type ИЗ TypesArray Do
 		If TypeOf(Type) = Type("Type") Then
 			TypesByType.Add(Type);
-		Иначе
+		Else
 			TypesByString.Add(Type);
 		EndIf;
 	EndDo;
 	
 	If NonnegativeNumber Then
 		Sign=AllowedSign.Nonnegative;
-	Иначе
+	Else
 		Sign=AllowedSign.Any;
 	EndIf;
 		
@@ -155,7 +266,7 @@ Procedure Apply(Command)
 		DateFraction=DateFractions.Time;
 	 ElsIf DateFormat=2 Then
 		DateFraction=DateFractions.DateTime;
-	Иначе
+	Else
 		DateFraction=DateFractions.Date;
 	EndIf;
 	
@@ -169,32 +280,93 @@ Procedure Apply(Command)
 		Description=New TypeDescription(Description, StrConcat(TypesByString,","),,NumberQualifier,StringQualifier,DateQualifier);
 	EndIf;
 	
-	Close(Description);
+	If ChoiceMode Then
+		ReturnValue = New Structure;
+		ReturnValue.Insert("Description", Description);
+		ReturnValue.Insert("UseDynamicListForRefValueSelection", UseDynamicListForRefValueSelection);
+	Else
+		ReturnValue = Description;
+	EndIf;
+	
+	Close(ReturnValue);
 EndProcedure
 
 #EndRegion
 
 #Region Internal
 
+&AtClient
+Procedure SelectCurrentTypeDefaultValue()
+	
+EndProcedure
+
 &AtServer
-Function StorageValueIsAvailable()
-	Return True;	
-EndFunction
-&AtServer
-Function AvailableNull()
-	Return WorkMode<>0;	
-EndFunction
-&AtServer
-Function TypesForQuery()
-	Return WorkMode=1;	
+Function PrimitiveTypeIsAvailable()
+	Return TypesSet.FindByValue("PRIMITIVETYPE") <> Undefined;	
 EndFunction
 
 &AtServer
-Function AddTypeToTypesTree(FillSelectedTypes,TypeName, Picture, Presentation = "", TreeRow = Undefined, IsGroup = False, Group=False, UnavailableForCompositeType=False)
+Function ValueStorageIsAvailable()
+	Return TypesSet.FindByValue("VALUESTORAGE") <> Undefined;	
+EndFunction
+
+&AtServer
+Function NullIsAvailable()
+	Return TypesSet.FindByValue("NULL") <> Undefined;	
+EndFunction
+
+&AtServer
+Function RefIsAvailable()
+	Return TypesSet.FindByValue("REF") <> Undefined;	
+EndFunction
+
+&AtServer
+Function CompositeRefIsAvailable()
+	Return TypesSet.FindByValue("COMPOSITEREF") <> Undefined;	
+EndFunction
+
+&AtServer
+Function UUIDIsAvailable()
+	Return TypesSet.FindByValue("UUID") <> Undefined;
+EndFunction
+
+&AtServer
+Function ValueCollectionIsAvailable()
+	Return TypesSet.FindByValue("VALUECOLLECTION") <> Undefined;	
+EndFunction
+
+&AtServer
+Function PointInTimeIsAvailable()
+	Return TypesSet.FindByValue("POINTINTIME") <> Undefined;
+EndFunction
+
+&AtServer
+Function TypeTypeIsAvailable()
+	Return TypesSet.FindByValue("TYPE") <> Undefined;
+EndFunction
+
+&AtServer
+Function BoundaryIsAvailable()
+	Return TypesSet.FindByValue("BOUNDARY") <> Undefined;
+EndFunction
+
+&AtServer
+Function StandardPeriodIsAvailable()
+	Return TypesSet.FindByValue("STANDARDPERIOD") <> Undefined;
+EndFunction
+
+&AtServer
+Function SystemEnumerationIsAvailable()
+	Return TypesSet.FindByValue("SYSTEMENUMERATION") <> Undefined;	
+EndFunction
+
+&AtServer
+Function AddTypeToTypesTree(FillSelectedTypes,TypeName, Picture, Presentation = "", 
+	TreeRow = Undefined, IsGroup = False, Group = False, UnavailableForCompositeType = False)
 	
 	If ValueIsFilled(Presentation) Then
 		TypePresentation=Presentation;
-	Иначе
+	Else
 		TypePresentation=TypeName;
 	EndIf;
 
@@ -216,6 +388,7 @@ Function AddTypeToTypesTree(FillSelectedTypes,TypeName, Picture, Presentation = 
 	NewRow.Picture=Picture;
 	NewRow.IsGroup=IsGroup;
 	NewRow.UnavailableForCompositeType=UnavailableForCompositeType;
+	NewRow.Group = Group;
 	
 	If FillSelectedTypes Then
 		Try
@@ -249,30 +422,42 @@ EndProcedure
 &AtServer
 Procedure FillPrimitiveTypes(FillSelectedTypes)
 	//AddTypeToTypesTree("Arbitrary", PictureLib.UT_ArbitraryType);
-	AddTypeToTypesTree(FillSelectedTypes,"Number", PictureLib.UT_Number);
-	AddTypeToTypesTree(FillSelectedTypes,"String", PictureLib.UT_String);
-	AddTypeToTypesTree(FillSelectedTypes,"Date", PictureLib.UT_Date);
-	AddTypeToTypesTree(FillSelectedTypes,"Boolean", PictureLib.UT_Boolean);
-	If StorageValueIsAvailable() Then      
+	If PrimitiveTypeIsAvailable() Then
+		AddTypeToTypesTree(FillSelectedTypes,"Number", PictureLib.UT_Number);
+		AddTypeToTypesTree(FillSelectedTypes,"String", PictureLib.UT_String);
+		AddTypeToTypesTree(FillSelectedTypes,"Date", PictureLib.UT_Date);
+		AddTypeToTypesTree(FillSelectedTypes,"Boolean", PictureLib.UT_Boolean);
+	EndIf;
+	If ValueStorageIsAvailable() Then      
 		AddTypeToTypesTree(FillSelectedTypes,"ValueStorage", New Picture);
 	EndIf;
-	If TypesForQuery() Then
+	If ValueCollectionIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"ValueTable", PictureLib.UT_ValueTable);
 		AddTypeToTypesTree(FillSelectedTypes,"ValueList", PictureLib.UT_ValueList);
 		AddTypeToTypesTree(FillSelectedTypes,"Array", PictureLib.UT_Array);
+	EndIf;
+	If TypeTypeIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"Type", PictureLib.ChooseType);
+	EndIf;
+	If PointInTimeIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"PointInTime", PictureLib.UT_PointInTime);
+	EndIf;
+	If BoundaryIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"Boundary", PictureLib.UT_Boundary);
 	EndIf;
-	
-	AddTypeToTypesTree(FillSelectedTypes,"UUID", PictureLib.UT_UUID);
-	If AvailableNull() Then
+	If UUIDIsAvailable() Then
+		AddTypeToTypesTree(FillSelectedTypes,"UUID", PictureLib.UT_UUID);
+	EndIf;
+	If NullIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"Null", PictureLib.UT_Null);
 	EndIf;
 EndProcedure
 
 &AtServer
 Procedure FillCharacteristicsTypes(FillSelectedTypes)
+	If Not CompositeRefIsAvailable() Then
+		Return;
+	EndIf;
 	//Characteristics
 	Charts=Metadata.ChartsOfCharacteristicTypes;
 	If Charts.Count()=0 Then
@@ -291,6 +476,10 @@ EndProcedure
 
 &AtServer
 Procedure FillDefinedTypes(FillSelectedTypes)
+	If Not CompositeRefIsAvailable() Then
+		Return;
+	EndIf;
+	
 	//Characteristics
 	Types=Metadata.DefinedTypes;
 	If Types.Count()=0 Then
@@ -307,6 +496,9 @@ EndProcedure
 
 &AtServer
 Procedure FillTypesOfSystemEnumerations(FillSelectedTypes)
+	If Not SystemEnumerationIsAvailable() Then
+		Return;
+	EndIf;
 	TypeAsString=AddTypeToTypesTree(FillSelectedTypes,"SystemEnumerations", PictureLib.Folder,"System Enumerations",,True, True);
 
 	AddTypeToTypesTree(FillSelectedTypes,"AccumulationRecordType",PictureLib.UT_AccumulationRecordType,,TypeAsString);
@@ -338,14 +530,16 @@ Procedure FillTypesTree(FillSelectedTypes=False)
 		FillDefinedTypes(FillSelectedTypes);
 	Except
 	EndTry;
-	AddTypeToTypesTree(FillSelectedTypes,"AnyRef", New Picture, "Any reference");
+	If CompositeRefIsAvailable() Then
+		AddTypeToTypesTree(FillSelectedTypes,"AnyRef", New Picture, "Any reference");
+	EndIf;
 
 	
-	If WorkMode=3 Then
+	If StandardPeriodIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"StandardBeginningDate", New Picture, "Standard beginning date");
 		AddTypeToTypesTree(FillSelectedTypes,"StandardPeriod", New Picture, "Standard period");
-		FillTypesOfSystemEnumerations(FillSelectedTypes);
 	EndIf;
+	FillTypesOfSystemEnumerations(FillSelectedTypes);
 	
 	SetSelectedTypesInTree(TypesTree,SelectedTypes);
 EndProcedure
@@ -377,6 +571,21 @@ Procedure SetConditionalAppearance()
 	Appearance=NewCa.Appearance.FindParameterValue(New DataCompositionParameter("ReadOnly"));
 	Appearance.Use=True;
 	Appearance.Value=True;
+	
+	If ChoiceMode Then
+		NewCA=ConditionalAppearance.Items.Add();
+		NewCA.Use=True;
+		UT_CommonClientServer.SetFilterItem(NewCA.Filter,
+			"Items.TypesTree.CurrentData.Group", True);
+		Field=NewCA.Fields.Items.Add();
+		Field.Use=True;
+		Field.Field=New DataCompositionField("TypesTreeSelected");
+
+		Appearance=NewCA.Appearance.FindParameterValue(New DataCompositionParameter("Show"));
+		Appearance.Use=True;
+		Appearance.Value=False;
+
+	EndIf;
 	
 EndProcedure
 
@@ -528,7 +737,7 @@ Function SelectedTypesArray()
 				MetadataObject=Metadata.ChartsOfCharacteristicTypes[ObjectName];
 			 ElsIf StrFind(Lower(TypeAsString),"definedtype")>0 Then
 				MetadataObject=Metadata.DefinedTypes[ObjectName];
-			Иначе
+			Else
 				Continue;
 			EndIf;
 			TypeDescription=MetadataObject.Тип;
