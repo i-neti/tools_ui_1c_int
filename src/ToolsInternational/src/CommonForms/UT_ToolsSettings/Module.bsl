@@ -3,53 +3,7 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	SetChoiseListOfStructureItem(Items.EditorOf1CScript,
-		UT_CodeEditorClientServer.CodeEditorVariants());
-	
-	SetChoiseListOfStructureItem(Items.MonacoEditorTheme,
-		UT_CodeEditorClientServer.MonacoEditorThemeVariants());
-	
-	SetChoiseListOfStructureItem(Items.MonacoEditorScriptVariant,
-		UT_CodeEditorClientServer.MonacoEditorSyntaxLanguageVariants());
-
-	EditorSettings = UT_CodeEditorServer.CodeEditorCurrentSettings();	
-	EditorOf1CScript = EditorSettings.Variant;
-	FontSize = EditorSettings.FontSize;	
-
-	MonacoEditorTheme = EditorSettings.Monaco.Theme;
-	MonacoEditorScriptVariant = EditorSettings.Monaco.ScriptVariant;
-	UseScriptMap = EditorSettings.Monaco.UseScriptMap;
-	HideLineNumbers = EditorSettings.Monaco.HideLineNumbers;
-	LinesHeight = EditorSettings.Monaco.LinesHeight;
-	DisplaySpacesAndTabs = EditorSettings.Monaco.DisplaySpacesAndTabs;
-
-	ConfigurationSourceFilesDirectories.Clear();
-	Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Clear();
-	SourceCodeSources = UT_CodeEditorServer.AvailableSourceCodeSources();
-	
-	For Each DirectoryDescription In EditorSettings.Monaco.SourceFilesDirectories Do
-		NewRow = ConfigurationSourceFilesDirectories.Add();
-		NewRow.Directory = DirectoryDescription.Directory;
-		NewRow.Source = DirectoryDescription.Source;
-	
-		Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Add(NewRow.Source);
-	EndDo;
-
-	For Each CurrentSource In SourceCodeSources Do
-		SearchStructure = New Structure;
-		SearchStructure.Insert("Source", CurrentSource.Value);
-		
-		FoundedRows = ConfigurationSourceFilesDirectories.FindRows(SearchStructure);
-		If FoundedRows.Count()>0 Then
-			Continue;
-		EndIf;
-		
-		NewRow = ConfigurationSourceFilesDirectories.Add();
-		NewRow.Source = CurrentSource.Value;
-		
-		Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Add(CurrentSource.Value);
-		
-	EndDo;
+	ReadCodeEditorSettings();
 
 	SetItemsVisibility();
 EndProcedure
@@ -58,7 +12,7 @@ EndProcedure
 Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 	CodeEditorVariants = UT_CodeEditorClientServer.CodeEditorVariants();
 	
-	If EditorOf1CScript = CodeEditorVariants.Monaco Then
+	If EditorOf1CCode = CodeEditorVariants.Monaco Then
 		CheckedAttributes.Add("MonacoEditorTheme");
 		CheckedAttributes.Add("MonacoEditorScriptVariant");
 	EndIf;
@@ -98,7 +52,7 @@ EndProcedure
 #Region FormHeaderEventsHandlers
 
 &AtClient
-Procedure EditorOf1CScriptOnChange(Item)
+Procedure EditorOf1CCodeOnChange(Item)
 	SetItemsVisibility();
 EndProcedure
 
@@ -117,7 +71,7 @@ Procedure ConfigurationSourceFilesDirectoriesDirectoryStartChoice(Item, ChoiceDa
 	
 	UT_CommonClient.FormFieldFileNameStartChoice(FileDescription, Item, ChoiceData, StandardProcessing,
 		FileDialogMode.ChooseDirectory,
-		New NotifyDescription("ConfigurationSourceFilesDirectoriesDirectoryStartChoiceEnd", ThisObject,
+		New NotifyDescription("ConfigurationSourceFilesDirectoriesDirectoryStartChoiceCompletion", ThisObject,
 		NotificationAdditionalParameters));
 EndProcedure
 
@@ -149,15 +103,93 @@ Procedure SaveConfigurationModulesToFiles(Command)
 	EndDo;
 	
 	UT_CodeEditorClient.SaveConfigurationModulesToFiles(
-		New NotifyDescription("SaveConfigurationModulesToFilesEnd", ThisObject), CurrentDirectories);
+		New NotifyDescription("SaveConfigurationModulesToFilesCompletion", ThisObject), CurrentDirectories);
+EndProcedure
+
+&AtClient
+Procedure CodeTemplatesFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	CurrData = Items.CodeTemplates.CurrentData;
+	If CurrData = Undefined Then
+		Return;
+	EndIf;
+	
+	FileDetails = UT_CommonClient.SelectedFileDetailsEmptyStructure();
+	FileDetails.FileName = CurrData.FileName;
+	UT_CommonClient.AddFormatToSavingFileDetails(FileDetails, NStr("ru = 'Файл шаблона кода(*.st)'; en = 'Script template file(*.st)'"), "st");
+	
+	NotifyAddlParameters = New Structure;
+	NotifyAddlParameters.Inser("CurrentRow", Items.CodeTemplates.CurrentRow);
+	
+	UT_CommonClient.FormFieldFileNameStartChoice(FileDetails, Item, ChoiceData, StandardProcessing,
+		FileDialogMode.Open,
+		New NotifyDescription("CodeTemplatesFileNameStartChoiceCompletion", ThisObject,
+		NotifyAddlParameters));
 EndProcedure
 
 #EndRegion
 
 #Region Internal
 
+&AtServer
+Procedure ReadCodeEditorSettings()
+	SetChoiseListOfStructureItem(Items.EditorOf1CCode,
+		UT_CodeEditorClientServer.CodeEditorVariants());
+	
+	SetChoiseListOfStructureItem(Items.MonacoEditorTheme,
+		UT_CodeEditorClientServer.MonacoEditorThemeVariants());
+	
+	SetChoiseListOfStructureItem(Items.MonacoEditorScriptVariant,
+		UT_CodeEditorClientServer.MonacoEditorSyntaxLanguageVariants());
+
+	EditorSettings = UT_CodeEditorServer.CodeEditorCurrentSettings();	
+	EditorOf1CCode = EditorSettings.Variant;
+	FontSize = EditorSettings.FontSize;	
+
+	MonacoEditorTheme = EditorSettings.Monaco.Theme;
+	MonacoEditorScriptVariant = EditorSettings.Monaco.ScriptVariant;
+	UseScriptMap = EditorSettings.Monaco.UseScriptMap;
+	HideLineNumbers = EditorSettings.Monaco.HideLineNumbers;
+	LinesHeight = EditorSettings.Monaco.LinesHeight;
+	DisplaySpacesAndTabs = EditorSettings.Monaco.DisplaySpacesAndTabs;
+	UseCodeStandardTemplates = EditorSettings.Monaco.UseCodeStandardTemplates;
+
+	ConfigurationSourceFilesDirectories.Clear();
+	Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Clear();
+	SourceCodeSources = UT_CodeEditorServer.AvailableSourceCodeSources();
+	
+	For Each DirectoryDescription In EditorSettings.Monaco.SourceFilesDirectories Do
+		NewRow = ConfigurationSourceFilesDirectories.Add();
+		NewRow.Directory = DirectoryDescription.Directory;
+		NewRow.Source = DirectoryDescription.Source;
+	
+		Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Add(NewRow.Source);
+	EndDo;
+
+	CodeTemplates.Clear();
+	For Each CurrFileName In EditorSettings.Monaco.CodeTemplatesFiles Do
+		NewRow = CodeTemplates.Add();
+		NewRow.FileName = CurrFileName;
+	EndDo;
+
+	For Each CurrentSource In SourceCodeSources Do
+		SearchStructure = New Structure;
+		SearchStructure.Insert("Source", CurrentSource.Value);
+		
+		FoundedRows = ConfigurationSourceFilesDirectories.FindRows(SearchStructure);
+		If FoundedRows.Count()>0 Then
+			Continue;
+		EndIf;
+		
+		NewRow = ConfigurationSourceFilesDirectories.Add();
+		NewRow.Source = CurrentSource.Value;
+		
+		Items.ConfigurationSourceFilesDirectoriesSource.ChoiceList.Add(CurrentSource.Value);
+		
+	EndDo;
+EndProcedure
+
 &AtClient
-Procedure SaveConfigurationModulesToFilesEnd(Result, AdditionalParameters) Export
+Procedure SaveConfigurationModulesToFilesCompletion(Result, AdditionalParameters) Export
 	If Result = Undefined Then
 		Return;
 	EndIf;
@@ -182,7 +214,7 @@ EndProcedure
 
 
 &AtClient
-Procedure ConfigurationSourceFilesDirectoriesDirectoryStartChoiceEnd(Result, AdditionalParameters) Export
+Procedure ConfigurationSourceFilesDirectoriesDirectoryStartChoiceCompletion(Result, AdditionalParameters) Export
 	If Result = Undefined Then
 		Return;
 	EndIf;
@@ -197,11 +229,27 @@ Procedure ConfigurationSourceFilesDirectoriesDirectoryStartChoiceEnd(Result, Add
 	Modified = True;
 EndProcedure
 
+&AtClient
+Procedure CodeTemplatesFileNameStartChoiceCompletion(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	
+	If Result.Count()=0 Then
+		Return;
+	EndIf;
+	
+	CurrentData = CodeTemplates.FindByID(AdditionalParameters.CurrentRow);
+	CurrentData.FileNale = Result[0];
+	
+	Modified = True;
+EndProcedure
+
 &AtServer
 Procedure SetItemsVisibility()
 	Variants = UT_CodeEditorClientServer.CodeEditorVariants();
 	
-	IsMonaco = EditorOf1CScript = Variants.Monaco;
+	IsMonaco = EditorOf1CCode = Variants.Monaco;
 	
 	Items.GroupMonacoCodeEditor.Visible = IsMonaco;
 EndProcedure
@@ -218,14 +266,14 @@ EndProcedure
 Procedure ApplyAtServer()
 	CodeEditorParameters = UT_CodeEditorClientServer.CodeEditorCurrentSettingsByDefault();
 	CodeEditorParameters.FontSize = FontSize;
-	CodeEditorParameters.Variant = EditorOf1CScript;
+	CodeEditorParameters.Variant = EditorOf1CCode;
 	
 	CodeEditorParameters.Monaco.Theme = MonacoEditorTheme;
 	CodeEditorParameters.Monaco.ScriptVariant = MonacoEditorScriptVariant;
 	CodeEditorParameters.Monaco.UseScriptMap = UseScriptMap;
 	CodeEditorParameters.Monaco.HideLineNumbers = HideLineNumbers;
 	CodeEditorParameters.Monaco.LinesHeight = LinesHeight;
-	CodeEditorParameters.Monaco.DisplaySpacesAndTabs = DisplaySpacesAndTabs;
+	CodeEditorParameters.Monaco.UseCodeStandardTemplates = UseCodeStandardTemplates;
 	For Each CurrentRow In ConfigurationSourceFilesDirectories Do
 		If Not ValueIsFilled(CurrentRow.Directory) Then
 			Continue;
@@ -236,6 +284,10 @@ Procedure ApplyAtServer()
 		DirectoryDescription.Directory = CurrentRow.Directory;
 		
 		CodeEditorParameters.Monaco.SourceFilesDirectories.Add(DirectoryDescription);
+	EndDo;
+	
+	For Each CurrRow In CodeTemplates Do
+		CodeEditorParameters.Monaco.CodeTemplatesFiles.Add(CurrRow.FileName);
 	EndDo;
 	
 	UT_CodeEditorServer.SetCodeEditorNewSettings(CodeEditorParameters);

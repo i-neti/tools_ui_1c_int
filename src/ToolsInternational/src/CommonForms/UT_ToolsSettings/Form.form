@@ -1,409 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:core="http://g5.1c.ru/v8/dt/mcore" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>GroupCodeEditor</name>
-    <id>22</id>
-    <items xsi:type="form:FormField">
-      <name>EditorOf1CScript</name>
-      <id>5</id>
-      <visible>true</visible>
-      <enabled>true</enabled>
-      <userVisible>
-        <common>true</common>
-      </userVisible>
-      <dataPath xsi:type="form:DataPath">
-        <segments>EditorOf1CScript</segments>
-      </dataPath>
-      <handlers>
-        <event>OnChange</event>
-        <name>EditorOf1CScriptOnChange</name>
-      </handlers>
-      <extendedTooltip>
-        <name>EditorOf1CScriptExtendedTooltip</name>
-        <id>7</id>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <type>Label</type>
-        <autoMaxWidth>true</autoMaxWidth>
-        <autoMaxHeight>true</autoMaxHeight>
-        <extInfo xsi:type="form:LabelDecorationExtInfo">
-          <horizontalAlign>Left</horizontalAlign>
-        </extInfo>
-      </extendedTooltip>
-      <contextMenu>
-        <name>EditorOf1CScriptContextMenu</name>
-        <id>6</id>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <autoFill>true</autoFill>
-      </contextMenu>
-      <type>InputField</type>
-      <editMode>Enter</editMode>
-      <showInHeader>true</showInHeader>
-      <headerHorizontalAlign>Left</headerHorizontalAlign>
-      <showInFooter>true</showInFooter>
-      <extInfo xsi:type="form:InputFieldExtInfo">
-        <autoMaxWidth>true</autoMaxWidth>
-        <autoMaxHeight>true</autoMaxHeight>
-        <wrap>true</wrap>
-        <listChoiceMode>true</listChoiceMode>
-        <chooseType>true</chooseType>
-        <typeDomainEnabled>true</typeDomainEnabled>
-        <textEdit>true</textEdit>
-      </extInfo>
-    </items>
-    <items xsi:type="form:FormField">
-      <name>FontSize</name>
-      <id>47</id>
-      <visible>true</visible>
-      <enabled>true</enabled>
-      <userVisible>
-        <common>true</common>
-      </userVisible>
-      <dataPath xsi:type="form:DataPath">
-        <segments>FontSize</segments>
-      </dataPath>
-      <extendedTooltip>
-        <name>FontSizeExtendedTooltip</name>
-        <id>49</id>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <type>Label</type>
-        <autoMaxWidth>true</autoMaxWidth>
-        <autoMaxHeight>true</autoMaxHeight>
-        <extInfo xsi:type="form:LabelDecorationExtInfo">
-          <horizontalAlign>Left</horizontalAlign>
-        </extInfo>
-      </extendedTooltip>
-      <contextMenu>
-        <name>FontSizeContextMenu</name>
-        <id>48</id>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <autoFill>true</autoFill>
-      </contextMenu>
-      <type>InputField</type>
-      <editMode>Enter</editMode>
-      <showInHeader>true</showInHeader>
-      <headerHorizontalAlign>Left</headerHorizontalAlign>
-      <showInFooter>true</showInFooter>
-      <extInfo xsi:type="form:InputFieldExtInfo">
-        <autoMaxWidth>true</autoMaxWidth>
-        <autoMaxHeight>true</autoMaxHeight>
-        <wrap>true</wrap>
-        <clearButton>true</clearButton>
-        <spinButton>true</spinButton>
-        <chooseType>true</chooseType>
-        <typeDomainEnabled>true</typeDomainEnabled>
-        <textEdit>true</textEdit>
-        <minValue xsi:type="core:NumberValue">
-          <value>0</value>
-        </minValue>
-        <maxValue xsi:type="core:NumberValue">
-          <value>128</value>
-        </maxValue>
-      </extInfo>
-    </items>
+    <name>PagesGroup</name>
+    <id>81</id>
     <items xsi:type="form:FormGroup">
-      <name>GroupMonacoCodeEditor</name>
-      <id>11</id>
-      <items xsi:type="form:FormGroup">
-        <name>GroupMonacoCodeEditorMainSettings</name>
-        <id>45</id>
-        <items xsi:type="form:FormField">
-          <name>MonacoEditorTheme</name>
-          <id>8</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>MonacoEditorTheme</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>MonacoEditorThemeExtendedTooltip</name>
-            <id>10</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>MonacoEditorThemeContextMenu</name>
-            <id>9</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>InputField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:InputFieldExtInfo">
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <wrap>true</wrap>
-            <listChoiceMode>true</listChoiceMode>
-            <chooseType>true</chooseType>
-            <typeDomainEnabled>true</typeDomainEnabled>
-            <textEdit>true</textEdit>
-          </extInfo>
-        </items>
-        <items xsi:type="form:FormField">
-          <name>MonacoEditorScriptVariant</name>
-          <id>13</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>MonacoEditorScriptVariant</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>MonacoEditorScriptVariantExtendedTooltip</name>
-            <id>15</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>MonacoEditorScriptVariantContextMenu</name>
-            <id>14</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>InputField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:InputFieldExtInfo">
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <wrap>true</wrap>
-            <listChoiceMode>true</listChoiceMode>
-            <chooseType>true</chooseType>
-            <typeDomainEnabled>true</typeDomainEnabled>
-            <textEdit>true</textEdit>
-          </extInfo>
-        </items>
-        <items xsi:type="form:FormField">
-          <name>UseScriptMap</name>
-          <id>16</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>UseScriptMap</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>UseScriptMapExtendedTooltip</name>
-            <id>18</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>UseScriptMapContextMenu</name>
-            <id>17</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>CheckBoxField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
-        </items>
-        <items xsi:type="form:FormField">
-          <name>HideLineNumbers</name>
-          <id>19</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>HideLineNumbers</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>HideLineNumbersExtendedTooltip</name>
-            <id>21</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>HideLineNumbersContextMenu</name>
-            <id>20</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>CheckBoxField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
-        </items>
-        <items xsi:type="form:FormField">
-          <name>DisplaySpacesAndTabs</name>
-          <id>53</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>DisplaySpacesAndTabs</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>DisplaySpacesAndTabsExtendedTooltip</name>
-            <id>55</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>DisplaySpacesAndTabsContextMenu</name>
-            <id>54</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>CheckBoxField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
-        </items>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <title>
-          <key>ru</key>
-          <value>Группа редактор кода monaco основные настройки</value>
-        </title>
-        <title>
-          <key>en</key>
-          <value>Group monaco code editor main settings</value>
-        </title>
-        <extendedTooltip>
-          <name>GroupMonacoCodeEditorMainSettingsExtendedTooltip</name>
-          <id>46</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <type>Label</type>
-          <autoMaxWidth>true</autoMaxWidth>
-          <autoMaxHeight>true</autoMaxHeight>
-          <extInfo xsi:type="form:LabelDecorationExtInfo">
-            <horizontalAlign>Left</horizontalAlign>
-          </extInfo>
-        </extendedTooltip>
-        <type>UsualGroup</type>
-        <extInfo xsi:type="form:UsualGroupExtInfo">
-          <group>HorizontalIfPossible</group>
-          <showLeftMargin>true</showLeftMargin>
-          <united>true</united>
-          <throughAlign>Auto</throughAlign>
-          <currentRowUse>Auto</currentRowUse>
-        </extInfo>
-      </items>
+      <name>CodeEditorGroup</name>
+      <id>83</id>
       <items xsi:type="form:FormField">
-        <name>LinesHeight</name>
-        <id>50</id>
+        <name>EditorOf1CCode</name>
+        <id>5</id>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>LinesHeight</segments>
+          <segments>EditorOf1CCode</segments>
         </dataPath>
+        <handlers>
+          <event>OnChange</event>
+          <name>EditorOf1CCodeOnChange</name>
+        </handlers>
         <extendedTooltip>
-          <name>LinesHeightExtendedTooltip</name>
-          <id>52</id>
+          <name>EditorOf1CCodeExtendedTooltip</name>
+          <id>7</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -417,8 +37,59 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>LinesHeightContextMenu</name>
-          <id>51</id>
+          <name>EditorOf1CCodeContextMenu</name>
+          <id>6</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <autoFill>true</autoFill>
+        </contextMenu>
+        <type>InputField</type>
+        <editMode>Enter</editMode>
+        <showInHeader>true</showInHeader>
+        <headerHorizontalAlign>Left</headerHorizontalAlign>
+        <showInFooter>true</showInFooter>
+        <extInfo xsi:type="form:InputFieldExtInfo">
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <wrap>true</wrap>
+          <listChoiceMode>true</listChoiceMode>
+          <chooseType>true</chooseType>
+          <typeDomainEnabled>true</typeDomainEnabled>
+          <textEdit>true</textEdit>
+        </extInfo>
+      </items>
+      <items xsi:type="form:FormField">
+        <name>FontSize</name>
+        <id>47</id>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <dataPath xsi:type="form:DataPath">
+          <segments>FontSize</segments>
+        </dataPath>
+        <extendedTooltip>
+          <name>FontSizeExtendedTooltip</name>
+          <id>49</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <type>Label</type>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <extInfo xsi:type="form:LabelDecorationExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
+          </extInfo>
+        </extendedTooltip>
+        <contextMenu>
+          <name>FontSizeContextMenu</name>
+          <id>48</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -440,163 +111,34 @@
           <chooseType>true</chooseType>
           <typeDomainEnabled>true</typeDomainEnabled>
           <textEdit>true</textEdit>
+          <minValue xsi:type="core:NumberValue">
+            <value>0</value>
+          </minValue>
+          <maxValue xsi:type="core:NumberValue">
+            <value>128</value>
+          </maxValue>
         </extInfo>
       </items>
-      <items xsi:type="form:Table">
-        <name>ConfigurationSourceFilesDirectories</name>
-        <id>24</id>
-        <title>
-          <key>en</key>
-          <value>Configuration source files directories</value>
-        </title>
-        <title>
-          <key>ru</key>
-          <value>Каталоги исходных файлов конфигурации</value>
-        </title>
-        <visible>true</visible>
-        <enabled>true</enabled>
-        <userVisible>
-          <common>true</common>
-        </userVisible>
-        <dataPath xsi:type="form:DataPath">
-          <segments>ConfigurationSourceFilesDirectories</segments>
-        </dataPath>
-        <titleLocation>Top</titleLocation>
-        <toolTip>
-          <key>en</key>
-          <value>You need to specify that the hints on the export methods of modules in the Monaco editor work</value>
-        </toolTip>
-        <toolTip>
-          <key>ru</key>
-          <value>Нужно указать, чтобы работали подсказки по экспортным методам модулей в вредакторе Monaco</value>
-        </toolTip>
-        <toolTipRepresentation>Button</toolTipRepresentation>
-        <items xsi:type="form:FormField">
-          <name>ConfigurationSourceFilesDirectoriesSource</name>
-          <id>40</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:DataPath">
-            <segments>ConfigurationSourceFilesDirectories.Source</segments>
-          </dataPath>
-          <extendedTooltip>
-            <name>ConfigurationSourceFilesDirectoriesSourceExtendedTooltip</name>
-            <id>42</id>
+      <items xsi:type="form:FormGroup">
+        <name>GroupMonacoCodeEditor</name>
+        <id>11</id>
+        <items xsi:type="form:FormGroup">
+          <name>GroupMonacoCodeEditorMainSettings</name>
+          <id>45</id>
+          <items xsi:type="form:FormField">
+            <name>MonacoEditorTheme</name>
+            <id>8</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>ConfigurationSourceFilesDirectoriesSourceContextMenu</name>
-            <id>41</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>InputField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:InputFieldExtInfo">
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <wrap>true</wrap>
-            <listChoiceMode>true</listChoiceMode>
-            <chooseType>true</chooseType>
-            <typeDomainEnabled>true</typeDomainEnabled>
-            <textEdit>true</textEdit>
-          </extInfo>
-        </items>
-        <items xsi:type="form:FormField">
-          <name>ConfigurationSourceFilesDirectoriesDirectory</name>
-          <id>37</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <dataPath xsi:type="form:MultiLanguageDataPath">
-            <activeLanguage>1</activeLanguage>
-            <paths xsi:type="form:DataPath">
-              <segments>ConfigurationSourceFilesDirectories.Directory</segments>
-            </paths>
-            <paths xsi:type="form:DataPath">
-              <segments>ConfigurationSourceFilesDirectories.Directory</segments>
-            </paths>
-          </dataPath>
-          <extendedTooltip>
-            <name>ConfigurationSourceFilesDirectoriesDirectoryExtendedTooltip</name>
-            <id>39</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <contextMenu>
-            <name>ConfigurationSourceFilesDirectoriesDirectoryContextMenu</name>
-            <id>38</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>InputField</type>
-          <editMode>Enter</editMode>
-          <showInHeader>true</showInHeader>
-          <headerHorizontalAlign>Left</headerHorizontalAlign>
-          <showInFooter>true</showInFooter>
-          <extInfo xsi:type="form:InputFieldExtInfo">
-            <handlers>
-              <event>StartChoice</event>
-              <name>ConfigurationSourceFilesDirectoriesDirectoryStartChoice</name>
-            </handlers>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <wrap>true</wrap>
-            <choiceButton>true</choiceButton>
-            <chooseType>true</chooseType>
-            <typeDomainEnabled>true</typeDomainEnabled>
-            <textEdit>true</textEdit>
-          </extInfo>
-        </items>
-        <autoCommandBar>
-          <name>ConfigurationSourceFilesDirectoriesCommandBar</name>
-          <id>25</id>
-          <items xsi:type="form:Button">
-            <name>ConfigurationSourceFilesDirectoriesSaveConfigurationModulesToFiles</name>
-            <id>43</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>MonacoEditorTheme</segments>
+            </dataPath>
             <extendedTooltip>
-              <name>ConfigurationSourceFilesDirectoriesSaveConfigurationModulesToFilesExtendedTooltip</name>
-              <id>44</id>
+              <name>MonacoEditorThemeExtendedTooltip</name>
+              <id>10</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
@@ -609,33 +151,270 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <commandName>Form.Command.SaveConfigurationModulesToFiles</commandName>
-            <representation>Auto</representation>
-            <onlyInAllActions>false</onlyInAllActions>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <placementArea>UserCmds</placementArea>
-            <representationInContextMenu>Auto</representationInContextMenu>
+            <contextMenu>
+              <name>MonacoEditorThemeContextMenu</name>
+              <id>9</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>InputField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:InputFieldExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <wrap>true</wrap>
+              <listChoiceMode>true</listChoiceMode>
+              <chooseType>true</chooseType>
+              <typeDomainEnabled>true</typeDomainEnabled>
+              <textEdit>true</textEdit>
+            </extInfo>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>MonacoEditorScriptVariant</name>
+            <id>13</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>MonacoEditorScriptVariant</segments>
+            </dataPath>
+            <extendedTooltip>
+              <name>MonacoEditorScriptVariantExtendedTooltip</name>
+              <id>15</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>MonacoEditorScriptVariantContextMenu</name>
+              <id>14</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>InputField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:InputFieldExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <wrap>true</wrap>
+              <listChoiceMode>true</listChoiceMode>
+              <chooseType>true</chooseType>
+              <typeDomainEnabled>true</typeDomainEnabled>
+              <textEdit>true</textEdit>
+            </extInfo>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>UseScriptMap</name>
+            <id>16</id>
+            <title>
+              <key>en</key>
+              <value>Script map</value>
+            </title>
+            <title>
+              <key>ru</key>
+              <value>Карта кода</value>
+            </title>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>UseScriptMap</segments>
+            </dataPath>
+            <extendedTooltip>
+              <name>UseScriptMapExtendedTooltip</name>
+              <id>18</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>UseScriptMapContextMenu</name>
+              <id>17</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>CheckBoxField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>HideLineNumbers</name>
+            <id>19</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>HideLineNumbers</segments>
+            </dataPath>
+            <extendedTooltip>
+              <name>HideLineNumbersExtendedTooltip</name>
+              <id>21</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>HideLineNumbersContextMenu</name>
+              <id>20</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>CheckBoxField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>DisplaySpacesAndTabs</name>
+            <id>53</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>DisplaySpacesAndTabs</segments>
+            </dataPath>
+            <extendedTooltip>
+              <name>DisplaySpacesAndTabsExtendedTooltip</name>
+              <id>55</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>DisplaySpacesAndTabsContextMenu</name>
+              <id>54</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>CheckBoxField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
           </items>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
           </userVisible>
-          <horizontalAlign>Left</horizontalAlign>
-          <autoFill>true</autoFill>
-        </autoCommandBar>
-        <searchStringAddition>
+          <title>
+            <key>ru</key>
+            <value>Группа редактор кода monaco основные настройки</value>
+          </title>
+          <title>
+            <key>en</key>
+            <value>Group monaco code editor main settings</value>
+          </title>
+          <extendedTooltip>
+            <name>GroupMonacoCodeEditorMainSettingsExtendedTooltip</name>
+            <id>46</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <type>UsualGroup</type>
+          <extInfo xsi:type="form:UsualGroupExtInfo">
+            <group>HorizontalIfPossible</group>
+            <showLeftMargin>true</showLeftMargin>
+            <united>true</united>
+            <throughAlign>Auto</throughAlign>
+            <currentRowUse>Auto</currentRowUse>
+          </extInfo>
+        </items>
+        <items xsi:type="form:FormField">
+          <name>LinesHeight</name>
+          <id>50</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ConfigurationSourceFilesDirectoriesSearchString</name>
-          <id>28</id>
+          <dataPath xsi:type="form:DataPath">
+            <segments>LinesHeight</segments>
+          </dataPath>
           <extendedTooltip>
-            <name>ConfigurationSourceFilesDirectoriesSearchStringExtendedTooltip</name>
-            <id>30</id>
+            <name>LinesHeightExtendedTooltip</name>
+            <id>52</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -649,8 +428,8 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ConfigurationSourceFilesDirectoriesSearchStringContextMenu</name>
-            <id>29</id>
+            <name>LinesHeightContextMenu</name>
+            <id>51</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -658,21 +437,317 @@
             </userVisible>
             <autoFill>true</autoFill>
           </contextMenu>
-          <extInfo xsi:type="form:SearchStringAdditionExtInfo">
+          <type>InputField</type>
+          <editMode>Enter</editMode>
+          <showInHeader>true</showInHeader>
+          <headerHorizontalAlign>Left</headerHorizontalAlign>
+          <showInFooter>true</showInFooter>
+          <extInfo xsi:type="form:InputFieldExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <wrap>true</wrap>
+            <clearButton>true</clearButton>
+            <spinButton>true</spinButton>
+            <chooseType>true</chooseType>
+            <typeDomainEnabled>true</typeDomainEnabled>
+            <textEdit>true</textEdit>
           </extInfo>
-        </searchStringAddition>
-        <viewStatusAddition>
+        </items>
+        <items xsi:type="form:FormGroup">
+          <name>GroupMonacoCodeEditorCodeTemplates</name>
+          <id>56</id>
+          <items xsi:type="form:FormField">
+            <name>UseCodeStandardTemplates</name>
+            <id>58</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>UseCodeStandardTemplates</segments>
+            </dataPath>
+            <extendedTooltip>
+              <name>UseCodeStandardTemplatesExtendedTooltip</name>
+              <id>60</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>UseCodeStandardTemplatesContextMenu</name>
+              <id>59</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>CheckBoxField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
+          </items>
+          <items xsi:type="form:Table">
+            <name>CodeTemplates</name>
+            <id>61</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>CodeTemplates</segments>
+            </dataPath>
+            <titleLocation>None</titleLocation>
+            <items xsi:type="form:FormField">
+              <name>CodeTemplatesFileName</name>
+              <id>74</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <dataPath xsi:type="form:DataPath">
+                <segments>CodeTemplates.FileName</segments>
+              </dataPath>
+              <extendedTooltip>
+                <name>CodeTemplatesFileNameExtendedTooltip</name>
+                <id>76</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>CodeTemplatesFileNameContextMenu</name>
+                <id>75</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>InputField</type>
+              <editMode>Enter</editMode>
+              <showInHeader>true</showInHeader>
+              <headerHorizontalAlign>Left</headerHorizontalAlign>
+              <showInFooter>true</showInFooter>
+              <extInfo xsi:type="form:InputFieldExtInfo">
+                <handlers>
+                  <event>StartChoice</event>
+                  <name>CodeTemplatesFileNameStartChoice</name>
+                </handlers>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <wrap>true</wrap>
+                <chooseType>true</chooseType>
+                <typeDomainEnabled>true</typeDomainEnabled>
+                <textEdit>true</textEdit>
+              </extInfo>
+            </items>
+            <autoCommandBar>
+              <name>CodeTemplatesCommandBar</name>
+              <id>62</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <horizontalAlign>Left</horizontalAlign>
+              <autoFill>true</autoFill>
+            </autoCommandBar>
+            <searchStringAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>CodeTemplatesSearchString</name>
+              <id>65</id>
+              <extendedTooltip>
+                <name>CodeTemplatesSearchStringExtendedTooltip</name>
+                <id>67</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>CodeTemplatesSearchStringContextMenu</name>
+                <id>66</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <extInfo xsi:type="form:SearchStringAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </searchStringAddition>
+            <viewStatusAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>CodeTemplatesViewStatus</name>
+              <id>71</id>
+              <extendedTooltip>
+                <name>CodeTemplatesViewStatusExtendedTooltip</name>
+                <id>73</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>CodeTemplatesViewStatusContextMenu</name>
+                <id>72</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>ViewStatusAddition</type>
+              <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </viewStatusAddition>
+            <searchControlAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>CodeTemplatesSearchControl</name>
+              <id>68</id>
+              <extendedTooltip>
+                <name>CodeTemplatesSearchControlExtendedTooltip</name>
+                <id>70</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>CodeTemplatesSearchControlContextMenu</name>
+                <id>69</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>SearchControlAddition</type>
+              <extInfo xsi:type="form:SearchControlAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </searchControlAddition>
+            <extendedTooltip>
+              <name>CodeTemplatesExtendedTooltip</name>
+              <id>64</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>CodeTemplatesContextMenu</name>
+              <id>63</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <changeRowSet>true</changeRowSet>
+            <changeRowOrder>true</changeRowOrder>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <autoMaxRowsCount>true</autoMaxRowsCount>
+            <selectionMode>MultiRow</selectionMode>
+            <header>true</header>
+            <headerHeight>1</headerHeight>
+            <footerHeight>1</footerHeight>
+            <horizontalScrollBar>AutoUse</horizontalScrollBar>
+            <verticalScrollBar>AutoUse</verticalScrollBar>
+            <horizontalLines>true</horizontalLines>
+            <verticalLines>true</verticalLines>
+            <searchOnInput>Auto</searchOnInput>
+            <initialListView>Auto</initialListView>
+            <horizontalStretch>true</horizontalStretch>
+            <verticalStretch>true</verticalStretch>
+          </items>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ConfigurationSourceFilesDirectoriesViewStatus</name>
-          <id>34</id>
+          <title>
+            <key>ru</key>
+            <value>Шаблоны кода</value>
+          </title>
+          <title>
+            <key>en</key>
+            <value>Code templates</value>
+          </title>
           <extendedTooltip>
-            <name>ConfigurationSourceFilesDirectoriesViewStatusExtendedTooltip</name>
-            <id>36</id>
+            <name>GroupMonacoCodeEditorCodeTemplatesExtendedTooltip</name>
+            <id>57</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -685,32 +760,375 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <contextMenu>
-            <name>ConfigurationSourceFilesDirectoriesViewStatusContextMenu</name>
-            <id>35</id>
+          <type>UsualGroup</type>
+          <extInfo xsi:type="form:UsualGroupExtInfo">
+            <group>HorizontalIfPossible</group>
+            <representation>WeakSeparation</representation>
+            <showLeftMargin>true</showLeftMargin>
+            <united>true</united>
+            <showTitle>true</showTitle>
+            <throughAlign>Auto</throughAlign>
+            <currentRowUse>Auto</currentRowUse>
+          </extInfo>
+        </items>
+        <items xsi:type="form:FormGroup">
+          <name>GroupMonacoCodeEditorSourceFileDirectories</name>
+          <id>77</id>
+          <items xsi:type="form:Table">
+            <name>ConfigurationSourceFilesDirectories</name>
+            <id>24</id>
+            <title>
+              <key>en</key>
+              <value>Configuration source files directories</value>
+            </title>
+            <title>
+              <key>ru</key>
+              <value>Каталоги исходных файлов конфигурации</value>
+            </title>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
               <common>true</common>
             </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>ViewStatusAddition</type>
-          <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
+            <dataPath xsi:type="form:DataPath">
+              <segments>ConfigurationSourceFilesDirectories</segments>
+            </dataPath>
+            <titleLocation>Top</titleLocation>
+            <toolTip>
+              <key>en</key>
+              <value>You need to specify that the hints on the export methods of modules in the Monaco editor work</value>
+            </toolTip>
+            <toolTip>
+              <key>ru</key>
+              <value>Нужно указать, чтобы работали подсказки по экспортным методам модулей в вредакторе Monaco</value>
+            </toolTip>
+            <toolTipRepresentation>Button</toolTipRepresentation>
+            <items xsi:type="form:FormField">
+              <name>ConfigurationSourceFilesDirectoriesSource</name>
+              <id>40</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <dataPath xsi:type="form:DataPath">
+                <segments>ConfigurationSourceFilesDirectories.Source</segments>
+              </dataPath>
+              <extendedTooltip>
+                <name>ConfigurationSourceFilesDirectoriesSourceExtendedTooltip</name>
+                <id>42</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>ConfigurationSourceFilesDirectoriesSourceContextMenu</name>
+                <id>41</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>InputField</type>
+              <editMode>Enter</editMode>
+              <showInHeader>true</showInHeader>
+              <headerHorizontalAlign>Left</headerHorizontalAlign>
+              <showInFooter>true</showInFooter>
+              <extInfo xsi:type="form:InputFieldExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <wrap>true</wrap>
+                <listChoiceMode>true</listChoiceMode>
+                <chooseType>true</chooseType>
+                <typeDomainEnabled>true</typeDomainEnabled>
+                <textEdit>true</textEdit>
+              </extInfo>
+            </items>
+            <items xsi:type="form:FormField">
+              <name>ConfigurationSourceFilesDirectoriesDirectory</name>
+              <id>37</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <dataPath xsi:type="form:MultiLanguageDataPath">
+                <activeLanguage>1</activeLanguage>
+                <paths xsi:type="form:DataPath">
+                  <segments>ConfigurationSourceFilesDirectories.Directory</segments>
+                </paths>
+                <paths xsi:type="form:DataPath">
+                  <segments>ConfigurationSourceFilesDirectories.Directory</segments>
+                </paths>
+              </dataPath>
+              <extendedTooltip>
+                <name>ConfigurationSourceFilesDirectoriesDirectoryExtendedTooltip</name>
+                <id>39</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>ConfigurationSourceFilesDirectoriesDirectoryContextMenu</name>
+                <id>38</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>InputField</type>
+              <editMode>Enter</editMode>
+              <showInHeader>true</showInHeader>
+              <headerHorizontalAlign>Left</headerHorizontalAlign>
+              <showInFooter>true</showInFooter>
+              <extInfo xsi:type="form:InputFieldExtInfo">
+                <handlers>
+                  <event>StartChoice</event>
+                  <name>ConfigurationSourceFilesDirectoriesDirectoryStartChoice</name>
+                </handlers>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <wrap>true</wrap>
+                <choiceButton>true</choiceButton>
+                <chooseType>true</chooseType>
+                <typeDomainEnabled>true</typeDomainEnabled>
+                <textEdit>true</textEdit>
+              </extInfo>
+            </items>
+            <autoCommandBar>
+              <name>ConfigurationSourceFilesDirectoriesCommandBar</name>
+              <id>25</id>
+              <items xsi:type="form:Button">
+                <name>ConfigurationSourceFilesDirectoriesSaveConfigurationModulesToFiles</name>
+                <id>43</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <extendedTooltip>
+                  <name>ConfigurationSourceFilesDirectoriesSaveConfigurationModulesToFilesExtendedTooltip</name>
+                  <id>44</id>
+                  <visible>true</visible>
+                  <enabled>true</enabled>
+                  <userVisible>
+                    <common>true</common>
+                  </userVisible>
+                  <type>Label</type>
+                  <autoMaxWidth>true</autoMaxWidth>
+                  <autoMaxHeight>true</autoMaxHeight>
+                  <extInfo xsi:type="form:LabelDecorationExtInfo">
+                    <horizontalAlign>Left</horizontalAlign>
+                  </extInfo>
+                </extendedTooltip>
+                <commandName>Form.Command.SaveConfigurationModulesToFiles</commandName>
+                <representation>Auto</representation>
+                <onlyInAllActions>false</onlyInAllActions>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <placementArea>UserCmds</placementArea>
+                <representationInContextMenu>Auto</representationInContextMenu>
+              </items>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <horizontalAlign>Left</horizontalAlign>
+              <autoFill>true</autoFill>
+            </autoCommandBar>
+            <searchStringAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>ConfigurationSourceFilesDirectoriesSearchString</name>
+              <id>28</id>
+              <extendedTooltip>
+                <name>ConfigurationSourceFilesDirectoriesSearchStringExtendedTooltip</name>
+                <id>30</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>ConfigurationSourceFilesDirectoriesSearchStringContextMenu</name>
+                <id>29</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <extInfo xsi:type="form:SearchStringAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </searchStringAddition>
+            <viewStatusAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>ConfigurationSourceFilesDirectoriesViewStatus</name>
+              <id>34</id>
+              <extendedTooltip>
+                <name>ConfigurationSourceFilesDirectoriesViewStatusExtendedTooltip</name>
+                <id>36</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>ConfigurationSourceFilesDirectoriesViewStatusContextMenu</name>
+                <id>35</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>ViewStatusAddition</type>
+              <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </viewStatusAddition>
+            <searchControlAddition>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <name>ConfigurationSourceFilesDirectoriesSearchControl</name>
+              <id>31</id>
+              <extendedTooltip>
+                <name>ConfigurationSourceFilesDirectoriesSearchControlExtendedTooltip</name>
+                <id>33</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <contextMenu>
+                <name>ConfigurationSourceFilesDirectoriesSearchControlContextMenu</name>
+                <id>32</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <autoFill>true</autoFill>
+              </contextMenu>
+              <type>SearchControlAddition</type>
+              <extInfo xsi:type="form:SearchControlAdditionExtInfo">
+                <autoMaxWidth>true</autoMaxWidth>
+              </extInfo>
+            </searchControlAddition>
+            <extendedTooltip>
+              <name>ConfigurationSourceFilesDirectoriesExtendedTooltip</name>
+              <id>27</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>ConfigurationSourceFilesDirectoriesContextMenu</name>
+              <id>26</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <changeRowSet>true</changeRowSet>
+            <changeRowOrder>true</changeRowOrder>
             <autoMaxWidth>true</autoMaxWidth>
-          </extInfo>
-        </viewStatusAddition>
-        <searchControlAddition>
+            <autoMaxHeight>true</autoMaxHeight>
+            <autoMaxRowsCount>true</autoMaxRowsCount>
+            <selectionMode>MultiRow</selectionMode>
+            <header>true</header>
+            <headerHeight>1</headerHeight>
+            <footerHeight>1</footerHeight>
+            <horizontalScrollBar>AutoUse</horizontalScrollBar>
+            <verticalScrollBar>AutoUse</verticalScrollBar>
+            <horizontalLines>true</horizontalLines>
+            <verticalLines>true</verticalLines>
+            <searchOnInput>Auto</searchOnInput>
+            <initialListView>Auto</initialListView>
+            <horizontalStretch>true</horizontalStretch>
+            <verticalStretch>true</verticalStretch>
+          </items>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ConfigurationSourceFilesDirectoriesSearchControl</name>
-          <id>31</id>
+          <title>
+            <key>en</key>
+            <value>Source file directories</value>
+          </title>
+          <title>
+            <key>ru</key>
+            <value>Каталоги исходных модулей</value>
+          </title>
           <extendedTooltip>
-            <name>ConfigurationSourceFilesDirectoriesSearchControlExtendedTooltip</name>
-            <id>33</id>
+            <name>GroupMonacoCodeEditorSourceFileDirectoriesExtendedTooltip</name>
+            <id>78</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -723,24 +1141,33 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <contextMenu>
-            <name>ConfigurationSourceFilesDirectoriesSearchControlContextMenu</name>
-            <id>32</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <autoFill>true</autoFill>
-          </contextMenu>
-          <type>SearchControlAddition</type>
-          <extInfo xsi:type="form:SearchControlAdditionExtInfo">
-            <autoMaxWidth>true</autoMaxWidth>
+          <type>UsualGroup</type>
+          <extInfo xsi:type="form:UsualGroupExtInfo">
+            <group>HorizontalIfPossible</group>
+            <representation>WeakSeparation</representation>
+            <showLeftMargin>true</showLeftMargin>
+            <united>true</united>
+            <showTitle>true</showTitle>
+            <throughAlign>Auto</throughAlign>
+            <currentRowUse>Auto</currentRowUse>
           </extInfo>
-        </searchControlAddition>
+        </items>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <title>
+          <key>ru</key>
+          <value>Группа редактор кода monaco</value>
+        </title>
+        <title>
+          <key>en</key>
+          <value>Group monaco code editor</value>
+        </title>
         <extendedTooltip>
-          <name>ConfigurationSourceFilesDirectoriesExtendedTooltip</name>
-          <id>27</id>
+          <name>GroupMonacoCodeEditorExtendedTooltip</name>
+          <id>12</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -753,33 +1180,14 @@
             <horizontalAlign>Left</horizontalAlign>
           </extInfo>
         </extendedTooltip>
-        <contextMenu>
-          <name>ConfigurationSourceFilesDirectoriesContextMenu</name>
-          <id>26</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <autoFill>true</autoFill>
-        </contextMenu>
-        <changeRowSet>true</changeRowSet>
-        <changeRowOrder>true</changeRowOrder>
-        <autoMaxWidth>true</autoMaxWidth>
-        <autoMaxHeight>true</autoMaxHeight>
-        <autoMaxRowsCount>true</autoMaxRowsCount>
-        <selectionMode>MultiRow</selectionMode>
-        <header>true</header>
-        <headerHeight>1</headerHeight>
-        <footerHeight>1</footerHeight>
-        <horizontalScrollBar>AutoUse</horizontalScrollBar>
-        <verticalScrollBar>AutoUse</verticalScrollBar>
-        <horizontalLines>true</horizontalLines>
-        <verticalLines>true</verticalLines>
-        <searchOnInput>Auto</searchOnInput>
-        <initialListView>Auto</initialListView>
-        <horizontalStretch>true</horizontalStretch>
-        <verticalStretch>true</verticalStretch>
+        <type>UsualGroup</type>
+        <extInfo xsi:type="form:UsualGroupExtInfo">
+          <group>Vertical</group>
+          <showLeftMargin>true</showLeftMargin>
+          <united>true</united>
+          <throughAlign>Auto</throughAlign>
+          <currentRowUse>Auto</currentRowUse>
+        </extInfo>
       </items>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -787,16 +1195,16 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Группа редактор кода monaco</value>
+        <key>en</key>
+        <value>Code editor</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group monaco code editor</value>
+        <key>ru</key>
+        <value>Редактор кода</value>
       </title>
       <extendedTooltip>
-        <name>GroupMonacoCodeEditorExtendedTooltip</name>
-        <id>12</id>
+        <name>CodeEditorGroupExtendedTooltip</name>
+        <id>84</id>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
@@ -809,13 +1217,47 @@
           <horizontalAlign>Left</horizontalAlign>
         </extInfo>
       </extendedTooltip>
-      <type>UsualGroup</type>
-      <extInfo xsi:type="form:UsualGroupExtInfo">
+      <type>Page</type>
+      <extInfo xsi:type="form:PageGroupExtInfo">
         <group>Vertical</group>
-        <showLeftMargin>true</showLeftMargin>
-        <united>true</united>
-        <throughAlign>Auto</throughAlign>
-        <currentRowUse>Auto</currentRowUse>
+        <showTitle>true</showTitle>
+      </extInfo>
+    </items>
+    <items xsi:type="form:FormGroup">
+      <name>QueryConsoleGroup</name>
+      <id>85</id>
+      <visible>true</visible>
+      <enabled>true</enabled>
+      <userVisible>
+        <common>true</common>
+      </userVisible>
+      <title>
+        <key>en</key>
+        <value>Query console</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Консоль запросов</value>
+      </title>
+      <extendedTooltip>
+        <name>QueryConsoleGroupExtendedTooltip</name>
+        <id>86</id>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <type>Label</type>
+        <autoMaxWidth>true</autoMaxWidth>
+        <autoMaxHeight>true</autoMaxHeight>
+        <extInfo xsi:type="form:LabelDecorationExtInfo">
+          <horizontalAlign>Left</horizontalAlign>
+        </extInfo>
+      </extendedTooltip>
+      <type>Page</type>
+      <extInfo xsi:type="form:PageGroupExtInfo">
+        <group>Vertical</group>
+        <showTitle>true</showTitle>
       </extInfo>
     </items>
     <visible>true</visible>
@@ -825,15 +1267,15 @@
     </userVisible>
     <title>
       <key>en</key>
-      <value>Сode editor</value>
+      <value>Group1</value>
     </title>
     <title>
       <key>ru</key>
-      <value>Редактор кода</value>
+      <value>Группа1</value>
     </title>
     <extendedTooltip>
-      <name>GroupCodeEditorExtendedTooltip</name>
-      <id>23</id>
+      <name>PagesGroupExtendedTooltip</name>
+      <id>82</id>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
@@ -846,15 +1288,9 @@
         <horizontalAlign>Left</horizontalAlign>
       </extInfo>
     </extendedTooltip>
-    <type>UsualGroup</type>
-    <extInfo xsi:type="form:UsualGroupExtInfo">
-      <group>Vertical</group>
-      <behavior>Collapsible</behavior>
-      <representation>NormalSeparation</representation>
-      <showLeftMargin>true</showLeftMargin>
-      <united>true</united>
-      <showTitle>true</showTitle>
-      <throughAlign>Auto</throughAlign>
+    <type>Pages</type>
+    <extInfo xsi:type="form:PagesGroupExtInfo">
+      <pagesRepresentation>TabsOnTop</pagesRepresentation>
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
   </items>
@@ -947,10 +1383,10 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>EditorOf1CScript</name>
+    <name>EditorOf1CCode</name>
     <title>
       <key>en</key>
-      <value>Editor of 1C Script</value>
+      <value>Editor of 1C code</value>
     </title>
     <title>
       <key>ru</key>
@@ -1199,6 +1635,70 @@
       <common>true</common>
     </edit>
     <savedData>true</savedData>
+  </attributes>
+  <attributes>
+    <name>UseCodeStandardTemplates</name>
+    <title>
+      <key>en</key>
+      <value>Use code standard templates</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Использовать стандартные шаблоны кода</value>
+    </title>
+    <id>13</id>
+    <valueType>
+      <types>Boolean</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>CodeTemplates</name>
+    <title>
+      <key>en</key>
+      <value>Script templates</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Шаблоны кода</value>
+    </title>
+    <id>14</id>
+    <valueType>
+      <types>ValueTable</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+    <columns>
+      <name>FileName</name>
+      <title>
+        <key>en</key>
+        <value>File name</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Имя файла</value>
+      </title>
+      <id>15</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
   </attributes>
   <formCommands>
     <name>Apply</name>
