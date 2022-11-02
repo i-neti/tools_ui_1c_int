@@ -217,7 +217,7 @@
         <excludedCommands>SortListDesc</excludedCommands>
         <excludedCommands>Tree</excludedCommands>
         <items xsi:type="form:FormGroup">
-          <name>MarketItemsString</name>
+          <name>MarkedItemsString</name>
           <id>29</id>
           <items xsi:type="form:FormField">
             <name>Mark</name>
@@ -321,19 +321,19 @@
             <common>true</common>
           </userVisible>
           <title>
-            <key>ru</key>
-            <value>Строка списка помеченных</value>
+            <key>en</key>
+            <value>Marked items string</value>
           </title>
           <title>
-            <key>en</key>
-            <value>Market items string</value>
+            <key>ru</key>
+            <value>Строка списка помеченных</value>
           </title>
           <toolTip>
             <key>ru</key>
             <value>Строка списка помеченных</value>
           </toolTip>
           <extendedTooltip>
-            <name>MarketItemsStringExtendedTooltip</name>
+            <name>MarkedItemsStringExtendedTooltip</name>
             <id>98</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1610,15 +1610,15 @@
           <extInfo xsi:type="form:PictureDecorationExtInfo"/>
         </items>
         <items xsi:type="form:Decoration">
-          <name>DelitionMarkedObjects</name>
+          <name>DeletionMarkedObjects</name>
           <id>63</id>
+          <title>
+            <key>en</key>
+            <value>Deletion marked objects</value>
+          </title>
           <title>
             <key>ru</key>
             <value>Удаление помеченных объектов</value>
-          </title>
-          <title>
-            <key>en</key>
-            <value>Delition marked objects</value>
           </title>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1626,7 +1626,7 @@
             <common>true</common>
           </userVisible>
           <extendedTooltip>
-            <name>DelitionMarkedObjectsExtendedTooltip</name>
+            <name>DeletionMarkedObjectsExtendedTooltip</name>
             <id>113</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -1641,7 +1641,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>DelitionMarkedObjectsContextMenu</name>
+            <name>DeletionMarkedObjectsContextMenu</name>
             <id>64</id>
             <visible>true</visible>
             <enabled>true</enabled>

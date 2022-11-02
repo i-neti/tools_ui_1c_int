@@ -157,6 +157,7 @@ Procedure ObjectTypeOnChangeAtServer()
 		For Each mdObject In TypeMetadata Do
 			vlObjectList.Add(mdObject.Name);
 		EndDo;
+		vlObjectList.SortByValue();
 		
 		Items.ObjectName.TypeRestriction = New TypeDescription("String");
 		ObjectName = "";

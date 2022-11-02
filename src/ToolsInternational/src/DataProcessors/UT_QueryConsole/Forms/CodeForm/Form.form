@@ -457,6 +457,52 @@
       <common>true</common>
     </edit>
   </attributes>
+  <attributes>
+    <name>UT_AlgorithmText</name>
+    <title>
+      <key>en</key>
+      <value>U t algorithm text</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>У и текст алгоритма</value>
+    </title>
+    <id>7</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>UT_CodeExecutionMethod</name>
+    <title>
+      <key>en</key>
+      <value>U t code execution method</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>У и метод исполнения кода</value>
+    </title>
+    <id>8</id>
+    <valueType>
+      <types>Number</types>
+      <numberQualifiers>
+        <precision>10</precision>
+      </numberQualifiers>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
   <formCommands>
     <name>Refresh</name>
     <title>

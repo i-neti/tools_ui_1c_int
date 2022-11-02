@@ -529,7 +529,7 @@
       <name>TableOfScheduledJobsContextMenu</name>
       <id>8</id>
       <items xsi:type="form:Button">
-        <name>РегламентныеЗаданияОчиститьКоличествоЗапусков1</name>
+        <name>ScheduledJobsClearNumberOfRuns1</name>
         <id>65</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -537,7 +537,7 @@
           <common>true</common>
         </userVisible>
         <extendedTooltip>
-          <name>РегламентныеЗаданияОчиститьКоличествоЗапусков1РасширеннаяПодсказка</name>
+          <name>ScheduledJobsClearNumberOfRuns1ExtendedTooltip</name>
           <id>66</id>
           <visible>true</visible>
           <enabled>true</enabled>

@@ -7,8 +7,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Title = Parameters.Title;
 	QueryName = Parameters.QueryName;
 	QueryParameters = Parameters.QueryParameters;
-	QueryText.SetText(Parameters.QueryText);
-	
+	QueryReceivedText = Parameters.QueryText;
+	QueryReceivedText = StrReplace(QueryReceivedText, Char(34), Char(34) + Char(34));
+	Parameters.Property("AlgorithmText", UT_AlgorithmText);
+	Parameters.Property("CodeExecutionMethod", UT_CodeExecutionMethod);
+	QueryText.SetText(QueryReceivedText);
 	SetParameterValues = FormAttributeToValue("Object").SavedStates_Get("SetParameterValues", True);
 	
 	GenerateCodeWithParameters();
@@ -351,14 +354,15 @@ EndFunction
 Procedure GenerateCodeWithParameters()
 	
 	Text = New TextDocument;
-	Text.AddLine(StrTemplate("	%1 = New Query(""", QueryName));
+	Text.AddLine(StrTemplate("%1 = New Query;", QueryName));
+	Text.AddLine(StrTemplate("%1.Text = """, QueryName));
 	
 	For j = 1 To QueryText.LineCount() Do
 		Line = QueryText.GetLine(j);
-		Text.AddLine(StrTemplate("		|%1", Line));
+		Text.AddLine(StrTemplate("|%1", Line));
 	EndDo;
 	
-	Text.ReplaceLine(Text.LineCount(), Text.GetLine(Text.LineCount()) + """);
+	Text.ReplaceLine(Text.LineCount(), Text.GetLine(Text.LineCount()) + """;
 	|");
 	
 	vtQueryParameters = FormAttributeToValue("Object").StringToValue(QueryParameters);
@@ -379,7 +383,7 @@ Procedure GenerateCodeWithParameters()
 				Text.AddLine(stLiteral.CreationCode);
 			EndIf;
 			
-			SetParameterCode = StrTemplate("	%1.SetParameter(""%2"", %3);", QueryName, ParameterName, stLiteral.Literal);
+			SetParameterCode = StrTemplate("%1.SetParameter(""%2"", %3);", QueryName, ParameterName, stLiteral.Literal);
 			
 			If ValueIsFilled(stLiteral.Comment) Then
 				SetParameterCode = StrTemplate("%1 //%2", SetParameterCode, stLiteral.Comment);
@@ -392,17 +396,31 @@ Procedure GenerateCodeWithParameters()
 			EndIf;
 			
 		Else
-			Text.AddLine(StrTemplate("	%1.SetParameter(""%2"", );", QueryName, ParameterName));
+			Text.AddLine(StrTemplate("%1.SetParameter(""%2"", );", QueryName, ParameterName));
 		EndIf;
 		
 	EndDo;
 	
 	Text.AddLine("");
-	Text.AddLine(StrTemplate("	QueryResult = %1.Execute();", QueryName));
-	Text.AddLine("	Selection = QueryResult.Select();");
-	Text.AddLine("	While Selection.Next() Do");
-	Text.AddLine("		");
-	Text.AddLine("	EndDo;");
+	Text.AddLine(StrTemplate("QueryResult = %1.Execute();", QueryName));
+	Text.AddLine("Selection = QueryResult.Select();");
+	If ValueIsFilled(UT_AlgorithmText) Then
+		If UT_CodeExecutionMethod = 0 Then
+			For Counter = 1 To StrLineCount(UT_AlgorithmText) Do
+				Text.AddLine("" + StrGetLine(UT_AlgorithmText, Counter));
+			EndDo;
+		Else
+			Text.AddLine("While Selection.Next() Do");
+			For Counter = 1 To StrLineCount(UT_AlgorithmText) Do
+				Text.AddLine("	" + StrGetLine(UT_AlgorithmText, Counter));
+			EndDo;
+			Text.AddLine("EndDo;"); 
+		EndIf;
+	Else
+		Text.AddLine("While Selection.Next() Do");
+		Text.AddLine("");
+		Text.AddLine("EndDo;");
+	EndIf;
 	
 EndProcedure
 
