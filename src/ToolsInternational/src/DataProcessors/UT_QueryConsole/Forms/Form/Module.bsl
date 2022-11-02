@@ -1239,6 +1239,8 @@ Function DisassembleMacrocolumnExpression(MacroExpressionString)
 		ValueType = Undefined;
 		If strMacroType = "UID" Then
 			ValueType = New TypeDescription("UUID");
+		ElsIf strMacroType = "CreationDate" Then
+			ValueType = New TypeDescription("Date");
 		EndIf;
 
 		If ValueType <> Undefined Then
@@ -1900,7 +1902,7 @@ EndProcedure
 Procedure PutEditingQuery()
 	If EditingQuery >= 0 Then
 		strQueryText = QueryText;
-		strAlgorithmText = CurrentAlgorithmText();
+		strAlgorithmText = AlgorithmCurrentText();
 		
 		AlgorithmSelectionBoundaries = AlgorithmSelectionBoundaries();	
 		QuerySelectionBoundaries = QuerySelectionBoundaries();	
@@ -2892,8 +2894,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ContainerAttributeSuffix=DataProcessorObject.ContainerAttributeSuffix();
 
 #Region UT_OnCreateAtServer
-	UT_IsPartOfUniversalTools = DataProcessorObject.DataProcessorIsPartOfUniversalTools();
-	If UT_IsPartOfUniversalTools Then
+	UT_IncludedInUniversalTools = DataProcessorObject.DataProcessorIsPartOfUniversalTools();
+	If UT_IncludedInUniversalTools Then
 		UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing,
 			Items.FormCommandBarRight);
 
@@ -4839,7 +4841,7 @@ Function ExecuteAlgorithmLineByLineIndication()
 	While True Do
 
 		stResult = ExecuteAlgorithmAtServerLineByLine(StateAddress, QueryResultAddress, ResultInBatch,
-			CurrentAlgorithmText(), Object.AlgorithmExecutionUpdateIntervalOption);
+			AlgorithmCurrentText(), Object.AlgorithmExecutionUpdateIntervalOption);
 
 		If Not stResult.Success Then
 			Break;
@@ -4885,17 +4887,17 @@ Procedure ExecuteDataProcessor_Command(Command)
 	EndIf;
 
 	If CodeExecutionMethod = 0 Then
-		stResult = ExecuteAlgorithm(CurrentAlgorithmText());
+		stResult = ExecuteAlgorithm(AlgorithmCurrentText());
 	ElsIf CodeExecutionMethod = 1 Then
-		stResult = ExecuteAlgorithmLineByLine(QueryResultAddress, ResultInBatch, CurrentAlgorithmText());
+		stResult = ExecuteAlgorithmLineByLine(QueryResultAddress, ResultInBatch, AlgorithmCurrentText());
 	ElsIf CodeExecutionMethod = 2 Then
 		stResult = ExecuteAlgorithmLineByLineIndication();
 	ElsIf CodeExecutionMethod = 3 Then
 		//execution in background
-		stResult = RunDataProcessorAtServer(CurrentAlgorithmText(), False);
+		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), False);
 	ElsIf CodeExecutionMethod = 4 Then
 		//line-by-line execution in background with indication
-		stResult = RunDataProcessorAtServer(CurrentAlgorithmText(), True);
+		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), True);
 	Else
 		stResult = New Structure("Success, ErrorDescription", False, NStr("ru = 'Неверный метод исполнения кода'; en = 'Code execution method is incorrect.'"));
 	EndIf;
@@ -4990,9 +4992,12 @@ Procedure GetCodeWithParameters_Command(Command)
 										|QueryName,
 										|QueryText,
 										|QueryParameters,
+										|AlgorithmText,
+										|CodeExecutionMethod,
 										|Title,
 										|Content", Object, QueryName, QueryText,
-		QueryParameters_GetAsString(), NStr("ru = 'Код для выполнения запроса на встроенном языке 1С'; en = 'Code for executing the query by 1C:Enterprise language'"));
+		QueryParameters_GetAsString(), AlgorithmCurrentText(), CodeExecutionMethod, 
+		NStr("ru = 'Код для выполнения запроса на встроенном языке 1С'; en = 'Code for executing the query by 1C:Enterprise language'"));
 
 	OpenForm(FormFullName("CodeForm"), OpeningParameters, ThisForm, False, , , ,
 		FormWindowOpeningMode.LockOwnerWindow);
@@ -5221,7 +5226,7 @@ EndFunction
 
 &AtClient
 Procedure SetAlgorithmText(NewText)
-	If UT_IsPartOfUniversalTools Then
+	If UT_IncludedInUniversalTools Then
 		UT_CodeEditorClient.SetEditorText(ThisObject, "Algorithm", NewText);
 	Else
 		AlgorithmText = NewText;
@@ -5229,8 +5234,8 @@ Procedure SetAlgorithmText(NewText)
 EndProcedure
 
 &AtClient
-Function CurrentAlgorithmText()
-	If UT_IsPartOfUniversalTools Then
+Function AlgorithmCurrentText()
+	If UT_IncludedInUniversalTools Then
 		Return UT_CodeEditorClient.EditorCodeText(ThisObject, "Algorithm");
 	Else
 		Return AlgorithmText;
@@ -5258,7 +5263,7 @@ EndFunction
 
 &AtClient
 Procedure SetAlgorithmSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd)
-	If UT_IsPartOfUniversalTools Then
+	If UT_IncludedInUniversalTools Then
 		UT_CodeEditorClient.SetTextSelectionBorders(ThisObject, "Algorithm", RowBeginning, ColumnBeginning,
 			RowEnd, ColumnEnd);
 	Else
@@ -5275,7 +5280,7 @@ EndProcedure
 
 &AtClient 
 Function AlgorithmSelectionBoundaries()
-	If UT_IsPartOfUniversalTools Then
+	If UT_IncludedInUniversalTools Then
 		Return UT_CodeEditorClient.EditorSelectionBorders(ThisObject, "Algorithm");
 	Else
 		Return ItemSelectionBounds(Items.AlgorithmText);	
@@ -5284,7 +5289,7 @@ EndFunction
 
 &AtClient 
 Function QuerySelectionBoundaries()
-//	If UT_IsPartOfUniversalTools Then
+//	If UT_IncludedInUniversalTools Then
 //		Return UT_CodeEditorClient.EditorSelectionBorders(ThisObject, "Algorithm");
 //	Else
 		Return ItemSelectionBounds(Items.QueryText);	
@@ -5293,7 +5298,7 @@ EndFunction
 
 &AtClient
 Procedure InsertTextInAlgorithmCursorPosition (Text)
-	If UT_IsPartOfUniversalTools Then
+	If UT_IncludedInUniversalTools Then
 		UT_CodeEditorClient.InsertTextInCursorLocation(ThisObject, "Algorithm", Text);
 	Else
 		InsertTextInItemCursorLocation(Items.AlgorithmText, Text);	
@@ -5309,6 +5314,11 @@ EndProcedure
 #EndRegion
 
 #Region UT
+
+&AtClient
+Procedure InsertMacroColumn(Command)
+	UT_CodeEditorClient.InsertQueryEditorMacroColumn(ThisObject, "Query");
+EndProcedure
 
 &AtClient
 Procedure UT_EditValue(Command)
@@ -5341,6 +5351,31 @@ Procedure UT_EditValue(Command)
 		CommonClientModule.EditObject(ColumnValue);
 	EndIf;
 
+EndProcedure
+
+&AtClient
+Procedure UT_EditPropertyRowValue(Command)
+	CurData=Items.UT_RowProperties.CurrentData;
+	If CurData = Undefined Then
+		Return;
+	EndIf;
+	
+	If CurData.Value = "<ValueStorage>" Then
+		ResultFormItem=Items.QueryResult;
+		If ResultKind = "tree" Then
+			ResultFormItem=Items.QueryResultTree;
+		EndIf;
+		ResultCurData=ResultFormItem.CurrentData;
+		If ResultCurData = Undefined Then
+			Return;
+		EndIf;
+		
+		UT_CommonClient.EditValueStorage(ThisObject, ResultCurData[CurData.Property
+			+ ContainerAttributeSuffix].Storage);
+			
+	Else
+		UT_CommonClient.EditObject(CurData.Value);
+	EndIf;
 EndProcedure
 
 &AtServer
@@ -5500,8 +5535,169 @@ Procedure UT_AddResultStructureContextAlgorithm()
 	
 	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Algorithm", AdditionalContextStructure);
 
+EndProcedure
+
+&AtClient
+Procedure UT_ResultRowProperties(Command)
+	
+	RowPropertiesVisible = Not RowPropertiesVisible;
+
+	Items.UT_QueryResultRowProperty.Check = RowPropertiesVisible;
+	Items.UT_QueryResultTreeRowProperty.Check = RowPropertiesVisible;
+	Items.UT_RowProperties.Visible = RowPropertiesVisible;
+	
+	If RowPropertiesVisible Then
+		SourceName = UT_SourceNameByResultKindAttribute();
+		UT_FillRowProperties(SourceName);
+		UT_ActivateRowPropertyRow(SourceName);	
+	EndIf;
+		
+EndProcedure
+
+&AtClient
+Procedure UT_QueryResultOnActivateRow(Item)	
+	UT_FillRowProperties(Item.Name);
+EndProcedure
+
+&AtClient
+Procedure UT_QueryResultOnActivateCell(Item)
+	UT_ActivateRowPropertyRow(Item.Name);
+EndProcedure
+
+&AtClient
+Procedure UT_ActivateRowPropertyRow(SourceName)
+	If Not RowPropertiesVisible Then
+		Return;
+	EndIf;
+	
+	CurrentData = Items[SourceName].CurrentData;
+	If CurrentData = Undefined Then
+		Return;
+	EndIf;
+	
+	ItemName = Items[SourceName].CurrentItem.Name;
+	CellName = QueryResultColumnsMap[ItemName];
+	Filter = New Structure("Property", CellName);
+	Rows = UT_RowProperties.FindRows(Filter);
+	If Rows.Count() Then
+		Items.UT_RowProperties.CurrentRow = Rows[0].GetID();
+		ValueColumn = Items.UT_RowProperties.ChildItems.UT_RowPropertiesGroup.ChildItems.UT_RowPropertiesValue;
+		Items.UT_RowProperties.CurrentItem = ValueColumn; 
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure UT_FillRowProperties(SourceName)
+	If Not RowPropertiesVisible Then
+		Return;
+	EndIf;
+
+	UT_RowProperties.Clear();
+	CurrentData = Items[SourceName].CurrentData;
+	If CurrentData = Undefined Then
+		Return;
+	EndIf;
+	
+	For Each ChildItem In Items[SourceName].ChildItems Do		
+		Name = QueryResultColumnsMap[ChildItem.Name];		
+		Value = Undefined;		
+		CurrentData.Property(Name, Value);
+		NewRow = UT_RowProperties.Add();
+		NewRow.Property = Name;
+		NewRow.Value = Value;
+		If QueryResultContainerColumns.Property(Name) Then
+			NewRow.Picture = PictureLib.UT_ValueTable;
+		ElsIf TypeOf(Value) = Type("Date") Then
+			NewRow.Picture = PictureLib.UT_Date;
+		ElsIf TypeOf(Value) = Type("String") Then
+			NewRow.Picture = PictureLib.UT_String;
+		ElsIf TypeOf(Value) = Type("Number") Then
+			NewRow.Picture = PictureLib.UT_Number;
+		ElsIf TypeOf(Value) = Type("Boolean") Then
+			NewRow.Picture = PictureLib.UT_Boolean;
+		ElsIf TypeOf(Value) = Type("Null") Then
+			NewRow.Picture = PictureLib.UT_Null;
+		Else
+			NewRow.Picture = UT_SelectRowPictureAtServer(Value);
+		EndIf;	
+	EndDo;
 
 EndProcedure
+
+&AtClient
+Procedure UT_RowPropertiesSelection(Item, RowSelected, Field, StandardProcessing)
+	
+	SourceName = UT_SourceNameByResultKindAttribute();
+	ColumnName = Item.CurrentData.Property;
+	FieldName = Undefined;
+	For Each KeyValue In QueryResultColumnsMap Do
+		If KeyValue.Value = ColumnName Then
+			FieldName = KeyValue.Key;
+			Break;
+		EndIf;
+	EndDo;
+	
+	If ValueIsFilled(FieldName) Then
+		Structure = New Structure("Name", FieldName);
+		QueryResultSelection(Items[SourceName], Undefined, Structure, True);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Function UT_SourceNameByResultKindAttribute()
+	
+	If ResultKind = "table" Then
+		SourceName = "QueryResult";	
+	Else
+		SourceName = "QueryResultTree";
+	EndIf;
+	
+	Return SourceName;
+	
+EndFunction
+
+&AtServerNoContext
+Function UT_SelectRowPictureAtServer(Value)
+			
+	Try
+		MetadataName = Value.Metadata();
+		BaseTypeName = UT_Common.BaseTypeNameByMetadataObject(MetadataName);	
+	Except
+		Return Undefined;
+	EndTry;
+	
+	If BaseTypeName = "Catalogs" Then
+		Picture = PictureLib.Catalog;
+	ElsIf BaseTypeName = "Documents" Then
+		Picture = PictureLib.Document;
+	ElsIf BaseTypeName = "Enums" Then
+		Picture = PictureLib.Enum;
+	ElsIf BaseTypeName = "ExchangePlans" Then
+		Picture = PictureLib.ExchangePlan;
+	ElsIf BaseTypeName = "ChartsOfCharacteristicTypes" Then
+		Picture = PictureLib.ChartOfCharacteristicTypes;
+	ElsIf BaseTypeName = "BusinessProcesses" Then
+		Picture = PictureLib.BusinessProcess;
+	ElsIf BaseTypeName = "Tasks" Then
+		Picture = PictureLib.Task;
+	ElsIf BaseTypeName = "ChartsOfAccounts" Then
+		Picture = PictureLib.ChartOfAccounts;
+	ElsIf BaseTypeName = "ChartsOfCalculationTypes" Then
+		Picture = PictureLib.ChartOfCalculationTypes;
+	ElsIf BaseTypeName = "Constants" Then
+		Picture = PictureLib.Constant;
+	ElsIf BaseTypeName = "DocumentJournals" Then
+		Picture = PictureLib.DocumentJournal;
+	Else
+		Picture = Undefined;
+	EndIf;
+	
+	Return Picture;
+	
+EndFunction
+
 #EndRegion
 
 #If Client Then

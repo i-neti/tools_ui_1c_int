@@ -767,7 +767,7 @@ Function RunDocumentsDeletion(Знач DeletedArray, DeletedObjectsTypes)
 	DeletionResult.Status = True;
 	DeletionResult.Value = New Structure("Found, NotDeleted", Found, NotDeletedObjectsArray);
 
-	Возврат DeletionResult;
+	Return DeletionResult;
 EndFunction
 &AtServer
 Procedure DeleteMarkedObjects(DeletionParameters, StorageAddress) 

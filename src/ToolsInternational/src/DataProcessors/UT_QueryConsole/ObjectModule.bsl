@@ -223,6 +223,8 @@ Function GetTypeName(Value) Export
 		Return "AccumulationRecordType";
 	ElsIf Value = Type("AccountType") Then
 		Return "AccountType";
+	ElsIf Value = Type("UUID") Then
+		Return "UUID";
 	Else
 		Return String(Value);
 	EndIf;
@@ -296,6 +298,12 @@ Procedure ProcessMacrocolumns(QueryResultString, selSelection, stMacrocolumns) E
 			Value = QueryResultString[kv.Value.SourceColumn];
 			If ValueIsFilled(Value) Then
 				QueryResultString[kv.Key] = Value.UUID();
+			EndIf;
+		ElsIf kv.Value.Type = "CreationDate" Then
+			Value = QueryResultString[kv.Value.SourceColumn];
+			If ValueIsFilled(Value) 
+				And UT_Common.IsReference(TypeOf(Value)) Then 
+				QueryResultString[kv.Key] = UT_Common.ReferenceCreationDate(Value);
 			EndIf;
 		EndIf;
 	EndDo;
