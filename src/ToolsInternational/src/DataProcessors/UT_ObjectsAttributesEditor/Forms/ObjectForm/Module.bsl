@@ -1882,6 +1882,7 @@ Procedure TabularSectionOnEditEnd(Item, NewItem, CancelEdit)
 	RefreshTabularSectionPageTitle(Item);
 EndProcedure
 
+
 &AtClient
 Procedure TabularSectionAfterDeleteRow(Item)
 	RefreshTabularSectionPageTitle(Item);
