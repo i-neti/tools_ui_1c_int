@@ -25,15 +25,19 @@ EndProcedure
 
 &AtClient
 Procedure SourceObjectOnChange(Item)
-	If NOT ValueIsFilled(Object.SourceObject) Then
-		SourceUUID="";
-	Else
-		Try
-			SourceUUID = Object.SourceObject.UUID();
-		Except
-			//TODO Amend the implementation code
-		EndTry;
-	EndIf;
+	OnChangeSourceObject()
+EndProcedure
+
+&AtClient
+Procedure SourceObjectClearing(Item, StandardProcessing)
+	UT_CommonClient.FormFieldClear(ThisObject, Item, StandardProcessing);
+EndProcedure
+
+&AtClient
+Procedure SourceObjectStartChoice(Item, ChoiceData, StandardProcessing)
+	UT_CommonClient.FormFieldValueStartChoice(ThisObject, Item, Object.SourceObject,
+		StandardProcessing, New NotifyDescription("SourceObjectStartChoiceTypeBlankValueChoiceCompletion",
+		ThisObject), "Refs");
 EndProcedure
 
 &AtClient
@@ -137,6 +141,25 @@ EndProcedure
 
 
 #Region Private
+
+&AtClient
+Procedure OnChangeSourceObject()
+	If Not ValueIsFilled(Object.SourceObject) Then
+		SourceUUID="";
+	Else
+		Try
+			SourceUUID = Object.SourceObject.UUID();
+		Except
+			//TODO Amend the implementation code
+		EndTry;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure SourceObjectStartChoiceTypeBlankValueChoiceCompletion(Result, AdditionalParameters) Export
+	Object.SourceObject = Result;
+	OnChangeSourceObject();
+EndProcedure
 
 &AtServer
 Procedure ExecuteReferencesSearchAtServer()
