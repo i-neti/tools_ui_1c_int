@@ -51,34 +51,23 @@ EndProcedure
 
 &AtClient
 Procedure mObjectRefStartChoice(Item, ChoiceData, StandardProcessing)
-	If mObjectRef = Undefined Then
-		StandardProcessing = False;
-		ParamStruct = New Structure("CloseOnOwnerClose", True);
-		OpenForm("CommonForm.UT_MetadataSelectionForm", ParamStruct, Item, , , , ,
-			FormWindowOpeningMode.LockOwnerWindow);
-	Else
-		Array = New Array;
-		Array.Add(TypeOf(mObjectRef));
-		Item.TypeRestriction = New TypeDescription(Array);
+	UT_CommonClient.FormFieldValueStartChoice(ThisObject, Item, mObjectRef, StandardProcessing,
+		New NotifyDescription("mObjectRefStartChoiceBlankValueChoiceCompletion", ThisObject), "Refs");
+EndProcedure
 
-		If _UseNonStandardFormToSelect Then
-			StandardProcessing = False;
-			pFullName = vGetFullNameMD(mObjectRef);
-			ParametersStruct = New Structure("MetadataObjectName", pFullName);
-			ParametersStruct.Insert("ChoiceMode", True);
-			Try
-				OpenForm("DataProcessor.UT_DynamicList.Form", ParamStruct, Item, True, , , ,
-					FormWindowOpeningMode.LockOwnerWindow);
-			Except
-				pErrorDescription = ErrorDescription();
-				StandardProcessing = True;
-			EndTry;
-		EndIf;
-	EndIf;
+&AtClient
+Procedure mObjectRefStartChoiceBlankValueChoiceCompletion(Result, AdditionalParameters) Export
+	mObjectRef = Result;
+	OnChangeMRef();
 EndProcedure
 
 &AtClient
 Procedure mObjectRefOnChange(Item)
+	OnChangeMRef();
+EndProcedure
+
+&AtClient
+Procedure OnChangeMRef()
 	ThisForm.UniqueKey = mObjectRef;
 
 	_URL = "";
@@ -92,7 +81,7 @@ EndProcedure
 
 &AtClient
 Procedure mObjectRefClearing(Item, StandardProcessing)
-	Item.TypeRestriction = New TypeDescription;
+	UT_CommonClient.FormFieldClear(ThisObject, Item, StandardProcessing);
 EndProcedure
 
 &AtClient
@@ -855,13 +844,8 @@ Function vDeleteObjectAtServer(Val Ref)
 			Return False;
 		EndIf;
 
-//		If WriteInLoadingMode Then
-//			пОбъект.DataExchange.Load = True;
-//		EndIf;
-
 		If UT_Common.WriteObjectToDB(pObject, UT_CommonClientServer.FormWriteSettings(
-			ThisObject)) Then
-//		pObject.Delete();
+			ThisObject), "DirectDeletion") Then
 
 			Return True;
 		Else
@@ -1144,7 +1128,7 @@ Procedure vFillObjectData(CreateAttributes)
 				TabName = _PrefixForNewItems + TSItem.Name;
 				NewPage = Items.Add("Str" + TabName, Type("FormGroup"), Items.PagesGroup);
 				NewPage.Type = FormGroupType.Page;
-				NewPage.Title = TSItem.Name;
+				NewPage.Title = TabularSectionPageTitle(TSItem.Name, mObjectRef[TSItem.Name]);
 				NewPage.ToolTip = TSItem.Presentation();
 
 				FIAppearanceTemplate = Items.ObjectAttributesDecoration;
@@ -1175,6 +1159,8 @@ Procedure vFillObjectData(CreateAttributes)
 				EndDo;
 
 				NewTable.SetAction("Selection", "TabularSectionSelection");
+				NewTable.SetAction("OnEditEnd", "TabularSectionOnEditEnd");
+				NewTable.SetAction("AfterDeleteRow", "TabularSectionAfterDeleteRow");
 				
 				// context menu
 				ButtonGroup = Items.Add("Group_" + TabName, Type("FormGroup"), NewTable.ContextMenu);
@@ -1830,6 +1816,9 @@ Procedure vRefreshObjectData()
 	vFillObjectData(CreateAttributes);
 	mPreviousObjectRef = mObjectRef;
 	vRefreshRecordSet();
+	If ValueIsFilled(mObjectRef) Then
+		UT_CreationDate = UT_Common.ReferenceCreationDate(mObjectRef);
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -1883,6 +1872,22 @@ Procedure TabularSectionSelection(Item, SelectedRow, Field, StandardProcessing)
 		EndIf;
 	EndIf;
 EndProcedure
+
+&AtClient
+Procedure TabularSectionOnEditEnd(Item, NewItem, CancelEdit)
+	If CancelEdit Then
+		Return;
+	EndIf;
+	
+	RefreshTabularSectionPageTitle(Item);
+EndProcedure
+
+
+&AtClient
+Procedure TabularSectionAfterDeleteRow(Item)
+	RefreshTabularSectionPageTitle(Item);
+EndProcedure
+
 &AtServer
 Procedure BeforeLoadDataFromSettingsAtServer(Settings)
 //	If Settings["_AdditionalProperties"] = Undefined Then
@@ -2422,6 +2427,35 @@ Procedure vProcessInputUUID(String, pStruct = Undefined) Export
 			EndIf;
 		EndIf;
 	EndIf;
+EndProcedure
+
+// Tabular section page title.
+// 
+// Parameters:
+//  TSName - String - a tabular section name.
+//  TSTable - ValueTable - a table containing a tabular section data.
+// 
+// Return value:
+//  String
+&AtClientAtServerNoContext
+Function TabularSectionPageTitle(TSName, TSTable)
+	If TSTable.Count() =0 Then
+		Return TSName;
+	Else
+		Return TSName + " ("+TSTable.Count()+")";
+	EndIf;			
+EndFunction
+
+&AtClient
+Procedure RefreshTabularSectionPageTitle(TabularSectionItem)
+	If Not StrStartsWith(TabularSectionItem.Name, _PrefixForNewItems) Then
+		Return;
+	EndIf;
+
+	TableName = Mid(TabularSectionItem.Name, StrLen(_PrefixForNewItems) + 1);
+	Items["Стр" + TabularSectionItem.Name].Title = TabularSectionPageTitle(TableName,
+		ThisObject[TabularSectionItem.Name]);
+
 EndProcedure
 
 //@skip-warning

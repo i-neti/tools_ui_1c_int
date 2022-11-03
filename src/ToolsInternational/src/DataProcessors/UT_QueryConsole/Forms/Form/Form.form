@@ -10825,6 +10825,9 @@ Example:
     <use>
       <common>true</common>
     </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>CommonPicture.UT_MacroColumn</picture>
+    </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
         <name>InsertMacroColumn</name>

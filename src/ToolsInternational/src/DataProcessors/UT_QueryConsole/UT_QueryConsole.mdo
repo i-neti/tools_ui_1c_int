@@ -503,6 +503,15 @@
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
+  <forms uuid="e65e86dc-0bea-44a1-becb-d194fad43f79">
+    <name>ВыборМакроКолонки</name>
+    <synonym>
+      <key>ru</key>
+      <value>Выбор макро колонки</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
   <templates uuid="1c5906e2-19e5-4ff5-a840-dcc4c14b3f54">
     <name>Pictures</name>
     <synonym>
