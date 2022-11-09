@@ -157,10 +157,6 @@
             <headerHorizontalAlign>Left</headerHorizontalAlign>
             <showInFooter>true</showInFooter>
             <extInfo xsi:type="form:HtmlFieldExtInfo">
-              <handlers>
-                <event>DocumentComplete</event>
-                <name>HEADEditorDocumentComplete</name>
-              </handlers>
               <width>50</width>
               <autoMaxWidth>true</autoMaxWidth>
               <height>5</height>
@@ -354,10 +350,6 @@
             <headerHorizontalAlign>Left</headerHorizontalAlign>
             <showInFooter>true</showInFooter>
             <extInfo xsi:type="form:HtmlFieldExtInfo">
-              <handlers>
-                <event>DocumentComplete</event>
-                <name>BODYEditorDocumentComplete</name>
-              </handlers>
               <width>50</width>
               <autoMaxWidth>true</autoMaxWidth>
               <height>5</height>
@@ -614,10 +606,6 @@
             <headerHorizontalAlign>Left</headerHorizontalAlign>
             <showInFooter>true</showInFooter>
             <extInfo xsi:type="form:HtmlFieldExtInfo">
-              <handlers>
-                <event>DocumentComplete</event>
-                <name>CSSEditorDocumentComplete</name>
-              </handlers>
               <width>50</width>
               <autoMaxWidth>true</autoMaxWidth>
               <height>5</height>
@@ -874,10 +862,6 @@
             <headerHorizontalAlign>Left</headerHorizontalAlign>
             <showInFooter>true</showInFooter>
             <extInfo xsi:type="form:HtmlFieldExtInfo">
-              <handlers>
-                <event>DocumentComplete</event>
-                <name>JSEditorDocumentComplete</name>
-              </handlers>
               <width>50</width>
               <autoMaxWidth>true</autoMaxWidth>
               <height>5</height>
@@ -1012,10 +996,6 @@
           <headerHorizontalAlign>Left</headerHorizontalAlign>
           <showInFooter>true</showInFooter>
           <extInfo xsi:type="form:HtmlFieldExtInfo">
-            <handlers>
-              <event>DocumentComplete</event>
-              <name>GeneratedHTMLEditorDocumentComplete</name>
-            </handlers>
             <width>50</width>
             <autoMaxWidth>true</autoMaxWidth>
             <height>10</height>
@@ -2192,10 +2172,6 @@ GeneratedHTMLDocumentComplete(Item)
               <headerHorizontalAlign>Left</headerHorizontalAlign>
               <showInFooter>true</showInFooter>
               <extInfo xsi:type="form:HtmlFieldExtInfo">
-                <handlers>
-                  <event>DocumentComplete</event>
-                  <name>EventHandlerDocumentCompleteDocumentComplete</name>
-                </handlers>
                 <width>50</width>
                 <autoMaxWidth>true</autoMaxWidth>
                 <height>10</height>
@@ -2336,10 +2312,6 @@ GeneratedHTMLOnClick(Item, EventData, StandardProcessing)
               <headerHorizontalAlign>Left</headerHorizontalAlign>
               <showInFooter>true</showInFooter>
               <extInfo xsi:type="form:HtmlFieldExtInfo">
-                <handlers>
-                  <event>DocumentComplete</event>
-                  <name>EventHandlerOnClickDocumentComplete</name>
-                </handlers>
                 <width>50</width>
                 <autoMaxWidth>true</autoMaxWidth>
                 <height>10</height>
