@@ -2963,12 +2963,13 @@ EndProcedure
 &AtClient
 Procedure SaveStandartSpreadsheetDocument(Command)
 
-#If ThickClientManagedApplication Or ThickClientOrdinaryApplication Then
-	ResultSpreadsheetDocument.BeginWriting(Undefined, StandartFileNameOfSpreadsheetDocument());
-#Else
-		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
-		|en = 'File comparison is only possible in a thick client'"));
-#EndIf
+	If Not ValueIsFilled(StandardSpreadsheetDocumentTempStorageURL) Then
+		StandardSpreadsheetDocumentTempStorageURL = PutToTempStorage(ResultSpreadsheetDocument,
+			UUID);
+	Else
+		StandardSpreadsheetDocumentTempStorageURL = PutToTempStorage(ResultSpreadsheetDocument,
+			StandardSpreadsheetDocumentTempStorageURL);
+	EndIf;
 
 EndProcedure
 
@@ -2976,30 +2977,23 @@ EndProcedure
 &AtClient
 Procedure CompareWithStandartSpreadsheetDocument(Command)
 
-#If ThickClientManagedApplication Or ThickClientOrdinaryApplication Then
-	ResultSpreadsheetDocument.BeginWriting(New NotifyDescription("CompareWithStandartSpreadsheetDocumentOnEnd",
-		ThisForm), SpreadsheetDocumentFileName());
-#Else
-		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
-		|en = 'File comparison is only possible in a thick client'"));
-#EndIf
+	If Not ValueIsFilled(StandardSpreadsheetDocumentTempStorageURL) Then
+		ShowMessageBox(, NStr("ru = 'Нет сохраненного эталона'; en = 'There is no standard spreadsheet document to compare'"));
+		Return;
+	EndIf;
+
+	CurrentDocumentURL = PutToTempStorage(ResultSpreadsheetDocument, UUID);
+	UT_CommonClient.CompareSpreadsheetDocuments(CurrentDocumentURL,
+		StandardSpreadsheetDocumentTempStorageURL, NStr("ru = 'Текущий'; en = 'Current'"), NStr("ru = 'Эталон'; en = 'Standard'"));
 
 EndProcedure
 
 &AtClient
 Procedure CompareWithStandartSpreadsheetDocumentOnEnd(Result, AdditionalParameters) Export
-#If ThickClientManagedApplication Or ThickClientOrdinaryApplication Then
 
-	FileCompare = New FileCompare;
-	FileCompare.FirstFile = StandartFileNameOfSpreadsheetDocument();
-	FileCompare.SecondFile = SpreadsheetDocumentFileName();
-	FileCompare.CompareMethod = FileCompareMethod.SpreadsheetDocument;
-	FileCompare.ShowDifferences();
-#Else
-	Message(NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
-	|en = 'File comparison is only possible in a thick client'"));
+	UT_CommonClient.CompareSpreadsheetDocumentsFiles(StandartFileNameOfSpreadsheetDocument(),
+		SpreadsheetDocumentFileName(), NStr("ru = 'Эталон'; en = 'Standard'"), NStr("ru = 'Текущий'; en = 'Current'"));
 
-#EndIf
 EndProcedure
 
 // command handler SaveStandartOfDataCompositionTemplate.

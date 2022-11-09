@@ -14881,6 +14881,28 @@ In the structure tree, select the report and edit additional report settings.</v
       <common>true</common>
     </edit>
   </attributes>
+  <attributes>
+    <name>StandardSpreadsheetDocumentTempStorageURL</name>
+    <title>
+      <key>en</key>
+      <value>Standard spreadsheet document temp storage URL</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Адрес эталона табличного документа во временном хранилище</value>
+    </title>
+    <id>42</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
   <formCommands>
     <name>DataCompositionSchemaWizard</name>
     <title>
