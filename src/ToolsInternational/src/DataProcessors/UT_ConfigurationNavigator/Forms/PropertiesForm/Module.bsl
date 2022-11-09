@@ -766,7 +766,7 @@ EndProcedure
 Procedure _OpenObject(Command)
 	StructureParams = New Structure;
 	StructureParams.Insert("mObjectRef", _EmptyRef);
-	OpenForm(PathToForms + "Form", StructureParams, , CurrentDate());
+	OpenForm("DataProcessor.UT_ObjectsAttributesEditor.Form.ObjectForm", StructureParams, , CurrentDate());
 EndProcedure
 &AtClient
 Procedure PropertyTreeSelection(Item, SelectedRow, Field, StandardProcessing)

@@ -3,9 +3,6 @@
 Var FormCloseConfirmed;
 
 &AtClient
-Var SavedEditorsValues;
-
-&AtClient
 Var UT_CodeEditorClientData Export;
 #EndRegion
 
@@ -49,15 +46,6 @@ EndProcedure
 &AtClient
 Procedure OnOpen(Cancel)
 	
-	SavedEditorsValues = New Structure;
-	SavedEditorsValues.Insert("GeneratedHTMLEditor", "");
-	SavedEditorsValues.Insert("BODYEditor", "");
-	SavedEditorsValues.Insert("HEADEditor", "");
-	SavedEditorsValues.Insert("CSSEditor", "");
-	SavedEditorsValues.Insert("JSEditor", "");
-	SavedEditorsValues.Insert("DocumentCompleteEventEditor", "");
-	SavedEditorsValues.Insert("OnClickEventEditor", "");
-	
 	UT_CodeEditorClient.FormOnOpen(ThisObject, New NotifyDescription("OnOpenComplete", ThisObject));
 	
 EndProcedure
@@ -65,41 +53,6 @@ EndProcedure
 #EndRegion
 
 #Region FormItemsEvents
-
-&AtClient
-Procedure BODYEditorDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure HEADEditorDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure CSSEditorDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure JSEditorDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure GeneratedHTMLEditorDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure EventHandlerDocumentCompleteDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
-
-&AtClient
-Procedure EventHandlerOnClickDocumentComplete(Item)
-	SetEditorTextFromSavedValues(Item);
-EndProcedure
 
 &AtClient
 Procedure GeneratedHTMLOnClick(Item, EventData, StandardProcessing)
@@ -118,12 +71,7 @@ EndProcedure
 Procedure GeneratedHTMLDocumentComplete(Item)
 	
 	AlgoText = EditorItemText(Items.DocumentCompleteEventEditor);
-	Try
-		Execute (AlgoText);
-	Except
-		ErrorDesc = ErrorDescription();
-		Message(ErrorDesc);
-	EndTry;
+	UT_CodeEditorClientServer.ExecuteAlgorithm(AlgoText, New Structure);
 	
 EndProcedure
 
@@ -670,11 +618,7 @@ EndFunction
 &AtClient
 Function EditorItemText(EditorItemField)
 	
-	If Not EditorItemField.Visible Then
-		Return SavedEditorsValues[EditorItemField.Name];
-	Else
-		Return UT_CodeEditorClient.EditorCodeTextItemForm(ThisObject, EditorItemField);
-	EndIf;
+	Return UT_CodeEditorClient.EditorCodeTextItemForm(ThisObject,EditorItemField);
 	
 EndFunction
 
@@ -691,25 +635,6 @@ Procedure AddLinkedLibrary(Path, AdditionalParameters)
 	Rec 						= LinkedLibraries.Add();
 	Rec.Path					= Path;
 	Rec.AdditionalParameters	= AdditionalParameters;
-	
-EndProcedure
-
-&AtClient
-Procedure SetEditorTextFromSavedValues(EditorItem)
-	
-	If TypeOf(SavedEditorsValues) <> Type("Structure") Then
-		Return;
-	EndIf;
-
-	If Not SavedEditorsValues.Property(EditorItem.Name) Then
-		Return;
-	Endif;
-	
-	If Not ValueIsFilled(SavedEditorsValues[EditorItem.Name]) Then
-		Return;
-	EndIf;
-
-	SetEditorText(EditorItem, SavedEditorsValues[EditorItem.Name]);
 	
 EndProcedure
 
@@ -745,18 +670,7 @@ EndProcedure
 &AtClient
 Procedure ToggleEditorVisibility(EditorItem)
 	
-	If EditorItem.Visible Then
-		SavedEditorsValues[EditorItem.Name] = EditorItemText(EditorItem);
-	Else
-		SavedEditorText = EditorItemText(EditorItem);		
-	EndIf;
-
-	EditorItem.Visible = Not EditorItem.Visible;
-	
-	If EditorItem.Visible Then
-		CurrentEditorName = EditorItem.Name;
-		AttachIdleHandler("SetupEditorTextForCurrentEditor", 0.1, True);
-	EndIf;	
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, EditorItem);	
 	
 EndProcedure
 

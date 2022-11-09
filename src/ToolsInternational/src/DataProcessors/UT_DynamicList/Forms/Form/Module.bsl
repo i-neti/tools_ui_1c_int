@@ -12,11 +12,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
      FillMetadataTree();
 
 	If ValueIsFilled(MetadataObjectName) Then
-		Items.MetadataTree.Visible=False;
+		Items.GroupMetadata.Visible=False;
 		SetDynamicListParametersAtServer(MetadataObjectRowID);
 	EndIf;
 
-	Items.Choose.Visible=ChoiceMode;
+	CloseOnChoice=ChoiceMode;
 	
 	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
 	
@@ -33,7 +33,21 @@ EndProcedure
 //@skip-warning
 &AtClient
 Procedure Attachable_DynamicListSelection(Item, RowSelected, Field, StandardProcessing)
+	If Not ChoiceMode Then
+		Return;
+	EndIf;
+	StandardProcessing = False;
+	NotifyChoice(RowSelected);
+EndProcedure
 
+//@skip-check module-unused-method
+&AtClient
+Procedure Attachable_DynamicListValueChoice(Item, Value, StandardProcessing)
+	If Not ChoiceMode Then
+		Return;
+	EndIf;
+	StandardProcessing = False;
+	NotifyChoice(Value);
 EndProcedure
 
 &AtClient
@@ -131,8 +145,8 @@ Procedure SetDynamicListParametersAtServer(RowSelected)
 	FormItem.DataPath = FormAttributeName;
 	FormItem.ToolTip = CurrentData.Comment;
 	FormItem.Title = CurrentData.Presentation;
-	//	FormItem.SetAction("ValueChoice", "ChoiceList");
-	//	FormItem.ChoiceMode = Not DataBaseViewMode;
+	FormItem.SetAction("Selection", "Attachable_DynamicListSelection");
+	FormItem.SetAction("ValueChoice", "Attachable_DynamicListValueChoice");
 	FormItem.ChoiceFoldersAndItems = FoldersAndItemsUse.FoldersAndItems;
 	//	FormItem.SelectionMode = ?(DataBaseViewMode, TableSelectionMode.MultiRow, TableSelectionMode.SingleRow);
 	//FormItem.CurrentItem.CurrentData = SelectedRef; //It's a pity it doesn't work. It would be good to set the current row.
@@ -278,25 +292,6 @@ Procedure SearchStringOnChange(Item)
 			Items.MetadataTree.Expand(TreeRow.GetID());
 		EndDo;
 	EndIf;
-EndProcedure
-
-&AtClient
-Procedure Choose(Command)
-	If Items.Find("DynamicList") = Undefined Then
-		Return;
-	EndIf;
-
-	CurrentData = Items.MetadataTree.CurrentData;
-	If ValueIsFilled(MetadataObjectName) Then
-//		Return;
-	ElsIf CurrentData = Undefined Then
-		Return;
-	ElsIf Not ValueIsFilled(CurrentData.ObjectType) Then
-		Return;
-	EndIf;
-
-	NotifyChoice(Items.DynamicList.CurrentRow);
-	Close(Items.DynamicList.CurrentRow);
 EndProcedure
 
 &AtClient

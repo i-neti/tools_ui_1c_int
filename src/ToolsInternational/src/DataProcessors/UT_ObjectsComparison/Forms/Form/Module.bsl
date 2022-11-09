@@ -1,3 +1,94 @@
+
+#Region FormEventHandlers
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	Objects.Clear();
+	If Parameters.Property("ObjectsComparison") Then
+		Objects.LoadValues(Parameters.ObjectsComparison);
+	EndIF;
+	GenerateAtServer();
+	
+	//UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
+	
+EndProcedure
+
+#EndRegion
+
+#Region ObjectFormTableEventHandlers
+
+&AtClient
+Procedure ObjectsValueStartChoice(Item, ChoiceData, StandardProcessing)
+	CurData = Items.Objects.CurrentData;
+	If CurData = Undefined Then
+		Return;
+	EndIf;
+	
+	NotifyParameters = New Structure;
+	NotifyParameters.Insert("RowID", Items.Objects.CurrentRow);
+
+	UT_CommonClient.FormFieldValueStartChoice(ThisObject, Item, CurData.Value,
+		StandardProcessing, New NotifyDescription("ObjectsValueStartChoiceBlankValueChoiceCompletion",
+		ThisObject, NotifyParameters), "Refs");
+EndProcedure
+
+&AtClient
+Procedure ObjectsValueClearing(Item, StandardProcessing)
+	UT_CommonClient.FormFieldClear(ThisObject, Item, StandardProcessing);
+EndProcedure
+
+#EndRegion
+
+#Region FormCommandHandlers
+
+&AtClient
+Procedure Generate(Command)
+	If Objects.Count() = 0 Then
+		Items.FormParameters.Check = True;
+		Items.GroupParameters.Visible = True;
+		CurrentItem = Items.Objects;
+		Return;
+	EndIf;
+	GenerateAtServer();
+	
+EndProcedure
+
+&AtClient
+Procedure Parameters(Command)
+	Check = NOT Items.FormParameters.Check;
+	Items.FormParameters.Check = Check;
+	Items.GroupParameters.Visible = Check;
+EndProcedure
+
+&AtClient
+Procedure AddObjectsAddedToComparisonEarly(Command)
+	AddObjectsAddedToComparisonEarlyAtServer();
+EndProcedure
+
+&AtClient
+Procedure ClearObjectsAddedToTheComparison(Command)
+	ClearObjectsAddedToTheComparisonAtServer();
+EndProcedure
+
+//@skip-check module-unused-method
+&AtClient
+Procedure Attachable_ExecuteToolsCommonCommand(Command) 
+	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
+EndProcedure
+
+#EndRegion
+
+#Region Private
+
+&AtClient
+Procedure ObjectsValueStartChoiceBlankValueChoiceCompletion(Result, AdditionalParameters) Export
+	ObjectsRow = Objects.FindByID(AdditionalParameters.RowID);
+	If ObjectsRow = Undefined Then
+		Return;
+	EndIf;
+	ObjectsRow.Value = Result;
+EndProcedure
+
 &AtServerNoContext
 Procedure AddToTree(VT, ObjectRef)
 	MD = ObjectRef.Metadata();
@@ -71,12 +162,6 @@ Procedure AddToTree(VT, ObjectRef)
 	Rows = VT.Rows;
 	Rows.Sort("Attribute", True);
 EndProcedure
-
-&AtClient
-Procedure ObjectsValueClearing(Item, StandardProcessing)
-	//TODO: Insert the handler content
-EndProcedure
-
 
 &AtServerNoContext
 Procedure ClearTree(VT, Rows = Undefined) 
@@ -184,38 +269,6 @@ Procedure GenerateAtServer()
 	GeneratePrintFormObjectsComparison();
 EndProcedure
 
-&НаКлиенте
-Procedure Generate(Command)
-	If Objects.Count() = 0 Then
-		Items.FormParameters.Check = True;
-		Items.GroupParameters.Visible = True;
-		CurrentItem = Items.Objects;
-		Return;
-	EndIf;
-	GenerateAtServer();
-	
-EndProcedure
-
-&НаКлиенте
-Procedure Parameters(Command)
-	Check = NOT Items.FormParameters.Check;
-	Items.FormParameters.Check = Check;
-	Items.GroupParameters.Visible = Check;
-EndProcedure
-
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	Objects.Clear();
-	If Parameters.Property("ObjectsComparison") Then
-		Objects.LoadValues(Parameters.ObjectsComparison);
-	EndIF;
-	GenerateAtServer();
-	
-	//UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
-	
-EndProcedure
-
-
 &AtServer
 Procedure AddObjectsAddedToComparisonEarlyAtServer()
 	ObjectsComparisonArray=UT_Common.ObjectsAddedToTheComparison();
@@ -229,26 +282,10 @@ Procedure AddObjectsAddedToComparisonEarlyAtServer()
 	EndDo;
 EndProcedure
 
-
-&НаКлиенте
-Procedure AddObjectsAddedToComparisonEarly(Comand)
-	AddObjectsAddedToComparisonEarlyAtServer();
-EndProcedure
-
-
 &AtServer
 Procedure ClearObjectsAddedToTheComparisonAtServer()
 	UT_Common.ClearObjectsAddedToTheComparison();
 EndProcedure
 
+#EndRegion
 
-&НаКлиенте
-Procedure ClearObjectsAddedToTheComparison(Comand)
-	ClearObjectsAddedToTheComparisonAtServer();
-EndProcedure
-
-//@skip-warning
-&НаКлиенте
-Procedure Attachable_ExecuteToolsCommonCommand(Comand) 
-	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Comand);
-EndProcedure

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://v8.1c.ru/8.2/data/spreadsheet" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<languageSettings>
-		<currentLanguage>en</currentLanguage>
+		<currentLanguage>ru</currentLanguage>
 		<defaultLanguage>en</defaultLanguage>
 		<languageInfo>
 			<id>ru</id>
@@ -132,7 +132,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Service Functions</v8:content>
+							<v8:content>General</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -350,6 +350,10 @@
 							<v8:lang>ru</v8:lang>
 							<v8:content>вызывает процедуру ОбновитьПовторноИспользуемыеЗначения(...)</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>call RefreshReusableValues(...) procedure</v8:content>
+						</v8:item>
 					</tl>
 				</c>
 			</c>
@@ -406,6 +410,10 @@
 							<v8:lang>ru</v8:lang>
 							<v8:content>Очищает содержимое избранного для текущего пользователя</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Clean the favorites items for the current user</v8:content>
+						</v8:item>
 					</tl>
 				</c>
 			</c>
@@ -461,6 +469,10 @@
 						<v8:item>
 							<v8:lang>ru</v8:lang>
 							<v8:content>Устанавливает режим блокировки сеансов</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Set the session lock mode</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -560,7 +572,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Start session 1C</v8:content>
+							<v8:content>Start 1C session</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -597,6 +609,10 @@
 						<v8:item>
 							<v8:lang>ru</v8:lang>
 							<v8:content>Запуск 1С в различных режимах</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Start 1C session in different modes</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -854,6 +870,10 @@
 							<v8:lang>ru</v8:lang>
 							<v8:content>Запуск сеанса 1С для произвольной базы с параметрами</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Start 1C session with parameters</v8:content>
+						</v8:item>
 					</tl>
 				</c>
 			</c>
@@ -990,6 +1010,10 @@
 							<v8:lang>ru</v8:lang>
 							<v8:content>Открыть папку "%ProgramData%\Microsoft\Windows\Start Menu\Programs"</v8:content>
 						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Open "%ProgramData%\Microsoft\Windows\Start Menu\Programs" folder</v8:content>
+						</v8:item>
 					</tl>
 				</c>
 			</c>
@@ -1045,6 +1069,10 @@
 						<v8:item>
 							<v8:lang>ru</v8:lang>
 							<v8:content>Открыть папку "%AppData%"</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>Open "%AppData%" folder</v8:content>
 						</v8:item>
 					</tl>
 				</c>

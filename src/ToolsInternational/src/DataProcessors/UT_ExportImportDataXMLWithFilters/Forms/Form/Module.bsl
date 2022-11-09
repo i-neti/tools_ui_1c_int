@@ -112,7 +112,7 @@ Procedure AdditionalObjectsToExportOnChange(Item)
 
 EndProcedure
 
-//@skip-warning
+//@skip-check module-unused-method
 &AtClient
 Procedure ImportFileNameOpen(Item, StandardProcessing)
 	
@@ -120,12 +120,27 @@ Procedure ImportFileNameOpen(Item, StandardProcessing)
 
 EndProcedure
 
-//@skip-warning
+//@skip-check module-unused-method
 &AtClient
 Procedure ImportFileNameStartChoice(Item, ChoiceData, StandardProcessing)
 
 	ProcessFileChoiceStart(StandardProcessing);
 
+EndProcedure
+
+&AtClient
+Procedure ObjectsTypeToExportStartChoice(Item, ChoiceData, StandardProcessing)
+	UT_CommonClient.EditType(ObjectsTypeToExport, 0, StandardProcessing, Item,
+		New NotifyDescription("ObjectsTypeToExportStartChoiceCompletion", ThisObject), "Refs");
+EndProcedure
+
+&AtClient
+Procedure ObjectsTypeToExportStartChoiceCompletion(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+
+	ObjectsTypeToExport = Result;
 EndProcedure
 
 #EndRegion
