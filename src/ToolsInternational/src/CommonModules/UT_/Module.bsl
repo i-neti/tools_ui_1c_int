@@ -1,5 +1,5 @@
 //Module for quick access to debugging procedures
-
+#Region ProgramInterface
 // Description
 // 
 // Runs the appropriate tool for a thick client or writes data to the database for further debugging// 
@@ -111,4 +111,48 @@ Function _ValueTablesCompare(BaseTable, ComparisonTable, ColumnsList = Undefined
 	EndTry;
 EndFunction
 
+// Description
+// 
+// Parametrs:
+// 	AlgorithmName - String -  Algoritms catalog item name , searched by name 
+// 	AlgorithmText - String - Attribute "AlgorithmText" value
+// 	ParameterN - Value of any type
+// Return value:
+// 	String - Result of algorithm saving execution
+Function _Alg(AlgorithmName, AlgorithmText = "", Val Parameter1 = Undefined, Val Parameter2 = Undefined,
+	Val Parameter3 = Undefined, Val Parameter4 = Undefined, Val Parameter5 = Undefined,
+	Val Parameter6 = Undefined, Val Parameter7 = Undefined, Val Parameter8 = Undefined,
+	Val Parameter9 = Undefined, Val ParametersNamesArray = Undefined) Export
+
+	Возврат UT_AlgorithmsServerCall.СозданиеАлгоритма(AlgorithmName, AlgorithmText, Parameter1, Parameter2,
+		Parameter3, Parameter4, Parameter5, Parameter6, Parameter7, Parameter8, Parameter9, StrSplit(ParametersNamesArray,
+		",", False));
+
+EndFunction
+
+//Alg2.
+// 
+// Parameters:
+//  AlgorithmText - String -Text of algorithm, transfered procedure like Module.Procedure(Parameters...)
+// 
+// Return value:
+//  String - A string for forming a debugging function
+Function _Alg2(AlgorithmText) Export
+	FirstBracket = StrFind(AlgorithmText, "(");
+	LastBracket = StrFind(AlgorithmText, ")");
+	ProcedureParameters = Mid(AlgorithmText, FirstBracket + 1, LastBracket - FirstBracket - 1);
+	ParametersArray = StrSplit(ProcedureParameters, ",");
+	ParametersCount = ParametersArray.Count();
+	If ParametersCount > 9 Then
+		Return NStr("ru = 'Слишком много параметров';en = 'Too many parameters'");
+	EndIf;
+	For ParameterNumber = ParametersCount + 1 To 9 Do
+		ParametersArray.Add("");
+	EndDo;
+
+	Return StrTemplate("UT_._Alg(""%1"",""%2"",%3, ""%3"")", Left(AlgorithmText, FirstBracket - 1), AlgorithmText,
+		StrConcat(ParametersArray, ","));
+EndFunction
+
 #EndIf
+#EndRegion

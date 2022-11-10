@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:CommonModule xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="2ca72ecb-2b37-4036-8b64-5b6556c67638">
+  <name>UT_AlgorithmsServerCall</name>
+  <synonym>
+    <key>ru</key>
+    <value>Algorithms client server</value>
+  </synonym>
+  <server>true</server>
+  <serverCall>true</serverCall>
+</mdclass:CommonModule>
