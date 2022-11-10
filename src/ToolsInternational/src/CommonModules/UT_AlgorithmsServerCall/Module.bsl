@@ -1,26 +1,26 @@
 
-// Описание
+// Description
 // 
-// Параметры:
-// 	НаименованиеАлгоритма - Строка - Название элемента справочника Алгоритмы, поиск происходит по наименованию 
-// 	ТекстАлгоритма - Строка - Значение реквизита "ТекстАлгоритма"
-// 	ПараметрN - Произвольное значение
-// Возвращаемое значение:
-// 	Строка Результат выполнения сохранения алгоритма
-Функция СозданиеАлгоритма(НаименованиеАлгоритма, ТекстАлгоритма = "", Знач Параметр1 = Неопределено, 
-	Знач Параметр2 = Неопределено, Знач Параметр3 = Неопределено, Знач Параметр4 = Неопределено, 
-	Знач Параметр5 = Неопределено, Знач Параметр6 = Неопределено, Знач Параметр7 = Неопределено, 
-	Знач Параметр8 = Неопределено, Знач Параметр9 = Неопределено, Знач МассивИменПараметров = Неопределено) Экспорт
+// Parameters:
+// 	AlgorithmName - String - Algoritms catalog item name , searched by name 
+// 	AlgorithmText - String - Attribute "AlgorithmText" value
+// 	ParameterN - Value of any type
+// Return value:
+// 	String - Result of algorithm saving execution
+Function CreatingOfAlgorithm(AlgorithmName, AlgorithmText = "", Val Parameter1 = Undefined, 
+	Val Parameter2 = Undefined, Val Parameter3 = Undefined, Val Parameter4 = Undefined, 
+	Val Parameter5 = Undefined, Val Parameter6 = Undefined, Val Parameter7 = Undefined, 
+	Val Parameter8 = Undefined, Val Parameter9 = Undefined, Val ParametersNamesArray = Undefined) Export
 	
-	Возврат УИ_АлгоритмыСервер.СозданиеАлгоритма(НаименованиеАлгоритма, ТекстАлгоритма, Параметр1, Параметр2, Параметр3, 
-		Параметр4, Параметр5, Параметр6, Параметр7, Параметр8, Параметр9, МассивИменПараметров);	
+	Return UT_AlgorithmsServer.CreatingOfAlgorithm(AlgorithmName, AlgorithmText, Parameter1, Parameter2, Parameter3, 
+		Parameter4, Parameter5, Parameter6, Parameter7, Parameter8, Parameter9, ParametersNamesArray);	
 
-КонецФункции
+EndFunction
 
-Процедура ВыполнитьАлгоритм(Алгоритм) Экспорт
-	УИ_АлгоритмыСервер.ВыполнитьАлгоритм(Алгоритм);
-КонецПроцедуры
+Procedure ExecuteAlgorithm(Algorithm) Export
+	UT_AlgorithmsServer.ExecuteAlgorithm(Algorithm);
+EndProcedure
 
-Функция ПолучитьПараметры(Алгоритм) Экспорт
-	Возврат УИ_АлгоритмыСервер.ПолучитьПараметры(Алгоритм);
-КонецФункции
+Function GetParameters(Algorithm) Export
+	Return UT_AlgorithmsServer.GetParameters(Algorithm);
+EndFunction

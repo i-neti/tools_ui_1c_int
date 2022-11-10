@@ -1,70 +1,70 @@
 
-// Описание
+// Description
 // 
-// Параметры:
-// 	НаименованиеАлгоритма - Строка - Название элемента справочника Алгоритмы, поиск происходит по наименованию 
-// 	ТекстАлгоритма - Строка - Значение реквизита "ТекстАлгоритма"
-// 	ПараметрN - Произвольное значение
-// Возвращаемое значение:
-// 	Строка Результат выполнения сохранения алгоритма
-Функция СозданиеАлгоритма(НаименованиеАлгоритма, ТекстАлгоритма = "", Знач Параметр1 = Неопределено, 
-	Знач Параметр2 = Неопределено, Знач Параметр3 = Неопределено, Знач Параметр4 = Неопределено, 
-	Знач Параметр5 = Неопределено, Знач Параметр6 = Неопределено, Знач Параметр7 = Неопределено, 
-	Знач Параметр8 = Неопределено, Знач Параметр9 = Неопределено, Знач МассивИменПараметров = Неопределено)  Экспорт
+// Parametrs:
+// 	AlgorithmName - String -  Algoritms catalog item name , searched by name 
+// 	AlgorithmText - String - Attribute "AlgorithmText" value
+// 	ParameterN - Value of any type
+// Return value:
+// 	String - Result of algorithm saving execution
+Function CreatingOfAlgorithm(AlgorithmName, AlgorithmText = "", Val Parameter1 = Undefined, 
+	Val Parameter2 = Undefined, Val Parameter3 = Undefined, Val Parameter4 = Undefined, 
+	Val Parameter5 = Undefined, Val Parameter6 = Undefined, Val Parameter7 = Undefined, 
+	Val Parameter8 = Undefined, Val Parameter9 = Undefined, Val ParametersNamesArray = Undefined)  Export
 	
-	АлгоритмыСсылка = Справочники.УИ_Алгоритмы.НайтиПоНаименованию(НаименованиеАлгоритма);
-	Если АлгоритмыСсылка = Справочники.УИ_Алгоритмы.ПустаяСсылка() Тогда
-		АлгоритмыОбъект = Справочники.УИ_Алгоритмы.СоздатьЭлемент();
-		АлгоритмыОбъект.Наименование = НаименованиеАлгоритма;	
-	Иначе	
-		АлгоритмыОбъект = АлгоритмыСсылка.ПолучитьОбъект();
-	КонецЕсли;
-	Если ЗначениеЗаполнено(ТекстАлгоритма) Тогда
-		АлгоритмыОбъект.ТекстАлгоритма = ТекстАлгоритма;
-	КонецЕсли;
+	AlgorithRef = Catalogs.UT_Algorithms.FindByDescription(AlgorithmName);
+	If AlgorithRef = Catalogs.UT_Algorithms.EmptyRef() Then
+		AlgorithmsObject = Catalogs.UT_Algorithms.CreateItem();
+		AlgorithmsObject.Description = AlgorithmName;	
+	Else	
+		AlgorithmsObject = AlgorithRef.GetObject();
+	EndIf;
+	If ValueIsFilled(AlgorithmText) Then
+		AlgorithmsObject.AlgorithmText = AlgorithmText;
+	EndIF;
 	
-	СтруктураПараметров = Новый структура;
-	ЗначениеПараметра = Неопределено;
+	ParametersStructure = New Structure;
+	ParameterValue = Undefined;
 	
-	УстановитьБезопасныйРежим(Истина);
-	Если ТипЗнч(МассивИменПараметров) <> Тип("Массив") Тогда
-		МассивИменПараметров = Новый Массив;
-	КонецЕсли;
-	Для Параметр = 1 По 9 Цикл
-		НазваниеПеременной = "Параметр" + Параметр;
-		Выполнить("ЗначениеПараметра = " + НазваниеПеременной);
-		ИмяПараметра = ?(МассивИменПараметров.Количество() >= Параметр, МассивИменПараметров[Параметр-1],"Параметр" + Параметр); 
-		Если ЗначениеПараметра <> Неопределено Тогда
-			СтруктураПараметров.Вставить(ИмяПараметра, ЗначениеПараметра);	
-		КонецЕсли;
-	КонецЦикла;	
-	УстановитьБезопасныйРежим(Ложь);
+	SetSafeMode(True);
+	If TypeOf(ParametersNamesArray) <> Type("Array") Then
+		ParametersNamesArray = New Array;
+	EndIf;
+	For Parameter = 1 To 9 Do
+		VariableName = "Parameter" + Parameter;
+		Execute("ParameterValue = " + VariableName);
+		ParameterName = ?(ParametersNamesArray.Count() >= Parameter, ParametersNamesArray[Parameter-1],"Parameter" + Parameter); 
+		If ParameterValue <> Undefined Then
+			ParametersStructure.Insert(ParameterName, ParameterValue);	
+		EndIf;
+	EndDo;	
+	SetSafeMode(False);
 	
-	АлгоритмыОбъект.Хранилище = Новый ХранилищеЗначения(СтруктураПараметров);
-	Попытка
-		АлгоритмыОбъект.Записать();
-	Исключение
-		Возврат "Ошибка выполнения записи " + ОписаниеОшибки();
-	КонецПопытки;
+	AlgorithmsObject.Storage = New ValueStorage(ParametersStructure);
+	Try
+		AlgorithmsObject.Записать();
+	Except
+		Return NSTR("ru = 'Ошибка выполнения записи';en = 'Writing execution error'") + ErrorDescription();
+	Endtry;
 	
-	Возврат  "Успешно сохранено";
-КонецФункции
+	Return NStr("ru = 'Успешно сохранено';en = 'Successfully saved'");
+EndFunction
 
-Процедура ВыполнитьАлгоритм(Алгоритм) Экспорт
-	Если Не ЗначениеЗаполнено(СокрЛП(Алгоритм.ТекстАлгоритма)) Тогда
-		Возврат;
-	КонецЕсли;
+Procedure ExecuteAlgorithm(Algorithm) Export
+	If Not ValueIsFilled(TrimAll(Algorithm.AlgorithmText)) Then
+		Return;
+	EndIf;
 	
-	КонтекстВыполнения = ПолучитьПараметры(Алгоритм);
+	ExecutionContext = GetParameters(Algorithm);
 
-	РезультатВыполнения = УИ_РедакторКодаКлиентСервер.ВыполнитьАлгоритм(Алгоритм.ТекстАлгоритма, КонтекстВыполнения);
+	ExecutionResult =  UT_CodeEditorClientServer.ExecuteAlgorithm(Algorithm.AlgorithmText, ExecutionContext);
 
-КонецПроцедуры
+EndProcedure
 
-Функция ПолучитьПараметры(Алгоритм) Экспорт
-	ПараметрыХранилища = Алгоритм.Хранилище.Получить();
-	Если ПараметрыХранилища = Неопределено ИЛИ ТипЗнч(ПараметрыХранилища) <> Тип("Структура")Тогда 
-		ПараметрыХранилища =  Новый Структура;
-	КонецЕсли;
-	Возврат ПараметрыХранилища;
-КонецФункции
+Function GetParameters(Algorithm) Export
+	StorageParameters = Algorithm.Storage.Get();
+	If StorageParameters = Undefined Or TypeOf(StorageParameters) <> Type("Structure")Then 
+		StorageParameters =  New Structure;
+	EndIf;
+	Return StorageParameters;
+EndFunction
