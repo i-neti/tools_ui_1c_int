@@ -44,7 +44,7 @@ Function CreatingOfAlgorithm(AlgorithmName, AlgorithmText = "", Val Parameter1 =
 	Try
 		AlgorithmsObject.Записать();
 	Except
-		Return NSTR("ru = 'Ошибка выполнения записи';en = 'Writing execution error'") + ErrorDescription();
+		Return NSTR("ru = 'Ошибка выполнения записи ';en = 'Writing execution error'") + ErrorDescription();
 	Endtry;
 	
 	Return NStr("ru = 'Успешно сохранено';en = 'Successfully saved'");
