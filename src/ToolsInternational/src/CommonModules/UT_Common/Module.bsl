@@ -5048,3 +5048,25 @@ Function WriteObjectToDB(Object, WriteSettings, Val Action = "Write", Val WriteM
 	Return Result;
 EndFunction
 #EndRegion
+
+#Region ServiceProceduresAndFunctions
+
+Function CollectionToVT(Collection) Export
+	VT = New ValueTable;
+	VT.Columns.Add("Value");
+	If Not TypeOf(Collection) = Type("Array") Then
+		VT.Columns.Add("Key");
+		For Each CurElem In Collection Do
+			NR = VT.Add();
+			FillPropertyValues(NR, CurElem);
+		EndDo;
+	Else
+		For I = 0 To Collection.Ubound() Do
+			VT.Add();
+		EndDo;
+		VT.LoadColumn(Collection, 0);
+	EndIf;
+	Return VT;
+EndFunction
+
+#EndRegion
