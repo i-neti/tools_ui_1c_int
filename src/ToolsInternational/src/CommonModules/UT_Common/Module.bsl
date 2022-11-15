@@ -5049,24 +5049,24 @@ Function WriteObjectToDB(Object, WriteSettings, Val Action = "Write", Val WriteM
 EndFunction
 #EndRegion
 
-#Область СлужебныеПроцедурыИФункции
+#Region ServiceProceduresAndFunctions
 
-Функция КоллекцияВТЗ(Коллекция) Экспорт
-	ТЗ = Новый ТаблицаЗначений;
-	ТЗ.Колонки.Добавить("Значение");
-	Если Не ТипЗнч(Коллекция) = Тип("Массив") Тогда
-		ТЗ.Колонки.Добавить("Ключ");
-		Для Каждого ТекЭлем Из Коллекция Цикл
-			НС=ТЗ.Добавить();
-			ЗаполнитьЗначенияСвойств(НС, ТекЭлем);
-		КонецЦикла;
-	Иначе
-		Для I = 0 По Коллекция.ВГраница() Цикл
-			ТЗ.Добавить();
-		КонецЦикла;
-		ТЗ.ЗагрузитьКолонку(Коллекция, 0);
-	КонецЕсли;
-	Возврат ТЗ;
-КонецФункции
+Function CollectionToVT(Collection) Export
+	VT = New ValueTable;
+	VT.Columns.Add("Value");
+	If Not TypeOf(Collection) = Type("Array") Then
+		VT.Columns.Add("Key");
+		For Each CurElem In Collection Do
+			NR = VT.Add();
+			FillPropertyValues(NR, CurElem);
+		EndDo;
+	Else
+		For I = 0 To Collection.Ubound() Do
+			VT.Add();
+		EndDo;
+		VT.LoadColumn(Collection, 0);
+	EndIf;
+	Return VT;
+EndFunction
 
-#КонецОбласти
+#EndRegion

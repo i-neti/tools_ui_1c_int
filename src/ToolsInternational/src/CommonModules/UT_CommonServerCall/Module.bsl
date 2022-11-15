@@ -1,8 +1,17 @@
+
+// Session start parameters
+//
+// Return value:
+//  Structure - Session start parameters:
+// * ExtensionRightsAdded - Boolean - 
+// * SessionNumber - Number - 
+// * ConfigurationScriptVariant - String -
 Function SessionStartParameters() export
 
 	SessionStartParameters= New Structure;
 
 	if Not UT_CommonClientServer.IsPortableDistribution() Then
+		//@skip-check using-isinrole
 		If AccessRight("Administration", Metadata) AND Not IsInRole("UT_UniversalTools")
 			and InfoBaseUsers.GetUsers().Count() > 0 then
 			CurrentUser = InfoBaseUsers.CurrentUser();
@@ -64,6 +73,10 @@ Procedure SetGroupTitleRepresentation(Form, GroupNames = "") Export
 
 EndProcedure
 
+// Defalut language code
+//
+// Return value:
+//  String - default language code
 Function DefaultLanguageCode() Export
 	Return UT_CommonServerCall.DefaultLanguageCode();
 EndFunction

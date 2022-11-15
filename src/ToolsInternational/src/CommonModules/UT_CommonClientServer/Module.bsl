@@ -614,6 +614,37 @@ Function ManagedFormType() Export
 	EndIf;
 EndFunction
 
+Function ThisIsServerContext() Export
+	#If Server Then
+		Return True;
+	#Else
+		Return False;
+	#EndIF
+EndFunction
+
+// Form element table
+//
+// Parameters:
+//  Element - FormField, FormGroup, Formtable
+// 
+// Return value:
+//  FormTable
+// Return value:
+//  Undefined - Elemt doesn't belong to form table
+Function FormElementTable(Element) Export
+	CurElement = Element;
+	FormType = ManagedFormType();
+	
+	While TypeOf(CurElement) <> Type("FormTable") Do
+		If CurElement.Parent = Undefined Or TypeOf(CurElement.Parent) = FormType Then
+			
+			Return Undefined;
+		EndIf;
+		
+		CurElement = CurElement.Parent;
+	EndDo;
+EndFunction
+
 #Region Variables
 Function IsCorrectVariableName(Name) Export
 	If Not ValueIsFilled(Name) Then
@@ -1339,6 +1370,13 @@ Function SerializeObjectForDebugToStructure(ObjectForDebugging, DcsSettingsOrHTT
 		ObjectStructure = SerializeQueryForDebug(ObjectForDebugging);
 	ElsIf TypeOf(ObjectForDebugging) = Type("DataCompositionSchema") Then
 		ObjectStructure = SerializeDCSForDebug(ObjectForDebugging, DcsSettingsOrHTTPConnection, ExternalDataSets);
+	ElsIf TypeOf(ObjectForDebugging) = Type("FormTable") Then
+		If Not ThisIsServerContext() Then
+			Return Undefined;
+		EndIf;
+		DCS = ObjectForDebugging.GetPerformingDataCompositionScheme();
+		Settings = ObjectForDebugging.GetPerformingDataCompositionSettings();
+		ObjectStructure = SerializeDCSForDebug(DCS, Settings, Undefined);
 	EndIf;
 	Return ObjectStructure;
 EndFunction
@@ -1359,6 +1397,8 @@ Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined
 	ElsIf TypeOf(ObjectForDebugging) = Type("Query") Then
 		DebugObjectType = "QUERY";
 	ElsIf TypeOf(ObjectForDebugging) = Type("DataCompositionSchema") Then
+		DebugObjectType = "DATACOMPOSITIONSCHEMA";
+	ElsIf TypeOf(ObjectForDebugging) = Type("FormTable") Then
 		DebugObjectType = "DATACOMPOSITIONSCHEMA";
 	EndIf;
 

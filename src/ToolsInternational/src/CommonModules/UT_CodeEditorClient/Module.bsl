@@ -2655,8 +2655,7 @@ Function EditorSaveDirectory(EditorType)
 		Return "";
 	EndIf;
 
-	Return FileVariablesStructure.TempFilesDirectory + "tools_ui_1c_int" + GetPathSeparator() + Format(
-		UT_CommonClientServer.Version(), "NG=0;") + GetPathSeparator() + EditorType;
+	Return UT_CommonClient.UT_AssistiveLibrariesDirectory() + GetPathSeparator() + EditorType;
 EndFunction
 
 Function AceEditorFileNameForLanguage(Language = "bsl") Export

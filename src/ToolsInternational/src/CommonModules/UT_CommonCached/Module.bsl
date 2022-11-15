@@ -46,6 +46,10 @@ Procedure InsertChildSybsystemsNames(Names, ParentSubsystem, DisabledSubsystems,
 
 EndProcedure
 
+// Defalut language code
+//
+// Return value:
+//  String - default language code
 Function DefaultLanguageCode() Export
 	Return Metadata.DefaultLanguage.LanguageCode;
 EndFunction

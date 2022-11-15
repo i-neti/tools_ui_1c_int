@@ -274,6 +274,33 @@ EndFunction
 		Return Form[AttributeName];
 	EndIf;
 EndFunction
+
+Procedure AddColumnNL(Form, Val ColumnName, ColumnTypeDescription, FormTable) Export
+	AddedAttributesArray = New Array;
+	AddedAttributesArray.Add(
+		New FormAttribute(ColumnName, ColumnTypeDescription, Formtable, ColumnName));
+	Form.ChangeAttributes(AddedAttributesArray);
+	NewElement = Form.Elements.Add(ColumnName, Type("FormField"), Form.Elements[FormTable]);
+	NewElement.Title = ColumnName;
+	NewElement.Type = FormFieldType.InputField;
+	NewElement.DataPath = FormTable + "." + ColumnName;
+EndProcedure
+
+Procedure DeleteColumnsNL(Form, Val ColumnNamesArray, FormTable) Export
+	DeletedAttributesArray = New Array;
+	For Each ColumnName In ColumnNamesArray Do
+		Form.Elements.Delete(Form.Elements.Find(ColumnName));
+		DeletedAttributesArray.Add(FormTable + "." + ColumnName);
+	EndDo;
+	Form.ChangeAttributes( , DeletedAttributesArray);
+EndProcedure
+
+Procedure DeleteColumnNL(Form, Val ColumnName, FormTable) Export
+	Form.Elements.Delete(Form.Elements.Find(ColumnName));
+	DeletedAttributesArray = New Array;
+	DeletedAttributesArray.Add(FormTable + "." + ColumnName);
+	Form.ChangeAttributes( , DeletedAttributesArray);
+EndProcedure
 #EndRegion
 
 #Region PostingSettings  

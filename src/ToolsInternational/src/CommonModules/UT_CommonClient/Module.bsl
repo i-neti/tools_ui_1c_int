@@ -488,9 +488,36 @@ Procedure EditType(DataType, StartMode, StandardProcessing, FormOwner, OnEndNoti
 		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
-Procedure EditValueTable(ValueTableAsString, FormOwner, OnEndNotifyDescription) Export
+// New parameters of value table editing
+//
+// Return type:
+//  Structure - New parameters of value table editing
+// * SerializeToXML - Boolean - If TRUE, then the string presentation of VT wiil be computed with UT_Common.ValueFromXMLString and UT_Common.ValueToXMLString.
+// If FALSE, then with platform methods ValueToStringInternal and ValueFromStringInternal
+Function ValueTableNewEditingParameters() Export
+	Structure = New Structure;
+	Structure.Insert("SerializeToXML", False);
+	Structure.Insert("ReadOnly", False);
+	
+	Return Structure;
+EndFunction
+
+// Edit value table
+//
+// Parameters:
+//  ValueTableAsString - String - Value table string presentation
+//  FormOwner - ClientApplicationForm - 
+//  OnEndNotifyDescription - NotifyDescription - Will be executed on end
+//  EditingParameters - Structure - See ValueTableNewEditingParameters
+Procedure EditValueTable(ValueTableAsString, FormOwner,
+	OnEndNotifyDescription = Undefined, EditingParameters = Undefined) Export
 	FormParameters=New Structure;
 	FormParameters.Insert("ValueTableAsString", ValueTableAsString);
+	If EditingParameters <> Undefined Then
+		For Each KeyValue In EditingParameters Do
+			FormParameters.Insert(KeyValue.Key, KeyValue.Value);
+		EndDo;
+	EndIf;
 
 	OpenForm("CommonForm.UT_ValueTableEditor", FormParameters, FormOwner, , , ,
 		OnEndNotifyDescription);
@@ -629,13 +656,18 @@ Procedure SaveAssistiveLibrariesAtClientOnStart() Export
 	Message(LibrariesDirectory);
 EndProcedure
 
+// Assistive libraries directory
+// Return type:
+//  String - Assistive libraries directory
 Function UT_AssistiveLibrariesDirectory() Export
 	FileVariablesStructure=SessionFileVariablesStructure();
-	If Not FileVariablesStructure.Property("TempFilesDirectory") Then
+	If Not FileVariablesStructure.Property("UserDataWorkingDirectory") Then
 		Return "";
 	EndIf;
 	
-	Return FileVariablesStructure.TempFilesDirectory + GetPathSeparator() + "tools_ui_1c_int" + GetPathSeparator()
+	Return FileVariablesStructure.UserDataWorkingDirectory + ?(StrEndsWith(
+		FileVariablesStructure.UserDataWorkingDirectory, GetPathSeparator()), "",
+		GetPathSeparator()) + "tools_ui_1c_int" + GetPathSeparator() + Format(UT_CommonClientServer.Version(), "NG=0;");
 EndFunction
 #EndRegion
 
@@ -1037,6 +1069,12 @@ Function SessionFileVariablesParameterName () Export
 	Return "FILE_VARIABLES";
 EndFunction
 
+// Sesstion file variables structure
+//
+// Return value:
+//  Structure - Sesstion file variables
+//  	*FILE_VARIABLES - String -
+//  	*UserDataWorkingDirectory - String -
 Function SessionFileVariablesStructure() Export
 	CurrentApplicationParameters=UT_ApplicationParameters;
 
