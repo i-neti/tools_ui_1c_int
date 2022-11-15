@@ -119,7 +119,7 @@
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
   <commonModules>CommonModule.UT_FormsClient</commonModules>
   <commonModules>CommonModule.UT_FormsServer</commonModules>
-  <commonModules>CommonModule.UT_AlgorithmsCallServer</commonModules>
+  <commonModules>CommonModule.UT_AlgorithmsServerCall</commonModules>
   <commonModules>CommonModule.UT_AlgorithmsServer</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
