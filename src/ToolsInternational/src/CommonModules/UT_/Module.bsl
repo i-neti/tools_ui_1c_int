@@ -1,5 +1,5 @@
 //Module for quick access to debugging procedures
-#Region ProgramInterface
+#Region ProgrammingInterface
 // Description
 // 
 // Runs the appropriate tool for a thick client or writes data to the database for further debugging// 
