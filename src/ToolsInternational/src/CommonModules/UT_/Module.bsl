@@ -126,7 +126,7 @@ Function _Alg(AlgorithmName, AlgorithmText = "", Val Parameter1 = Undefined, Val
 	Val Parameter6 = Undefined, Val Parameter7 = Undefined, Val Parameter8 = Undefined, 
 	Val Parameter9 = Undefined, Val ParametersNamesArray = Undefined) Export
 	
-	Return UT_AlgorithmsServerCall.CreateAlgorithm(AlgorithmName, AlgorithmText, Parameter1, Parameter2,
+	Return UT_AlgorithmsServerCall.CreatingOfAlgorithm(AlgorithmName, AlgorithmText, Parameter1, Parameter2,
 		Parameter3, Parameter4, Parameter5, Parameter6, Parameter7, Parameter8, Parameter9, StrSplit(ParametersNamesArray, ",", False));
 		
 EndFunction
