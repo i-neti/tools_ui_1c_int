@@ -11398,7 +11398,7 @@
                 <name>ParameterListACommandBar</name>
                 <id>621</id>
                 <items xsi:type="form:Button">
-                  <name>СписокПараметровАКомандаПолучитьПараметрыЗапросаА</name>
+                  <name>ParameterListACommandGetQueryParametersA</name>
                   <id>647</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -11406,7 +11406,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>СписокПараметровАКомандаПолучитьПараметрыЗапросаАРасширеннаяПодсказка</name>
+                    <name>ParameterListACommandGetQueryParametersAExtendedTooltip</name>
                     <id>648</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13123,7 +13123,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>GroupOptionSettingsConnectionsFileA</name>
+                <name>GroupSettingsConnectionsFileB</name>
                 <id>419</id>
                 <items xsi:type="form:FormGroup">
                   <name>GroupSettingsConnectionsToFileGeneralB</name>
@@ -13871,14 +13871,14 @@
                 </title>
                 <title>
                   <key>en</key>
-                  <value>Group option settings connections file A</value>
+                  <value>Group settings connections file B</value>
                 </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа параметры файла А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>GroupOptionSettingsConnectionsFileAExtendedTooltip</name>
+                  <name>GroupSettingsConnectionsFileBExtendedTooltip</name>
                   <id>420</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -17691,7 +17691,7 @@
                 <name>ParameterListBCommandBar</name>
                 <id>653</id>
                 <items xsi:type="form:Button">
-                  <name>СписокПараметровБКомандаПолучитьПараметрыЗапросаБ</name>
+                  <name>ParameterListBCommandGetQueryParametersB</name>
                   <id>679</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -17699,7 +17699,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>СписокПараметровБКомандаПолучитьПараметрыЗапросаБРасширеннаяПодсказка</name>
+                    <name>ParameterListBCommandGetQueryParametersBExtendedTooltip</name>
                     <id>680</id>
                     <visible>true</visible>
                     <enabled>true</enabled>

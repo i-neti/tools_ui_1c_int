@@ -734,7 +734,7 @@ EndProcedure
 &AtClient
 Procedure UpdateHeader()
 	
-	ThisForm.Title = "КСД: " + Object.Title;
+	ThisForm.Title =NSTR("ru = 'КСД:';en = 'Data comparison console:'") + Object.Title;
 	
 EndProcedure
 
@@ -764,17 +764,17 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 	//Table 
 	Items["GroupPageTable" + BaseID].Visible = Object["BaseType" + BaseID] = 4;
 		
-//#Region _1C_8_внешняя
+//#Region _1C_8_External
 	If Object["BaseType" + BaseID] = 1 Then
 		
 		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= True;
 		Items["GroupVariantVersionPlatformsBase" + BaseID].Visible 						= True;
 		If Object["WorkOptionExternalBase" + BaseID] = 1 Then
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= True;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Имя базы';en = 'Base name'");
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Имя базы';en = 'Database name'");
 		Else
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= False;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Путь к базе';en = 'Path to base'");
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Путь к базе';en = 'Path to Database'");
 		EndIf;
 		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= False;
 		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
@@ -1033,7 +1033,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 							
 //#EndRegion 
 
-//#Region _1С_8_текущая
+//#Region _1C_8_Current
 	Else 
 		
 		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
@@ -1174,14 +1174,14 @@ EndProcedure
 &AtClient
 Procedure UpdateVisibilityAvailabilityPage_GroupConditionsOutputRows()
 	
-	Items.GroupConditionsOutputRows.BgColor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
+	Items.GroupConditionsOutputRows.backcolor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
 &AtClient
 Procedure UpdateVisibilityAvailabilityPage_GroupConditionsProhibitOutputRows()
 	
-	Items.GroupConditionsProhibitOutputRows.BgColor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
+	Items.GroupConditionsProhibitOutputRows.backcolor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
@@ -1867,8 +1867,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		Object.NumberColumnsInKey = 1;
 		Object.PeriodType = 0;
-		Object.AbsolutePeriodValue.ValidFrom = BegOfMonth(CurrentDate());
-		Object.AbsolutePeriodValue.ValidTo = EndOfDay(CurrentDate());
+		Object.AbsolutePeriodValue.StartDate = BegOfMonth(CurrentDate());
+		Object.AbsolutePeriodValue.EndDate = EndOfDay(CurrentDate());
 		Object.RelativePeriodValue = 0;
 		Object.ValueOfSlaveRelativePeriod = 0;
 		Object.DiscretenessOfRelativePeriod = "month";
@@ -1896,8 +1896,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		For Counter = 1 To 20 Do 
 			
-			Object.TableA.Region(1,Counter,1,Counter).Text = Counter;
-			Object.TableB.Region(1,Counter,1,Counter).Text = Counter;
+			Object.TableA.Area(1,Counter,1,Counter).Text = Counter;
+			Object.TableB.Area(1,Counter,1,Counter).Text = Counter;
 			
 		EndDo;
 		
