@@ -1,48 +1,52 @@
 #Region Internal
 
 Function GetParameters() Export
-//	Parameters = Storage.Get();
-//	If Parameters = Undefined OR TypeOf(Parameters) <> Type("Structure") Then 
-//		Parameters =  New Structure;
-//	EndIf;
-//	Return Parameters;
+	StorageParameters = Storage.Get();
+	If StorageParameters = Undefined OR TypeOf(StorageParameters) <> Type("Structure") Then 
+		StorageParameters =  New Structure;
+	EndIf;
+	Return StorageParameters;
 EndFunction
 
 Function GetParameter(ParameterName) Export
-//	Parameters = Storage.Get();
-//	If Parameters <> Undefined AND Parameters.Property(ParameterName) Then
-//		Return Parameters[ParameterName];
-//	Else 
-//		Return Undefined;
-//	EndIf;
+	StorageParameters = Storage.Get();
+	If StorageParameters <> Undefined AND StorageParameters.Property(ParameterName) Then
+		Return StorageParameters[ParameterName];
+	Else 
+		Return Undefined;
+	EndIf;
 EndFunction
 
 Function RemoveParameter(Key) Export
-//	Try
-//		Parameters = GetParameters();
-//		Parameters.Delete(Key);
-//		Storage = New ValueStorage(Parameters);
-//		Write();
-//		Return True;	
-//	Except
-//		WriteToEventLog("Parameter deletion",ErrorDescription());
-//		Return False;
-//	EndTry;
+	
+		StorageParameters = GetParameters();
+		StorageParameters.Delete(Key);
+		Storage = New ValueStorage(StorageParameters);
+		Write();
+		Return True;	
+
 EndFunction
 
 Function RenameParameter(Key, NewName) Export
-//	Try
-//		Parameters = GetParameters();
-//		Значение = Parameters[Key];
-//		Parameters.Delete(Key);
-//		Parameters.Insert(NewName,Value);
-//		Storage = New ValueStorage(Parameters);
-//		Write();
-//		Return True;
-//	Except
-//		WriteToEventLog("Rename parameter error",ErrorDescription());
-//		Return False;
-//	EndTry;
+	Try
+		StorageParameters = GetParameters();
+		Value = StorageParameters[Key];
+		StorageParameters.Delete(Key);
+		StorageParameters.Insert(NewName,Value);
+		Storage = New ValueStorage(StorageParameters);
+		Write();
+		Return True;
+	Except
+		Return False;
+	EndTry;
+EndFunction
+
+Function EditParameter(Key, NewValue) Export
+	StorageParameters = GetParameters();
+	StorageParameters.Insert(Key,NewValue);
+	Storage = New ValueStorage(StorageParameters);
+	Write();
+	Return True;
 EndFunction
 
 #EndRegion

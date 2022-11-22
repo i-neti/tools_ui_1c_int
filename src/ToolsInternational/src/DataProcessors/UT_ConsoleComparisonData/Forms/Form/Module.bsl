@@ -438,7 +438,7 @@ Procedure GetParametersFromQueryOnServer(BaseID)
 	For Each QueryParameter In QueryOptions Do
 		
 		ParameterName = QueryParameter.Name;
-		If ParameterName = "ValidFrom" Or ParameterName = "ValidTo" Then
+		If ParameterName = "StartDate" Or ParameterName = "EndDate" Then
 			Continue;
 		EndIf;
 		

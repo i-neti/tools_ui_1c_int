@@ -703,8 +703,8 @@ Function ExecuteQuery1C8AndGetValueTable(BaseID, ErrorsText = "", Connection = U
 	
 	EndIf;
 	
-	Query.SetParameter("ValidFrom", 	AbsolutePeriodValue.ValidFrom);
-	Query.SetParameter("ValidTo", 	AbsolutePeriodValue.ValidTo);
+	Query.SetParameter("StartDate", 	AbsolutePeriodValue.StartDate);
+	Query.SetParameter("EndDate", 	AbsolutePeriodValue.EndDate);
 	
 	Try
 		ValueTable = Query.Execute().Unload();
@@ -4607,7 +4607,7 @@ Procedure SetParameters(Query, BaseID)
 	
 	For Each Parameter In ThisObject["ParameterList" + BaseID] Do
 		If TypeOf(Parameter.ParameterValue) <> Type("Undefined") Then
-			If Parameter.ParameterName = "ValidFrom" Or Parameter.ParameterName = "ValidTo" Then
+			If Parameter.ParameterName = "StartDate" Or Parameter.ParameterName = "EndDate" Then
 				Continue;
 			EndIf;
 			Query.SetParameter(Parameter.ParameterName, Parameter.ParameterValue);			
@@ -4958,8 +4958,8 @@ Procedure RefreshDataPeriod() Export
 	StartingPointDateBeginning = BegOfDay(CurrentDate) + 24 * 3600;
 	
 	//Defaults
-	ValidFrom = CurrentDate;
-	ValidTo = EndOfDay(CurrentDate);
+	StartDate = CurrentDate;
+	EndDate = EndOfDay(CurrentDate);
 	
 	//Absolute period
 	If PeriodType = 0 Then
@@ -4967,39 +4967,39 @@ Procedure RefreshDataPeriod() Export
 	Else
 		
 		If DiscretenessOfRelativePeriod = "year" Then
-			ValidFrom = AddMonth(StartingPointDateBeginning, -1 * 12 * RelativePeriodValue);
+			StartDate = AddMonth(StartingPointDateBeginning, -1 * 12 * RelativePeriodValue);
 		ElsIf DiscretenessOfRelativePeriod = "month" Then
-			ValidFrom = AddMonth(StartingPointDateBeginning, -1 * RelativePeriodValue);
+			StartDate = AddMonth(StartingPointDateBeginning, -1 * RelativePeriodValue);
 		ElsIf DiscretenessOfRelativePeriod = "day" Then
-			ValidFrom = StartingPointDateBeginning - 24 * 3600 * RelativePeriodValue;
+			StartDate = StartingPointDateBeginning - 24 * 3600 * RelativePeriodValue;
 		EndIf;
 		
 		//Last Х
 		If PeriodType = 1 Then
 
-			ValidTo = EndOfDay(CurrentDate);
+			EndDate = EndOfDay(CurrentDate);
 			
 		//First X of the last Y
 		ElsIf PeriodType = 2 Then
 			
-			StartingPointDatesEnds = ValidFrom - 1;
+			StartingPointDatesEnds = StartDate - 1;
 			
 			If DiscretenessOfSlaveRelativePeriod = "year" Then
-				ValidTo = AddMonth(StartingPointDatesEnds, 1 * 12 * ValueOfSlaveRelativePeriod);
+				EndDate = AddMonth(StartingPointDatesEnds, 1 * 12 * ValueOfSlaveRelativePeriod);
 			ElsIf DiscretenessOfSlaveRelativePeriod = "month" Then
-				ValidTo = AddMonth(StartingPointDatesEnds, 1 * ValueOfSlaveRelativePeriod);
+				EndDate = AddMonth(StartingPointDatesEnds, 1 * ValueOfSlaveRelativePeriod);
 			ElsIf DiscretenessOfSlaveRelativePeriod = "day" Then
-				ValidTo = StartingPointDatesEnds + 24 * 3600 * ValueOfSlaveRelativePeriod;
+				EndDate = StartingPointDatesEnds + 24 * 3600 * ValueOfSlaveRelativePeriod;
 			EndIf;
 			
 		Else
 			
-			ValidTo = EndOfDay(CurrentDate);
+			EndDate = EndOfDay(CurrentDate);
 		
 		EndIf;
 		
-		AbsolutePeriodValue.ValidFrom = Min(ValidFrom,ValidTo);
-		AbsolutePeriodValue.ValidTo = ValidTo;
+		AbsolutePeriodValue.StartDate = Min(StartDate,EndDate);
+		AbsolutePeriodValue.EndDate = EndDate;
 		
 	EndIf;
 		

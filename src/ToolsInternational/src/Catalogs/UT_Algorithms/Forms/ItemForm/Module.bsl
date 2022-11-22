@@ -248,7 +248,7 @@ Procedure EventLog(Command)
 	ConnectExternalDataProcessorAtServer();
 	OpenParameters = New Structure;
 	OpenParameters.Insert("Data", Object.Ref);
-	OpenParameters.Insert("ValidFrom", BegOfDay(CurrentDate()));
+	OpenParameters.Insert("StartDate", BegOfDay(CurrentDate()));
 	OpenForm("ExternalDataProcessors.StandardEventLog.Form", OpenParameters);
 EndProcedure
 
