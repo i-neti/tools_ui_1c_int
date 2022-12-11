@@ -111,7 +111,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>ФиксированныеНастройкиОтборВыбор</name>
+          <name>FixedSettingsFilterSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -345,7 +345,7 @@
         </autoCommandBar>
         <handlers>
           <event>Selection</event>
-          <name>НастройкиОтборВыбор</name>
+          <name>SettingsFilterSelection</name>
         </handlers>
         <searchStringAddition>
           <visible>true</visible>
@@ -596,7 +596,7 @@
   </autoCommandBar>
   <handlers>
     <event>OnCreateAtServer</event>
-    <name>ПриСозданииНаСервере</name>
+    <name>OnCreateAtServer</name>
   </handlers>
   <autoTitle>true</autoTitle>
   <autoUrl>true</autoUrl>
