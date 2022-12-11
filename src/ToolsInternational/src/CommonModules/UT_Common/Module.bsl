@@ -5051,7 +5051,7 @@ EndFunction
 
 #Region ServiceProceduresAndFunctions
 
-Function CollectionToVT(Collection) Export
+Function CollectionToValueTable(Collection) Export
 	VT = New ValueTable;
 	VT.Columns.Add("Value");
 	If Not TypeOf(Collection) = Type("Array") Then

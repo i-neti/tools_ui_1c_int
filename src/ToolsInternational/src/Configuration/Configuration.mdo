@@ -138,7 +138,7 @@
   <commonForms>CommonForm.UT_WriteSettings</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentEditor</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentsComparison</commonForms>
-  <commonForms>CommonForm.УИ_НастройкиДинамическогоСписка</commonForms>
+  <commonForms>CommonForm.UT_DynamicListSettings</commonForms>
   <catalogs>Catalog.UT_Algorithms</catalogs>
   <catalogs>Catalog.AdditionalReportsAndDataProcessors</catalogs>
   <reports>Report.UT_ReportsConsole</reports>

@@ -1,4 +1,4 @@
-
+#Region ProgramInterface
 // Session start parameters
 //
 // Return value:
@@ -78,7 +78,7 @@ EndProcedure
 // Return value:
 //  String - default language code
 Function DefaultLanguageCode() Export
-	Return UT_CommonServerCall.DefaultLanguageCode();
+	Return UT_CommonClientServer.DefaultLanguageCode();
 EndFunction
 
 // See. StandardSubsystemsCached.RefsByPredefinedItemsNames
@@ -653,6 +653,7 @@ Function ExecuteTwoValueTablesComparison(BaseTable, ComparisonTable, ListOfCompa
 	Return New Structure("IdenticalTables,DifferencesTable", TablesIdentical, TempTable);
 EndFunction
 
+#EndRegion
 #EndRegion
 
 #Region ConsolesDataSaveRead

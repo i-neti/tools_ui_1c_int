@@ -1,4 +1,4 @@
-
+#Region ProgramInterface
 // Create copy of value type of Structure, Recursively, according of types of properties. 
 // If  structure properties contains values of object types  (catalogref, DocumentRef,etc),
 //  their contents are not copied, but references to the source object are returned..
@@ -622,26 +622,26 @@ Function ThisIsServerContext() Export
 	#EndIF
 EndFunction
 
-// Form element table
+// Form item table
 //
 // Parameters:
-//  Element - FormField, FormGroup, Formtable
+//  Item - FormField, FormGroup, Formtable
 // 
 // Return value:
 //  FormTable
 // Return value:
-//  Undefined - Elemt doesn't belong to form table
-Function FormElementTable(Element) Export
-	CurElement = Element;
+//  Undefined - Item doesn't belong to form table
+Function FormItemTable(Item) Export
+	CurrentItem = Item;
 	FormType = ManagedFormType();
 	
-	While TypeOf(CurElement) <> Type("FormTable") Do
-		If CurElement.Parent = Undefined Or TypeOf(CurElement.Parent) = FormType Then
+	While TypeOf(CurrentItem) <> Type("FormTable") Do
+		If CurrentItem.Parent = Undefined Or TypeOf(CurrentItem.Parent) = FormType Then
 			
 			Return Undefined;
 		EndIf;
 		
-		CurElement = CurElement.Parent;
+		CurrentItem = CurrentItem.Parent;
 	EndDo;
 EndFunction
 
@@ -1874,4 +1874,13 @@ EndFunction
 Function IsPortableDistribution() Export
 	Return DistributionType() = PortableDistributionType();	
 EndFunction
+#EndRegion
+#EndRegion
+
+#Region InternalProgramInterface
+// is intended for modules that are part of some functional subsystem. It should contain export procedures and functions that can only be called from other functional subsystems of the same library.
+#EndRegion
+
+#Region InternalProceduresAndFunctions
+// contains procedures and functions that make up the internal implementation of a common module. In cases where a common module is part of some functional subsystem that includes several metadata objects, this section can also contain service export procedures and functions intended only for calling from other objects of this subsystem.
 #EndRegion

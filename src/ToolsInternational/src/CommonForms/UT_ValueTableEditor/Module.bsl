@@ -241,7 +241,7 @@ Function ResultValueTableToString()
 	
 	ResultStructure=New Structure;
 	If SerializeToXML Then
-		ResultStructure.Insert("Value", UT_Common.ValueToXMLString(VT);
+		ResultStructure.Insert("Value", UT_Common.ValueToXMLString(VT));
 	Else
 		ResultStructure.Insert("Value", ValueToStringInternal(VT));
 	EndIf;

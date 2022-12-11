@@ -78,7 +78,7 @@
       <name>ФиксированныеНастройки</name>
       <id>61</id>
       <items xsi:type="form:Table">
-        <name>ФиксированныеНастройкиОтбор</name>
+        <name>FixedSettingsFilter</name>
         <id>3</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -86,12 +86,12 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>КомпоновщикНастроек.FixedSettings.Filter</segments>
+          <segments>SettingsComposer.FixedSettings.Filter</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <commandBarLocation>None</commandBarLocation>
         <autoCommandBar>
-          <name>ФиксированныеНастройкиОтборКоманднаяПанель</name>
+          <name>FixedSettingsFilterCommandBar</name>
           <id>5</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -111,10 +111,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ФиксированныеНастройкиОтборСтрокаПоиска</name>
+          <name>FixedSettingsFilterSearchString</name>
           <id>7</id>
           <extendedTooltip>
-            <name>ФиксированныеНастройкиОтборСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>FixedSettingsFilterSearchStringExtendedTooltip</name>
             <id>9</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -129,7 +129,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ФиксированныеНастройкиОтборСтрокаПоискаКонтекстноеМеню</name>
+            <name>FixedSettingsFilterSearchStringContextMenu</name>
             <id>8</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -138,7 +138,7 @@
             </userVisible>
             <autoFill>true</autoFill>
           </contextMenu>
-          <source>ФиксированныеНастройкиОтборСтрокаПоиска</source>
+          <source>FixedSettingsFilterSearchString</source>
           <extInfo xsi:type="form:SearchStringAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
@@ -149,10 +149,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ФиксированныеНастройкиОтборСостояниеПросмотра</name>
+          <name>FixedSettingsFilterViewStatus</name>
           <id>10</id>
           <extendedTooltip>
-            <name>ФиксированныеНастройкиОтборСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>FixedSettingsFilterViewStatusExtendedTooltip</name>
             <id>12</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -167,7 +167,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ФиксированныеНастройкиОтборСостояниеПросмотраКонтекстноеМеню</name>
+            <name>FixedSettingsFilterViewStatusContextMenu</name>
             <id>11</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -177,7 +177,7 @@
             <autoFill>true</autoFill>
           </contextMenu>
           <type>ViewStatusAddition</type>
-          <source>ФиксированныеНастройкиОтборСостояниеПросмотра</source>
+          <source>FixedSettingsFilterViewStatus</source>
           <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
@@ -188,10 +188,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>ФиксированныеНастройкиОтборУправлениеПоиском</name>
+          <name>FixedSettingsFilterSearchControl</name>
           <id>13</id>
           <extendedTooltip>
-            <name>ФиксированныеНастройкиОтборУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>FixedSettingsFilterSearchControlExtendedTooltip</name>
             <id>15</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -206,7 +206,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>ФиксированныеНастройкиОтборУправлениеПоискомКонтекстноеМеню</name>
+            <name>FixedSettingsFilterSearchControlContextMenu</name>
             <id>14</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -216,13 +216,13 @@
             <autoFill>true</autoFill>
           </contextMenu>
           <type>SearchControlAddition</type>
-          <source>ФиксированныеНастройкиОтборУправлениеПоиском</source>
+          <source>FixedSettingsFilterSearchControl</source>
           <extInfo xsi:type="form:SearchControlAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>ФиксированныеНастройкиОтборРасширеннаяПодсказка</name>
+          <name>FixedSettingsFilterExtendedTooltip</name>
           <id>6</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -237,7 +237,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>ФиксированныеНастройкиОтборКонтекстноеМеню</name>
+          <name>FixedSettingsFilterContextMenu</name>
           <id>4</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -316,7 +316,7 @@
           <common>true</common>
         </userVisible>
         <dataPath xsi:type="form:DataPath">
-          <segments>КомпоновщикНастроек.Settings.Filter</segments>
+          <segments>SettingsComposer.Settings.Filter</segments>
         </dataPath>
         <titleLocation>None</titleLocation>
         <commandBarLocation>None</commandBarLocation>
@@ -587,7 +587,11 @@
   <showTitle>true</showTitle>
   <showCloseButton>true</showCloseButton>
   <attributes>
-    <name>КомпоновщикНастроек</name>
+    <name>SettingsComposer</name>
+    <title>
+      <key>en</key>
+      <value>Settings composer</value>
+    </title>
     <id>1</id>
     <valueType>
       <types>DataCompositionSettingsComposer</types>
