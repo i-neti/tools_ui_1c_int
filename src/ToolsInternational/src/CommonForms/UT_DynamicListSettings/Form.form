@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form:Form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:form="http://g5.1c.ru/v8/dt/form">
   <items xsi:type="form:FormGroup">
-    <name>Группа1</name>
+    <name>Group1</name>
     <id>59</id>
     <items xsi:type="form:FormGroup">
-      <name>Группа3</name>
+      <name>Group3</name>
       <id>63</id>
       <items xsi:type="form:FormGroup">
-        <name>КомпоновщикНастроекПользовательскиеНастройки</name>
+        <name>SettingsComposerUserSettings</name>
         <id>1</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -18,8 +18,12 @@
           <key>ru</key>
           <value>Пользовательские настройки</value>
         </title>
+        <title>
+          <key>en</key>
+          <value>Settings composer user settings</value>
+        </title>
         <extendedTooltip>
-          <name>КомпоновщикНастроекПользовательскиеНастройкиРасширеннаяПодсказка</name>
+          <name>SettingsComposerUserSettingsExtendedTooltip</name>
           <id>2</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -53,8 +57,12 @@
         <key>ru</key>
         <value>Пользовательские</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Group3</value>
+      </title>
       <extendedTooltip>
-        <name>Группа3РасширеннаяПодсказка</name>
+        <name>Group3ExtendedTooltip</name>
         <id>64</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -75,7 +83,7 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ФиксированныеНастройки</name>
+      <name>FixedSettings</name>
       <id>61</id>
       <items xsi:type="form:Table">
         <name>FixedSettingsFilter</name>
@@ -279,12 +287,16 @@
         <key>ru</key>
         <value>Фиксированные</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Fixed settings</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Фиксированные настройки</value>
       </toolTip>
       <extendedTooltip>
-        <name>ФиксированныеНастройкиРасширеннаяПодсказка</name>
+        <name>FixedSettingsExtendedTooltip</name>
         <id>62</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -305,10 +317,10 @@
       </extInfo>
     </items>
     <items xsi:type="form:FormGroup">
-      <name>ОбычныеНастройки</name>
+      <name>StandartSettings</name>
       <id>65</id>
       <items xsi:type="form:Table">
-        <name>НастройкиОтбор</name>
+        <name>SettingsFilter</name>
         <id>67</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -321,7 +333,7 @@
         <titleLocation>None</titleLocation>
         <commandBarLocation>None</commandBarLocation>
         <autoCommandBar>
-          <name>НастройкиОтборКоманднаяПанель</name>
+          <name>SettingsFilterCommandBar</name>
           <id>69</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -341,10 +353,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НастройкиОтборСтрокаПоиска</name>
+          <name>SettingsFilterSearchString</name>
           <id>71</id>
           <extendedTooltip>
-            <name>НастройкиОтборСтрокаПоискаРасширеннаяПодсказка</name>
+            <name>SettingsFilterSearchStringExtendedTooltip</name>
             <id>73</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -359,7 +371,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НастройкиОтборСтрокаПоискаКонтекстноеМеню</name>
+            <name>SettingsFilterSearchStringContextMenu</name>
             <id>72</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -368,7 +380,7 @@
             </userVisible>
             <autoFill>true</autoFill>
           </contextMenu>
-          <source>НастройкиОтборСтрокаПоиска</source>
+          <source>SettingsFilterSearchString</source>
           <extInfo xsi:type="form:SearchStringAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
@@ -379,10 +391,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НастройкиОтборСостояниеПросмотра</name>
+          <name>SettingsFilterViewStatus</name>
           <id>74</id>
           <extendedTooltip>
-            <name>НастройкиОтборСостояниеПросмотраРасширеннаяПодсказка</name>
+            <name>SettingsFilterViewStatusExtendedTooltip</name>
             <id>76</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -397,7 +409,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НастройкиОтборСостояниеПросмотраКонтекстноеМеню</name>
+            <name>SettingsFilterViewStatusContextMenu</name>
             <id>75</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -407,7 +419,7 @@
             <autoFill>true</autoFill>
           </contextMenu>
           <type>ViewStatusAddition</type>
-          <source>НастройкиОтборСостояниеПросмотра</source>
+          <source>SettingsFilterViewStatus</source>
           <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
@@ -418,10 +430,10 @@
           <userVisible>
             <common>true</common>
           </userVisible>
-          <name>НастройкиОтборУправлениеПоиском</name>
+          <name>SettingsFilterSearchControl</name>
           <id>77</id>
           <extendedTooltip>
-            <name>НастройкиОтборУправлениеПоискомРасширеннаяПодсказка</name>
+            <name>SettingsFilterSearchControlExtendedTooltip</name>
             <id>79</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -436,7 +448,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>НастройкиОтборУправлениеПоискомКонтекстноеМеню</name>
+            <name>SettingsFilterSearchControlContextMenu</name>
             <id>78</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -446,13 +458,13 @@
             <autoFill>true</autoFill>
           </contextMenu>
           <type>SearchControlAddition</type>
-          <source>НастройкиОтборУправлениеПоиском</source>
+          <source>SettingsFilterSearchControl</source>
           <extInfo xsi:type="form:SearchControlAdditionExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
           </extInfo>
         </searchControlAddition>
         <extendedTooltip>
-          <name>НастройкиОтборРасширеннаяПодсказка</name>
+          <name>SettingsFilterExtendedTooltip</name>
           <id>70</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -467,7 +479,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>НастройкиОтборКонтекстноеМеню</name>
+          <name>SettingsFilterContextMenu</name>
           <id>68</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -511,12 +523,16 @@
         <key>ru</key>
         <value>Обычные</value>
       </title>
+      <title>
+        <key>en</key>
+        <value>Standart settings</value>
+      </title>
       <toolTip>
         <key>ru</key>
         <value>Обычные настройки</value>
       </toolTip>
       <extendedTooltip>
-        <name>ОбычныеНастройкиРасширеннаяПодсказка</name>
+        <name>StandartSettingsExtendedTooltip</name>
         <id>66</id>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -541,8 +557,12 @@
     <userVisible>
       <common>true</common>
     </userVisible>
+    <title>
+      <key>en</key>
+      <value>Group1</value>
+    </title>
     <extendedTooltip>
-      <name>Группа1РасширеннаяПодсказка</name>
+      <name>Group1ExtendedTooltip</name>
       <id>60</id>
       <visible>true</visible>
       <enabled>true</enabled>
@@ -609,6 +629,6 @@
     <commandBar/>
   </commandInterface>
   <extInfo xsi:type="form:SettingsComposerFormExtInfo">
-    <userSettingsGroup>КомпоновщикНастроекПользовательскиеНастройки</userSettingsGroup>
+    <userSettingsGroup>SettingsComposerUserSettings</userSettingsGroup>
   </extInfo>
 </form:Form>
