@@ -622,10 +622,14 @@
     <type>UsualGroup</type>
     <extInfo xsi:type="form:UsualGroupExtInfo">
       <group>Vertical</group>
-      <behavior>PopUp</behavior>
       <showLeftMargin>true</showLeftMargin>
       <united>true</united>
       <showTitle>true</showTitle>
+      <backColor xsi:type="core:ColorDef">
+        <red>255</red>
+        <green>243</green>
+        <blue>220</blue>
+      </backColor>
       <throughAlign>Auto</throughAlign>
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
@@ -737,26 +741,27 @@
       <name>GroupCode</name>
       <id>97</id>
       <items xsi:type="form:FormField">
-        <name>Algorithm</name>
+        <name>AlgorithmText</name>
         <id>111</id>
+        <title>
+          <key>en</key>
+          <value>special characters:  @ ,$ , #   ;  templates: (==)  Ctr+Space  ;  Alt + 60 &lt;,62 >,@ 64 , $ 36 , # 35 , &amp; 38 , 39' ,93], 91[, 124| </value>
+        </title>
         <title>
           <key>ru</key>
           <value>спецсимволы :  @ ,$ , #   ;  шаблоны: (==)  Ctr+Space  ;  Alt + 60 &lt;,62 >,@ 64 , $ 36 , # 35 , &amp; 38 , 39' ,93], 91[, 124| </value>
         </title>
-        <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
           <common>true</common>
         </userVisible>
-        <dataPath xsi:type="form:MultiLanguageDataPath">
-          <paths xsi:type="form:DataPath">
-            <segments>Object.AlgorithmText</segments>
-          </paths>
+        <dataPath xsi:type="form:DataPath">
+          <segments>Object.AlgorithmText</segments>
         </dataPath>
         <defaultItem>true</defaultItem>
         <titleLocation>None</titleLocation>
         <extendedTooltip>
-          <name>AlgorithmExtendedTooltip</name>
+          <name>AlgorithmTextExtendedTooltip</name>
           <id>158</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -771,7 +776,7 @@
           </extInfo>
         </extendedTooltip>
         <contextMenu>
-          <name>AlgorithmContextMenu</name>
+          <name>AlgorithmTextContextMenu</name>
           <id>112</id>
           <items xsi:type="form:Button">
             <name>ShowQueryWizard</name>
@@ -825,6 +830,64 @@
           <textEdit>true</textEdit>
         </extInfo>
       </items>
+      <items xsi:type="form:FormField">
+        <name>FieldAlgorithmText</name>
+        <id>823</id>
+        <title>
+          <key>en</key>
+          <value>Algorithm text</value>
+        </title>
+        <title>
+          <key>ru</key>
+          <value>Текст алгоритма</value>
+        </title>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <dataPath xsi:type="form:DataPath">
+          <segments>FieldAlgorithmText</segments>
+        </dataPath>
+        <extendedTooltip>
+          <name>FieldAlgorithmTextExtendedTooltip</name>
+          <id>825</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <type>Label</type>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <extInfo xsi:type="form:LabelDecorationExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
+          </extInfo>
+        </extendedTooltip>
+        <contextMenu>
+          <name>FieldAlgorithmTextContextMenu</name>
+          <id>824</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <autoFill>true</autoFill>
+        </contextMenu>
+        <type>TextDocumentField</type>
+        <editMode>Enter</editMode>
+        <showInHeader>true</showInHeader>
+        <headerHorizontalAlign>Left</headerHorizontalAlign>
+        <showInFooter>true</showInFooter>
+        <extInfo xsi:type="form:TextDocFieldExtInfo">
+          <width>50</width>
+          <autoMaxWidth>true</autoMaxWidth>
+          <height>10</height>
+          <autoMaxHeight>true</autoMaxHeight>
+          <horizontalStretch>true</horizontalStretch>
+          <verticalStretch>true</verticalStretch>
+        </extInfo>
+      </items>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
@@ -841,6 +904,10 @@
       <titleTextColor xsi:type="core:ColorDef">
         <red>128</red>
       </titleTextColor>
+      <toolTip>
+        <key>en</key>
+        <value>Group code</value>
+      </toolTip>
       <toolTip>
         <key>ru</key>
         <value>Группа код</value>
@@ -1167,6 +1234,10 @@
           <event>BeforeDeleteRow</event>
           <name>ParametersTableBeforeDeleteRow</name>
         </handlers>
+        <handlers>
+          <event>OnActivateRow</event>
+          <name>ParametersTableOnActivateRow</name>
+        </handlers>
         <searchStringAddition>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -1331,6 +1402,310 @@
         <searchControlLocation>None</searchControlLocation>
         <rowFilter xsi:type="core:UndefinedValue"/>
       </items>
+      <items xsi:type="form:FormGroup">
+        <name>GroupParametersValues</name>
+        <id>826</id>
+        <items xsi:type="form:Decoration">
+          <name>DecorationGapParameterValues</name>
+          <id>838</id>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>DecorationGapParameterValuesExtendedTooltip</name>
+            <id>840</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <contextMenu>
+            <name>DecorationGapParameterValuesContextMenu</name>
+            <id>839</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <autoFill>true</autoFill>
+          </contextMenu>
+          <type>Label</type>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <extInfo xsi:type="form:LabelDecorationExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
+          </extInfo>
+        </items>
+        <items xsi:type="form:FormField">
+          <name>PrimitiveTypeParameterValue</name>
+          <id>841</id>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <dataPath xsi:type="form:DataPath">
+            <segments>PrimitiveTypeParameterValue</segments>
+          </dataPath>
+          <extendedTooltip>
+            <name>PrimitiveTypeParameterValueExtendedTooltip</name>
+            <id>843</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <contextMenu>
+            <name>PrimitiveTypeParameterValueContextMenu</name>
+            <id>842</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <autoFill>true</autoFill>
+          </contextMenu>
+          <type>InputField</type>
+          <editMode>Enter</editMode>
+          <showInHeader>true</showInHeader>
+          <headerHorizontalAlign>Left</headerHorizontalAlign>
+          <showInFooter>true</showInFooter>
+          <extInfo xsi:type="form:InputFieldExtInfo">
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <wrap>true</wrap>
+            <chooseType>true</chooseType>
+            <typeDomainEnabled>true</typeDomainEnabled>
+            <textEdit>true</textEdit>
+          </extInfo>
+        </items>
+        <items xsi:type="form:Table">
+          <name>ParameterCollection</name>
+          <id>844</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <dataPath xsi:type="form:DataPath">
+            <segments>ParameterCollection</segments>
+          </dataPath>
+          <titleLocation>None</titleLocation>
+          <autoCommandBar>
+            <name>ParameterCollectionCommandBar</name>
+            <id>845</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <horizontalAlign>Left</horizontalAlign>
+            <autoFill>true</autoFill>
+          </autoCommandBar>
+          <searchStringAddition>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <name>ParameterCollectionSearchString</name>
+            <id>848</id>
+            <extendedTooltip>
+              <name>ParameterCollectionSearchStringExtendedTooltip</name>
+              <id>850</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>ParameterCollectionSearchStringContextMenu</name>
+              <id>849</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <extInfo xsi:type="form:SearchStringAdditionExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+            </extInfo>
+          </searchStringAddition>
+          <viewStatusAddition>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <name>ParameterCollectionViewStatus</name>
+            <id>854</id>
+            <extendedTooltip>
+              <name>ParameterCollectionViewStatusExtendedTooltip</name>
+              <id>856</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>ParameterCollectionViewStatusContextMenu</name>
+              <id>855</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>ViewStatusAddition</type>
+            <extInfo xsi:type="form:ViewStatusAdditionExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+            </extInfo>
+          </viewStatusAddition>
+          <searchControlAddition>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <name>ParameterCollectionSearchControl</name>
+            <id>851</id>
+            <extendedTooltip>
+              <name>ParameterCollectionSearchControlExtendedTooltip</name>
+              <id>853</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>ParameterCollectionSearchControlContextMenu</name>
+              <id>852</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>SearchControlAddition</type>
+            <extInfo xsi:type="form:SearchControlAdditionExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+            </extInfo>
+          </searchControlAddition>
+          <extendedTooltip>
+            <name>ParameterCollectionExtendedTooltip</name>
+            <id>847</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <contextMenu>
+            <name>ParameterCollectionContextMenu</name>
+            <id>846</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <autoFill>true</autoFill>
+          </contextMenu>
+          <changeRowSet>true</changeRowSet>
+          <changeRowOrder>true</changeRowOrder>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <autoMaxRowsCount>true</autoMaxRowsCount>
+          <selectionMode>MultiRow</selectionMode>
+          <header>true</header>
+          <headerHeight>1</headerHeight>
+          <footerHeight>1</footerHeight>
+          <horizontalScrollBar>AutoUse</horizontalScrollBar>
+          <verticalScrollBar>AutoUse</verticalScrollBar>
+          <horizontalLines>true</horizontalLines>
+          <verticalLines>true</verticalLines>
+          <searchOnInput>Auto</searchOnInput>
+          <initialListView>Auto</initialListView>
+          <horizontalStretch>true</horizontalStretch>
+          <verticalStretch>true</verticalStretch>
+        </items>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <title>
+          <key>en</key>
+          <value>Group1</value>
+        </title>
+        <extendedTooltip>
+          <name>GroupParametersValuesExtendedTooltip</name>
+          <id>827</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <type>Label</type>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <extInfo xsi:type="form:LabelDecorationExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
+          </extInfo>
+        </extendedTooltip>
+        <type>UsualGroup</type>
+        <extInfo xsi:type="form:UsualGroupExtInfo">
+          <group>HorizontalIfPossible</group>
+          <showLeftMargin>true</showLeftMargin>
+          <united>true</united>
+          <showTitle>true</showTitle>
+          <throughAlign>Auto</throughAlign>
+          <currentRowUse>Auto</currentRowUse>
+        </extInfo>
+      </items>
       <visible>true</visible>
       <enabled>true</enabled>
       <userVisible>
@@ -1368,7 +1743,7 @@
         <picture xsi:type="core:PictureRef">
           <picture>StdPicture.SettingsStorage</picture>
         </picture>
-        <group>Vertical</group>
+        <group>AlwaysHorizontal</group>
         <showTitle>true</showTitle>
       </extInfo>
     </items>
@@ -2281,6 +2656,10 @@
     <event>NotificationProcessing</event>
     <name>NotificationProcessing</name>
   </handlers>
+  <handlers>
+    <event>OnOpen</event>
+    <name>OnOpen</name>
+  </handlers>
   <autoSaveDataInSettings>Use</autoSaveDataInSettings>
   <autoTitle>true</autoTitle>
   <autoUrl>true</autoUrl>
@@ -2402,6 +2781,90 @@
         <common>true</common>
       </edit>
     </columns>
+  </attributes>
+  <attributes>
+    <name>SelectedParameter</name>
+    <title>
+      <key>en</key>
+      <value>Selected parameter</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Выбранный параметр</value>
+    </title>
+    <id>4</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>PrimitiveTypeParameterValue</name>
+    <title>
+      <key>en</key>
+      <value>Primitive Type parameter value</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Значение параметра простой тип</value>
+    </title>
+    <id>5</id>
+    <valueType/>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>ParameterCollection</name>
+    <title>
+      <key>en</key>
+      <value>Parameter collection</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Параметр коллекция</value>
+    </title>
+    <id>6</id>
+    <valueType>
+      <types>ValueTable</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>FieldAlgorithmText</name>
+    <title>
+      <key>en</key>
+      <value>Field algorithm text</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Поле текст алгоритма</value>
+    </title>
+    <id>7</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
   </attributes>
   <formCommands>
     <name>AddParameter</name>

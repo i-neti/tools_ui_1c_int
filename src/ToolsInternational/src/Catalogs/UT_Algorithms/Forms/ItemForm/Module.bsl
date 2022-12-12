@@ -1,7 +1,11 @@
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 #Region EventHandlers
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
 	FillParametersTable();
 
 	If Not Parameters.Key.IsEmpty() Then
@@ -20,11 +24,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillFormFieldsChoiceLists();
 
 	SetVisibleAndEnabled();
-EndProcedure
-
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	//TODO: Insert the handler content
+	
+	// CodeEditor
+	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
+	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,"Algorithm" ,Items.FieldAlgorithmText);
+	//CodeEditor
+	
 EndProcedure
 
 &AtServer
@@ -60,6 +65,7 @@ EndProcedure
 Procedure AtClientOnChange(Item)
 	SetVisibleAndEnabled();
 EndProcedure
+
 #EndRegion
 
 #Region FormTableItemsEventHandlers_Parameters
@@ -97,6 +103,90 @@ Procedure ParametersTableParameterOpening(Item, StandardProcessing)
 	EndTry;
 EndProcedure
 
+&AtClient
+Procedure ParametersTableOnActivateRow(Item)
+		If Item.CurrentData = Undefined Then
+		Return;	
+	EndIf;
+	If SelectedParameter <> Item.CurrentData.Parameter Then
+		SelectedParameter = Item.CurrentData.Parameter;	
+		AttachIdleHandler("RepresentParameterValue", 0.1, True);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure EditParametersEnd(Result, AdditionalParameters) Export
+	
+	AttachIdleHandler("RepresentParameterValue", 0.1, True);
+
+EndProcedure
+
+
+&AtClient
+Процедура RepresentParameterValue()
+	
+	Если Items.ParametersTable.CurrentData = Undefined Then
+		Return;	
+	EndIf;
+	
+	Элементы.ПараметрКоллекция.Видимость = Ложь;
+	Элементы.ДекорацияОтступЗначенияПарамета.Видимость = Ложь;
+	Элементы.ЗначениеПараметраПростойТип.Видимость = Ложь;
+
+	RepresentParameterValueServer(Элементы.ParametersTable.CurrentData.Параметр, Элементы.ParametersTable.CurrentData.ОписаниеТипа);	
+КонецПроцедуры
+
+&НаСервере
+Процедура RepresentParameterValueServer(ParameterName, ТипПараметраСтроки)
+	SelectedObject=FormAttributeToValue("Object");
+	Параметр = SelectedObject.GetParameter(ParameterName);
+    ОписаниеТипа = Новый TypeDescription();
+	
+	C = Новый Соответствие;
+	C.Вставить("Массив", "Коллекция");
+	C.Вставить("Структура", "Коллекция");
+	C.Вставить("Соответствие", "Коллекция");
+	C.Вставить("Таблица значений", "Коллекция");
+	C.Вставить("Двоичные данные", "ВнешнийФайл");
+	C.Вставить(Undefined, "ДоступныеТипы");
+	ТипПараметра = C.Получить(ТипПараметраСтроки);
+	Если ТипПараметра = Undefined Then
+		ЗначениеПараметраПростойТип = Параметр;
+		Элементы.ЗначениеПараметраПростойТип.Видимость = True;
+	ИначеЕсли ТипПараметра = "Коллекция" Then
+		УдаляемыеЭлементы = Новый Массив;
+		Для Каждого ЭлементКоллекции Из Элементы.ПараметрКоллекция.ПодчиненныеЭлементы Цикл
+			УдаляемыеЭлементы.Добавить(ЭлементКоллекции.Имя);
+		КонецЦикла;            
+        УИ_РаботаСФормами.УдалитьКолонкиНС(ЭтотОбъект, УдаляемыеЭлементы, "ПараметрКоллекция");		
+		Если ТипПараметраСтроки = "Массив" Then
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+			ПараметрКоллекция.Загрузить(Т);
+		ИначеЕсли ТипПараметраСтроки = "Структура" Then
+			ОТ = Новый ОписаниеТипов("Строка", , Новый КвалификаторыСтроки(20, ДопустимаяДлина.Переменная));
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Ключ", ОТ, "ПараметрКоллекция");
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+			ПараметрКоллекция.Загрузить(Т);
+		ИначеЕсли ТипПараметраСтроки = "Соответствие" Then
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Ключ", ОписаниеТипа, "ПараметрКоллекция");
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+			ПараметрКоллекция.Загрузить(Т);
+		Иначе
+			Для Каждого Колонка Из Параметр.Колонки Цикл
+				УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, Колонка.Имя, Колонка.ТипЗначения, "ПараметрКоллекция");
+			КонецЦикла;
+			ПараметрКоллекция.Загрузить(Параметр);
+		EndIf;
+		Элементы.ПараметрКоллекция.Видимость = True;
+	Иначе
+		Параметры.ТипПараметра="ВнешнийФайл";
+	EndIf;
+	Элементы.ДекорацияОтступЗначенияПарамета.Видимость = True;	
+КонецПроцедуры
+
 #EndRegion
 
 #Region FormCommandsHandlers
@@ -131,10 +221,9 @@ EndProcedure
 ///
 &AtClient
 Procedure ExecuteProcedure(Command)
-
-	If Modified Then
-		Write();
-	EndIf;
+//TODO При изменении кода при использовании monako не встает признак модифицированности
+	//по этому идет запись каждый раз, необходимо выяснить как изменение текста может изменить этот флаг	
+	Записать();
 
 	StartTime = CurrentUniversalDateInMilliseconds();
 
@@ -693,6 +782,19 @@ Procedure DeleteScheduledJobAtServer()
 		JobsArray[0].Delete();
 		Message(Nstr("ru = 'Удалено регламентное задание';en = 'Deleted scheluded job'")+ Object.Title);
 	EndIf;
+EndProcedure
+
+
+
+&AtClient
+Procedure OnOpen(Cancel)
+	//TODO: Insert the handler content
+EndProcedure
+
+
+&AtServer
+Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
+	SetVisibleAndEnabled();
 EndProcedure
 
 #EndRegion
