@@ -3180,5 +3180,9 @@
       <event>BeforeWriteAtServer</event>
       <name>BeforeWriteAtServer</name>
     </handlers>
+    <handlers>
+      <event>BeforeWrite</event>
+      <name>BeforeWrite</name>
+    </handlers>
   </extInfo>
 </form:Form>

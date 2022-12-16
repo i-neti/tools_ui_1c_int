@@ -123,62 +123,62 @@ EndProcedure
 
 
 &AtClient
-Процедура RepresentParameterValue()
+Procedure RepresentParameterValue()
 	
-	Если Items.ParametersTable.CurrentData = Undefined Then
+	If  Items.ParametersTable.CurrentData = Undefined Then
 		Return;	
 	EndIf;
 	
-	Элементы.ПараметрКоллекция.Видимость = Ложь;
-	Элементы.ДекорацияОтступЗначенияПарамета.Видимость = Ложь;
-	Элементы.ЗначениеПараметраПростойТип.Видимость = Ложь;
-
-	RepresentParameterValueServer(Элементы.ParametersTable.CurrentData.Параметр, Элементы.ParametersTable.CurrentData.ОписаниеТипа);	
-КонецПроцедуры
-
-&НаСервере
-Процедура RepresentParameterValueServer(ParameterName, ТипПараметраСтроки)
-	SelectedObject=FormAttributeToValue("Object");
-	Параметр = SelectedObject.GetParameter(ParameterName);
-    ОписаниеТипа = Новый TypeDescription();
+	Items.ParameterCollection.Visible = False;
+	Items.DecorationGapParameterValues.Visible = False;
+	Items.PrimitiveTypeParameterValue.Visible = False;
 	
-	C = Новый Соответствие;
+	RepresentParameterValueServer(Items.ParametersTable.CurrentData.Parameter, Items.ParametersTable.CurrentData.TypeDescription);	
+EndProcedure
+
+&AtServer
+Procedure RepresentParameterValueServer(ParameterName, TypeOfStringParameter)
+	SelectedObject=FormAttributeToValue("Object");
+	Parameter = SelectedObject.GetParameter(ParameterName);
+    TypeDescription = New TypeDescription();
+	
+	C = New Map;
 	C.Вставить("Массив", "Коллекция");
 	C.Вставить("Структура", "Коллекция");
 	C.Вставить("Соответствие", "Коллекция");
 	C.Вставить("Таблица значений", "Коллекция");
 	C.Вставить("Двоичные данные", "ВнешнийФайл");
 	C.Вставить(Undefined, "ДоступныеТипы");
-	ТипПараметра = C.Получить(ТипПараметраСтроки);
+	ТипПараметра = C.Получить(TypeOfStringParameter);
 	Если ТипПараметра = Undefined Then
-		ЗначениеПараметраПростойТип = Параметр;
+		ЗначениеПараметраПростойТип = Parameter;
 		Элементы.ЗначениеПараметраПростойТип.Видимость = True;
 	ИначеЕсли ТипПараметра = "Коллекция" Then
-		УдаляемыеЭлементы = Новый Массив;
+		УдаляемыеЭлементы = New Массив;
 		Для Каждого ЭлементКоллекции Из Элементы.ПараметрКоллекция.ПодчиненныеЭлементы Цикл
 			УдаляемыеЭлементы.Добавить(ЭлементКоллекции.Имя);
 		КонецЦикла;            
         УИ_РаботаСФормами.УдалитьКолонкиНС(ЭтотОбъект, УдаляемыеЭлементы, "ПараметрКоллекция");		
-		Если ТипПараметраСтроки = "Массив" Then
-			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
-			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+		Если TypeOfStringParameter = "Массив" Then
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", TypeDescription, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Parameter);
 			ПараметрКоллекция.Загрузить(Т);
-		ИначеЕсли ТипПараметраСтроки = "Структура" Then
-			ОТ = Новый ОписаниеТипов("Строка", , Новый КвалификаторыСтроки(20, ДопустимаяДлина.Переменная));
+		ИначеЕсли TypeOfStringParameter = "Структура" Then
+			ОТ = New ОписаниеТипов("Строка", , New КвалификаторыСтроки(20, ДопустимаяДлина.Переменная));
 			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Ключ", ОТ, "ПараметрКоллекция");
-			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
-			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", TypeDescription, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Parameter);
 			ПараметрКоллекция.Загрузить(Т);
-		ИначеЕсли ТипПараметраСтроки = "Соответствие" Then
-			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Ключ", ОписаниеТипа, "ПараметрКоллекция");
-			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", ОписаниеТипа, "ПараметрКоллекция");
-			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Параметр);
+		ИначеЕсли TypeOfStringParameter = "Соответствие" Then
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Ключ", TypeDescription, "ПараметрКоллекция");
+			УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, "Значение", TypeDescription, "ПараметрКоллекция");
+			Т = УИ_ОбщегоНазначения.КоллекцияВТЗ(Parameter);
 			ПараметрКоллекция.Загрузить(Т);
 		Иначе
 			Для Каждого Колонка Из Параметр.Колонки Цикл
 				УИ_РаботаСФормами.ДобавитьКолонкуНС(ЭтотОбъект, Колонка.Имя, Колонка.ТипЗначения, "ПараметрКоллекция");
 			КонецЦикла;
-			ПараметрКоллекция.Загрузить(Параметр);
+			ПараметрКоллекция.Загрузить(Parameter);
 		EndIf;
 		Элементы.ПараметрКоллекция.Видимость = True;
 	Иначе
@@ -209,13 +209,14 @@ EndProcedure
 
 &AtClient
 Procedure EditValue(Command)
-	If Items.ParametersTable.CurrentData <> Undefined Then
-		FormParameters = New Structure;
-		FormParameters.Insert("Key", Parameters.Key);
-		FormParameters.Insert("ParameterName", Items.ParametersTable.CurrentData.Parameter);
-		FormParameters.Insert("ParameterType", Items.ParametersTable.CurrentData.ОписаниеТипа);
-		OpenForm("Catalog.UT_Algorithms.Form.ParameterForm", FormParameters, ThisObject);
-	EndIf;
+		Если Элементы.ТаблицаПараметров.ТекущиеДанные <> Неопределено Тогда
+		Оповещение = New ОписаниеОповещения("EditParametersEnd", ЭтотОбъект);
+		П = New Структура;
+		П.Вставить("Ключ", Параметры.Ключ);
+		П.Вставить("ИмяПараметра", Элементы.ТаблицаПараметров.ТекущиеДанные.Параметр);
+		П.Вставить("ТипПараметра", Элементы.ТаблицаПараметров.ТекущиеДанные.TypeDescription);
+		ОткрытьФорму("Справочник.УИ_Алгоритмы.Форма.ФормаПараметра", П, ЭтотОбъект,,,, Оповещение);
+	КонецЕсли;
 EndProcedure
 
 ///
@@ -225,25 +226,20 @@ Procedure ExecuteProcedure(Command)
 	//по этому идет запись каждый раз, необходимо выяснить как изменение текста может изменить этот флаг	
 	Записать();
 
-	StartTime = CurrentUniversalDateInMilliseconds();
+	ВремяСтарт = ТекущаяУниверсальнаяДатаВМиллисекундах();
 
-	Error = False;
-	ErrorMessage = "";
+	Ошибка = Ложь;
+	СообщениеОбОшибке = "";
+	СтруктураПередачи = New Структура;
+	
+	Если Объект.НаКлиенте Тогда
+		ВыполнитьАлгоритмНаКлиенте(СтруктураПередачи);
+	Иначе
+		УИ_АлгоритмыВызовСервера.ВыполнитьАлгоритм(Объект.Ссылка);
+	КонецЕсли;
 
-	If Object.AtClient Then
-		UT_CommonClient.ExecuteAlgorithm(Object.Ref, , Error, ErrorMessage);
-	Else
-		UT_CommonServerCall.ExecuteAlgorithm(Object.Ref, , Error, ErrorMessage);
-	EndIf;
-	If Error Then
-		UT_CommonClientServer.MessageToUser(ErrorMessage);
-
-		Items.EventLog.Title = NSTR("ru = 'ПОСМОТРЕТЬ ОШИБКИ';en = 'VIEW ERRORS'");
-		MarkError(ErrorMessage);
-	Else
-		Items.EventLog.Title = " ";
-	EndIf;
-		Items.ExecuteProcedure.Title = StrTemplate("ru = 'Выполнить процедуру %1 мс.';en = 'Execute procedure %1 ms.'", String(CurrentUniversalDateInMilliseconds()- StartTime));
+	Элементы.ВыполнитьПроцедуру.Заголовок = "Выполнить процедуру (" + Строка(ТекущаяУниверсальнаяДатаВМиллисекундах()
+		- ВремяСтарт) + " мс.)";
 EndProcedure
 
 ///
@@ -304,9 +300,6 @@ Procedure FormatText(Command)
 			FormatAfter = Chars.LF + TabulationString;
 		EndIf;
 
-		//If WordType["LeftTransfer"] And Not WasType["RightTransfer"]  Then 
-		//	FormatBefore =  Chars.LF + TabulationString ;
-		//EndIf;
 		FormattedText = FormattedText + FormatBefore + WordsArray[Iterator] + Char(32) + FormatAfter;
 
 		WasType = WordType;
@@ -385,8 +378,21 @@ EndFunction
 
 &AtServer
 Function GetParameterAtServer(ParameterName)
-	SelectedObject = FormAttributeToValue("Object");
-	Return SelectedObject.GetParameter(ParameterName);
+	ВыбОбъект = РеквизитФормыВЗначение("Объект");
+	ЗначениеПолученногоПараметра = ВыбОбъект.ПолучитьПараметр(НаименованиеПараметра);
+	Если ТипЗнч(ЗначениеПолученногоПараметра) = Тип("ТаблицаЗначений") Тогда
+		
+
+		ЗначениеПолученногоПараметра = ОбщегоНазначения.ТаблицаЗначенийВМассив(ЗначениеПолученногоПараметра);
+		ЭтоJSON = Истина;
+		ЗаписьJSON = New ЗаписьJSON;
+		ЗаписьJSON.УстановитьСтроку();
+		ЗаписатьJSON(ЗаписьJSON, ЗначениеПолученногоПараметра); 
+		СтрокаОтветаJSON = ЗаписьJSON.Закрыть();
+
+		Возврат СтрокаОтветаJSON;	
+	КонецЕсли;
+	Возврат ЗначениеПолученногоПараметра;
 EndFunction
 
 &AtServer
@@ -411,13 +417,6 @@ Procedure ChangeParameter(NewData) Export
 	Else
 		ParameterValue = NewData.ParameterValue;
 	EndIf;
-//	Parameters = Storage.Get();
-//	If Parameters = Undefined ИЛИ Typeof(Parameters) <> Type("Structure") Then
-//		Parameters = New Structure;
-//	EndIf;
-//	Parameters.Insert(ParameterName, ParameterValue);
-//	Storage = New ValueStorage(Parameters);
-//	Write();
 EndProcedure
 
 #EndRegion
@@ -478,8 +477,6 @@ EndProcedure
 
 &AtClient
 Procedure HighlightChangedCode()
-      //Items.AlgorithmText.BorderColor=New Color(255,99,71);
-	//Items.Write.BgColor=New Color(255,99,71);
 	Modified = True;
 EndProcedure
 
@@ -572,9 +569,6 @@ EndProcedure
 &AtServer
 Procedure FillFormFieldsChoiceLists()
 
-       //ChoiceList MetadataObject  CommandInterface
-
-	// ChoiceLists  Parameters
 	Query = New Query;
 	Query.Text = "SELECT DISTINCT
   					|UT_AlgorithmsParameters.ParameterType
@@ -601,6 +595,49 @@ Procedure SetVisibleAndEnabled()
 
 	Items.GroupServer.Visible=Not Object.AtClient;
 EndProcedure
+
+&НаКлиенте
+Процедура ВыполнитьАлгоритмНаКлиенте(СтруктураПередачи)
+	Если Не ЗначениеЗаполнено(СокрЛП(Объект.ТекстАлгоритма)) Тогда
+		Возврат;
+	КонецЕсли;
+	Попытка
+		КонтекстВыполнения = КонтекстВыполненияАлгоритма(СтруктураПередачи);
+	Исключение
+		ВызватьИсключение "Нет возможности получить на клиенте текущие параметры";
+	КонецПопытки;
+	РезультатВыполнения = УИ_РедакторКодаКлиентСервер.ВыполнитьАлгоритм(Объект.ТекстАлгоритма, КонтекстВыполнения);
+
+КонецПроцедуры
+
+&НаСервере
+Процедура ВыполнитьАлгоритмНаСервере(СтруктураПередачи)
+	Если Не ЗначениеЗаполнено(СокрЛП(Объект.ТекстАлгоритма)) Тогда
+		Возврат;
+	КонецЕсли;
+	
+	КонтекстВыполнения = КонтекстВыполненияАлгоритма(СтруктураПередачи);
+
+	РезультатВыполнения = УИ_РедакторКодаКлиентСервер.ВыполнитьАлгоритм(Объект.ТекстАлгоритма, КонтекстВыполнения);
+
+КонецПроцедуры
+
+&НаСервере
+Функция КонтекстВыполненияАлгоритма(СтруктураПередачи)
+	КонтекстВыполнения = New Структура;
+	КонтекстВыполнения.Вставить("СтруктураПередачи", СтруктураПередачи);
+	
+	ВыбОбъект = РеквизитФормыВЗначение("Объект");
+	Переменные = ВыбОбъект.Хранилище.Получить();
+	Если ЗначениеЗаполнено(Переменные) Тогда
+		Для Каждого Элемент Из Переменные Цикл
+			КонтекстВыполнения.Вставить(Элемент.Ключ, Элемент.Значение);
+		КонецЦикла;
+	КонецЕсли;
+	
+	Возврат КонтекстВыполнения;	
+КонецФункции
+
 #Region ImportExport
 //Import
 &AtClient
@@ -642,7 +679,7 @@ Procedure ReadAtServer(StorageURL, SelectedFileName, AdditionalParameters)
 	EndTry;
 EndProcedure
 
-// readatserver()
+// Readatserver()
 
 //Export
 &AtClient
@@ -792,9 +829,45 @@ Procedure OnOpen(Cancel)
 EndProcedure
 
 
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	SetVisibleAndEnabled();
+//@skip-warning
+&НаКлиенте
+Процедура Подключаемый_ПолеРедактораДокументСформирован(Элемент)
+	УИ_РедакторКодаКлиент.ПолеРедактораHTMLДокументСформирован(ЭтотОбъект, Элемент);
+КонецПроцедуры
+
+//@skip-warning
+&НаКлиенте
+Процедура Подключаемый_ПолеРедактораПриНажатии(Элемент, ДанныеСобытия, СтандартнаяОбработка)
+	УИ_РедакторКодаКлиент.ПолеРедактораHTMLПриНажатии(ЭтотОбъект, Элемент, ДанныеСобытия, СтандартнаяОбработка);
+КонецПроцедуры
+
+//@skip-warning
+&НаКлиенте
+Процедура Подключаемый_РедакторКодаОтложеннаяИнициализацияРедакторов()
+	УИ_РедакторКодаКлиент.РедакторКодаОтложеннаяИнициализацияРедакторов(ЭтотОбъект);
+КонецПроцедуры
+
+&НаКлиенте
+Процедура Подключаемый_РедакторКодаОтложеннаяОбработкаСобытийРедактора() Экспорт
+	УИ_РедакторКодаКлиент.ОтложеннаяОбработкаСобытийРедактора(ЭтотОбъект);
+КонецПроцедуры
+
+&НаКлиенте 
+Процедура Подключаемый_РедакторКодаЗавершениеИнициализации() Экспорт
+	УИ_РедакторКодаКлиент.УстановитьТекстРедактора(ЭтотОбъект, "Алгоритм", Объект.ТекстАлгоритма, Истина);
+КонецПроцедуры
+
+
+&НаКлиенте
+Процедура ПередЗаписью(Отказ, ПараметрыЗаписи)
+	Объект.ТекстАлгоритма = УИ_РедакторКодаКлиент.ТекстКодаРедактора(ЭтотОбъект, "Алгоритм");
+КонецПроцедуры
+
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	Объект.ТекстАлгоритма = УИ_РедакторКодаКлиент.ТекстКодаРедактора(ЭтотОбъект, "Алгоритм");
 EndProcedure
+
 
 #EndRegion
