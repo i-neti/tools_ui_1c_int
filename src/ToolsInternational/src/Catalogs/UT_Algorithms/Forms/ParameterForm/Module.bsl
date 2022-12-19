@@ -38,6 +38,12 @@ Function ParameterNameHasErrors(Name)
 EndFunction
 
 &AtClient
+Procedure SelectedTypeOnChange(Item)
+	Parameters.ParameterType=SelectedType;
+	FormItemsVisibilityManaging(SelectedType);
+EndProcedure
+
+&AtClient
 Procedure ExternalFileStartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing=False;
 	Dialog = New FileDialog(FileDialogMode.Opening);
@@ -49,15 +55,12 @@ Procedure ExternalFileStartChoice(Item, ChoiceData, StandardProcessing)
 	Dialog.Show(New NotifyDescription("ExternalFileStartChoiceOnEnd", ThisForm));
 EndProcedure
 
-
 &AtClient
 Procedure ExternalFileStartChoiceOnEnd(SelectedFiles, AdditionalParameters) Export
 	If (TypeOf(SelectedFiles) = Type("Array") And SelectedFiles.Count() > 0) Then
 		ExternalFile = SelectedFiles[0];
 		NotifyDescription = New NotifyDescription("PutFileEnd", ThisObject);
 		BeginPutFile(NotifyDescription, , ExternalFile, False, ThisForm.UUID);
-	Else
-		_37583_AlgorithmsClient.PopUp(" No file ");
 	EndIf;
 EndProcedure
 
@@ -67,13 +70,13 @@ Procedure PutFileEnd(Result, Address, SelectedFileName, AdditionalParameters) Ex
 EndProcedure
 
 &AtServer
-Procedure FormItemsVisibilityManaging(P = "", ButtonsVisibility = True)
+Procedure FormItemsVisibilityManaging(Param = "", ButtonsVisibility = True)
 	For Each Item In Items Do
 		If TypeOf(Item) = Type("FormDecoration") Then
 			Continue;
 		EndIf;
-		If Not IsBlankString(P) Then
-			Item.Visible=?(Find(Item.Name, P) > 0, True, False);
+		If Not IsBlankString(Param) Then
+			Item.Visible=?(Find(Item.Name, Param) > 0, True, False);
 		EndIf;
 		If Find(Item.Name, "Close") > 0 Then
 			Item.Visible=ButtonsVisibility;
@@ -83,23 +86,23 @@ Procedure FormItemsVisibilityManaging(P = "", ButtonsVisibility = True)
 EndProcedure
 
 &AtServer
-Procedure CollectionVisibilityManaging(P = "Array")
+Procedure CollectionVisibilityManaging(Param = "Array")
 	If Not IsBlankString(Parameters.ParameterName) Then
 		Items.TypeCollection.Visible=False;
 	EndIf;
-	If P = "Array" Then
-		AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
-	ElsIf P = "Structure" Then
+	If Param = "Array" Then
+		Catalogs.UT_Algorithms.AddColumnNL(ThisObject, "Value", TypeDescription, "ParameterCollection"); // - In item form - this code has view : UT_Forms.AddColumnNL(ThisObject, "Value", TypeDescription, "ParameterCollection");	
+	ElsIf Param = "Structure" Then
 		Items.TypeDescription.Visible=False;
 		Items.AddColumn.Visible=False;
 		TD= New TypeDescription("String", , New StringQualifiers(20, AllowedLength.Variable));
-		AddColumnAtServer("Key", TD, "CollectionParameter");
-		AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
-	ElsIf P = "Map" Then
+		Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Key", TD, "CollectionParameter");
+		Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Value", TypeDescription, "CollectionParameter");
+	ElsIf Param = "Map" Then
 		Items.TypeDescription.Visible=False;
 		Items.AddColumn.Visible=False;
-		AddColumnAtServer("Key", TypeDescription, "CollectionParameter");
-		AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
+		Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Key", TypeDescription, "CollectionParameter");
+		Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Value", TypeDescription, "CollectionParameter");
 	Else
 		Items.TypeDescription.Visible=True;
 		Items.AddColumn.Visible=True;
@@ -113,7 +116,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ThisForm.Title=NStr("ru = 'Новый параметр';en = 'New parameter'");
 		FormItemsVisibilityManaging("Title", False);
 	ElsIf Parameters.Rename Then
-		
 		ThisForm.Title=StrTemplate("%1 :%2",Parameters.ParameterName,NSTR("ru = 'Новое имя параметра';en = 'New parameter name'"));
 		ParameterName=Parameters.ParameterName;
 		FormItemsVisibilityManaging("Title");
@@ -131,7 +133,7 @@ Procedure OnParameterChangeAction()
 	M.Insert("Array", "Collection");
 	M.Insert("Structure", "Collection");
 	M.Insert("Map", "Collection");
-	M.Insert("Table значений", "Collection");
+	M.Insert("Value Table", "Collection");
 	M.Insert("Binary data", "ExternalFile");
 	M.Insert(Undefined, "AvailableTypes");
 	ParameterType=M.Get(Parameters.ParameterType);
@@ -148,33 +150,33 @@ Procedure OnParameterChangeAction()
 			CollectionItem.Visible=True;
 		EndDo;
 		If Parameters.ParameterType = "Array" Then
-			AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
-			Т=CollectionToValueTable(Parameter);
-			CollectionParameter.Load(Т);
+			Catalogs.UT_Algorithms.AddColumnNL(ThisObject, "Value", TypeDescription, "CollectionParameter");
+			Table = Catalogs.UT_Algorithms.CollectionToValueTable(Parameter);
+			CollectionParameter.Load(Table);
 			TypeCollection="Array";
 		ElsIf Parameters.ParameterType = "Structure" Then
 			Items.TypeDescription.Visible=False;
 			Items.AddColumn.Visible=False;
 			TD= New TypeDescription("String", , New StringQualifiers(20, AllowedLength.Variable));
-			AddColumnAtServer("Key", TD, "CollectionParameter");
-			AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
-			Т=CollectionToValueTable(Parameter);
-			CollectionParameter.Load(Т);
+			Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Key", TD, "CollectionParameter");
+			Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Value", TypeDescription, "CollectionParameter");
+			Table = Catalogs.UT_Algorithms.CollectionToValueTable(Parameter);
+			CollectionParameter.Load(Table);
 			TypeCollection="Structure";
 		ElsIf Parameters.ParameterType = "Map" Then
 			Items.TypeDescription.Visible=False;
 			Items.AddColumn.Visible=False;
-			AddColumnAtServer("Key", TypeDescription, "CollectionParameter");
-			AddColumnAtServer("Value", TypeDescription, "CollectionParameter");
-			Т=CollectionToValueTable(Parameter);
-			CollectionParameter.Load(Т);
+			Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Key", TD, "CollectionParameter");
+			Catalogs.UT_Algorithms.AddColumnNL(ThisObject,"Value", TypeDescription, "CollectionParameter");
+			Table = Catalogs.UT_Algorithms.CollectionToValueTable(Parameter);
+			CollectionParameter.Load(Table);
 			TypeCollection="Map";
 		Else
 			Items.TypeDescription.Visible=True;
 			Items.AddColumn.Visible=True;
 			Items.DeleteColumn.Visible=True;
 			For Each Column In Parameter.Columns Do
-				AddColumnAtServer(Column.Name, Column.ValueType, "CollectionParameter");
+				Catalogs.UT_Algorithms.AddColumnNL(ThisObject,Column.Name, Column.ValueType, "CollectionParameter");
 			EndDo;
 			CollectionParameter.Load(Parameter);
 		EndIf;
@@ -185,31 +187,12 @@ Procedure OnParameterChangeAction()
 EndProcedure
 
 &AtServer
-Function CollectionToValueTable(Collection)
-	VT = New ValueTable;
-	VT.Columns.Add("Value");
-	If Not TypeOf(Collection) = Type("Array") Then
-		VT.Columns.Add("Key");
-		For Each ТекЭлем In Collection Do
-			НС=VT.Add();
-			FillPropertyValues(НС, ТекЭлем);
-		EndDo;
-	Else
-		For I = 0 To Collection.UBound() Do
-			VT.Add();
-		EndDo;
-		VT.LoadColumn(Collection, 0);
-	EndIf;
-	Return VT;
-EndFunction
-
-&AtServer
 Procedure RenameParameter(Key, NewName)
 	SelectedObject=FormAttributeToValue("Object");
 	SelectedObject.RenameParameter(Key, NewName);
 EndProcedure
 
-/// Интерф
+/// Interface
 
 &AtClient
 Procedure AddColumn(Command)
@@ -223,12 +206,22 @@ Procedure AddColumnEnd(Value, AdditionalParameters) Export
 
 	ColumnName = ?(Value = Undefined, AdditionalParameters.ColumnName, Value);
 	If Not IsBlankString(ColumnName) Then
-		AddColumnAtServer(TrimAll(ColumnName), TypeDescription, "CollectionParameter");
+		AddColumnNLAtServer(ThisObject,TrimAll(ColumnName), TypeDescription, "CollectionParameter");
 		TypeDescription="";
 	Else
 		Return;
 	EndIf;
 
+EndProcedure
+
+&AtServerNoContext
+Procedure AddColumnNLAtServer(pForm, ColumnName, TypeDescription, TableName)
+	Catalogs.UT_Algorithms.AddColumnNL(pForm, ColumnName, TypeDescription, TableName);
+EndProcedure
+
+&AtServerNoContext
+Procedure DeleteColumnNlAtServer(pForm, ColumnName, TableName)
+	Catalogs.UT_Algorithms.DeleteColumnNL(pForm, ColumnName, TableName);
 EndProcedure
 
 &AtClient
@@ -249,35 +242,14 @@ Procedure DeleteColumnEnd(QuestionResult, AdditionalParameters) Export
 	ColumnName = AdditionalParameters.ColumnName;
 
 	If QuestionResult = DialogReturnCode.Yes Then
-		DeleteColumnAtServer(ColumnName, "CollectionParameter");
-	EndIf
-	;
+		DeleteColumnNlAtServer(ThisForm,ColumnName, "CollectionParameter");
+	EndIf;
 
-EndProcedure
-
-&AtServer
-Procedure AddColumnAtServer(Val ColumnName, ColumnTypeDescription, FormTable)
-	AddedAttributesArray = New Array;
-	AddedAttributesArray.Add(
-	New FormAttribute(ColumnName, ColumnTypeDescription, FormTable, ColumnName));
-	ChangeAttributes(AddedAttributesArray);
-	NewItem = Items.Add(ColumnName, Type("FormField"), Items[FormTable]);
-	NewItem.Title=ColumnName;
-	NewItem.Type = FormFieldType.TextBox;
-	NewItem.DataPath = FormTable + "." + ColumnName;
-EndProcedure
-
-&AtServer
-Procedure DeleteColumnAtServer(ColumnName, FormTable)
-	Items.Delete(Items.Find(ColumnName));
-	DeletedAttributesArray = New Array;
-	DeletedAttributesArray.Add(FormTable + "." + ColumnName);
-	ChangeAttributes( , DeletedAttributesArray);
 EndProcedure
 
 &AtClient
 Procedure TypeCollectionOnChange(Item)
-		CollectionVisibilityManaging(TypeCollection);
+	CollectionVisibilityManaging(TypeCollection);
 	Item.Visible=False;
 EndProcedure
 
@@ -286,8 +258,7 @@ Procedure ChangeParameter()
 	NewValue=GetNewValue();
 	If Not NewValue = Undefined Then
 		SelectedObject=FormAttributeToValue("Object");
-		SelectedObject.ChangeParameter(New Structure("ParameterName,ParameterValue", ParameterName,
-			NewValue));
+		SelectedObject.ChangeParameter(ParameterName,NewValue);
 	EndIf;
 EndProcedure
 
@@ -334,12 +305,6 @@ Function GetParameter(ParameterName)
 	SelectedObject=FormAttributeToValue("Object");
 	Return SelectedObject.GetParameter(ParameterName);
 EndFunction // GetParameter()
-
-&AtClient
-Procedure SelectedTypeOnChange(Item)
-	Parameters.ParameterType=SelectedType;
-	FormItemsVisibilityManaging(SelectedType);
-EndProcedure
 
 &AtClient
 Procedure ParameterNameOnChange(Item)

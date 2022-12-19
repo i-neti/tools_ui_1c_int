@@ -1,23 +1,19 @@
 
 &AtClient
 Procedure ExecuteAlgorithm(Command)
-	
 	AlgorithmsArray = Items.List.SelectedRows;
 	
 		For Each Algorithm In  AlgorithmsArray Do
 		Error = False;
 		ErrorMessage = "";
+		TransmittedStructure = New Structure;
 
 		If AlgorithmExecutedAtClient(Algorithm) Then
-			UT_CommonClient.ExecuteAlgorithm(Algorithm, , Error, ErrorMessage);
+			ExecuteAlgorithmAtClient(Algorithm,TransmittedStructure);
 		Else
-			UT_CommonServerCall.ExecuteAlgorithm(Algorithm, , Error, ErrorMessage);
-		EndIf;
-		If Error Then
-			UT_CommonClientServer.MessageToUser(ErrorMessage);
+			UT_AlgorithmsServerCall.ExecuteAlgorithm(Algorithm);
 		EndIf;
 	EndDo;
-
 EndProcedure
 
 &AtServer
@@ -26,3 +22,15 @@ Function AlgorithmExecutedAtClient(Algorithm)
 	Return Algorithm.AtClient;
 
 EndFunction
+
+&AtClient
+Procedure ExecuteAlgorithmAtClient(Algorithm, TransmittedStructure)
+	If Not ValueIsFilled(TrimAll(Algorithm.AlgorithmText)) Then
+		Return;
+	EndIf;
+
+	ExecutionContext =  UT_AlgorithmsServerCall.GetParameters(Algorithm);
+
+	ExecutionResult = UT_CodeEditorClientServer.ExecuteAlgorithm(Algorithm.AlgorithmText, ExecutionContext);
+
+КонецПроцедуры

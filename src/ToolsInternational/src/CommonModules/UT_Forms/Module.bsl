@@ -286,19 +286,19 @@ Procedure AddColumnNL(Form, Val ColumnName, ColumnTypeDescription, FormTable) Ex
 	NewElement.DataPath = FormTable + "." + ColumnName;
 EndProcedure
 
+Procedure DeleteColumnNL(Form, Val ColumnName, FormTable) Export
+	Form.Items.Delete(Form.Items.Find(ColumnName));
+	DeletedAttributesArray = New Array;
+	DeletedAttributesArray.Add(FormTable + "." + ColumnName);
+	Form.ChangeAttributes( , DeletedAttributesArray);
+EndProcedure
+
 Procedure DeleteColumnsNL(Form, Val ColumnNamesArray, FormTable) Export
 	DeletedAttributesArray = New Array;
 	For Each ColumnName In ColumnNamesArray Do
 		Form.Items.Delete(Form.Items.Find(ColumnName));
 		DeletedAttributesArray.Add(FormTable + "." + ColumnName);
 	EndDo;
-	Form.ChangeAttributes( , DeletedAttributesArray);
-EndProcedure
-
-Procedure DeleteColumnNL(Form, Val ColumnName, FormTable) Export
-	Form.Items.Delete(Form.Items.Find(ColumnName));
-	DeletedAttributesArray = New Array;
-	DeletedAttributesArray.Add(FormTable + "." + ColumnName);
 	Form.ChangeAttributes( , DeletedAttributesArray);
 EndProcedure
 #EndRegion
