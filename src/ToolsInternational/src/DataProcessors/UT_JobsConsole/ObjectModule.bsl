@@ -1,3 +1,5 @@
+// @strict-types
+
 #Region ExternalDataProcessorInfo
 // -------------------------------------------------------
 //
@@ -8,7 +10,18 @@
 //
 // Returning value:
 //   Structure   - typical parameters of SSL external data processor.
-//
+//   // * Kind - String -
+// * Purpose - Array - Array of objects name ,Whom our External Data Processor will be connected
+// * Description - String -
+// * SafeMode - Boolean -
+// * Версия - String -
+// * Version - String -
+// * Commands - ValueTable -:
+// ** Presentation - String -
+// ** ID - String -
+// ** StartupOption - String -
+// ** ShowNotification - Boolean -
+// ** Modifier - String -
 Function ExternalDataProcessorInfo() Export
 	
 	// Declaring variable for saving and returning data.
@@ -53,9 +66,12 @@ Function ExternalDataProcessorInfo() Export
 EndFunction
 
 // Executes command in background.
+// 
+// Parameters:
+//  CommandID - String - Id Of command
 Procedure ExecuteCommand(CommandID) Export
 	
-	If CommandID = Undefined Then
+	If CommandID = "" Then
 		
 		CommandID = "";
 		
@@ -77,7 +93,7 @@ EndFunction
 
 Function DataProcessorVersion() Export
 	
-	Return "1.10";
+	Return "1.11";
 	
 EndFunction
 
