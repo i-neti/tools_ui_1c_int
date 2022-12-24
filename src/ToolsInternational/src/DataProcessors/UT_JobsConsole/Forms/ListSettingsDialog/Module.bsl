@@ -1,27 +1,21 @@
-#Region EventHandlers
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	ThisForm.AutoUpdate = ThisForm.Parameters.AutoUpdate;
-	ThisForm.AutoUpdatePeriod = ThisForm.Parameters.AutoUpdatePeriod;
+	ThisObject.AutoUpdate = Parameters.AutoUpdate;
+	ThisObject.AutoUpdatePeriod = Parameters.AutoUpdatePeriod;
 	IntervalSeconds = 5;
-	If AutoUpdatePeriod < IntervalSeconds Then
-		AutoUpdatePeriod = IntervalSeconds;
+	If ThisObject.AutoUpdatePeriod < IntervalSeconds Then
+		ThisObject.AutoUpdatePeriod = IntervalSeconds;
 	EndIf;
 EndProcedure
 
-#EndRegion
-
-#Region ItemsEventHandlers
 
 &AtClient
 Procedure OK(Command)
 	IntervalSeconds = 5;
-	If AutoUpdatePeriod < IntervalSeconds Then
-		AutoUpdatePeriod = IntervalSeconds;
+	If ThisObject.AutoUpdatePeriod < IntervalSeconds Then
+		ThisObject.AutoUpdatePeriod = IntervalSeconds;
 	EndIf;
-	Result = New Structure("AutoUpdate, AutoUpdatePeriod", AutoUpdate, AutoUpdatePeriod);
+	Result = New Structure("AutoUpdate, AutoUpdatePeriod", AutoUpdate, ThisObject.AutoUpdatePeriod);
 	Close(Result);
 EndProcedure
-
-#EndRegion
