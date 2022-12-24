@@ -30,7 +30,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 	If Parameters.Property("DebugData") Then
 		DataToDebug = GetFromTempStorage(Parameters.DebugData);
-		mObjectRef = DataToDebug.Объект;	
+		mObjectRef = DataToDebug.Object;	
 	ElsIf Parameters.Property("mObjectRef") Then
 		mObjectRef = Parameters.mObjectRef;
 	EndIf;
