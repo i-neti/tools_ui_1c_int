@@ -32,7 +32,7 @@ Function ParameterNameHasErrors(Name)
 	If IsBlankString(Name) Then
 		Return True;
 	Else
-		 //TODO  Check for avalible symbols
+		 //TODO  Check for available symbols
 		Return False;
 	EndIf;
 EndFunction

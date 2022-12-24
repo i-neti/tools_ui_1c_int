@@ -152,8 +152,8 @@ Function CommonModule(Name) Export
 	Return UT_Common.CommonModule(Name);
 EndFunction
 
-Function DataBaseObjectEditorAvalibleObjectsTypes() Export
-	//Avalible to editing 
+Function DataBaseObjectEditorAvailableObjectsTypes() Export
+	//Available to editing 
 	//Catalogs,Documents,ChartsOfCharacteristicTypes,ChartsOfAccounts,ChartsOfCalculationTypes, BusinessProcesses, Tasks, ExchangePlans
 
 	TypesArray=New Array;

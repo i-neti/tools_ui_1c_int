@@ -3,6 +3,7 @@
 // hal@hal9000.cc
 // Minimum platform version 8.3.12, minimum compatibility mode 8.3.8
 // Translated by Neti Company
+#Region Variables
 
 &AtClient
 Var ConsoleSignature;
@@ -19,7 +20,102 @@ Var AutoSaveFileDeletedFlag;//used in LoadQueryBatchAfterQuestion
 &AtClient
 Var StatusFileDeletedFlag;//used in LoadQueryBatchAfterQuestion
 
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 //Container types in QueryParameters: 0 - none, 1 - value list, 2 - array, 3 - value table.
+
+#EndRegion
+
+#Область ОбработчикиСобытийФормы
+
+&AtClient
+Procedure OnOpen(Cancel)
+	
+	FilesExtension = "q9";
+	ConsoleSignature = ConsoleDataProcessorName(ThisObject);
+	SaveFilter = "Querys file (*." + FilesExtension + ")|*." + FilesExtension;
+	AutoSaveExtension = "q9save";
+	FormatVersion = 13;
+		
+	//If Enabled off at Web-Client OnCreateAtServer this will work by another way than for another clients.
+	//Therefore, only this way.
+	Enabled = False;
+
+#If WebClient Then
+
+	Notification = New NotifyDescription("AfterAttachingFileSystemExtension", ThisObject);
+	BeginAttachingFileSystemExtension(Notification);
+
+	ShowAlgorithmExecutionStatus();
+
+#Else
+
+		ShowAlgorithmExecutionStatus();
+		OnOpenFollowUp();
+
+#EndIf
+
+EndProcedure
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+
+	DataProcessorObject = FormAttributeToValue("Object");
+	DataProcessorObject.Initializing(ThisForm);
+	ValueToFormAttribute(DataProcessorObject, "Object");
+
+	QueryInWizard = -1;
+	EditingQuery = -1;
+	
+	//UsedFileName = FormAttributeToValue("Object").UsedFileName;
+
+	Items.TempTablesValue.ChoiceButtonPicture = PictureLib.Change;
+
+	Object.Title = NStr("ru = 'Консоль запросов 9000 v'; en = 'Query console 9000 v'") + Object.DataProcessorVersion;
+
+	MacroParameter = "__";
+	
+	// For the correct displaying the query result area before execution.
+	arAttributesToBeAdded = New Array;
+	Attribute = New FormAttribute("Empty", New TypeDescription, "QueryResult");
+	arAttributesToBeAdded.Add(Attribute);
+	ChangeAttributes(arAttributesToBeAdded);
+	Item = Items.Add("Empty", Type("FormField"), Items.QueryResult);
+	Item.DataPath = "QueryResult.Empty";
+	Item.ShowInHeader = False;
+
+	ContainerAttributeSuffix=DataProcessorObject.ContainerAttributeSuffix();
+
+#Region UT_OnCreateAtServer
+	UT_IncludedInUniversalTools = DataProcessorObject.DataProcessorIsPartOfUniversalTools();
+	If UT_IncludedInUniversalTools Then
+		UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing,
+			Items.FormCommandBarRight);
+
+		Object.Title="";
+		Title="";
+		AutoTitle=True;
+		Items.QueryBatchHookingSubmenu.Visible=False;
+		Items.QueryCommandBarGroupRightHooking.Visible=False;
+		Items.ResultKindCommandBar.BackColor=New Color;
+
+		Items.UT_EditValue.Visible=True;
+		Items.QueryResultContextMenuUT_EditValue.Visible=True;
+		Items.QueryResultTreeContextMenuUT_EditValue.Visible=True;
+
+		UT_FillWithDebugData();
+
+		UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
+		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Algorithm", Items.AlgorithmText);
+		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "AlgorithmBeforeExecution",
+			Items.AlgorithmTextBeforeExecution);
+		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Query", Items.QueryText, , "bsl_query");
+	EndIf;
+#EndRegion
+		AlgorithmHintBeforeExecution = "Доступны переменные: мЗапрос (Тип-Запрос)";
+EndProcedure
+
 
 &AtClient
 Function GetAutoSaveFileName(FileName)
@@ -2608,27 +2704,6 @@ Procedure FinishCheckingExistence(Exists, AdditionalParameters) Export
 EndProcedure
 
 &AtClient
-Procedure OnOpen(Cancel)
-	
-	Enabled = False;
-
-#If WebClient Then
-
-	Notification = New NotifyDescription("AfterAttachingFileSystemExtension", ThisObject);
-	BeginAttachingFileSystemExtension(Notification);
-
-	ShowAlgorithmExecutionStatus();
-
-#Else
-
-		ShowAlgorithmExecutionStatus();
-		OnOpenFollowUp();
-
-#EndIf
-
-EndProcedure
-
-&AtClient
 Procedure AfterAttachingFileSystemExtension(Attached, AdditionalParameters) Export
 
 	FileExtensionConnected = Attached;
@@ -2864,60 +2939,7 @@ Procedure OnOpenCompletion()
 
 EndProcedure
 
-&AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
-	DataProcessorObject = FormAttributeToValue("Object");
-	DataProcessorObject.Initializing(ThisForm);
-	ValueToFormAttribute(DataProcessorObject, "Object");
-
-	QueryInWizard = -1;
-	EditingQuery = -1;
-	
-	//UsedFileName = FormAttributeToValue("Object").UsedFileName;
-
-	Items.TempTablesValue.ChoiceButtonPicture = PictureLib.Change;
-
-	Object.Title = NStr("ru = 'Консоль запросов 9000 v'; en = 'Query console 9000 v'") + Object.DataProcessorVersion;
-
-	MacroParameter = "__";
-	
-	// For the correct displaying the query result area before execution.
-	arAttributesToBeAdded = New Array;
-	Attribute = New FormAttribute("Empty", New TypeDescription, "QueryResult");
-	arAttributesToBeAdded.Add(Attribute);
-	ChangeAttributes(arAttributesToBeAdded);
-	Item = Items.Add("Empty", Type("FormField"), Items.QueryResult);
-	Item.DataPath = "QueryResult.Empty";
-	Item.ShowInHeader = False;
-
-	ContainerAttributeSuffix=DataProcessorObject.ContainerAttributeSuffix();
-
-#Region UT_OnCreateAtServer
-	UT_IncludedInUniversalTools = DataProcessorObject.DataProcessorIsPartOfUniversalTools();
-	If UT_IncludedInUniversalTools Then
-		UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing,
-			Items.FormCommandBarRight);
-
-		Object.Title="";
-		Title="";
-		AutoTitle=True;
-		Items.QueryBatchHookingSubmenu.Visible=False;
-		Items.QueryCommandBarGroupRightHooking.Visible=False;
-		Items.ResultKindCommandBar.BackColor=New Color;
-
-		Items.UT_EditValue.Visible=True;
-		Items.QueryResultContextMenuUT_EditValue.Visible=True;
-		Items.QueryResultTreeContextMenuUT_EditValue.Visible=True;
-
-		UT_FillWithDebugData();
-
-		UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
-		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Algorithm", Items.AlgorithmText);
-	EndIf;
-#EndRegion
-
-EndProcedure
 
 &AtClient
 Procedure AutoSaveHandler() Export

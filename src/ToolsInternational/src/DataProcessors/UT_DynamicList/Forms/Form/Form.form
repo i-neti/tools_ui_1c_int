@@ -465,7 +465,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>GroupNotAvalibleTable</name>
+        <name>GroupNotAvailableTable</name>
         <id>132</id>
         <items xsi:type="form:Decoration">
           <name>Decoration2</name>
@@ -525,17 +525,17 @@
           <common>true</common>
         </userVisible>
         <title>
-          <key>ru</key>
-          <value>Группа недоступная таблица</value>
+          <key>en</key>
+          <value>Group not available table</value>
         </title>
         <title>
-          <key>en</key>
-          <value>Group not avalible table</value>
+          <key>ru</key>
+          <value>Группа недоступная таблица</value>
         </title>
         <horizontalStretch>true</horizontalStretch>
         <verticalStretch>true</verticalStretch>
         <extendedTooltip>
-          <name>GroupNotAvalibleTableExtendedTooltip</name>
+          <name>GroupNotAvailableTableExtendedTooltip</name>
           <id>133</id>
           <visible>true</visible>
           <enabled>true</enabled>

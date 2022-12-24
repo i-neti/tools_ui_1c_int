@@ -3289,43 +3289,6 @@ Example:
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
-          <name>AlgorithmTextBeforeExecutionPage</name>
-          <id>549</id>
-          <visible>true</visible>
-          <enabled>true</enabled>
-          <userVisible>
-            <common>true</common>
-          </userVisible>
-          <title>
-            <key>en</key>
-            <value>Algorithm before execution</value>
-          </title>
-          <title>
-            <key>ru</key>
-            <value>Алгоритм перед выполнением</value>
-          </title>
-          <extendedTooltip>
-            <name>AlgorithmTextBeforeExecutionPageExtendedTooltip</name>
-            <id>550</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <type>Label</type>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <extInfo xsi:type="form:LabelDecorationExtInfo">
-              <horizontalAlign>Left</horizontalAlign>
-            </extInfo>
-          </extendedTooltip>
-          <type>Page</type>
-          <extInfo xsi:type="form:PageGroupExtInfo">
-            <group>Vertical</group>
-            <showTitle>true</showTitle>
-          </extInfo>
-        </items>
-        <items xsi:type="form:FormGroup">
           <name>TempTablesPage</name>
           <id>144</id>
           <items xsi:type="form:Table">
@@ -3340,7 +3303,6 @@ Example:
               <segments>TempTables</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
-            <excludedCommands>Add</excludedCommands>
             <items xsi:type="form:FormField">
               <name>TempTablesName</name>
               <id>159</id>
@@ -3450,6 +3412,37 @@ Example:
             <autoCommandBar>
               <name>TempTablesCommandBar</name>
               <id>148</id>
+              <items xsi:type="form:Button">
+                <name>TempTablesAdd</name>
+                <id>559</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <extendedTooltip>
+                  <name>TempTablesAddExtendedTooltip</name>
+                  <id>560</id>
+                  <visible>true</visible>
+                  <enabled>true</enabled>
+                  <userVisible>
+                    <common>true</common>
+                  </userVisible>
+                  <type>Label</type>
+                  <autoMaxWidth>true</autoMaxWidth>
+                  <autoMaxHeight>true</autoMaxHeight>
+                  <extInfo xsi:type="form:LabelDecorationExtInfo">
+                    <horizontalAlign>Left</horizontalAlign>
+                  </extInfo>
+                </extendedTooltip>
+                <commandName>Form.Item.TempTables.StandardCommand.Add</commandName>
+                <representation>Auto</representation>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <placementArea>UserCmds</placementArea>
+                <toolTipRepresentation>Auto</toolTipRepresentation>
+                <representationInContextMenu>Auto</representationInContextMenu>
+              </items>
               <items xsi:type="form:Button">
                 <name>TempTablesCopyButton</name>
                 <id>338</id>
@@ -3765,6 +3758,146 @@ Example:
           <extendedTooltip>
             <name>TempTablesPageExtendedTooltip</name>
             <id>145</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <type>Page</type>
+          <extInfo xsi:type="form:PageGroupExtInfo">
+            <group>Vertical</group>
+            <showTitle>true</showTitle>
+          </extInfo>
+        </items>
+        <items xsi:type="form:FormGroup">
+          <name>AlgorithmTextBeforeExecutionPage</name>
+          <id>549</id>
+          <items xsi:type="form:FormField">
+            <name>AlgorithmTextBeforeExecution</name>
+            <id>551</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>AlgorithmTextBeforeExecution</segments>
+            </dataPath>
+            <titleLocation>None</titleLocation>
+            <extendedTooltip>
+              <name>AlgorithmTextBeforeExecutionExtendedTooltip</name>
+              <id>553</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>AlgorithmTextBeforeExecutionContextMenu</name>
+              <id>552</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>TextDocumentField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:TextDocFieldExtInfo">
+              <width>50</width>
+              <autoMaxWidth>true</autoMaxWidth>
+              <height>10</height>
+              <autoMaxHeight>true</autoMaxHeight>
+              <horizontalStretch>true</horizontalStretch>
+              <verticalStretch>true</verticalStretch>
+            </extInfo>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>AlgorithmHintBeforeExecution</name>
+            <id>554</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>AlgorithmHintBeforeExecution</segments>
+            </dataPath>
+            <titleLocation>None</titleLocation>
+            <extendedTooltip>
+              <name>AlgorithmHintBeforeExecutionExtendedTooltip</name>
+              <id>556</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>AlgorithmHintBeforeExecutionContextMenu</name>
+              <id>555</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>InputField</type>
+            <readOnly>true</readOnly>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:InputFieldExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <wrap>true</wrap>
+              <chooseType>true</chooseType>
+              <typeDomainEnabled>true</typeDomainEnabled>
+              <textEdit>true</textEdit>
+            </extInfo>
+          </items>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <title>
+            <key>en</key>
+            <value>Algorithm before execution</value>
+          </title>
+          <title>
+            <key>ru</key>
+            <value>Алгоритм перед выполнением</value>
+          </title>
+          <extendedTooltip>
+            <name>AlgorithmTextBeforeExecutionPageExtendedTooltip</name>
+            <id>550</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -4554,6 +4687,7 @@ Example:
               <autoInsertNewRow>true</autoInsertNewRow>
               <searchOnInput>Auto</searchOnInput>
               <initialListView>Auto</initialListView>
+              <initialTreeView>ExpandTopLevel</initialTreeView>
               <horizontalStretch>true</horizontalStretch>
               <verticalStretch>true</verticalStretch>
               <enableStartDrag>true</enableStartDrag>
@@ -4615,11 +4749,11 @@ Example:
           </userVisible>
           <title>
             <key>en</key>
-            <value>Algorithm</value>
+            <value>Result processing</value>
           </title>
           <title>
             <key>ru</key>
-            <value>Алгоритм</value>
+            <value>Обработка результата</value>
           </title>
           <toolTip>
             <key>en</key>
@@ -8071,6 +8205,50 @@ Example:
         <common>true</common>
       </edit>
     </columns>
+    <columns>
+      <name>AlgorithmBeforeExecution</name>
+      <title>
+        <key>en</key>
+        <value>Algorithm before execution</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Алгоритм перед выполнением</value>
+      </title>
+      <id>62</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>AlgorithmBeforeExecutionOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Algorithm before execution</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Алгоритм перед выполнением</value>
+      </title>
+      <id>63</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
   </attributes>
   <attributes>
     <name>QueryParameters</name>
@@ -9622,6 +9800,28 @@ Example:
       <value>Текст алгоритм перед выполнением</value>
     </title>
     <id>60</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>AlgorithmHintBeforeExecution</name>
+    <title>
+      <key>en</key>
+      <value>Algorithm hint before execution</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Подсказка алгоритма перед выполнением</value>
+    </title>
+    <id>61</id>
     <valueType>
       <types>String</types>
       <stringQualifiers/>

@@ -316,8 +316,8 @@ Procedure OpenValueListChoiceItemsForm(List, OnCloseNotifyDescription, Title = "
 EndProcedure
 
 Procedure EditObject(ObjectRef) Export
-	AvalibleForEditingObjectsArray=UT_CommonClientCached.DataBaseObjectEditorAvalibleObjectsTypes();
-	If AvalibleForEditingObjectsArray.Find(TypeOf(ObjectRef)) = Undefined Then
+	AvailableForEditingObjectsArray=UT_CommonClientCached.DataBaseObjectEditorAvailableObjectsTypes();
+	If AvailableForEditingObjectsArray.Find(TypeOf(ObjectRef)) = Undefined Then
 		Return;
 	EndIf;
 
