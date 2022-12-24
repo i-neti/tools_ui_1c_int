@@ -10,13 +10,53 @@
 			<item xsi:type="FilterItemComparison">
 				<left xsi:type="dcscor:Field">ScheduledJobsList.Use</left>
 				<comparisonType>Equal</comparisonType>
-				<right xsi:type="xs:string">Нет</right>
+				<right xsi:type="xs:string">No</right>
 			</item>
 		</filter>
 		<appearance>
 			<dcscor:item xsi:type="SettingsParameterValue">
 				<dcscor:parameter>ЦветТекста</dcscor:parameter>
 				<dcscor:value xsi:type="v8ui:Color">#A0A0A3</dcscor:value>
+			</dcscor:item>
+		</appearance>
+	</item>
+	<item>
+		<selection>
+			<item>
+				<field>ScheduledJobsList</field>
+			</item>
+		</selection>
+		<filter>
+			<item xsi:type="FilterItemComparison">
+				<left xsi:type="dcscor:Field">ScheduledJobsList.State</left>
+				<comparisonType>Contains</comparisonType>
+				<right xsi:type="xs:string">error</right>
+			</item>
+		</filter>
+		<appearance>
+			<dcscor:item xsi:type="SettingsParameterValue">
+				<dcscor:parameter>TextColor</dcscor:parameter>
+				<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
+			</dcscor:item>
+		</appearance>
+	</item>
+	<item>
+		<selection>
+			<item>
+				<field>BackgroundJobsList</field>
+			</item>
+		</selection>
+		<filter>
+			<item xsi:type="FilterItemComparison">
+				<left xsi:type="dcscor:Field">BackgroundJobsList.State</left>
+				<comparisonType>Contains</comparisonType>
+				<right xsi:type="xs:string">error</right>
+			</item>
+		</filter>
+		<appearance>
+			<dcscor:item xsi:type="SettingsParameterValue">
+				<dcscor:parameter>TextColor</dcscor:parameter>
+				<dcscor:value xsi:type="v8ui:Color">web:DarkRed</dcscor:value>
 			</dcscor:item>
 		</appearance>
 	</item>

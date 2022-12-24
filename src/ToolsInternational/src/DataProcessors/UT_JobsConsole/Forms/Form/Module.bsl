@@ -1,11 +1,6 @@
 #Region EventHandlers
 
 &AtServer
-Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing, Items.ScheduledJobsList.CommandBar);
-EndProcedure
-
-&AtServer
 Procedure FilterOnOpen()
 
 	ThisForm.BackgroundJobsFilterEnabled = True;
@@ -76,6 +71,11 @@ EndProcedure
 &AtClient
 Procedure ScheduledJobsAutoUpdateHandler()
 	RefreshScheduledJobsList();
+EndProcedure
+
+&AtServer
+Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing, Items.ScheduledJobsList.CommandBar);
 EndProcedure
 
 #EndRegion
@@ -352,7 +352,7 @@ Procedure PutScheduledJobs(GetAllStates = False)
 	Count = Scheduled_.Count();
 	For Each Scheduled In Scheduled_ Do
 		NewRow = ScheduledJobsList.Add();
-		NewRow.Metadata = Scheduled.Metadata.Presentation();
+		NewRow.Metadata = StrTemplate("%1 (%2)", Scheduled.Metadata.Name, Scheduled.Metadata.Synonym);
 		NewRow.Description = Scheduled.Description;
 		NewRow.Key = Scheduled.Key;
 		NewRow.Schedule = Scheduled.Schedule;
@@ -361,6 +361,7 @@ Procedure PutScheduledJobs(GetAllStates = False)
 		NewRow.Use = Scheduled.Use;
 		NewRow.ID = Scheduled.UUID;
 		NewRow.Method = Scheduled.Metadata.MethodName;
+		NewRow.MetadataName = Scheduled.Metadata.Name; 
 		
 		OutputTimeoutMilliseconds = 200;
 		OutputDuration = CurrentUniversalDateInMilliseconds() - MeteringStart;
@@ -448,8 +449,7 @@ Function SetScheduledJobSchedule(ID, Description, Schedule, JobName)
 		EditedJobObject.Write();
 	Except
 		Raise NStr("ru = 'Произошла ошибка при сохранении расписания выполнения обменов. Возможно данные расписания были изменены. Закройте форму настройки и повторите попытку изменения расписания еще раз.
-		|Подробное описание ошибки: '; en = 'Schedule saving error. Perhaps the schedule data has been changed. Close the settings form and try again.
-		|Detailed error description : '") + ErrorDescription();
+		|Подробное описание ошибки: '; en = 'Schedule saving error. Perhaps the schedule data has been changed. Close the settings form and try again.Detailed error description : '") + ErrorDescription();
 	EndTry;
 	
 	Return True;
@@ -726,8 +726,6 @@ Procedure BackgroundJobsListRefresh(NewJobID = Undefined)
 		IDs.Add(CurRow.ID);
 	EndDo;
 
-	BackgroundJobsList.Clear();
-	
 	PutBackgroundJobs();
 	
 	If CurrentID <> Undefined Then
@@ -763,6 +761,8 @@ Procedure PutBackgroundJobs()
 		Return;
 	EndTry;
 	
+	// by method name/key
+	BackgroundJobsList.Clear();
 	For Each Background In Background_ Do
 		NewRow = BackgroundJobsList.Add();
 		
@@ -794,6 +794,8 @@ Procedure PutBackgroundJobs()
 		NewRow.ID = Background.UUID;
 		NewRow.JobState = Background.State;
 	EndDo;
+	
+	BackgroundJobsList.Sort("Begin Desc");
 		
 EndProcedure
 
