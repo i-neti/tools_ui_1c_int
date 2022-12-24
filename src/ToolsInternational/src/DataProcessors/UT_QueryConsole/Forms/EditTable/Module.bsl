@@ -8,7 +8,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	Title = Parameters.Title + NStr("ru = ' (таблица значений)'; en = ' (value table)'");
 	
-	Table = DataProcessor.StringToValue(Parameters.Value.Value);
+	If Parameters.Value = Undefined Then
+		Table = New ValueTable;
+	Else
+		Table = DataProcessor.StringToValue(Parameters.Value.Value);
+	EndIf;
 	
 	DataProcessor.CreateTableAttributesByColumns(ThisForm, "ValueTable", "ValueTableColumnMap", "ValueTableContainerColumns", Table.Columns, True);
 
