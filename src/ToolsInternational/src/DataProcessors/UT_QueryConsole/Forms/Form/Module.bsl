@@ -1333,7 +1333,315 @@ EndProcedure
 
 #Область СобытияФормы
 
+&AtClient
+Procedure AttachAutoSaveHandler()
+	If AutoSaveIntervalOption > 0 Then
+		AttachIdleHandler("AutoSaveHandler", AutoSaveIntervalOption);
+	Else
+		DetachIdleHandler("AutoSaveHandler");
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure FinishGettingUserDataWorkDir(UserDataDirectory, AdditionalParameters) Export
+	AdditionalParameters.Insert("UserDataDirectory", UserDataDirectory);
+	ExecuteContinuation(AdditionalParameters);
+EndProcedure
+
+&AtClient
+Procedure FinishCheckingExistence(Exists, AdditionalParameters) Export
+	AdditionalParameters.Insert("Exists", Exists);
+	ExecuteContinuation(AdditionalParameters);
+EndProcedure
+
+
+
+&AtClient
+Procedure AfterAttachingFileSystemExtension(Attached, AdditionalParameters) Export
+
+	FileExtensionConnected = Attached;
+
+	If Not FileExtensionConnected Then
+		ShowConsoleMessageBox(NStr("ru = 'Для работы консоли необходимо установить расширение работы с файлами.'; en = 'The file system extension must be installed.'"));
+		BeginInstallFileSystemExtension();
+		Close();
+		Return;
+	EndIf;
+
+	OnOpenFollowUp();
+
+EndProcedure
+
+&AtClient
+Procedure OnOpenFollowUp(AdditionalParameters = Undefined) Export
+
+	If Not ValueIsFilled(AdditionalParameters) Then
+
+		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
+			"AfterGettingWorkDir");
+		NotifyDescription = New NotifyDescription("FinishGettingUserDataWorkDir", ThisForm,
+			AdditionalParameters);
+		BeginGettingUserDataWorkDir(NotifyDescription);
+		Return;
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterGettingWorkDir" Then
+
+		UserDataDirectory = AdditionalParameters.UserDataDirectory;
+		StateAutoSaveFileName = UserDataDirectory + ConsoleSignature + "." + AutoSaveExtension;
+
+		strAutoSaveFileNameTemp = StateAutoSaveFileName;
+		File = New File(strAutoSaveFileNameTemp);
+		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
+			"AfterCheckingExistenceSaving");
+		NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
+			AdditionalParameters);
+		File.BeginCheckingExistence(NotifyDescription);
+		Return;
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceSaving" Then
+		If UT_Debug Then
+			SetQueriesFileName();
+			OnOpenCompletion();
+			Return;
+		EndIf;
+
+		If Not AdditionalParameters.Exists Then
+			QueryBatch_New();
+			OnOpenCompletion();
+			Return;
+		EndIf;
+
+		strAutoSaveFileNameTemp = StateAutoSaveFileName;
+		Try
+			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
+				"OnOpenFollowUp", "AfterLoadingTitle", strAutoSaveFileNameTemp);
+			QueryBatch_Load(AdditionalParameters);
+		Except
+			// The file is corrupted.
+			QueryBatch_New();
+			OnOpenCompletion();
+		EndTry;
+
+		Return;
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterLoadingTitle" Then
+
+		stTitle = AdditionalParameters.LoadedData;
+		If stTitle = Undefined Then
+			// The file is corrupted.
+			QueryBatch_New();
+			OnOpenCompletion();
+			Return;
+		EndIf;
+
+		If stTitle.Property("QueryBatch") Then
+
+			Modified = True;
+			OnOpenCompletion(); // AutoSaving is loaded from temp, query list was not loaded to file.
+			Return;
+
+		Else
+
+			QueriesFileName = stTitle.FileName;
+			SetQueriesFileName(QueriesFileName);
+			strAutoSaveFileName = GetAutoSaveFileName(QueriesFileName);
+
+			File = New File(strAutoSaveFileName);
+			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, AutoSaveFileName",
+				"OnOpenFollowUp", "AfterCheckingExistenceAutoSaving", strAutoSaveFileName);
+			NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
+				AdditionalParameters);
+			File.BeginCheckingExistence(NotifyDescription);
+			Return;
+
+		EndIf;
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceAutoSaving" Then
+
+		Try
+			If AdditionalParameters.Exists Then
+				strAutoSaveFileName = AdditionalParameters.AutoSaveFileName;
+				AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
+					"OnOpenFollowUp", "AfterLoadAutoSaving", strAutoSaveFileName);
+				QueryBatch_Load(AdditionalParameters);
+				Return;
+			EndIf;
+		Except
+			// The file is corrupted. Loading the main file.
+		EndTry;
+
+		AdditionalParameters = New Structure("FollowUp, FollowUpPoint, LoadedData",
+			"OnOpenFollowUp", "AfterLoadAutoSaving");
+		ExecuteContinuation(AdditionalParameters);
+		Return;
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterLoadAutoSaving" Then
+
+		If AdditionalParameters.LoadedData <> Undefined Then
+			Modified = True;
+			OnOpenCompletion(); // Loaded from changed file autosaving.
+			Return;
+		EndIf;
+
+		File = New File(QueriesFileName);
+		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
+			"AfterCheckingExistenceFile");
+		NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
+			AdditionalParameters);
+		File.BeginCheckingExistence(NotifyDescription);
+
+	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceFile" Then
+
+		If AdditionalParameters.Exists Then
+			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
+				"OnOpenFollowUp", "AfterLoadingMainFile", QueriesFileName);
+			QueryBatch_Load(AdditionalParameters);
+			Return;
+		Else
+			QueryBatch_New();
+			OnOpenCompletion();
+			Return;
+		EndIf;
+
+	ElsIf AdditionalParameters.FollowUp = "AfterLoadingMainFile" Then
+
+		If AdditionalParameters.LoadedData = Undefined Then
+			QueryBatch_New();
+		EndIf;
+
+		OnOpenCompletion(); // Loaded from main file.
+		Return;
+
+	EndIf;
+
+EndProcedure
+
+&AtServer
+Procedure OnOpenCompletionAtServer()
+
+	DataProcessor = FormAttributeToValue("Object");
+	
+	//Saved states +++
+
+	ResultKind = SavedStates_GetAtServer("ResultKind", "table");
+	OutputLinesLimit = SavedStates_GetAtServer("OutputLinesLimit", "1000");
+	OutputLinesLimitEnabled = SavedStates_GetAtServer("OutputLinesLimitEnabled", True);
+	OutputLinesLimitTop = SavedStates_GetAtServer("OutputLinesLimitTop", 1000);
+	OutputLinesLimitTopEnabled = SavedStates_GetAtServer("OutputLinesLimitTopEnabled",
+		False);
+
+	fQueryResultBatchVisible = SavedStates_GetAtServer("QueryResultBatchVisible", False);
+	If Items.ShowHideQueryResultBatch.Check <> fQueryResultBatchVisible Then
+		Items.ShowHideQueryResultBatch.Check = fQueryResultBatchVisible;
+		Items.QueryResultBatch.Visible = fQueryResultBatchVisible;
+		Items.ResultInBatchGroup.Visible = Not fQueryResultBatchVisible;
+	EndIf;
+
+	fQueryParametersNextToText = SavedStates_GetAtServer("QueryParametersNextToText", True);
+	If Items.QueryParametersNextToText.Check <> fQueryParametersNextToText Then
+		Items.QueryParametersNextToText.Check = fQueryParametersNextToText;
+		QueryParametersNextToTextAtServer();
+	EndIf;
+	
+	//Saved states ---
+	
+	//Masking all exceptions while checking technological log.
+	//There may be a lack of rights, or something else, but technological log is really not needed at all.
+	Try
+		If DataProcessor.TechnologicalLog_ConsoleLogExists() Then
+			Items.TechnologicalLog.Check = True;
+		EndIf;
+	Except
+	EndTry;
+
+	ValueToFormAttribute(DataProcessor, "Object");
+
+EndProcedure
+
+&AtClient
+Procedure OnOpenCompletion()
+
+	OnOpenCompletionAtServer();
+	GetDataProcessorServerFileName();
+	AttachAutoSaveHandler();
+	SetItemsStates();
+
+	If Items.TechnologicalLog.Check Then
+		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
+		TechnologicalLog_Enabled(); // For executing the test query and checking the result.
+		AttachIdleHandler("TechnologicalLog_WaitingForEnable", 1, True);
+	EndIf;
+	
+	// 8.3.17 platform with disabled compatibility mode does not set current row.
+	If Items.QueryBatch.CurrentRow = Undefined And QueryBatch.GetItems().Count() > 0 Then
+		Items.QueryBatch.CurrentRow = QueryBatch.GetItems()[0].GetID();
+	EndIf;
+
+	If Not Object.ExternalDataProcessorMode Then
+		AllowHooking();
+		AllowBackgroundExecution();
+	EndIf;
+
+	Enabled = True;
+
+#Region UT_OnOpen
+	UT_CodeEditorClient.FormOnOpen(ThisObject);
 #EndRegion
+
+EndProcedure
+
+
+&AtClient
+Procedure AutoSaveHandler() Export
+
+	If Modified Then
+		Autosave();
+	EndIf;
+
+EndProcedure
+
+
+#EndRegion
+#EndRegion
+
+//@skip-warning
+&AtClient
+Procedure Attachable_ExecuteToolsCommonCommand(Command)
+	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
+EndProcedure
+
+#Область РедакторКода
+//@skip-warning
+&AtClient
+Procedure EditorFieldDocumentGenerated(Item)
+	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
+EndProcedure
+
+//@skip-warning
+&AtClient
+Procedure Attachable_EditorFieldOnClick(Item, EventData, StandardProcessing)
+	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, EventData, StandardProcessing);
+EndProcedure
+
+//@skip-warning
+&AtClient
+Procedure Attachable_CodeEditorDeferredInitializingEditors()
+	UT_CodeEditorClient.CodeEditorDeferredInitializingEditors(ThisObject);
+EndProcedure
+
+&AtClient
+Procedure Attachable_CodeEditorInitializingCompletion() Export
+	CurrentRow = Items.QueryBatch.CurrentRow;
+	If CurrentRow = Undefined Then
+		Return;
+	EndIf;
+
+	stQueryData = Query_GetQueryData(CurrentRow);
+
+	SetAlgorithmText(stQueryData.CodeText);
+	
+	
+EndProcedure
 #EndRegion
 
 &AtClient
@@ -1527,9 +1835,7 @@ EndProcedure
 //	ErrorString - String - error description string.
 //	Query - Query - query with parameters.
 //	OriginalQueryText - String - original query text.
-//	LineNumber - Number - number of error location line.
-//	ColumnNumber - Number - number of error location column.
-//
+//	LineNumber,ColumnNumber- Number - number of error location line.
 &AtServerNoContext
 Procedure DisassembleSpecifiedQueryError(ErrorString, Query, OriginalQueryText, LineNumber, ColumnNumber)
 
@@ -2245,9 +2551,9 @@ EndProcedure
 
 &AtClient
 Procedure ResultRecordStructure_Expand()
-	TreeItems = ResultRecordStructure.GetItems();
-	Items.ResultRecordStructure.Expand(TreeItems[0].GetID());
-	Items.ResultRecordStructure.Expand(TreeItems[1].GetID());
+	//TreeItems = ResultRecordStructure.GetItems();
+	//Items.ResultRecordStructure.Expand(TreeItems[0].GetID());
+	//Items.ResultRecordStructure.Expand(TreeItems[1].GetID());
 	
 	#Region UT_AfterResultRecordStructureRefresh
 	
@@ -2673,6 +2979,16 @@ Function ExecuteBatch(Query, QuerySchema)
 	Return arBatchResult;
 
 EndFunction
+&НаСервереБезКонтекста
+Процедура ВыполнитьАлгоритмПередВыполнениемЗапроса(Запрос, ТекстАлгоритма)
+	Контекст = Новый Структура;
+	Контекст.Вставить("мЗапрос", Запрос);
+	
+	Результат = УИ_РедакторКодаКлиентСервер.ВыполнитьАлгоритм(ТекстАлгоритма, Контекст);
+	Если Не Результат.Успешно Тогда
+		ВызватьИсключение Результат.ОписаниеОшибки;
+	КонецЕсли;
+КонецПроцедуры
 
 &AtServer
 Procedure SetQueryMacrocolumnParameters(Query)
@@ -2952,6 +3268,23 @@ Procedure TempTablesFromValueList(vlTempTables, TempTablesFormDataCollection)
 	EndIf;
 
 EndProcedure
+
+&НаКлиенте
+Процедура ОбновитьИконкиСтраницАлгоритмов(стДанныеЗапроса)
+	ИконкаЗаполнена = БиблиотекаКартинок.СинтаксическийКонтроль;
+	
+	Если ЗначениеЗаполнено(стДанныеЗапроса.ТекстКод) Тогда
+		Элементы.СтраницаАлгоритм.Картинка = ИконкаЗаполнена;
+	Иначе
+		Элементы.СтраницаАлгоритм.Картинка = Новый Картинка;
+	КонецЕсли;
+	
+	Если ЗначениеЗаполнено(стДанныеЗапроса.АлгоритмПередВыполнением) Тогда
+		Элементы.СтраницаАлгоритмПередВыполнением.Картинка = ИконкаЗаполнена;
+	Иначе
+		Элементы.СтраницаАлгоритмПередВыполнением.Картинка = Новый Картинка;
+	КонецЕсли;
+КонецПроцедуры
 
 &AtClient
 Procedure RefreshAlgorithmFormItems()
@@ -3899,280 +4232,6 @@ EndFunction
 
 #EndRegion
 
-#Region FormEvents
-
-&AtClient
-Procedure AttachAutoSaveHandler()
-	If AutoSaveIntervalOption > 0 Then
-		AttachIdleHandler("AutoSaveHandler", AutoSaveIntervalOption);
-	Else
-		DetachIdleHandler("AutoSaveHandler");
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure FinishGettingUserDataWorkDir(UserDataDirectory, AdditionalParameters) Export
-	AdditionalParameters.Insert("UserDataDirectory", UserDataDirectory);
-	ExecuteContinuation(AdditionalParameters);
-EndProcedure
-
-&AtClient
-Procedure FinishCheckingExistence(Exists, AdditionalParameters) Export
-	AdditionalParameters.Insert("Exists", Exists);
-	ExecuteContinuation(AdditionalParameters);
-EndProcedure
-
-&AtClient
-Procedure AfterAttachingFileSystemExtension(Attached, AdditionalParameters) Export
-
-	FileExtensionConnected = Attached;
-
-	If Not FileExtensionConnected Then
-		ShowConsoleMessageBox(NStr("ru = 'Для работы консоли необходимо установить расширение работы с файлами.'; en = 'The file system extension must be installed.'"));
-		BeginInstallFileSystemExtension();
-		Close();
-		Return;
-	EndIf;
-
-	OnOpenFollowUp();
-
-EndProcedure
-
-&AtClient
-Procedure OnOpenFollowUp(AdditionalParameters = Undefined) Export
-
-	If Not ValueIsFilled(AdditionalParameters) Then
-
-		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
-			"AfterGettingWorkDir");
-		NotifyDescription = New NotifyDescription("FinishGettingUserDataWorkDir", ThisForm,
-			AdditionalParameters);
-		BeginGettingUserDataWorkDir(NotifyDescription);
-		Return;
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterGettingWorkDir" Then
-
-		UserDataDirectory = AdditionalParameters.UserDataDirectory;
-		StateAutoSaveFileName = UserDataDirectory + ConsoleSignature + "." + AutoSaveExtension;
-
-		strAutoSaveFileNameTemp = StateAutoSaveFileName;
-		File = New File(strAutoSaveFileNameTemp);
-		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
-			"AfterCheckingExistenceSaving");
-		NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
-			AdditionalParameters);
-		File.BeginCheckingExistence(NotifyDescription);
-		Return;
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceSaving" Then
-		If UT_Debug Then
-			SetQueriesFileName();
-			OnOpenCompletion();
-			Return;
-		EndIf;
-
-		If Not AdditionalParameters.Exists Then
-			QueryBatch_New();
-			OnOpenCompletion();
-			Return;
-		EndIf;
-
-		strAutoSaveFileNameTemp = StateAutoSaveFileName;
-		Try
-			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
-				"OnOpenFollowUp", "AfterLoadingTitle", strAutoSaveFileNameTemp);
-			QueryBatch_Load(AdditionalParameters);
-		Except
-			// The file is corrupted.
-			QueryBatch_New();
-			OnOpenCompletion();
-		EndTry;
-
-		Return;
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterLoadingTitle" Then
-
-		stTitle = AdditionalParameters.LoadedData;
-		If stTitle = Undefined Then
-			// The file is corrupted.
-			QueryBatch_New();
-			OnOpenCompletion();
-			Return;
-		EndIf;
-
-		If stTitle.Property("QueryBatch") Then
-
-			Modified = True;
-			OnOpenCompletion(); // AutoSaving is loaded from temp, query list was not loaded to file.
-			Return;
-
-		Else
-
-			QueriesFileName = stTitle.FileName;
-			SetQueriesFileName(QueriesFileName);
-			strAutoSaveFileName = GetAutoSaveFileName(QueriesFileName);
-
-			File = New File(strAutoSaveFileName);
-			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, AutoSaveFileName",
-				"OnOpenFollowUp", "AfterCheckingExistenceAutoSaving", strAutoSaveFileName);
-			NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
-				AdditionalParameters);
-			File.BeginCheckingExistence(NotifyDescription);
-			Return;
-
-		EndIf;
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceAutoSaving" Then
-
-		Try
-			If AdditionalParameters.Exists Then
-				strAutoSaveFileName = AdditionalParameters.AutoSaveFileName;
-				AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
-					"OnOpenFollowUp", "AfterLoadAutoSaving", strAutoSaveFileName);
-				QueryBatch_Load(AdditionalParameters);
-				Return;
-			EndIf;
-		Except
-			// The file is corrupted. Loading the main file.
-		EndTry;
-
-		AdditionalParameters = New Structure("FollowUp, FollowUpPoint, LoadedData",
-			"OnOpenFollowUp", "AfterLoadAutoSaving");
-		ExecuteContinuation(AdditionalParameters);
-		Return;
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterLoadAutoSaving" Then
-
-		If AdditionalParameters.LoadedData <> Undefined Then
-			Modified = True;
-			OnOpenCompletion(); // Loaded from changed file autosaving.
-			Return;
-		EndIf;
-
-		File = New File(QueriesFileName);
-		AdditionalParameters = New Structure("FollowUp, FollowUpPoint", "OnOpenFollowUp",
-			"AfterCheckingExistenceFile");
-		NotifyDescription = New NotifyDescription("FinishCheckingExistence", ThisForm,
-			AdditionalParameters);
-		File.BeginCheckingExistence(NotifyDescription);
-
-	ElsIf AdditionalParameters.FollowUpPoint = "AfterCheckingExistenceFile" Then
-
-		If AdditionalParameters.Exists Then
-			AdditionalParameters = New Structure("FollowUp, FollowUpPoint, FileName",
-				"OnOpenFollowUp", "AfterLoadingMainFile", QueriesFileName);
-			QueryBatch_Load(AdditionalParameters);
-			Return;
-		Else
-			QueryBatch_New();
-			OnOpenCompletion();
-			Return;
-		EndIf;
-
-	ElsIf AdditionalParameters.FollowUp = "AfterLoadingMainFile" Then
-
-		If AdditionalParameters.LoadedData = Undefined Then
-			QueryBatch_New();
-		EndIf;
-
-		OnOpenCompletion(); // Loaded from main file.
-		Return;
-
-	EndIf;
-
-EndProcedure
-
-&AtServer
-Procedure OnOpenCompletionAtServer()
-
-	DataProcessor = FormAttributeToValue("Object");
-	
-	//Saved states +++
-
-	ResultKind = SavedStates_GetAtServer("ResultKind", "table");
-	OutputLinesLimit = SavedStates_GetAtServer("OutputLinesLimit", "1000");
-	OutputLinesLimitEnabled = SavedStates_GetAtServer("OutputLinesLimitEnabled", True);
-	OutputLinesLimitTop = SavedStates_GetAtServer("OutputLinesLimitTop", 1000);
-	OutputLinesLimitTopEnabled = SavedStates_GetAtServer("OutputLinesLimitTopEnabled",
-		False);
-
-	fQueryResultBatchVisible = SavedStates_GetAtServer("QueryResultBatchVisible", False);
-	If Items.ShowHideQueryResultBatch.Check <> fQueryResultBatchVisible Then
-		Items.ShowHideQueryResultBatch.Check = fQueryResultBatchVisible;
-		Items.QueryResultBatch.Visible = fQueryResultBatchVisible;
-		Items.ResultInBatchGroup.Visible = Not fQueryResultBatchVisible;
-	EndIf;
-
-	fQueryParametersNextToText = SavedStates_GetAtServer("QueryParametersNextToText", True);
-	If Items.QueryParametersNextToText.Check <> fQueryParametersNextToText Then
-		Items.QueryParametersNextToText.Check = fQueryParametersNextToText;
-		QueryParametersNextToTextAtServer();
-	EndIf;
-	
-	//Saved states ---
-	
-	//Masking all exceptions while checking technological log.
-	Try
-		If DataProcessor.TechnologicalLog_ConsoleLogExists() Then
-			Items.TechnologicalLog.Check = True;
-		EndIf;
-	Except
-	EndTry;
-
-	ValueToFormAttribute(DataProcessor, "Object");
-
-EndProcedure
-
-&AtClient
-Procedure OnOpenCompletion()
-
-	OnOpenCompletionAtServer();
-	GetDataProcessorServerFileName();
-	AttachAutoSaveHandler();
-	SetItemsStates();
-
-	If Items.TechnologicalLog.Check Then
-		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
-		TechnologicalLog_Enabled(); // For executing the test query and checking the result.
-		AttachIdleHandler("TechnologicalLog_WaitingForEnable", 1, True);
-	EndIf;
-	
-	// 8.3.17 platform with disabled compatibility mode does not set current row.
-	If Items.QueryBatch.CurrentRow = Undefined And QueryBatch.GetItems().Count() > 0 Then
-		Items.QueryBatch.CurrentRow = QueryBatch.GetItems()[0].GetID();
-	EndIf;
-
-	If Not Object.ExternalDataProcessorMode Then
-		AllowHooking();
-		AllowBackgroundExecution();
-	EndIf;
-
-	Enabled = True;
-
-#Region UT_OnOpen
-	If UT_CommonClientServer.HTMLFieldBasedOnWebkit() Then
-		Items.CodeCommandBarGroup.Visible = False;
-	EndIf;
-	UT_CodeEditorClient.FormOnOpen(ThisObject);
-#EndRegion
-
-EndProcedure
-
-
-
-&AtClient
-Procedure AutoSaveHandler() Export
-
-	If Modified Then
-		Autosave();
-	EndIf;
-
-EndProcedure
-
-
-
-#EndRegion
-
 #Region FormItemsEvents
 
 &AtClient
@@ -4224,12 +4283,9 @@ Procedure ProcessParameterNameChange(NewRow, CancelEditing, Cancel)
 EndProcedure
 
 
-
-
-
-
-
-
+//&НаКлиенте
+//Процедура ПараметрыЗапросаПриНачалеРедактирования(Элемент, НоваяСтрока, Копирование)
+//КонецПроцедуры
 
 
 
@@ -5035,6 +5091,35 @@ Procedure RemoveCommentsFromText(TextItem)
 
 EndProcedure
 
+&НаКлиенте
+Процедура СортироватьРезультатЗапросаТаблица(НаправлениеСортировки)
+	ИмяКолонки = Элементы.РезультатЗапроса.ТекущийЭлемент.Имя;
+	Если СтрЧислоВхождений(ИмяКолонки, "РезультатЗапроса") = 1 Тогда
+		ИмяКолонки = СтрЗаменить(ИмяКолонки, "РезультатЗапроса", "");
+		РезультатЗапроса.Сортировать(ИмяКолонки + " " + НаправлениеСортировки);
+	ИначеЕсли СтрЧислоВхождений(ИмяКолонки, "РезультатЗапроса") > 1 Тогда
+		ПоказатьПредупреждение(, "Нельза сортировать по колонке содержащей в названии ""РезультатЗапроса""");
+	КонецЕсли;
+КонецПроцедуры
+
+&НаКлиенте
+Процедура СортироватьРезультатЗапросаДерево(НаправлениеСортировки)
+	ИмяКолонки = Элементы.РезультатЗапросаДерево.ТекущийЭлемент.Имя;
+	Если СтрЧислоВхождений(ИмяКолонки, "РезультатЗапросаДерево") = 1 Тогда
+		ИмяКолонки = СтрЗаменить(ИмяКолонки, "РезультатЗапросаДерево", "");
+		СортироватьРезультатЗапросаДеревоНаСервере(ИмяКолонки, НаправлениеСортировки);
+	ИначеЕсли СтрЧислоВхождений(ИмяКолонки, "РезультатЗапросаДерево") > 1 Тогда 
+		ПоказатьПредупреждение(, "Нельза сортировать по колонке содержащей в названии ""РезультатЗапросаДерево""");			
+	КонецЕсли;
+КонецПроцедуры
+
+&НаСервере
+Процедура СортироватьРезультатЗапросаДеревоНаСервере(ИмяКолонки, НаправлениеСортировки)
+	ДеревоРезультат = РеквизитФормыВЗначение("РезультатЗапросаДерево");
+	ДеревоРезультат.Строки.Сортировать(ИмяКолонки + " " + НаправлениеСортировки, Истина);
+	ЗначениеВРеквизитФормы(ДеревоРезультат, "РезультатЗапросаДерево");
+КонецПроцедуры
+
 #Region ExecuteDataProcessor_Command
 
 &AtServer
@@ -5642,43 +5727,9 @@ EndProcedure
 
 
 
-//@skip-warning
-&AtClient
-Procedure Attachable_ExecuteToolsCommonCommand(Command)
-	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
-EndProcedure
 
-//@skip-warning
-&AtClient
-Procedure EditorFieldDocumentGenerated(Item)
-	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
-EndProcedure
 
-//@skip-warning
-&AtClient
-Procedure Attachable_EditorFieldOnClick(Item, EventData, StandardProcessing)
-	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, EventData, StandardProcessing);
-EndProcedure
 
-//@skip-warning
-&AtClient
-Procedure Attachable_CodeEditorDeferredInitializingEditors()
-	UT_CodeEditorClient.CodeEditorDeferredInitializingEditors(ThisObject);
-EndProcedure
-
-&AtClient
-Procedure Attachable_CodeEditorInitializingCompletion() Export
-	CurrentRow = Items.QueryBatch.CurrentRow;
-	If CurrentRow = Undefined Then
-		Return;
-	EndIf;
-
-	stQueryData = Query_GetQueryData(CurrentRow);
-
-	SetAlgorithmText(stQueryData.CodeText);
-	
-	
-EndProcedure
 
 &AtClient
 Procedure UT_AddResultStructureContextAlgorithm()
