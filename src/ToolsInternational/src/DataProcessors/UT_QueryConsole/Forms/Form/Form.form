@@ -11095,6 +11095,102 @@ Example:
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
+  <formCommands>
+    <name>РезультатЗапросаТаблицаСортироватьУбыв</name>
+    <title>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </title>
+    <id>41</id>
+    <toolTip>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListDesc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>Команда_РезультатЗапросаТаблицаСортироватьУбыв</name>
+      </handler>
+    </action>
+    <representation>Picture</representation>
+    <currentRowUse>Auto</currentRowUse>
+    <associatedTableElementId>4</associatedTableElementId>
+  </formCommands>
+  <formCommands>
+    <name>РезультатЗапросаТаблицаСортироватьВозр</name>
+    <title>
+      <key>en</key>
+      <value>Сортировать по возрвстанию</value>
+    </title>
+    <id>42</id>
+    <toolTip>
+      <key>en</key>
+      <value>Сортировать по возрвстанию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListAsc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>Команда_РезультатЗапросаТаблицаСортироватьВозр</name>
+      </handler>
+    </action>
+    <representation>Picture</representation>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>РезультатЗапросаДеревоСортироватьВозр</name>
+    <title>
+      <key>en</key>
+      <value>Сортировать по возрвстанию</value>
+    </title>
+    <id>43</id>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListAsc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>Команда_РезультатЗапросаДеревоСортироватьВозр</name>
+      </handler>
+    </action>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>РезультатЗапросаДеревоСортироватьУбыв</name>
+    <title>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </title>
+    <id>44</id>
+    <toolTip>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListDesc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>Команда_РезультатЗапросаДеревоСортироватьУбыв</name>
+      </handler>
+    </action>
+    <currentRowUse>Auto</currentRowUse>
+    <associatedTableElementId>4</associatedTableElementId>
+  </formCommands>
   <commandInterface>
     <navigationPanel/>
     <commandBar/>

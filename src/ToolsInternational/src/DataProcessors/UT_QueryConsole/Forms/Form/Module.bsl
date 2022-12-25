@@ -27,14 +27,14 @@ Var UT_CodeEditorClientData Export;
 
 #EndRegion
 
-#Область ОбработчикиСобытийФормы
+#Region FormEventsHandlers
 
 &AtClient
 Procedure OnOpen(Cancel)
 	
 	FilesExtension = "q9";
 	ConsoleSignature = ConsoleDataProcessorName(ThisObject);
-	SaveFilter = "Querys file (*." + FilesExtension + ")|*." + FilesExtension;
+	SaveFilter = "Queries file (*." + FilesExtension + ")|*." + FilesExtension;
 	AutoSaveExtension = "q9save";
 	FormatVersion = 13;
 		
@@ -107,15 +107,1234 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		UT_FillWithDebugData();
 
 		UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
+		
 		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Algorithm", Items.AlgorithmText);
 		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "AlgorithmBeforeExecution",
 			Items.AlgorithmTextBeforeExecution);
 		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "Query", Items.QueryText, , "bsl_query");
 	EndIf;
 #EndRegion
-		AlgorithmHintBeforeExecution = "Доступны переменные: мЗапрос (Тип-Запрос)";
+
+		AlgorithmHintBeforeExecution =NStr("ru = 'Доступны переменные: мЗапрос (Тип-Запрос)';en = 'Variables available: mQuery (Type-Query)'");
 EndProcedure
 
+&AtClient
+Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
+
+#If WebClient Then
+	If Not FileExtensionConnected Then
+		Return;
+	EndIf;
+#EndIf
+
+	If Exit = True Then
+		
+		// Server calls are not allowed. The maximum that can be done is warnings
+
+		WarningText = "";
+		If Modified Then
+			//There will be a warning about an unsaved Query.
+			WarningText = NStr("ru = 'В консоли запросов 9000 имеется не сохраненный пакет запросов! '; en = 'Query console 9000 contains an unsaved query batch.'");
+			Cancel = True;
+		EndIf;
+
+		If Items.TechnologicalLog.Check Then
+			WarningText = WarningText + NStr("ru = 'Технологический журнал не выключен! '; en = 'technological log is not disabled.'");
+			Cancel = True;
+		EndIf;
+
+		If Not ValueIsFilled(WarningText) Then
+			//It is always better to close the console with your hands to save the state.
+			WarningText = NStr("ru = 'Для сохранения состояний консоль запросов 9000 рекомендуется закрывать вручную.'; en = 'For saving states it is recommended to close query console 9000 manually'");
+			Cancel = True;
+		EndIf;
+
+	Else
+		
+		//save the state..
+		QueryBatch_Save( , StateAutoSaveFileName, True);
+
+		If Not SaveWithQuestion("Completion") Then
+			Cancel = True;
+		EndIf;
+
+		If Not Cancel And Items.TechnologicalLog.Check Then
+			TechnologicalLog_Command(Undefined);
+		EndIf;
+
+	EndIf;
+
+EndProcedure
+
+#EndRegion
+
+#Region FormHeaderItemsEventsHandlers
+
+&AtClient
+Procedure SaveCommentsOptionOnChange(Item)
+	Modified = True;
+EndProcedure
+
+&AtClient
+Procedure OptionProcessing__OnChange(Item)
+	Modified = True;
+EndProcedure
+
+&AtClient
+Procedure AutoSaveIntervalOptionOnChange(Item)
+	AttachAutoSaveHandler();
+	Modified = True;
+EndProcedure
+
+&AtClient
+Procedure AlgorithmExecutionUpdateIntervalOptionOnChange(Item)
+	Modified = True;
+EndProcedure
+
+&AtClient
+Procedure OutputLinesLimitEnabledOptionOnChange(Item)
+	SetItemsStates();
+EndProcedure
+
+&AtClient
+Procedure OutputLinesLimitTopEnabledOptionOnChange(Item)
+	SetItemsStates();
+EndProcedure
+
+&AtClient
+Procedure QueryTextOnChange(Item)
+	PutEditingQuery();
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыПакетЗапросов
+
+&AtClient
+Procedure QueryBatchSelection(Item, SelectedRow, Field, StandardProcessing)
+	ExecuteQuery(False);
+	StandardProcessing = False;
+EndProcedure
+
+&AtClient
+Procedure QueryBatchOnActivateRow(Item)
+
+	CurrentData = Items.QueryBatch.CurrentData;
+
+	If Items.QueryBatch.CurrentRow = EditingQuery Then
+		Return;
+	EndIf;
+
+	If CurrentData <> Undefined And Not CurrentData.Initialized Then
+		InitializeQuery(Items.QueryBatch.CurrentData);
+		ExtractEditingQuery( , False);
+	Else
+		ExtractEditingQuery();
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure QueryBatchBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Parameter)
+
+	If Clone Then
+
+		Cancel = True;
+
+		CurrentRow = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
+		Parent = CurrentRow.GetParent();
+		If Parent = Undefined Then
+			Parent = CurrentRow;
+		EndIf;
+
+		NewRow = Parent.GetItems().Add();
+		FillPropertyValues(NewRow, CurrentRow);
+		Items.QueryBatch.CurrentRow = NewRow.GetID();
+
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure QueryBatchOnEditEnd(Item, NewRow, CancelEdit)
+	PreviousValueParameterName = "";
+EndProcedure
+
+&AtClient
+Procedure QueryBatchBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
+
+	QueryName = Item.CurrentData.Name;
+
+	Row = FindInTree(QueryBatch, "Name", QueryName, Item.CurrentRow);
+	If Row <> Undefined Then
+		ShowConsoleMessageBox(NStr("ru = 'Запрос с таким именем уже есть! Введите другое имя.'; en = 'This query name already exists. Please enter another name.'"));
+		Cancel = True;
+		Return;
+	EndIf;
+
+EndProcedure
+
+
+#КонецОбласти
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыПараметрыЗапроса
+
+&AtClient
+Procedure QueryParametersOnActivateRow(Item)
+	SetValueInputParameters();
+EndProcedure
+
+&AtClient
+Procedure QueryParametersBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
+
+	ProcessParameterNameChange(NewRow, CancelEdit, Cancel);
+
+EndProcedure
+
+&AtClient
+Procedure QueryParametersOnChange(Item)
+	PutEditingQuery();
+EndProcedure
+
+&AtClient
+Procedure QueryParametersParameterTypeStartChoice(Item, ChoiceData, StandardProcessing)
+
+	StandardProcessing = False;
+	CurrentData = Items.QueryParameters.CurrentData;
+
+	If CurrentData.ContainerType < 3 Then
+		ValueType = CurrentData.ValueType;
+	Else
+		ValueType = CurrentData.Containet;
+	EndIf;
+
+	NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
+		Items.QueryParameters.CurrentRow, "ValueType");
+	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
+		NotifyParameters);
+	OpeningParameters = New Structure("Object, ValueType, ContainerType, Name, EnabledInQuery", Object,
+		ValueType, CurrentData.ContainerType, CurrentData.Name, True);
+	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
+		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+&AtClient
+Procedure QueryParametersValueOnChange(Item)
+
+	CurrentData = Items.QueryParameters.CurrentData;
+
+	If CurrentData.ContainerType = 0 Then
+
+		CurrentData.Container = CurrentData.Value;
+		If Not ValueIsFilled(CurrentData.ValueType) Then
+			CurrentData.ValueType = TypeDescriptionByType(TypeOf(CurrentData.Value));
+		EndIf;
+
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure QueryParametersValueClearing(Item, StandardProcessing)
+
+	CurrentData = Items.QueryParameters.CurrentData;
+
+	If CurrentData.ContainerType = 0 Then
+		nTypeCount = CurrentData.ValueType.Types().Count();
+		If nTypeCount = 0 Or nTypeCount > 1 Then
+			CurrentData.Value = Undefined;
+		Else
+			CurrentData.Value = CurrentData.ValueType.AdjustValue(Undefined);
+		EndIf;
+	ElsIf CurrentData.ContainerType = 3 Then
+	EndIf;
+
+	SetValueInputParameters();
+
+EndProcedure
+
+&AtClient
+Procedure QueryParametersValueTextEditEnd(Item, Text, ChoiceData, DataGetParameters,
+	StandardProcessing)
+	CurrentData = Items.QueryParameters.CurrentData;
+	If TypeOf(CurrentData.Container) = Type("Structure") And CurrentData.Container.Type = "UUID" Then
+		Try
+			Value = New UUID(Text);
+		Except
+			Raise NStr("ru = 'Не корректное значение уникального идентификатора'; en = 'UUID is incorrect.'");
+		EndTry;
+		QueryParameters_SaveValue(Items.QueryParameters.CurrentRow, Value);
+		StandardProcessing = False;
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure QueryParametersValueStartChoice(Item, ChoiceData, StandardProcessing)
+
+	CurrentData = Item.Parent.CurrentData;
+
+	If CurrentData.ContainerType > 0 Then
+
+		StandardProcessing = False;
+		NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
+			Item.Parent.CurrentRow, "Container");
+		CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
+			ThisForm, NotifyParameters);
+		OpeningParameters = New Structure("Object, ValueType, Title, Value, ContainerType", Object,
+			CurrentData.ValueType, CurrentData.Name, CurrentData.Container, CurrentData.ContainerType);
+
+		If CurrentData.ContainerType = 3 Then
+			EditingFormName = "EditTable";
+		Else
+			EditingFormName = "PickupToList";
+		EndIf;
+
+		OpenForm(FormFullName(EditingFormName), OpeningParameters, ThisForm, False, , ,
+			CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+
+	ElsIf TypeOf(CurrentData.Container) = Type("Structure") Then
+
+		If CurrentData.Container.Type = "PointInTime" Or CurrentData.Container.Type = "Boundary" Then
+			StandardProcessing = False;
+			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
+				Item.Parent.CurrentRow, "Container");
+			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
+				ThisForm, NotifyParameters);
+			OpeningParameters = New Structure("Object, Value", Object, CurrentData.Container);
+			OpenForm(FormFullName("EditPointInTimeBoundary"), OpeningParameters, ThisForm, False, , ,
+				CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+		ElsIf CurrentData.Container.Type = "Type" Then
+			StandardProcessing = False;
+			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
+				Item.Parent.CurrentRow, "ContainerAsType");
+			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
+				ThisForm, NotifyParameters);
+			OpeningParameters = New Structure("Object, ValueType, ContainerType", Object, CurrentData.Container,
+				CurrentData.ContainerType);
+			OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
+				CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+		EndIf;
+
+	Else
+		If TypeOf(CurrentData.Value) = Тип("UUID") Then
+			StandardProcessing = False;
+			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
+				Item.Parent.CurrentRow, "Value");
+			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
+				ThisForm, NotifyParameters);
+			OpeningParameters = New Structure("Object, Value", Object, CurrentData.Value);
+			OpenForm(FormFullName("EditUUID"), OpeningParameters, ThisForm,
+				True, , , CloseFormNotifyDescription,
+				FormWindowOpeningMode.LockOwnerWindow);
+		EndIf;
+	EndIf;
+
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыВременныеТаблицы
+
+&AtClient
+Procedure TempTablesValueStartChoice(Item, ChoiceData, StandardProcessing)
+
+	StandardProcessing = False;
+
+	CurrentData = Items.TempTables.CurrentData;
+
+	NotifyParameters = New Structure("Table, Row, Field", "TempTables",
+		Items.TempTables.CurrentRow, "Container");
+	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
+		NotifyParameters);
+	OpeningParameters = New Structure("Object, ValueType, Title, Value, ContainerType", Object, ,
+		CurrentData.Name, CurrentData.Container, 3);
+
+	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, False, , ,
+		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+
+
+
+
+
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыСтруктураЗаписиРезультата
+
+&AtClient
+Procedure ResultRecordStructureSelection(Item, SelectedRow, Field, StandardProcessing)
+	InsertTextInAlgorithmCursorPosition (ResultRecordStructureGetInsertText(SelectedRow));
+EndProcedure
+
+&AtClient
+Procedure ResultRecordStructureBeforeExpand(Item, Row, Cancel)
+
+	TreeRow = ResultRecordStructure.FindByID(Row);
+
+	If Not TreeRow.ChildNodesExpanded Then
+		ResultRecordStructure_ExpandChildNodes(Row);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure ResultRecordStructureDragStart(Item, DragParameters, Perform)
+
+	arParts = New Array;
+	For Each Value In DragParameters.Value Do
+		arParts.Add(ResultRecordStructureGetInsertText(Value));
+	EndDo;
+
+	DragParameters.Value = StrConcat(arParts, ";");
+
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыПакетРезультатаЗапроса
+
+&AtClient
+Procedure QueryResultBatchSelection(Item, SelectedRow, Field, StandardProcessing)
+
+	If Item.CurrentItem.Name = "QueryResultBatchInfo" Then
+
+		DetachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow");
+		CurrentRow = Items.QueryResultBatch.CurrentRow;
+		If CurrentRow <> Undefined Then
+			If ExtractResult(QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
+				CurrentRow)) + 1) > 0 Then
+				ResultRecordStructure_Expand();
+			EndIf;
+		EndIf;
+
+		QueryPlan_Command(Undefined);
+
+	ElsIf Item.CurrentItem.Name = "QueryResultBatchName" Then
+
+		DetachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow");
+		CurrentRow = Items.QueryResultBatch.CurrentRow;
+		If CurrentRow <> Undefined Then
+			If ExtractResult(QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
+				CurrentRow)) + 1) > 0 Then
+				ResultRecordStructure_Expand();
+			EndIf;
+		EndIf;
+
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure QueryResultBatchOnActivateRow(Item)
+	AttachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow", 0.01, True);
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыРезультатЗапросаДерево
+
+&AtClient
+Procedure QueryResultSelection(Item, SelectedRow, Field, StandardProcessing)
+
+	ColumnName = QueryResultColumnsMap[Field.Name];
+
+	Value = Item.CurrentData[ColumnName];
+
+	If QueryResultContainerColumns.Property(ColumnName) Then
+
+		Container = ThisForm[Item.Name].FindByID(Item.CurrentRow)[ColumnName
+			+ ContainerAttributeSuffix];
+
+		If Container.Type = "ValueTable" Then
+			OpeningParameters = New Structure("Object, Title, Value, ReadOnly", Object, ColumnName,
+				Container, True);
+			OpenForm(FormFullName("EditTable"), OpeningParameters, ThisForm, False, , , ,
+				FormWindowOpeningMode.LockOwnerWindow);
+		ElsIf Container.Type = Undefined Then
+			//Container is empty. Value is contained in the main field.
+			ShowValue( , Value);
+		Else
+			ShowValue( , Value.Presentation);
+		EndIf;
+
+	Else
+		ShowValue( , Value);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure UT_QueryResultOnActivateRow(Item)	
+	UT_FillRowProperties(Item.Name);
+EndProcedure
+
+&AtClient
+Procedure UT_QueryResultOnActivateCell(Item)
+	UT_ActivateRowPropertyRow(Item.Name);
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиСобытийЭлементовТаблицыФормыУИ_СвойстваСтроки
+
+&AtClient
+Procedure UT_RowPropertiesSelection(Item, RowSelected, Field, StandardProcessing)
+	
+	SourceName = UT_SourceNameByResultKindAttribute();
+	ColumnName = Item.CurrentData.Property;
+	FieldName = Undefined;
+	For Each KeyValue In QueryResultColumnsMap Do
+		If KeyValue.Value = ColumnName Then
+			FieldName = KeyValue.Key;
+			Break;
+		EndIf;
+	EndDo;
+	
+	If ValueIsFilled(FieldName) Then
+		Structure = New Structure("Name", FieldName);
+		QueryResultSelection(Items[SourceName], Undefined, Structure, True);
+	EndIf;
+	
+EndProcedure
+
+#EndRegion
+
+#Область ОбработчикиКомандФормы
+
+&AtClient
+Procedure RemoveCommentsFromText_Command(Command)
+	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
+		RemoveCommentsFromText(Items.QueryText);
+	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
+		RemoveCommentsFromText(Items.AlgorithmText);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure QuerySyntaxCheck_Command(Command)
+
+	If Items.QueryGroupPages.CurrentPage <> Items.QueryPage Then
+		Return;
+	EndIf;
+
+	Result = FormatQueryTextAtServer(QueryText);
+
+	If TypeOf(Result) <> Type("String") Then
+		ShowConsoleMessageBox(Result.ErrorDescription);
+		CurrentItem = Items.QueryText;
+		If ValueIsFilled(Result.Row) Then
+			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
+				Result.Column);
+		EndIf;
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure FormatQueryText_Command(Command)
+
+	If Items.QueryGroupPages.CurrentPage <> Items.QueryPage Then
+		Return;
+	EndIf;
+
+	strQueryText = QueryText;
+	QueryComments_SaveSourceQueryData(strQueryText);
+	Result = FormatQueryTextAtServer(strQueryText);
+
+	If TypeOf(Result) <> Type("String") Then
+
+		ShowConsoleMessageBox(Result.ErrorDescription);
+		CurrentItem = Items.QueryText;
+		If ValueIsFilled(Result.Row) Then
+			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
+				Result.Column);
+		EndIf;
+
+		Return;
+
+	EndIf;
+
+	QueryComments_Restore(Result);
+	
+	SetQueryText();
+	PutEditingQuery();
+	Modified = True;
+
+EndProcedure
+
+&AtClient
+Procedure GetCodeForTrace_Command(Command)
+	If Object.ExternalDataProcessorMode Then
+
+		strDataProcessorServerFileName = GetDataProcessorServerFileName();
+		//"ExternalDataProcessors.Create(""" + стрDataProcessorServerFileName + """, False).SaveQuery(" + Format(Object.SessionID, "NG=0") + ", Query)";
+		strCode = StrTemplate("ExternalDataProcessors.Create(""%1"", False).SaveQuery(%2, Query)",
+			strDataProcessorServerFileName, Format(Object.SessionID, "NG=0"));
+	Else
+		strCode = StrTemplate("DataProcessors.%1.Create().SaveQuery(%2, Query)", Object.DataProcessorName, Format(
+			Object.SessionID, "NG=0"));
+	EndIf;
+
+	OpeningParameters = New Structure("
+									  |Object,
+									  |Title,
+									  |CodeToCopy,
+									  |Info", Object, NStr("ru = 'Код для перехвата запроса в отладчике'; en = 'Code to hook the query in the debugger.'"), strCode, NStr("ru = 'Для перехвата запроса в отладчике скопируйте и выполните по Shift+F9 указанный код.
+																											   |Консоль запросов должна быть запущена в той же информационной базе под тем же пользователем.
+																											   |Для получения запросов в консоль используйте команду на закладке текста запроса ""Перехват | Получить перехваченные запросы (Ctrl+F9)""
+																											   |В настройках пользователя должна быть отключена защита от опасных действий.'; 
+																											   |en = 'To hook the query in the debugger, copy and execute this code by Shift + F9.
+																											   |Query console must be launched in the same infobase under the same login.
+																											   |To receive queries to the console, use the ""Hooking | Get hooked queries (Ctrl+F9)"" command.
+																											   |""Unsafe operation protection"" user setting must be switched off.'"));
+
+	OpenForm(FormFullName("Info"), OpeningParameters, ThisForm, False, , , ,
+		FormWindowOpeningMode.LockOwnerWindow);
+EndProcedure
+
+&AtClient
+Procedure GetHookedQueries_Command(Command)
+
+	strExplanation = NStr("ru = 'Загрузка перехваченных запросов'; en = 'Loading hooked queries'");
+
+	PutEditingQuery();
+
+	arQueryFiles = GetFileListAtServerFromTempFilesDir("*." + Object.LockedQueriesExtension);
+
+	j = 1;
+	For Each strFile In arQueryFiles Do
+		Status(NStr("ru = 'Загрузка перехваченного запроса: '; en = Loading hooked query: ") + j + NStr("ru = ' из '; en = ' out of '") + arQueryFiles.Count(), (j - 1) * 100
+			/ arQueryFiles.Count(), strExplanation);
+		NewQuery = QueryBatch.GetItems().Add();
+		Items.QueryBatch.CurrentRow = NewQuery.GetID();
+		FillFromFile(strFile);
+		PutEditingQuery();
+		j = j + 1;
+	EndDo;
+
+	Status(NStr("ru = 'Удаление временных файлов...'; en = 'Deleting temporary files...'"), 100, strExplanation);
+	DeleteFilesAtServer(arQueryFiles);
+	ShowConsoleMessageBox(NStr("ru = 'Загружено перехваченных запросов: '; en = 'Hooked queries loaded: '") + arQueryFiles.Count());
+	Modified = Modified Or arQueryFiles.Count() > 0;
+
+EndProcedure
+
+&AtClient
+Procedure DeleteHookedQueries_Command(Command)
+
+	PutEditingQuery();
+
+	arQueryFiles = GetFileListAtServerFromTempFilesDir("*." + Object.LockedQueriesExtension);
+
+	Status(NStr("ru = 'Удаление временных файлов...'; en = 'Deleting temporary files...'"), 100);
+	DeleteFilesAtServer(arQueryFiles);
+	ShowConsoleMessageBox(NStr("ru = 'Удалено перехваченных запросов: '; en = 'Hooked queries deleted: '") + arQueryFiles.Count());
+
+EndProcedure
+
+&AtClient
+Procedure QueryWizard_Command(Command)
+
+	strQueryText = QueryText;
+	QueryComments_SaveSourceQueryData(strQueryText);
+
+	If ValueIsFilled(strQueryText) Then
+		QueryWizard = GetQueryWizard(strQueryText);
+		If QueryWizard = Undefined Then
+			Return;
+		EndIf;
+	Else
+		QueryWizard = New QueryWizard;
+	EndIf;
+
+#If ThickClientManagedApplication Then
+	If QueryWizard.DoModal() Then
+		strQueryText = QueryWizard.Text;
+		QueryComments_Restore(strQueryText);
+		QueryText = strQueryText;
+		PutEditingQuery();
+		Modified = True;
+	EndIf;
+#Else
+
+		If QueryInWizard > 0 Then
+			Query_SetInWizard(QueryInWizard, False);
+			QueryInWizard = -1;
+		EndIf;
+
+		CurrentQuery = QueryBatch_CurrentQuery();
+		Query_SetInWizard(CurrentQuery, True);
+		ExtractEditingQuery();
+		QueryWizard.Show(
+			New NotifyDescription("QueryWizard_CloseWizardNotification_Command", ThisForm,
+			CurrentQuery));
+			
+#EndIf
+
+EndProcedure
+
+
+&AtClient
+Procedure UT_EditValue(Command)
+	FormItem=Items.QueryResult;
+	If ResultKind = "tree" Then
+		FormItem=Items.QueryResultTree;
+	EndIf;
+	
+	CurData=FormItem.CurrentData;
+	If CurData = Undefined Then
+		Return;
+	EndIf;
+	CurColumn=FormItem.CurrentItem;
+
+	ColumnName=StrReplace(CurColumn.Name, FormItem.Name, "");
+
+	ColumnValue=CurData[ColumnName];
+
+	Try
+		CommonClientModule=Eval("UT_CommonClient");
+	Except
+		CommonClientModule=Undefined;
+	EndTry;
+
+	If CommonClientModule = Undefined Then
+		Return;
+	EndIf;
+
+	If ColumnValue = "<ValueStorage>" Then
+		CommonClientModule.EditValueStorage(ThisObject, CurData[ColumnName + ContainerAttributeSuffix].Storage);
+	Else
+		CommonClientModule.EditObject(ColumnValue);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure UT_EditPropertyRowValue(Command)
+	CurData=Items.UT_RowProperties.CurrentData;
+	If CurData = Undefined Then
+		Return;
+	EndIf;
+	
+	If CurData.Value = "<ValueStorage>" Then
+		ResultFormItem=Items.QueryResult;
+		If ResultKind = "tree" Then
+			ResultFormItem=Items.QueryResultTree;
+		EndIf;
+		ResultCurData=ResultFormItem.CurrentData;
+		If ResultCurData = Undefined Then
+			Return;
+		EndIf;
+		
+		UT_CommonClient.EditValueStorage(ThisObject, ResultCurData[CurData.Property	
+		+ ContainerAttributeSuffix].Storage);
+			
+	Else
+		UT_CommonClient.EditObject(CurData.Value);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure ExecuteQuery_Command(Command)
+	If Items.QueryBatch.CurrentRow <> Undefined Then
+		ExecuteQuery(True);
+	EndIf;
+EndProcedure
+
+#Область ПакетЗапросов
+
+&AtClient
+Procedure QueryBatchAdd_Command(Command)
+	Items.QueryBatch.CurrentRow = QueryBatch.GetItems().Add().GetID();
+	Items.QueryBatch.CurrentItem = Items.QueryListQuery;
+	Items.QueryBatch.ChangeRow();
+	Modified = True;
+EndProcedure
+
+&AtClient
+Procedure QueryBatchCopy_Command(Command)
+
+	Row = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
+	NewRow = Row.GetItems().Add();
+	FillPropertyValues(NewRow, Row, ,
+		"InWizard, Info, ResultReturningRowsCount, ResultRowCount, RowCountDifference");
+	NewRow.Name = NStr("ru = 'Копия '; en = 'Copy '") + NewRow.Name;
+	Items.QueryBatch.CurrentRow = NewRow.GetID();
+	Items.QueryBatch.CurrentItem = Items.QueryListQuery;
+	Items.QueryBatch.ChangeRow();
+
+	Modified = True;
+
+EndProcedure
+
+&AtClient
+Procedure QueryBatchLevelUp_Command(Command)
+
+	Row = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
+	Parent = Row.GetParent();
+
+	If Parent <> Undefined Then
+		ParentParent = Parent.GetParent();
+		If ParentParent = Undefined Then
+			InsertIndex = QueryBatch.GetItems().IndexOf(Parent) + 1;
+		Else
+			InsertIndex = ParentParent.GetItems().IndexOf(Parent) + 1;
+		EndIf;
+		NewRow = MoveTreeRow(QueryBatch, Row, InsertIndex, ParentParent);
+		Items.QueryBatch.CurrentRow = NewRow.GetID();
+	EndIf;
+
+	Modified = True;
+
+EndProcedure
+
+&AtClient
+Procedure QueryBatchNew_Command(Command)
+
+	If Not SaveWithQuestion("New") Then
+		Return;
+	EndIf;
+
+	QueryBatch_New();
+
+EndProcedure
+
+&AtClient
+Procedure LoadQueryBatch_Command(Command)
+
+	If Not SaveWithQuestion("Load") Then
+		Return;
+	EndIf;
+
+	LoadQueryBatch();
+
+EndProcedure
+
+&AtClient
+Procedure QueryBatchSave_Command(Command)
+	SaveQueryBatch(New Structure);
+EndProcedure
+
+&AtClient
+Procedure QueryBatchSaveAs_Command(Command)
+	QueryBatchSaveAs(New Structure);
+EndProcedure
+
+
+
+#КонецОбласти
+
+&AtClient
+Procedure FillParametersFromQuery_Command(Command)
+	stError = ParametersFillFromQueryAtServer();
+
+	If ValueIsFilled(stError) Then
+
+		ShowConsoleMessageBox(stError.ErrorDescription);
+		CurrentItem = Items.QueryText;
+
+		If ValueIsFilled(stError.Row) Then
+			Items.QueryText.SetTextSelectionBounds(stError.Row, stError.Column, stError.Row,
+				stError.Column);
+		EndIf;
+
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure FillFromXML_Command(Command)
+	strError = FillFromXMLAtServer();
+	If ValueIsFilled(strError) Then
+		ShowConsoleMessageBox(strError);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure ClearParameters_Command(Command)
+	QueryParameters.Clear();
+EndProcedure
+
+
+&AtClient
+Procedure QueryParametersNextToText_Command(Command)
+	Items.QueryParametersNextToText.Check = Not Items.QueryParametersNextToText.Check;
+	SavedStates_Save("QueryParametersNextToText", Items.QueryParametersNextToText.Check);
+	QueryParametersNextToTextAtServer();
+EndProcedure
+
+&AtClient
+Procedure TechnologicalLog_Command(Command)
+	If Items.TechnologicalLog.Check Then
+		TechnologicalLog_Disable();
+		Items.TechnologicalLog.Check = False;
+		Items.QueryPlan.Visible = False;
+		Items.QueryResultBatchInfo.CellHyperlink = False;
+		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
+		AttachIdleHandler("TechnologicalLog_WaitingForDisable",
+			TechLogSwitchingPollingPeriodOption, True);
+	Else
+		TechnologicalLog_Enable();
+		TechLogEnabledAndRunning = False;
+		Items.TechnologicalLog.Check = True;
+		TechnologicalLog_EnablingIndication(False);
+		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
+		AttachIdleHandler("TechnologicalLog_WaitingForEnable",
+			TechLogSwitchingPollingPeriodOption, True);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure QueryPlan_Command(Command)
+
+	CurrentRow = Items.QueryResultBatch.CurrentRow;
+	If CurrentRow = Undefined Then
+		Return;
+	EndIf;
+
+	OpeningParameters = New Structure("Object, QueryResultAddress, ResultInBatch", Object,
+		QueryResultAddress, QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
+		CurrentRow)) + 1);
+	Form = OpenForm(FormFullName("QueryPlanForm"), OpeningParameters, ThisForm, False, , , ,
+		FormWindowOpeningMode.LockOwnerWindow);
+
+	If Form = Undefined Then
+		ShowConsoleMessageBox(NStr("ru = 'Не удалось получить информацию о запросе'; en  ='Cannot get query info.'"));
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure AddLineFeedsToText_Command(Command)
+	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
+		AddLineFeedsToText(Items.QueryText);
+	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
+		AddLineFeedsToText(Items.AlgorithmText);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure RemoveLineFeedsFromText_Command(Command)
+	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
+		RemoveLineFeedsFromText(Items.QueryText);
+	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
+		RemoveLineFeedsFromText(Items.AlgorithmText);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure AddCommentsToText_Command(Command)
+	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
+		AddCommentsToText(Items.QueryText);
+	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
+		AddCommentsToText(Items.AlgorithmText);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure RefreshResult_Command(Command)
+	If ExtractResult() > 0 Then
+		ResultRecordStructure_Expand();
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure QueryResultTreeExpandAll_Command(Command)
+	For Each TreeItem In QueryResultTree.GetItems() Do
+		Items.QueryResultTree.Expand(TreeItem.GetID(), True);
+	EndDo;
+EndProcedure
+
+&AtClient
+Procedure QueryResultTreeCollapseAll_Command(Command)
+	For Each TreeItem In QueryResultTree.GetItems() Do
+		Items.QueryResultTree.Collapse(TreeItem.GetID());
+	EndDo;
+EndProcedure
+
+&AtClient
+Procedure ResultToSpreadsheetDocument_Command(Command)
+
+	OpeningParameters = New Structure("Object, QueryResultAddress, ResultInBatch, QueryName, ResultKind",
+		Object, QueryResultAddress, ResultInBatch, ResultQueryName, ResultKind);
+	SpreadsheetDocumentForm = OpenForm(FormFullName("SpreadsheetDocumentForm"), OpeningParameters, ThisForm,
+		False);
+
+	If Not SpreadsheetDocumentForm.Initialized Then
+		//Refresh opened form
+		Notify("Refresh", OpeningParameters);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure ShowHideResultPanelTotals_Command(Command)
+	fShowTotals = Not Items.ShowHideResultPanelTotals.Check;
+	Items.ShowHideResultPanelTotals.Check = fShowTotals;
+	Items.QueryResult.Footer = fShowTotals;
+EndProcedure
+
+&НаКлиенте
+Процедура Команда_РезультатЗапросаТаблицаСортироватьУбыв(Команда)
+	СортироватьРезультатЗапросаТаблица("Убыв");
+КонецПроцедуры
+
+&НаКлиенте
+Процедура Команда_РезультатЗапросаТаблицаСортироватьВозр(Команда)
+	 СортироватьРезультатЗапросаТаблица("Возр");
+КонецПроцедуры
+
+&НаКлиенте
+Процедура Команда_РезультатЗапросаДеревоСортироватьВозр(Команда)
+	СортироватьРезультатЗапросаДерево("Возр");
+КонецПроцедуры
+
+&НаКлиенте
+Процедура Команда_РезультатЗапросаДеревоСортироватьУбыв(Команда)
+	СортироватьРезультатЗапросаДерево("Убыв");
+КонецПроцедуры
+
+&AtClient
+Procedure ExecuteDataProcessor_Command(Command)
+
+	If Not ValueIsFilled(ResultInBatch) Or Number(ResultInBatch) <= 0 Then
+		ShowConsoleMessageBox(NStr("ru = 'Выполнение невозможно - результат запроса отсутствует'; en = 'Query result not found.'"));
+		Return;
+	EndIf;
+
+	If Not IsBlankString(BackgroundJobID) Then
+		//Interrupting
+		InterruptBackgroundJob();
+		ShowBackgroundJobState();
+		ShowConsoleMessageBox(NStr("ru = 'Выполнение прервано пользователем!'; en = 'Execution was interrupted by user.'"));
+		Return;
+	EndIf;
+
+	If CodeExecutionMethod = 0 Then
+		stResult = ExecuteAlgorithm(AlgorithmCurrentText());
+	ElsIf CodeExecutionMethod = 1 Then
+		stResult = ExecuteAlgorithmLineByLine(QueryResultAddress, ResultInBatch, AlgorithmCurrentText());
+	ElsIf CodeExecutionMethod = 2 Then
+		stResult = ExecuteAlgorithmLineByLineIndication();
+	ElsIf CodeExecutionMethod = 3 Then
+		//execution in background
+		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), False);
+	ElsIf CodeExecutionMethod = 4 Then
+		//line-by-line execution in background with indication
+		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), True);
+	Else
+		stResult = New Structure("Success, ErrorDescription", False, NStr("ru = 'Неверный метод исполнения кода'; en = 'Code execution method is incorrect.'"));
+	EndIf;
+
+	If CodeExecutionMethod = 3 Or CodeExecutionMethod = 4 Then
+		If stResult.Success Then
+			Items.ExecuteDataProcessor.Title = "Interrupt";
+			//Pictures = GetFromTempStorage(Object.Pictures);
+			//Items.ExecuteDataProcessor.Picture = Pictures.ExecutionPogress;
+			Items.ExecuteDataProcessor.Picture = PictureLib.Stop;
+			ShowBackgroundJobState();
+		EndIf;
+	EndIf;
+
+	If Not stResult.Success Then
+		ShowConsoleMessageBox(stResult.ErrorDescription);
+	EndIf;
+
+EndProcedure
+
+&AtClient
+Procedure InsertPredefinedValue_Command(Command)
+	Var BeginLine, BeginColumn, EndLine, EndColumn;
+
+	Items.QueryText.GetTextSelectionBounds(BeginLine, BeginColumn, EndLine, EndColumn);
+	NotifyParameters = New Structure("BeginLine, BeginColumn, EndLine, EndColumn",
+		BeginLine, BeginColumn, EndLine, EndColumn);
+	CloseFormNotifyDescription = New NotifyDescription("ChoicePredefinedCompletion",
+		ThisForm, NotifyParameters);
+	OpeningParameters = New Structure("Object, FormData, QueryText, BeginLine, BeginColumn, EndLine, EndColumn",
+		Object, FormDataChoicePredefined, QueryText, BeginLine, BeginColumn, EndLine,
+		EndColumn);
+
+	OpenForm(FormFullName("ChoicePredefined"), OpeningParameters, ThisForm, True, , ,
+		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+//&AtServer
+//Procedure GetResultValueTable(Command)
+//EndProcedure
+
+&AtClient
+Procedure ResultToParameter_Command(Command)
+
+	vtTable = ExtractResultAsContainer();
+
+	NotifyParameters = New Structure("Table, Row, Field", "QueryParameters", Undefined, "ValueType");
+	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
+		NotifyParameters);
+	OpeningParameters = New Structure("Object, ValueType, ContainerType, Name, EnabledInQuery, ToParameter", Object,
+		vtTable, 3, ResultQueryName, False, True);
+	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
+		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+&AtClient
+Procedure AlgorithmHelp_Command(Command)
+	CurrentLanguage = Upper(CurrentSystemLanguage());
+	OpeningParameters = New Structure("TemplateName, Title", "AlgorithmHelp_"+CurrentLanguage, NStr("ru = 'Обработка результата запроса кодом'; en = 'Query result processing by code'"));
+	OpenForm(FormFullName("Help"), OpeningParameters, ThisForm);
+EndProcedure
+&AtClient
+Procedure GetCodeWithParameters_Command(Command)
+
+	If Items.QueryBatch.CurrentData = Undefined Then
+		Return;
+	EndIf;
+	
+	//Trying to use query name. If it is incorrect, name will be "Query".
+	QueryName = Items.QueryBatch.CurrentData.Name;
+	If Not NameIsCorrect(QueryName) Then
+		QueryName = "Query";
+	EndIf;
+
+	OpeningParameters = New Structure("
+										|Object,
+										|QueryName,
+										|QueryText,
+										|QueryParameters,
+										|AlgorithmText,
+										|CodeExecutionMethod,
+										|Title,
+										|Content", Object, QueryName, QueryText,
+		QueryParameters_GetAsString(), AlgorithmCurrentText(), CodeExecutionMethod, 
+		NStr("ru = 'Код для выполнения запроса на встроенном языке 1С'; en = 'Code for executing the query by 1C:Enterprise language'"));
+
+	OpenForm(FormFullName("CodeForm"), OpeningParameters, ThisForm, False, , , ,
+		FormWindowOpeningMode.LockOwnerWindow);
+
+EndProcedure
+
+&AtClient
+Procedure ShowHideQueryResultBatch_Command(Command)
+	fQueryResultBatchVisible = Not Items.ShowHideQueryResultBatch.Check;
+	Items.ShowHideQueryResultBatch.Check = fQueryResultBatchVisible;
+	Items.QueryResultBatch.Visible = fQueryResultBatchVisible;
+	Items.ResultInBatchGroup.Visible = Not fQueryResultBatchVisible;
+	Object.SavedStates.Insert("QueryResultBatchVisible", fQueryResultBatchVisible);
+EndProcedure
+
+&AtClient
+Procedure InsertMacroColumn(Command)
+	UT_CodeEditorClient.InsertQueryEditorMacroColumn(ThisObject, "Query");
+	
+EndProcedure
+
+#EndRegion
+
+#Область СлужебныеПроцедурыИФункции
+
+&AtServer
+Procedure UT_FillWithDebugData()
+	If Not Parameters.Property("DebugData") Then
+		Return;
+	EndIf;
+
+	If Object.SavedStates = Undefined Then
+		Object.SavedStates = New Structure;
+	EndIf;
+
+	Modified = False;
+
+	AutoSaveIntervalOption = 60;
+	SaveCommentsOption = True;
+	AutoSaveBeforeQueryExecutionOption = True;
+	AlgorithmExecutionUpdateIntervalOption = 1000;
+	Object.OptionProcessing__ = True;
+	Object.AlgorithmExecutionUpdateIntervalOption = 1000;
+
+	DataProcessorObject=FormAttributeToValue("Object");
+
+	UT_Debug=True;
+
+	DebugData=GetFromTempStorage(Parameters.DebugData);
+
+	TreeRows=QueryBatch.GetItems();
+
+	NewRow=TreeRows.Add();
+	NewRow.Name=NStr("ru = 'Отладка'; en = 'Debug'");
+	NewRow.QueryText=DebugData.Text;
+	NewRow.QueryParameters=New ValueList;
+
+	If DebugData.Property("Parameters") Then
+		For Each CurParameter In DebugData.Parameters Do
+
+			NewParameter=New Structure;
+			NewParameter.Insert("Name", CurParameter.Key);
+			NewParameter.Insert("ContainerType", GetValueFormCode(CurParameter.Value));
+
+			NewParameter.Insert("Container", DataProcessorObject.Container_SaveValue(CurParameter.Value));
+
+			If NewParameter.ContainerType = 2 Then
+				TypeArray=New Array;
+
+				For Each ArrayValue In CurParameter.Value Do
+					CurType=TypeOf(ArrayValue);
+					If TypeArray.Find(CurType) = Undefined Then
+						TypeArray.Add(CurType);
+					EndIf;
+				EndDo;
+
+				NewParameter.Insert("ValueType", New TypeDescription(TypeArray));
+				NewParameter.Insert("Value", NewParameter.Container.Presentation);
+			ElsIf NewParameter.ContainerType = 1 Then
+				TypeArray=New Array;
+
+				For Each ListItem In CurParameter.Value Do
+					CurType=TypeOf(ListItem.Value);
+					If TypeArray.Find(CurType) = Undefined Then
+						TypeArray.Add(CurType);
+					EndIf;
+				EndDo;
+
+				NewParameter.Insert("ValueType", New TypeDescription(TypeArray));
+				NewParameter.Insert("Value", NewParameter.Container.Presentation);
+			ElsIf NewParameter.ContainerType = 3 Then
+				NewParameter.Insert("ValueType", NStr("ru = 'Талица значений'; en = 'Value table'"));
+				NewParameter.Insert("Value", NewParameter.Container.Presentation);
+			Else
+				NewParameter.Insert("ValueType", TypeDescriptionByType(TypeOf(CurParameter.Value)));
+				NewParameter.Insert("Value", NewParameter.Container);
+
+			EndIf;
+			NewRow.QueryParameters.Add(NewParameter);
+		EndDo;
+	EndIf;
+
+	If DebugData.Property("TempTables") Then
+		NewRow.TempTables=New ValueList;
+
+		For Each KeyValue In DebugData.TempTables Do
+			TempTable=New Structure;
+			TempTable.Вставить("Name", KeyValue.Key);
+			TempTable.Вставить("Container", DataProcessorObject.Container_SaveValue(KeyValue.Value));
+			TempTable.Вставить("Value", TempTable.Container.Presentation);
+
+			NewRow.TempTables.Add(TempTable);
+		EndDo;
+	EndIf;
+
+EndProcedure
+
+#Область СобытияФормы
+
+#EndRegion
+#EndRegion
 
 &AtClient
 Function GetAutoSaveFileName(FileName)
@@ -946,7 +2165,7 @@ Procedure ResultRecordStructure_ExpandChildNodes(Row)
 
 	DataProcessor = FormAttributeToValue("Object");
 
-	TreeRow = ResultRecordStructure.FiindByID(Row);
+	TreeRow = ResultRecordStructure.FindByID(Row);
 
 	For Each StructureItem In TreeRow.GetItems() Do
 
@@ -2950,50 +4169,7 @@ Procedure AutoSaveHandler() Export
 
 EndProcedure
 
-&AtClient
-Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
 
-#If WebClient Then
-	If Not FileExtensionConnected Then
-		Return;
-	EndIf;
-#EndIf
-
-	If Exit = True Then
-		
-		// Server calls are not allowed.
-
-		WarningText = "";
-		If Modified Then
-			WarningText = NStr("ru = 'В консоли запросов 9000 имеется не сохраненный пакет запросов! '; en = 'Query console 9000 contains an unsaved query batch.'");
-			Cancel = True;
-		EndIf;
-
-		If Items.TechnologicalLog.Check Then
-			WarningText = WarningText + NStr("ru = 'Технологический журнал не выключен! '; en = 'technological log is not disabled.'");
-			Cancel = True;
-		EndIf;
-
-		If Not ValueIsFilled(WarningText) Then
-			WarningText = NStr("ru = 'Для сохранения состояний консоль запросов 9000 рекомендуется закрывать вручную.'; en = 'For saving states it is recommended to close query console 9000 manually'");
-			Cancel = True;
-		EndIf;
-
-	Else
-		
-		QueryBatch_Save( , StateAutoSaveFileName, True);
-
-		If Not SaveWithQuestion("Completion") Then
-			Cancel = True;
-		EndIf;
-
-		If Not Cancel And Items.TechnologicalLog.Check Then
-			TechnologicalLog_Command(Undefined);
-		EndIf;
-
-	EndIf;
-
-EndProcedure
 
 #EndRegion
 
@@ -3047,132 +4223,15 @@ Procedure ProcessParameterNameChange(NewRow, CancelEditing, Cancel)
 
 EndProcedure
 
-&AtClient
-Procedure QueryParametersBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
 
-	ProcessParameterNameChange(NewRow, CancelEdit, Cancel);
 
-EndProcedure
 
-//&AtClient
-//Procedure QueryParametersOnStartEdit(Item, NewRow, Clone)
-//EndProcedure
 
-&AtClient
-Procedure QueryBatchOnEditEnd(Item, NewRow, CancelEdit)
-	PreviousValueParameterName = "";
-EndProcedure
 
-&AtClient
-Procedure QueryBatchBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
 
-	QueryName = Item.CurrentData.Name;
 
-	Row = FindInTree(QueryBatch, "Name", QueryName, Item.CurrentRow);
-	If Row <> Undefined Then
-		ShowConsoleMessageBox(NStr("ru = 'Запрос с таким именем уже есть! Введите другое имя.'; en = 'This query name already exists. Please enter another name.'"));
-		Cancel = True;
-		Return;
-	EndIf;
 
-EndProcedure
 
-&AtClient
-Procedure QueryBatchOnActivateRow(Item)
-
-	CurrentData = Items.QueryBatch.CurrentData;
-
-	If Items.QueryBatch.CurrentRow = EditingQuery Then
-		Return;
-	EndIf;
-
-	If CurrentData <> Undefined And Not CurrentData.Initialized Then
-		InitializeQuery(Items.QueryBatch.CurrentData);
-		ExtractEditingQuery( , False);
-	Else
-		ExtractEditingQuery();
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure QueryBatchSelection(Item, SelectedRow, Field, StandardProcessing)
-	ExecuteQuery(False);
-	StandardProcessing = False;
-EndProcedure
-
-&AtClient
-Procedure QueryTextOnChange(Item)
-	PutEditingQuery();
-EndProcedure
-
-&AtClient
-Procedure QueryParametersOnChange(Item)
-	PutEditingQuery();
-EndProcedure
-
-&AtClient
-Procedure QueryParametersValueStartChoice(Item, ChoiceData, StandardProcessing)
-
-	CurrentData = Item.Parent.CurrentData;
-
-	If CurrentData.ContainerType > 0 Then
-
-		StandardProcessing = False;
-		NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
-			Item.Parent.CurrentRow, "Container");
-		CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
-			ThisForm, NotifyParameters);
-		OpeningParameters = New Structure("Object, ValueType, Title, Value, ContainerType", Object,
-			CurrentData.ValueType, CurrentData.Name, CurrentData.Container, CurrentData.ContainerType);
-
-		If CurrentData.ContainerType = 3 Then
-			EditingFormName = "EditTable";
-		Else
-			EditingFormName = "PickupToList";
-		EndIf;
-
-		OpenForm(FormFullName(EditingFormName), OpeningParameters, ThisForm, False, , ,
-			CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
-	ElsIf TypeOf(CurrentData.Container) = Type("Structure") Then
-
-		If CurrentData.Container.Type = "PointInTime" Or CurrentData.Container.Type = "Boundary" Then
-			StandardProcessing = False;
-			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
-				Item.Parent.CurrentRow, "Container");
-			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
-				ThisForm, NotifyParameters);
-			OpeningParameters = New Structure("Object, Value", Object, CurrentData.Container);
-			OpenForm(FormFullName("EditPointInTimeBoundary"), OpeningParameters, ThisForm, False, , ,
-				CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-		ElsIf CurrentData.Container.Type = "Type" Then
-			StandardProcessing = False;
-			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
-				Item.Parent.CurrentRow, "ContainerAsType");
-			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
-				ThisForm, NotifyParameters);
-			OpeningParameters = New Structure("Object, ValueType, ContainerType", Object, CurrentData.Container,
-				CurrentData.ContainerType);
-			OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
-				CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-		EndIf;
-
-	Else
-		If TypeOf(CurrentData.Value) = Тип("UUID") Then
-			StandardProcessing = False;
-			NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
-				Item.Parent.CurrentRow, "Value");
-			CloseFormNotifyDescription = New NotifyDescription("RowEditEnd",
-				ThisForm, NotifyParameters);
-			OpeningParameters = New Structure("Object, Value", Object, CurrentData.Value);
-			OpenForm(FormFullName("EditUUID"), OpeningParameters, ThisForm,
-				True, , , CloseFormNotifyDescription,
-				FormWindowOpeningMode.LockOwnerWindow);
-		EndIf;
-	EndIf;
-
-EndProcedure
 
 &AtClient
 Procedure SetValueInputParameters()
@@ -3199,7 +4258,7 @@ Procedure SetValueInputParameters()
 			Items.QueryParametersValue.ChooseType = False;
 			Items.QueryParametersValue.ChoiceButtonPicture = PictureLib.Change;
 			Items.QueryParametersValue.TextEdit = False;
-			Items.QueryParametersValue.TypeRestriction = New TypeDescription("Строка");
+			Items.QueryParametersValue.TypeRestriction = New TypeDescription("String");
 
 		Else
 
@@ -3232,10 +4291,7 @@ Procedure SetValueInputParameters()
 
 EndProcedure
 
-&AtClient
-Procedure QueryParametersOnActivateRow(Item)
-	SetValueInputParameters();
-EndProcedure
+
 
 &AtClient
 Function AddParameterWithNameCheck(ParameterName)
@@ -3321,126 +4377,6 @@ Procedure RowEditEnd(Result, AdditionalParameters) Export
 EndProcedure
 
 &AtClient
-Procedure QueryParametersParameterTypeStartChoice(Item, ChoiceData, StandardProcessing)
-
-	StandardProcessing = False;
-	CurrentData = Items.QueryParameters.CurrentData;
-
-	If CurrentData.ContainerType < 3 Then
-		ValueType = CurrentData.ValueType;
-	Else
-		ValueType = CurrentData.Containet;
-	EndIf;
-
-	NotifyParameters = New Structure("Table, Row, Field", "QueryParameters",
-		Items.QueryParameters.CurrentRow, "ValueType");
-	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
-		NotifyParameters);
-	OpeningParameters = New Structure("Object, ValueType, ContainerType, Name, EnabledInQuery", Object,
-		ValueType, CurrentData.ContainerType, CurrentData.Name, True);
-	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
-		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-&AtClient
-Procedure QueryParametersValueOnChange(Item)
-
-	CurrentData = Items.QueryParameters.CurrentData;
-
-	If CurrentData.ContainerType = 0 Then
-
-		CurrentData.Container = CurrentData.Value;
-		If Not ValueIsFilled(CurrentData.ValueType) Then
-			CurrentData.ValueType = TypeDescriptionByType(TypeOf(CurrentData.Value));
-		EndIf;
-
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure TempTablesValueStartChoice(Item, ChoiceData, StandardProcessing)
-
-	StandardProcessing = False;
-
-	CurrentData = Items.TempTables.CurrentData;
-
-	NotifyParameters = New Structure("Table, Row, Field", "TempTables",
-		Items.TempTables.CurrentRow, "Container");
-	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
-		NotifyParameters);
-	OpeningParameters = New Structure("Object, ValueType, Title, Value, ContainerType", Object, ,
-		CurrentData.Name, CurrentData.Container, 3);
-
-	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, False, , ,
-		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-&AtClient
-Procedure QueryBatchBeforeAddRow(Item, Cancel, Clone, Parent, Folder, Parameter)
-
-	If Clone Then
-
-		Cancel = True;
-
-		CurrentRow = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
-		Parent = CurrentRow.GetParent();
-		If Parent = Undefined Then
-			Parent = CurrentRow;
-		EndIf;
-
-		NewRow = Parent.GetItems().Add();
-		FillPropertyValues(NewRow, CurrentRow);
-		Items.QueryBatch.CurrentRow = NewRow.GetID();
-
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure SaveCommentsOptionOnChange(Item)
-	Modified = True;
-EndProcedure
-
-&AtClient
-Procedure AutoSaveIntervalOptionOnChange(Item)
-	AttachAutoSaveHandler();
-	Modified = True;
-EndProcedure
-
-&AtClient
-Procedure QueryResultSelection(Item, SelectedRow, Field, StandardProcessing)
-
-	ColumnName = QueryResultColumnsMap[Field.Name];
-
-	Value = Item.CurrentData[ColumnName];
-
-	If QueryResultContainerColumns.Property(ColumnName) Then
-
-		Container = ThisForm[Item.Name].FindByID(Item.CurrentRow)[ColumnName
-			+ ContainerAttributeSuffix];
-
-		If Container.Type = "ValueTable" Then
-			OpeningParameters = New Structure("Object, Title, Value, ReadOnly", Object, ColumnName,
-				Container, True);
-			OpenForm(FormFullName("EditTable"), OpeningParameters, ThisForm, False, , , ,
-				FormWindowOpeningMode.LockOwnerWindow);
-		ElsIf Container.Type = Undefined Then
-			//Container is empty. Value is contained in the main field.
-			ShowValue( , Value);
-		Else
-			ShowValue( , Value.Presentation);
-		EndIf;
-
-	Else
-		ShowValue( , Value);
-	EndIf;
-
-EndProcedure
-
-&AtClient
 Procedure ResultInBatchOnChange(Item)
 	If ExtractResult(ResultInBatch) > 0 Then
 		ResultRecordStructure_Expand();
@@ -3455,15 +4391,6 @@ Procedure SetItemsStates()
 
 EndProcedure
 
-&AtClient
-Procedure OutputLinesLimitTopEnabledOptionOnChange(Item)
-	SetItemsStates();
-EndProcedure
-
-&AtClient
-Procedure OutputLinesLimitEnabledOptionOnChange(Item)
-	SetItemsStates();
-EndProcedure
 
 &AtClient
 Procedure QueryParametersValueChoiceProcessing(Item, SelectedValue, StandardProcessing)
@@ -3484,66 +4411,6 @@ Procedure QueryParametersValueChoiceProcessing(Item, SelectedValue, StandardProc
 EndProcedure
 
 &AtClient
-Procedure QueryParametersValueTextEditEnd(Item, Text, ChoiceData, DataGetParameters,
-	StandardProcessing)
-	CurrentData = Items.QueryParameters.CurrentData;
-	If TypeOf(CurrentData.Container) = Type("Structure") And CurrentData.Container.Type = "UUID" Then
-		Try
-			Value = New UUID(Text);
-		Except
-			Raise NStr("ru = 'Не корректное значение уникального идентификатора'; en = 'UUID is incorrect.'");
-		EndTry;
-		QueryParameters_SaveValue(Items.QueryParameters.CurrentRow, Value);
-		StandardProcessing = False;
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure QueryParametersValueClearing(Item, StandardProcessing)
-
-	CurrentData = Items.QueryParameters.CurrentData;
-
-	If CurrentData.ContainerType = 0 Then
-		nTypeCount = CurrentData.ValueType.Types().Count();
-		If nTypeCount = 0 Or nTypeCount > 1 Then
-			CurrentData.Value = Undefined;
-		Else
-			CurrentData.Value = CurrentData.ValueType.AdjustValue(Undefined);
-		EndIf;
-	ElsIf CurrentData.ContainerType = 3 Then
-	EndIf;
-
-	SetValueInputParameters();
-
-EndProcedure
-
-&AtClient
-Procedure OptionProcessing__OnChange(Item)
-	Modified = True;
-EndProcedure
-
-&AtClient
-Procedure AlgorithmExecutionUpdateIntervalOptionOnChange(Item)
-	Modified = True;
-EndProcedure
-
-&AtClient
-Procedure QueryResultBatchOnActivateRow(Item)
-	AttachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow", 0.01, True);
-EndProcedure
-
-&AtClient
-Procedure ResultRecordStructureBeforeExpand(Item, Row, Cancel)
-
-	TreeRow = ResultRecordStructure.FindByID(Row);
-
-	If Not TreeRow.ChildNodesExpanded Then
-		ResultRecordStructure_ExpandChildNodes(Row);
-	EndIf;
-
-EndProcedure
-
-&AtClient
 Function ResultRecordStructureGetInsertText(Row)
 
 	arValueText = New Array;
@@ -3557,54 +4424,6 @@ Function ResultRecordStructureGetInsertText(Row)
 	Return StrConcat(arValueText, ".");
 
 EndFunction
-
-&AtClient
-Procedure ResultRecordStructureDragStart(Item, DragParameters, Perform)
-
-	arParts = New Array;
-	For Each Value In DragParameters.Value Do
-		arParts.Add(ResultRecordStructureGetInsertText(Value));
-	EndDo;
-
-	DragParameters.Value = StrConcat(arParts, ";");
-
-EndProcedure
-
-&AtClient
-Procedure ResultRecordStructureSelection(Item, SelectedRow, Field, StandardProcessing)
-	InsertTextInAlgorithmCursorPosition (ResultRecordStructureGetInsertText(SelectedRow));
-EndProcedure
-
-&AtClient
-Procedure QueryResultBatchSelection(Item, SelectedRow, Field, StandardProcessing)
-
-	If Item.CurrentItem.Name = "QueryResultBatchInfo" Then
-
-		DetachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow");
-		CurrentRow = Items.QueryResultBatch.CurrentRow;
-		If CurrentRow <> Undefined Then
-			If ExtractResult(QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
-				CurrentRow)) + 1) > 0 Then
-				ResultRecordStructure_Expand();
-			EndIf;
-		EndIf;
-
-		QueryPlan_Command(Undefined);
-
-	ElsIf Item.CurrentItem.Name = "QueryResultBatchName" Then
-
-		DetachIdleHandler("QueryResultBatchIdleHandlerOnActivateRow");
-		CurrentRow = Items.QueryResultBatch.CurrentRow;
-		If CurrentRow <> Undefined Then
-			If ExtractResult(QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
-				CurrentRow)) + 1) > 0 Then
-				ResultRecordStructure_Expand();
-			EndIf;
-		EndIf;
-
-	EndIf;
-
-EndProcedure
 
 &AtClient
 Procedure QueryResultBatchIdleHandlerOnActivateRow()
@@ -3903,27 +4722,9 @@ Procedure SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBegin
 
 EndProcedure
 
-&AtClient
-Procedure QueryBatchNew_Command(Command)
 
-	If Not SaveWithQuestion("New") Then
-		Return;
-	EndIf;
 
-	QueryBatch_New();
 
-EndProcedure
-
-&AtClient
-Procedure LoadQueryBatch_Command(Command)
-
-	If Not SaveWithQuestion("Load") Then
-		Return;
-	EndIf;
-
-	LoadQueryBatch();
-
-EndProcedure
 
 &AtClient
 Procedure SaveQueryBatch(Context)
@@ -3947,10 +4748,7 @@ Procedure SaveQueryBatchContinue(Result, Context) Export
 	QueryBatchSaveAs(Context);
 EndProcedure
 
-&AtClient
-Procedure QueryBatchSave_Command(Command)
-	SaveQueryBatch(New Structure);
-EndProcedure
+
 
 &AtClient
 Procedure QueryBatchSaveAs(Context)
@@ -3963,11 +4761,6 @@ Procedure QueryBatchSaveAs(Context)
 	NotifyDescription = New NotifyDescription("QueryBatchSaveAs_AfterChoosingFile", ThisForm, Context);
 	Dialog.Show(NotifyDescription);
 
-EndProcedure
-
-&AtClient
-Procedure QueryBatchSaveAs_Command(Command)
-	QueryBatchSaveAs(New Structure);
 EndProcedure
 
 &AtClient
@@ -4041,46 +4834,7 @@ Function GetQueryWizard(strQueryText)
 
 EndFunction
 
-&AtClient
-Procedure QueryWizard_Command(Command)
 
-	strQueryText = QueryText;
-	QueryComments_SaveSourceQueryData(strQueryText);
-
-	If ValueIsFilled(strQueryText) Then
-		QueryWizard = GetQueryWizard(strQueryText);
-		If QueryWizard = Undefined Then
-			Return;
-		EndIf;
-	Else
-		QueryWizard = New QueryWizard;
-	EndIf;
-
-#If ThickClientManagedApplication Then
-	If QueryWizard.DoModal() Then
-		strQueryText = QueryWizard.Text;
-		QueryComments_Restore(strQueryText);
-		QueryText = strQueryText;
-		PutEditingQuery();
-		Modified = True;
-	EndIf;
-#Else
-
-		If QueryInWizard > 0 Then
-			Query_SetInWizard(QueryInWizard, False);
-			QueryInWizard = -1;
-		EndIf;
-
-		CurrentQuery = QueryBatch_CurrentQuery();
-		Query_SetInWizard(CurrentQuery, True);
-		ExtractEditingQuery();
-		QueryWizard.Show(
-			New NotifyDescription("QueryWizard_CloseWizardNotification_Command", ThisForm,
-			CurrentQuery));
-
-#EndIf
-
-EndProcedure
 
 &AtClient
 Procedure QueryWizard_CloseWizardNotification_Command(strQueryText, CurrentQuery) Экспорт
@@ -4151,12 +4905,7 @@ Procedure ExecuteQuery(fUseSelection)
 
 EndProcedure
 
-&AtClient
-Procedure ExecuteQuery_Command(Command)
-	If Items.QueryBatch.CurrentRow <> Undefined Then
-		ExecuteQuery(True);
-	EndIf;
-EndProcedure
+
 
 &AtServer
 Function ParametersFillFromQueryAtServer()
@@ -4199,40 +4948,6 @@ Function ParametersFillFromQueryAtServer()
 EndFunction
 
 &AtClient
-Procedure FillParametersFromQuery_Command(Command)
-
-	stError = ParametersFillFromQueryAtServer();
-
-	If ValueIsFilled(stError) Then
-
-		ShowConsoleMessageBox(stError.ErrorDescription);
-		CurrentItem = Items.QueryText;
-
-		If ValueIsFilled(stError.Row) Then
-			Items.QueryText.SetTextSelectionBounds(stError.Row, stError.Column, stError.Row,
-				stError.Column);
-		EndIf;
-
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure FillFromXML_Command(Command)
-
-	strError = FillFromXMLAtServer();
-	If ValueIsFilled(strError) Then
-		ShowConsoleMessageBox(strError);
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure ClearParameters_Command(Command)
-	QueryParameters.Clear();
-EndProcedure
-
-&AtClient
 Procedure AddLineFeedsToText(TextItem)
 	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
 
@@ -4249,15 +4964,6 @@ Procedure AddLineFeedsToText(TextItem)
 	TextItem.SelectedText = ProcessingText.GetText();
 	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
 
-EndProcedure
-
-&AtClient
-Procedure AddLineFeedsToText_Command(Command)
-	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
-		AddLineFeedsToText(Items.QueryText);
-	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
-		AddLineFeedsToText(Items.AlgorithmText);
-	EndIf;
 EndProcedure
 
 &AtClient
@@ -4283,14 +4989,7 @@ Procedure RemoveLineFeedsFromText(TextItem)
 
 EndProcedure
 
-&AtClient
-Procedure RemoveLineFeedsFromText_Command(Command)
-	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
-		RemoveLineFeedsFromText(Items.QueryText);
-	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
-		RemoveLineFeedsFromText(Items.AlgorithmText);
-	EndIf;
-EndProcedure
+
 
 &AtClient
 Procedure AddCommentsToText(TextItem)
@@ -4311,14 +5010,7 @@ Procedure AddCommentsToText(TextItem)
 
 EndProcedure
 
-&AtClient
-Procedure AddCommentsToText_Command(Command)
-	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
-		AddCommentsToText(Items.QueryText);
-	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
-		AddCommentsToText(Items.AlgorithmText);
-	EndIf;
-EndProcedure
+
 
 &AtClient
 Procedure RemoveCommentsFromText(TextItem)
@@ -4341,232 +5033,6 @@ Procedure RemoveCommentsFromText(TextItem)
 	TextItem.SelectedText = ProcessingText.GetText();
 	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
 
-EndProcedure
-
-&AtClient
-Procedure RemoveCommentsFromText_Command(Command)
-	If Items.QueryGroupPages.CurrentPage = Items.QueryPage Then
-		RemoveCommentsFromText(Items.QueryText);
-	ElsIf Items.QueryGroupPages.CurrentPage = Items.AlgorithmPage Then
-		RemoveCommentsFromText(Items.AlgorithmText);
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure QuerySyntaxCheck_Command(Command)
-
-	If Items.QueryGroupPages.CurrentPage <> Items.QueryPage Then
-		Return;
-	EndIf;
-
-	Result = FormatQueryTextAtServer(QueryText);
-
-	If TypeOf(Result) <> Type("String") Then
-		ShowConsoleMessageBox(Result.ErrorDescription);
-		CurrentItem = Items.QueryText;
-		If ValueIsFilled(Result.Row) Then
-			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
-				Result.Column);
-		EndIf;
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure FormatQueryText_Command(Command)
-
-	If Items.QueryGroupPages.CurrentPage <> Items.QueryPage Then
-		Return;
-	EndIf;
-
-	strQueryText = QueryText;
-	QueryComments_SaveSourceQueryData(strQueryText);
-	Result = FormatQueryTextAtServer(strQueryText);
-
-	If TypeOf(Result) <> Type("String") Then
-
-		ShowConsoleMessageBox(Result.ErrorDescription);
-		CurrentItem = Items.QueryText;
-		If ValueIsFilled(Result.Row) Then
-			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
-				Result.Column);
-		EndIf;
-
-		Return;
-
-	EndIf;
-
-	QueryComments_Restore(Result);
-
-	CountText = New TextDocument;
-	CountText.SetText(QueryText);
-	Items.QueryText.SetTextSelectionBounds(1, 1, CountText.LineCount() + 1, 1);
-	Items.QueryText.SelectedText = Result;
-	PutEditingQuery();
-	Modified = True;
-
-EndProcedure
-
-&AtClient
-Procedure GetCodeForTrace_Command(Command)
-
-	If Object.ExternalDataProcessorMode Then
-
-		strDataProcessorServerFileName = GetDataProcessorServerFileName();
-		//"ExternalDataProcessors.Create(""" + стрDataProcessorServerFileName + """, False).SaveQuery(" + Format(Object.SessionID, "NG=0") + ", Query)";
-		strCode = StrTemplate("ExternalDataProcessors.Create(""%1"", False).SaveQuery(%2, Query)",
-			strDataProcessorServerFileName, Format(Object.SessionID, "NG=0"));
-	Else
-
-		strCode = StrTemplate("DataProcessors.%1.Create().SaveQuery(%2, Query)", Object.DataProcessorName, Format(
-			Object.SessionID, "NG=0"));
-
-	EndIf;
-
-	OpeningParameters = New Structure("
-									  |Object,
-									  |Title,
-									  |CodeToCopy,
-									  |Info", Object, NStr("ru = 'Код для перехвата запроса в отладчике'; en = 'Code to hook the query in the debugger.'"), strCode, NStr("ru = 'Для перехвата запроса в отладчике скопируйте и выполните по Shift+F9 указанный код.
-																											   |Консоль запросов должна быть запущена в той же информационной базе под тем же пользователем.
-																											   |Для получения запросов в консоль используйте команду на закладке текста запроса ""Перехват | Получить перехваченные запросы (Ctrl+F9)""
-																											   |В настройках пользователя должна быть отключена защита от опасных действий.'; 
-																											   |en = 'To hook the query in the debugger, copy and execute this code by Shift + F9.
-																											   |Query console must be launched in the same infobase under the same login.
-																											   |To receive queries to the console, use the ""Hooking | Get hooked queries (Ctrl+F9)"" command.
-																											   |""Unsafe operation protection"" user setting must be switched off.'"));
-
-	OpenForm(FormFullName("Info"), OpeningParameters, ThisForm, False, , , ,
-		FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-&AtClient
-Procedure GetHookedQueries_Command(Command)
-
-	strExplanation = NStr("ru = 'Загрузка перехваченных запросов'; en = 'Loading hooked queries'");
-
-	PutEditingQuery();
-
-	arQueryFiles = GetFileListAtServerFromTempFilesDir("*." + Object.LockedQueriesExtension);
-
-	j = 1;
-	For Each strFile In arQueryFiles Do
-		Status(NStr("ru = 'Загрузка перехваченного запроса: '; en = Loading hooked query: ") + j + NStr("ru = ' из '; en = ' out of '") + arQueryFiles.Count(), (j - 1) * 100
-			/ arQueryFiles.Count(), strExplanation);
-		NewQuery = QueryBatch.GetItems().Add();
-		Items.QueryBatch.CurrentRow = NewQuery.GetID();
-		FillFromFile(strFile);
-		PutEditingQuery();
-		j = j + 1;
-	EndDo;
-
-	Status(NStr("ru = 'Удаление временных файлов...'; en = 'Deleting temporary files...'"), 100, strExplanation);
-	DeleteFilesAtServer(arQueryFiles);
-	ShowConsoleMessageBox(NStr("ru = 'Загружено перехваченных запросов: '; en = 'Hooked queries loaded: '") + arQueryFiles.Count());
-	Modified = Modified Or arQueryFiles.Count() > 0;
-
-EndProcedure
-
-&AtClient
-Procedure DeleteHookedQueries_Command(Command)
-
-	PutEditingQuery();
-
-	arQueryFiles = GetFileListAtServerFromTempFilesDir("*." + Object.LockedQueriesExtension);
-
-	Status(NStr("ru = 'Удаление временных файлов...'; en = 'Deleting temporary files...'"), 100);
-	DeleteFilesAtServer(arQueryFiles);
-	ShowConsoleMessageBox(NStr("ru = 'Удалено перехваченных запросов: '; en = 'Hooked queries deleted: '") + arQueryFiles.Count());
-
-EndProcedure
-
-&AtClient
-Procedure QueryBatchAdd_Command(Command)
-	Items.QueryBatch.CurrentRow = QueryBatch.GetItems().Add().GetID();
-	Items.QueryBatch.CurrentItem = Items.QueryListQuery;
-	Items.QueryBatch.ChangeRow();
-	Modified = True;
-EndProcedure
-
-&AtClient
-Procedure QueryBatchLevelUp_Command(Command)
-
-	Row = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
-	Parent = Row.GetParent();
-
-	If Parent <> Undefined Then
-		ParentParent = Parent.GetParent();
-		If ParentParent = Undefined Then
-			InsertIndex = QueryBatch.GetItems().IndexOf(Parent) + 1;
-		Else
-			InsertIndex = ParentParent.GetItems().IndexOf(Parent) + 1;
-		EndIf;
-		NewRow = MoveTreeRow(QueryBatch, Row, InsertIndex, ParentParent);
-		Items.QueryBatch.CurrentRow = NewRow.GetID();
-	EndIf;
-
-	Modified = True;
-
-EndProcedure
-
-&AtClient
-Procedure QueryBatchCopy_Command(Command)
-
-	Row = QueryBatch.FindByID(Items.QueryBatch.CurrentRow);
-	NewRow = Row.GetItems().Add();
-	FillPropertyValues(NewRow, Row, ,
-		"InWizard, Info, ResultReturningRowsCount, ResultRowCount, RowCountDifference");
-	NewRow.Name = NStr("ru = 'Копия '; en = 'Copy '") + NewRow.Name;
-	Items.QueryBatch.CurrentRow = NewRow.GetID();
-	Items.QueryBatch.CurrentItem = Items.QueryListQuery;
-	Items.QueryBatch.ChangeRow();
-
-	Modified = True;
-
-EndProcedure
-
-&AtClient
-Procedure RefreshResult_Command(Command)
-	If ExtractResult() > 0 Then
-		ResultRecordStructure_Expand();
-	EndIf;
-EndProcedure
-
-&AtClient
-Procedure QueryResultTreeExpandAll_Command(Command)
-	For Each TreeItem In QueryResultTree.GetItems() Do
-		Items.QueryResultTree.Expand(TreeItem.GetID(), True);
-	EndDo;
-EndProcedure
-
-&AtClient
-Procedure QueryResultTreeCollapseAll_Command(Command)
-	For Each TreeItem In QueryResultTree.GetItems() Do
-		Items.QueryResultTree.Collapse(TreeItem.GetID());
-	EndDo;
-EndProcedure
-
-&AtClient
-Procedure ResultToSpreadsheetDocument_Command(Command)
-
-	OpeningParameters = New Structure("Object, QueryResultAddress, ResultInBatch, QueryName, ResultKind",
-		Object, QueryResultAddress, ResultInBatch, ResultQueryName, ResultKind);
-	SpreadsheetDocumentForm = OpenForm(FormFullName("SpreadsheetDocumentForm"), OpeningParameters, ThisForm,
-		False);
-
-	If Not SpreadsheetDocumentForm.Initialized Then
-		//Refresh opened form
-		Notify("Refresh", OpeningParameters);
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure ShowHideResultPanelTotals_Command(Command)
-	fShowTotals = Not Items.ShowHideResultPanelTotals.Check;
-	Items.ShowHideResultPanelTotals.Check = fShowTotals;
-	Items.QueryResult.Footer = fShowTotals;
 EndProcedure
 
 #Region ExecuteDataProcessor_Command
@@ -4892,53 +5358,7 @@ Procedure InterruptBackgroundJob()
 	BackgroundJobID = "";
 EndProcedure
 
-&AtClient
-Procedure ExecuteDataProcessor_Command(Command)
 
-	If Not ValueIsFilled(ResultInBatch) Or Number(ResultInBatch) <= 0 Then
-		ShowConsoleMessageBox(NStr("ru = 'Выполнение невозможно - результат запроса отсутствует'; en = 'Query result not found.'"));
-		Return;
-	EndIf;
-
-	If Not IsBlankString(BackgroundJobID) Then
-		//Interrupting
-		InterruptBackgroundJob();
-		ShowBackgroundJobState();
-		ShowConsoleMessageBox(NStr("ru = 'Выполнение прервано пользователем!'; en = 'Execution was interrupted by user.'"));
-		Return;
-	EndIf;
-
-	If CodeExecutionMethod = 0 Then
-		stResult = ExecuteAlgorithm(AlgorithmCurrentText());
-	ElsIf CodeExecutionMethod = 1 Then
-		stResult = ExecuteAlgorithmLineByLine(QueryResultAddress, ResultInBatch, AlgorithmCurrentText());
-	ElsIf CodeExecutionMethod = 2 Then
-		stResult = ExecuteAlgorithmLineByLineIndication();
-	ElsIf CodeExecutionMethod = 3 Then
-		//execution in background
-		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), False);
-	ElsIf CodeExecutionMethod = 4 Then
-		//line-by-line execution in background with indication
-		stResult = RunDataProcessorAtServer(AlgorithmCurrentText(), True);
-	Else
-		stResult = New Structure("Success, ErrorDescription", False, NStr("ru = 'Неверный метод исполнения кода'; en = 'Code execution method is incorrect.'"));
-	EndIf;
-
-	If CodeExecutionMethod = 3 Or CodeExecutionMethod = 4 Then
-		If stResult.Success Then
-			Items.ExecuteDataProcessor.Title = "Interrupt";
-			//Pictures = GetFromTempStorage(Object.Pictures);
-			//Items.ExecuteDataProcessor.Picture = Pictures.ExecutionPogress;
-			Items.ExecuteDataProcessor.Picture = PictureLib.Stop;
-			ShowBackgroundJobState();
-		EndIf;
-	EndIf;
-
-	If Not stResult.Success Then
-		ShowConsoleMessageBox(stResult.ErrorDescription);
-	EndIf;
-
-EndProcedure
 
 #EndRegion
 
@@ -4950,92 +5370,16 @@ Procedure ChoicePredefinedCompletion(Result, AdditionalParameters) Export
 	EndIf;
 EndProcedure
 
-&AtClient
-Procedure InsertPredefinedValue_Command(Command)
-	Var BeginLine, BeginColumn, EndLine, EndColumn;
 
-	Items.QueryText.GetTextSelectionBounds(BeginLine, BeginColumn, EndLine, EndColumn);
-	NotifyParameters = New Structure("BeginLine, BeginColumn, EndLine, EndColumn",
-		BeginLine, BeginColumn, EndLine, EndColumn);
-	CloseFormNotifyDescription = New NotifyDescription("ChoicePredefinedCompletion",
-		ThisForm, NotifyParameters);
-	OpeningParameters = New Structure("Object, FormData, QueryText, BeginLine, BeginColumn, EndLine, EndColumn",
-		Object, FormDataChoicePredefined, QueryText, BeginLine, BeginColumn, EndLine,
-		EndColumn);
 
-	OpenForm(FormFullName("ChoicePredefined"), OpeningParameters, ThisForm, True, , ,
-		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-//&AtServer
-//Procedure GetResultValueTable(Command)
-//EndProcedure
-
-&AtClient
-Procedure ResultToParameter_Command(Command)
-
-	vtTable = ExtractResultAsContainer();
-
-	NotifyParameters = New Structure("Table, Row, Field", "QueryParameters", Undefined, "ValueType");
-	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
-		NotifyParameters);
-	OpeningParameters = New Structure("Object, ValueType, ContainerType, Name, EnabledInQuery, ToParameter", Object,
-		vtTable, 3, ResultQueryName, False, True);
-	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, True, , ,
-		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
-
-&AtClient
-Procedure AlgorithmHelp_Command(Command)
-	CurrentLanguage = Upper(CurrentSystemLanguage());
-	OpeningParameters = New Structure("TemplateName, Title", "AlgorithmHelp_"+CurrentLanguage, NStr("ru = 'Обработка результата запроса кодом'; en = 'Query result processing by code'"));
-	OpenForm(FormFullName("Help"), OpeningParameters, ThisForm);
-EndProcedure
 
 #Region GetCodeWithParameters_Command
 
-&AtClient
-Procedure GetCodeWithParameters_Command(Command)
 
-	If Items.QueryBatch.CurrentData = Undefined Then
-		Return;
-	EndIf;
-	
-	//Trying to use query name. If it is incorrect, name will be "Query".
-	QueryName = Items.QueryBatch.CurrentData.Name;
-	If Not NameIsCorrect(QueryName) Then
-		QueryName = "Query";
-	EndIf;
-
-	OpeningParameters = New Structure("
-										|Object,
-										|QueryName,
-										|QueryText,
-										|QueryParameters,
-										|AlgorithmText,
-										|CodeExecutionMethod,
-										|Title,
-										|Content", Object, QueryName, QueryText,
-		QueryParameters_GetAsString(), AlgorithmCurrentText(), CodeExecutionMethod, 
-		NStr("ru = 'Код для выполнения запроса на встроенном языке 1С'; en = 'Code for executing the query by 1C:Enterprise language'"));
-
-	OpenForm(FormFullName("CodeForm"), OpeningParameters, ThisForm, False, , , ,
-		FormWindowOpeningMode.LockOwnerWindow);
-
-EndProcedure
 
 #EndRegion //GetCodeWithParameters_Command
 
-&AtClient
-Procedure ShowHideQueryResultBatch_Command(Command)
-	fQueryResultBatchVisible = Not Items.ShowHideQueryResultBatch.Check;
-	Items.ShowHideQueryResultBatch.Check = fQueryResultBatchVisible;
-	Items.QueryResultBatch.Visible = fQueryResultBatchVisible;
-	Items.ResultInBatchGroup.Visible = Not fQueryResultBatchVisible;
-	Object.SavedStates.Insert("QueryResultBatchVisible", fQueryResultBatchVisible);
-EndProcedure
+
 
 &AtServer
 Procedure QueryParametersNextToTextAtServer()
@@ -5046,12 +5390,7 @@ Procedure QueryParametersNextToTextAtServer()
 	EndIf;
 EndProcedure
 
-&AtClient
-Procedure QueryParametersNextToText_Command(Command)
-	Items.QueryParametersNextToText.Check = Not Items.QueryParametersNextToText.Check;
-	SavedStates_Save("QueryParametersNextToText", Items.QueryParametersNextToText.Check);
-	QueryParametersNextToTextAtServer();
-EndProcedure
+
 
 #Region TechnologicalLog_Command
 
@@ -5143,46 +5482,9 @@ Procedure TechnologicalLog_WaitingForDisable() Export
 
 EndProcedure
 
-&AtClient
-Procedure TechnologicalLog_Command(Command)
-	If Items.TechnologicalLog.Check Then
-		TechnologicalLog_Disable();
-		Items.TechnologicalLog.Check = False;
-		Items.QueryPlan.Visible = False;
-		Items.QueryResultBatchInfo.CellHyperlink = False;
-		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
-		AttachIdleHandler("TechnologicalLog_WaitingForDisable",
-			TechLogSwitchingPollingPeriodOption, True);
-	Else
-		TechnologicalLog_Enable();
-		TechLogEnabledAndRunning = False;
-		Items.TechnologicalLog.Check = True;
-		TechnologicalLog_EnablingIndication(False);
-		TechLogBeginEndTime = CurrentUniversalDateInMilliseconds();
-		AttachIdleHandler("TechnologicalLog_WaitingForEnable",
-			TechLogSwitchingPollingPeriodOption, True);
-	EndIf;
-EndProcedure
 
-&AtClient
-Procedure QueryPlan_Command(Command)
 
-	CurrentRow = Items.QueryResultBatch.CurrentRow;
-	If CurrentRow = Undefined Then
-		Return;
-	EndIf;
 
-	OpeningParameters = New Structure("Object, QueryResultAddress, ResultInBatch", Object,
-		QueryResultAddress, QueryResultBatch.IndexOf(QueryResultBatch.FindByID(
-		CurrentRow)) + 1);
-	Form = OpenForm(FormFullName("QueryPlanForm"), OpeningParameters, ThisForm, False, , , ,
-		FormWindowOpeningMode.LockOwnerWindow);
-
-	If Form = Undefined Then
-		ShowConsoleMessageBox(NStr("ru = 'Не удалось получить информацию о запросе'; en  ='Cannot get query info.'"));
-	EndIf;
-
-EndProcedure
 
 #EndRegion //TechnologicalLog_Command
 
@@ -5337,160 +5639,8 @@ EndProcedure
 
 #Region UT
 
-&AtClient
-Procedure InsertMacroColumn(Command)
-	UT_CodeEditorClient.InsertQueryEditorMacroColumn(ThisObject, "Query");
-EndProcedure
 
-&AtClient
-Procedure UT_EditValue(Command)
-	FormItem=Items.QueryResult;
-	If ResultKind = "tree" Then
-		FormItem=Items.QueryResultTree;
-	EndIf;
 
-	CurData=FormItem.CurrentData;
-	CurColumn=FormItem.CurrentItem;
-
-	ColumnName=StrReplace(CurColumn.Name, FormItem.Name, "");
-
-	ColumnValue=CurData[ColumnName];
-
-	Try
-		CommonClientModule=Eval("UT_CommonClient");
-	Except
-		CommonClientModule=Undefined;
-	EndTry;
-
-	If CommonClientModule = Undefined Then
-		Return;
-	EndIf;
-
-	If ColumnValue = "<ValueStorage>" Then
-		CommonClientModule.EditValueStorage(ThisObject, CurData[ColumnName
-			+ ContainerAttributeSuffix].Хранилище);
-	Else
-		CommonClientModule.EditObject(ColumnValue);
-	EndIf;
-
-EndProcedure
-
-&AtClient
-Procedure UT_EditPropertyRowValue(Command)
-	CurData=Items.UT_RowProperties.CurrentData;
-	If CurData = Undefined Then
-		Return;
-	EndIf;
-	
-	If CurData.Value = "<ValueStorage>" Then
-		ResultFormItem=Items.QueryResult;
-		If ResultKind = "tree" Then
-			ResultFormItem=Items.QueryResultTree;
-		EndIf;
-		ResultCurData=ResultFormItem.CurrentData;
-		If ResultCurData = Undefined Then
-			Return;
-		EndIf;
-		
-		UT_CommonClient.EditValueStorage(ThisObject, ResultCurData[CurData.Property
-			+ ContainerAttributeSuffix].Storage);
-			
-	Else
-		UT_CommonClient.EditObject(CurData.Value);
-	EndIf;
-EndProcedure
-
-&AtServer
-Procedure UT_FillWithDebugData()
-	If Not Parameters.Property("DebugData") Then
-		Return;
-	EndIf;
-
-	If Object.SavedStates = Undefined Then
-		Object.SavedStates = New Structure;
-	EndIf;
-
-	Modified = False;
-
-	AutoSaveIntervalOption = 60;
-	SaveCommentsOption = True;
-	AutoSaveBeforeQueryExecutionOption = True;
-	AlgorithmExecutionUpdateIntervalOption = 1000;
-	Object.OptionProcessing__ = True;
-	Object.AlgorithmExecutionUpdateIntervalOption = 1000;
-
-	DataProcessorObject=FormAttributeToValue("Object");
-
-	UT_Debug=True;
-
-	DebugData=GetFromTempStorage(Parameters.DebugData);
-
-	TreeRows=QueryBatch.GetItems();
-
-	NewRow=TreeRows.Add();
-	NewRow.Name=NStr("ru = 'Отладка'; en = 'Debug'");
-	NewRow.QueryText=DebugData.Text;
-	NewRow.QueryParameters=New ValueList;
-
-	If DebugData.Property("Parameters") Then
-		For Each CurParameter In DebugData.Parameters Do
-
-			NewParameter=New Structure;
-			NewParameter.Insert("Name", CurParameter.Key);
-			NewParameter.Insert("ContainerType", GetValueFormCode(CurParameter.Value));
-
-			NewParameter.Insert("Container", DataProcessorObject.Container_SaveValue(CurParameter.Value));
-
-			If NewParameter.ContainerType = 2 Then
-				TypeArray=New Array;
-
-				For Each ArrayValue In CurParameter.Value Do
-					CurType=TypeOf(ArrayValue);
-					If TypeArray.Find(CurType) = Undefined Then
-						TypeArray.Add(CurType);
-					EndIf;
-				EndDo;
-
-				NewParameter.Insert("ValueType", New TypeDescription(TypeArray));
-				NewParameter.Insert("Value", NewParameter.Container.Presentation);
-			ElsIf NewParameter.ContainerType = 1 Then
-				TypeArray=New Array;
-
-				For Each ListItem In CurParameter.Value Do
-					CurType=TypeOf(ListItem.Value);
-					If TypeArray.Find(CurType) = Undefined Then
-						TypeArray.Add(CurType);
-					EndIf;
-				EndDo;
-
-				NewParameter.Insert("ValueType", New TypeDescription(TypeArray));
-				NewParameter.Insert("Value", NewParameter.Container.Presentation);
-			ElsIf NewParameter.ContainerType = 3 Then
-				NewParameter.Insert("ValueType", NStr("ru = 'Талица значений'; en = 'Value table'"));
-				NewParameter.Insert("Value", NewParameter.Container.Presentation);
-			Else
-				NewParameter.Insert("ValueType", TypeDescriptionByType(TypeOf(CurParameter.Value)));
-				NewParameter.Insert("Value", NewParameter.Container);
-
-			EndIf;
-			NewRow.QueryParameters.Add(NewParameter);
-		EndDo;
-	EndIf;
-
-	If DebugData.Property("TempTables") Then
-		NewRow.TempTables=New ValueList;
-
-		For Each KeyValue In DebugData.TempTables Do
-			TempTable=New Structure;
-			TempTable.Вставить("Name", KeyValue.Key);
-			TempTable.Вставить("Container", DataProcessorObject.Container_SaveValue(KeyValue.Value));
-			TempTable.Вставить("Value", TempTable.Container.Presentation);
-
-			NewRow.TempTables.Add(TempTable);
-		EndDo;
-	EndIf;
-
-EndProcedure
 
 //@skip-warning
 &AtClient
@@ -5577,16 +5727,6 @@ Procedure UT_ResultRowProperties(Command)
 EndProcedure
 
 &AtClient
-Procedure UT_QueryResultOnActivateRow(Item)	
-	UT_FillRowProperties(Item.Name);
-EndProcedure
-
-&AtClient
-Procedure UT_QueryResultOnActivateCell(Item)
-	UT_ActivateRowPropertyRow(Item.Name);
-EndProcedure
-
-&AtClient
 Procedure UT_ActivateRowPropertyRow(SourceName)
 	If Not RowPropertiesVisible Then
 		Return;
@@ -5647,25 +5787,7 @@ Procedure UT_FillRowProperties(SourceName)
 
 EndProcedure
 
-&AtClient
-Procedure UT_RowPropertiesSelection(Item, RowSelected, Field, StandardProcessing)
-	
-	SourceName = UT_SourceNameByResultKindAttribute();
-	ColumnName = Item.CurrentData.Property;
-	FieldName = Undefined;
-	For Each KeyValue In QueryResultColumnsMap Do
-		If KeyValue.Value = ColumnName Then
-			FieldName = KeyValue.Key;
-			Break;
-		EndIf;
-	EndDo;
-	
-	If ValueIsFilled(FieldName) Then
-		Structure = New Structure("Name", FieldName);
-		QueryResultSelection(Items[SourceName], Undefined, Structure, True);
-	EndIf;
-	
-EndProcedure
+
 
 &AtClient
 Function UT_SourceNameByResultKindAttribute()
@@ -5721,13 +5843,3 @@ Function UT_SelectRowPictureAtServer(Value)
 EndFunction
 
 #EndRegion
-
-#If Client Then
-
-FilesExtension = "q9";
-ConsoleSignature = ConsoleDataProcessorName(ThisObject);
-SaveFilter = NStr("ru = 'Файл запросов (*.'; en = 'Query file (*.'") + FilesExtension + ")|*." + FilesExtension;
-AutoSaveExtension = "q9save";
-FormatVersion = 13;
-
-#EndIf
