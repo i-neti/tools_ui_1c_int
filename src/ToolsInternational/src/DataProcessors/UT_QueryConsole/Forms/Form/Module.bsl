@@ -2979,8 +2979,9 @@ Function ExecuteBatch(Query, QuerySchema)
 	Return arBatchResult;
 
 EndFunction
+
 &НаСервереБезКонтекста
-Процедура ВыполнитьАлгоритмПередВыполнениемЗапроса(Запрос, ТекстАлгоритма)
+Процедура ExecuteAlgorithmBeforeQueryExecution(Запрос, ТекстАлгоритма)
 	Контекст = Новый Структура;
 	Контекст.Вставить("мЗапрос", Запрос);
 	
@@ -3009,7 +3010,7 @@ Procedure SetQueryMacrocolumnParameters(Query)
 EndProcedure
 
 &AtServer
-Function ExecuteQueryAtServer(QueryText)
+Function ExecuteQueryAtServer(QueryText,TextOfAlgorithmBeforeExecution)
 	Var RowNumber, ColumnNumber;
 
 	ExecutingQuery = New Query;
@@ -3025,16 +3026,27 @@ Function ExecuteQueryAtServer(QueryText)
 		ExecutingQuery.SetParameter(ParameterRow.Name, Value);
 
 	EndDo;
-
-	QuerySchema = New QuerySchema;
-
+	
+	ExecutingQuery.Текст = QueryText;
 	Try
-		ExecutingQuery.Text = QueryText;
-		SetQueryMacrocolumnParameters(ExecutingQuery);
-		QuerySchema.SetQueryText(QueryText);
+		ExecuteAlgorithmBeforeQueryExecution(ExecutingQuery, TextOfAlgorithmBeforeExecution);
 	Except
 		ErrorString = ErrorDescription();
 		DisassembleSpecifiedQueryError(ErrorString, ExecutingQuery, QueryText, RowNumber, ColumnNumber);
+		Return New Structure("ErrorDescription, Row, Column, StartTime, FinishTime", ErrorString,
+			RowNumber, ColumnNumber);
+		
+	EndTry;
+	
+	QuerySchema = New QuerySchema;
+
+	Try
+		//ExecutingQuery.Text = QueryText;
+		SetQueryMacrocolumnParameters(ExecutingQuery);
+		QuerySchema.SetQueryText(ExecutingQuery.Text);
+	Except
+		ErrorString = ErrorDescription();
+		DisassembleSpecifiedQueryError(ErrorString, ExecutingQuery, ExecutingQuery.Text, RowNumber, ColumnNumber);
 		Return New Structure("ErrorDescription, Row, Column, StartTime, FinishTime", ErrorString,
 			RowNumber, ColumnNumber);
 	EndTry;
@@ -3935,18 +3947,22 @@ EndFunction
 Function Query_GetQueryData(QueryID)
 
 	If QueryID = Undefined Then
-		Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn, CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn",
+		Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn, CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn,ЗапросОригинальный, ТекстКодОригинальный",
 			"", "", "", 2, Undefined, False, 1, 1, 1, 1, 1, 1, 1, 1);
 	EndIf;
 
 	QueryRow = QueryBatch.FindByID(QueryID);
-	Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, TempTables, InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn, CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn",
+	Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, TempTables, 
+	|InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn,
+	|CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn
+	|ЗапросОригинальный, ТекстКодОригинальный,АлгоритмПередВыполнением,АлгоритмПередВыполнениемОригинальный",
 		QueryRow.Name, QueryRow.QueryText, QueryRow.CodeText, QueryRow.CodeExecutionMethod,
 		QueryRow.QueryParameters, QueryRow.TempTables, QueryRow.InWizard,
 		QueryRow.CursorBeginRow + 1, QueryRow.CursorBeginColumn + 1, QueryRow.CursorEndRow
 		+ 1, QueryRow.CursorEndColumn + 1, QueryRow.CodeCursorBeginRow + 1,
 		QueryRow.CodeCursorBeginColumn + 1, QueryRow.CodeCursorEndRow + 1,
-		QueryRow.CodeCursorEndColumn + 1);
+		QueryRow.CodeCursorEndColumn + 1,QueryRow.ТекстЗапросаОригинальный, QueryRow.ТекстКодОригинальный,
+		QueryRow.АлгоритмПередВыполнением, QueryRow.АлгоритмПередВыполнениемОригинальный));
 
 EndFunction
 

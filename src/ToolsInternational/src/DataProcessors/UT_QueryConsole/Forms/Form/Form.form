@@ -8249,6 +8249,42 @@ Example:
         <common>true</common>
       </edit>
     </columns>
+    <columns>
+      <name>QueryTextOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Query text original</value>
+      </title>
+      <id>64</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>CodeTextOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Code text original</value>
+      </title>
+      <id>65</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
   </attributes>
   <attributes>
     <name>QueryParameters</name>
