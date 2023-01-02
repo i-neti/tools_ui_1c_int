@@ -208,7 +208,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыПакетЗапросов
+#Region QueryBatchFormTableEventHandlers
 
 &AtClient
 Procedure QueryBatchSelection(Item, SelectedRow, Field, StandardProcessing)
@@ -275,9 +275,9 @@ Procedure QueryBatchBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
 EndProcedure
 
 
-#КонецОбласти
+#EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыПараметрыЗапроса
+#Region QueryParametersFormTableEventHandlers
 
 &AtClient
 Procedure QueryParametersOnActivateRow(Item)
@@ -434,7 +434,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыВременныеТаблицы
+#Область TempTablesFormTableEventHandlers
 
 &AtClient
 Procedure TempTablesValueStartChoice(Item, ChoiceData, StandardProcessing)
@@ -447,23 +447,23 @@ Procedure TempTablesValueStartChoice(Item, ChoiceData, StandardProcessing)
 		Items.TempTables.CurrentRow, "Container");
 	CloseFormNotifyDescription = New NotifyDescription("RowEditEnd", ThisForm,
 		NotifyParameters);
-	OpeningParameters = New Structure("Object, ValueType, Title, Value, ContainerType", Object, ,
-		CurrentData.Name, CurrentData.Container, 3);
+	
+	If CurrentData.Container = Undefined Then
+		ValueTableData = Undefined;
+	Else
+		ValueTableData = CurrentData.Container.Value;
+	EndIf;
 
-	OpenForm(FormFullName("EditType"), OpeningParameters, ThisForm, False, , ,
-		CloseFormNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
-
+	EditingParameters = UT_CommonClient.ValueTableNewEditingParameters();
+	EditingParameters.SerializeToXML = True;
+	UT_CommonClient.EditValueTable(ValueTableData, ThisObject,
+		CloseFormNotifyDescription, EditingParameters);
+		
 EndProcedure
-
-
-
-
-
-
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыСтруктураЗаписиРезультата
+#Region ResultRecordStructureFormTableEventHandlers
 
 &AtClient
 Procedure ResultRecordStructureSelection(Item, SelectedRow, Field, StandardProcessing)
@@ -476,7 +476,7 @@ Procedure ResultRecordStructureBeforeExpand(Item, Row, Cancel)
 	TreeRow = ResultRecordStructure.FindByID(Row);
 
 	If Not TreeRow.ChildNodesExpanded Then
-		ResultRecordStructure_ExpandChildNodes(Row);
+		//ResultRecordStructure_ExpandChildNodes(Row);
 	EndIf;
 
 EndProcedure
@@ -495,7 +495,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыПакетРезультатаЗапроса
+#Region QueryResultBatchFormTableEventHandlers
 
 &AtClient
 Procedure QueryResultBatchSelection(Item, SelectedRow, Field, StandardProcessing)
@@ -535,7 +535,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыРезультатЗапросаДерево
+#Область QueryResultTreeFormTableEventHandlers
 
 &AtClient
 Procedure QueryResultSelection(Item, SelectedRow, Field, StandardProcessing)
@@ -579,7 +579,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиСобытийЭлементовТаблицыФормыУИ_СвойстваСтроки
+#Region UT_RowPropertiesFormTableEventHandlers
 
 &AtClient
 Procedure UT_RowPropertiesSelection(Item, RowSelected, Field, StandardProcessing)
@@ -603,7 +603,7 @@ EndProcedure
 
 #EndRegion
 
-#Область ОбработчикиКомандФормы
+#Region FormCommandsHandlers
 
 &AtClient
 Procedure RemoveCommentsFromText_Command(Command)
@@ -621,13 +621,13 @@ Procedure QuerySyntaxCheck_Command(Command)
 		Return;
 	EndIf;
 
-	Result = FormatQueryTextAtServer(QueryText);
+	Result = FormatQueryTextAtServer(CurrentQueryText());
 
 	If TypeOf(Result) <> Type("String") Then
 		ShowConsoleMessageBox(Result.ErrorDescription);
 		CurrentItem = Items.QueryText;
 		If ValueIsFilled(Result.Row) Then
-			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
+			SetQuerySelectionBounds(Result.Row, Result.Column, Result.Row,
 				Result.Column);
 		EndIf;
 	EndIf;
@@ -641,7 +641,7 @@ Procedure FormatQueryText_Command(Command)
 		Return;
 	EndIf;
 
-	strQueryText = QueryText;
+	strQueryText = CurrentQueryText();
 	QueryComments_SaveSourceQueryData(strQueryText);
 	Result = FormatQueryTextAtServer(strQueryText);
 
@@ -650,7 +650,7 @@ Procedure FormatQueryText_Command(Command)
 		ShowConsoleMessageBox(Result.ErrorDescription);
 		CurrentItem = Items.QueryText;
 		If ValueIsFilled(Result.Row) Then
-			Items.QueryText.SetTextSelectionBounds(Result.Row, Result.Column, Result.Row,
+			SetQuerySelectionBounds(Result.Row, Result.Column, Result.Row,
 				Result.Column);
 		EndIf;
 
@@ -660,7 +660,7 @@ Procedure FormatQueryText_Command(Command)
 
 	QueryComments_Restore(Result);
 	
-	SetQueryText();
+	SetQueryText(Result);
 	PutEditingQuery();
 	Modified = True;
 
@@ -668,6 +668,7 @@ EndProcedure
 
 &AtClient
 Procedure GetCodeForTrace_Command(Command)
+	
 	If Object.ExternalDataProcessorMode Then
 
 		strDataProcessorServerFileName = GetDataProcessorServerFileName();
@@ -675,6 +676,7 @@ Procedure GetCodeForTrace_Command(Command)
 		strCode = StrTemplate("ExternalDataProcessors.Create(""%1"", False).SaveQuery(%2, Query)",
 			strDataProcessorServerFileName, Format(Object.SessionID, "NG=0"));
 	Else
+		
 		strCode = StrTemplate("DataProcessors.%1.Create().SaveQuery(%2, Query)", Object.DataProcessorName, Format(
 			Object.SessionID, "NG=0"));
 	EndIf;
@@ -684,14 +686,12 @@ Procedure GetCodeForTrace_Command(Command)
 									  |Title,
 									  |CodeToCopy,
 									  |Info", Object, NStr("ru = 'Код для перехвата запроса в отладчике'; en = 'Code to hook the query in the debugger.'"), strCode, NStr("ru = 'Для перехвата запроса в отладчике скопируйте и выполните по Shift+F9 указанный код.
-																											   |Консоль запросов должна быть запущена в той же информационной базе под тем же пользователем.
-																											   |Для получения запросов в консоль используйте команду на закладке текста запроса ""Перехват | Получить перехваченные запросы (Ctrl+F9)""
+																											   |Консоль запросов должна быть запущена в той же информационной базе под тем же пользователем.																											   |Для получения запросов в консоль используйте команду на закладке текста запроса ""Перехват | Получить перехваченные запросы (Ctrl+F9)""
 																											   |В настройках пользователя должна быть отключена защита от опасных действий.'; 
 																											   |en = 'To hook the query in the debugger, copy and execute this code by Shift + F9.
 																											   |Query console must be launched in the same infobase under the same login.
 																											   |To receive queries to the console, use the ""Hooking | Get hooked queries (Ctrl+F9)"" command.
 																											   |""Unsafe operation protection"" user setting must be switched off.'"));
-
 	OpenForm(FormFullName("Info"), OpeningParameters, ThisForm, False, , , ,
 		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
@@ -739,7 +739,7 @@ EndProcedure
 &AtClient
 Procedure QueryWizard_Command(Command)
 
-	strQueryText = QueryText;
+	strQueryText = CurrentQueryText();
 	QueryComments_SaveSourceQueryData(strQueryText);
 
 	If ValueIsFilled(strQueryText) Then
@@ -755,7 +755,7 @@ Procedure QueryWizard_Command(Command)
 	If QueryWizard.DoModal() Then
 		strQueryText = QueryWizard.Text;
 		QueryComments_Restore(strQueryText);
-		QueryText = strQueryText;
+		SetQueryText(strQueryText); 
 		PutEditingQuery();
 		Modified = True;
 	EndIf;
@@ -845,7 +845,7 @@ Procedure ExecuteQuery_Command(Command)
 	EndIf;
 EndProcedure
 
-#Область ПакетЗапросов
+#Region QueryBatch
 
 &AtClient
 Procedure QueryBatchAdd_Command(Command)
@@ -926,7 +926,7 @@ EndProcedure
 
 
 
-#КонецОбласти
+#EndRegion
 
 &AtClient
 Procedure FillParametersFromQuery_Command(Command)
@@ -938,7 +938,7 @@ Procedure FillParametersFromQuery_Command(Command)
 		CurrentItem = Items.QueryText;
 
 		If ValueIsFilled(stError.Row) Then
-			Items.QueryText.SetTextSelectionBounds(stError.Row, stError.Column, stError.Row,
+			SetQuerySelectionBounds(stError.Row, stError.Column, stError.Row,
 				stError.Column);
 		EndIf;
 
@@ -2983,7 +2983,7 @@ EndFunction
 &НаСервереБезКонтекста
 Процедура ExecuteAlgorithmBeforeQueryExecution(Запрос, ТекстАлгоритма)
 	Контекст = Новый Структура;
-	Контекст.Вставить("мЗапрос", Запрос);
+	Контекст.Вставить("mQuery", Запрос);
 	
 	Результат = УИ_РедакторКодаКлиентСервер.ВыполнитьАлгоритм(ТекстАлгоритма, Контекст);
 	Если Не Результат.Успешно Тогда
@@ -3291,7 +3291,7 @@ EndProcedure
 		Элементы.СтраницаАлгоритм.Картинка = Новый Картинка;
 	КонецЕсли;
 	
-	Если ЗначениеЗаполнено(стДанныеЗапроса.АлгоритмПередВыполнением) Тогда
+	Если ЗначениеЗаполнено(стДанныеЗапроса.AlgorithmBeforeExecution) Тогда
 		Элементы.СтраницаАлгоритмПередВыполнением.Картинка = ИконкаЗаполнена;
 	Иначе
 		Элементы.СтраницаАлгоритмПередВыполнением.Картинка = Новый Картинка;
@@ -3955,14 +3955,14 @@ Function Query_GetQueryData(QueryID)
 	Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, TempTables, 
 	|InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn,
 	|CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn
-	|ЗапросОригинальный, ТекстКодОригинальный,АлгоритмПередВыполнением,АлгоритмПередВыполнениемОригинальный",
+	|ЗапросОригинальный, ТекстКодОригинальный,AlgorithmBeforeExecution,АлгоритмПередВыполнениемОригинальный",
 		QueryRow.Name, QueryRow.QueryText, QueryRow.CodeText, QueryRow.CodeExecutionMethod,
 		QueryRow.QueryParameters, QueryRow.TempTables, QueryRow.InWizard,
 		QueryRow.CursorBeginRow + 1, QueryRow.CursorBeginColumn + 1, QueryRow.CursorEndRow
 		+ 1, QueryRow.CursorEndColumn + 1, QueryRow.CodeCursorBeginRow + 1,
 		QueryRow.CodeCursorBeginColumn + 1, QueryRow.CodeCursorEndRow + 1,
 		QueryRow.CodeCursorEndColumn + 1,QueryRow.ТекстЗапросаОригинальный, QueryRow.ТекстКодОригинальный,
-		QueryRow.АлгоритмПередВыполнением, QueryRow.АлгоритмПередВыполнениемОригинальный));
+		QueryRow.AlgorithmBeforeExecution, QueryRow.АлгоритмПередВыполнениемОригинальный));
 
 EndFunction
 
@@ -5777,6 +5777,15 @@ Procedure UT_AddResultStructureContextAlgorithm()
 EndProcedure
 
 &AtClient
+Procedure UT_AddAlgorithmContextBeforeExecution()
+	AdditionalContextStructure = New Structure;
+	AdditionalContextStructure.Insert("mQuery", "classes.Query");
+
+	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "AlgorithmBeforeExecution", AdditionalContextStructure);
+	
+EndProcedure
+
+&AtClient
 Procedure UT_ResultRowProperties(Command)
 	
 	RowPropertiesVisible = Not RowPropertiesVisible;
@@ -5792,6 +5801,10 @@ Procedure UT_ResultRowProperties(Command)
 	EndIf;
 		
 EndProcedure
+
+
+
+
 
 &AtClient
 Procedure UT_ActivateRowPropertyRow(SourceName)
@@ -5908,5 +5921,6 @@ Function UT_SelectRowPictureAtServer(Value)
 	Return Picture;
 	
 EndFunction
+#EndRegion
 
 #EndRegion
