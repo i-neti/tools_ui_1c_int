@@ -5010,28 +5010,28 @@ EndProcedure
 
 &AtClient
 Procedure ExecuteQuery(fUseSelection)
-
-	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
-
-	Items.QueryText.GetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
-	fEntireText = Not fUseSelection Or (RowBeginning = RowEnd And ColumnBeginning = ColumnEnd);
-	If fEntireText Then
-		strQueryText = QueryText;
-	Else
-		strQueryText = Items.QueryText.SelectedText;
-	EndIf;
+	
+	QuerySelectionBoundaries= QuerySelectionBoundaries();
+	fEntireText = Not fUseSelection
+				 Or (QuerySelectionBoundaries.RowBeginning = QuerySelectionBoundaries.RowEnd
+					  And QuerySelectionBoundaries.ColumnBeginning = QuerySelectionBoundaries.ColumnEnd);
+	Если fEntireText Тогда
+		strQueryText =CurrentQueryText();
+	Иначе
+		strQueryText =ВыделенныйТекстЗапроса();
+	КонецЕсли;
 
 	If AutoSaveBeforeQueryExecutionOption And Modified Then
 		AutoSave();
 	EndIf;
 
-	stResult = ExecuteQueryAtServer(strQueryText);
-	If ValueIsFilled(stResult.ErrorDescription) Then
+	stResult = ExecuteQueryAtServer(strQueryText, ТекущийАлгоритмПередВыполнением());
+	Если ValueIsFilled(stResult.ErrorDescription) Тогда
 		ShowConsoleMessageBox(stResult.ErrorDescription);
 		CurrentItem = Items.QueryText;
 		If ValueIsFilled(stResult.Row) Then
-			If fEntireText Then
-				Items.QueryText.SetTextSelectionBounds(stResult.Row, stResult.Column,
+			Если fEntireText Тогда
+				SetQuerySelectionBounds(stResult.Row, stResult.Column,
 					stResult.Row, stResult.Column);
 			Else
 			EndIf;
@@ -5056,11 +5056,12 @@ Procedure ExecuteQuery(fUseSelection)
 EndProcedure
 
 
-
 &AtServer
 Function ParametersFillFromQueryAtServer()
 	Var RowNumber, ColumnNumber;
 
+	DataProcessorObject = FormAttributeToValue("Object");
+	
 	Query = New Query(QueryText);
 	Try
 		Query.TempTablesManager = LoadTempTables();
@@ -5083,6 +5084,10 @@ Function ParametersFillFromQueryAtServer()
 		Else
 			ParameterRow = QueryParameters.Add();
 			ParameterRow.Name = Parameter.Name;
+			If Parameter.ValueType = New TypeDescription("ValueTable") Then
+				ParameterRow.ContainerType = 3;
+			КонецЕсли;
+			
 			QueryParameters_SaveValue(ParameterRow.GetID(),
 				Parameter.ValueType.AdjustValue(Undefined));
 		EndIf;
@@ -5099,119 +5104,58 @@ EndFunction
 
 &AtClient
 Procedure AddLineFeedsToText(TextItem)
-	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
-
-	SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBeginning, RowEnd,
-		ColumnEnd);
-
-	ProcessingText = New TextDocument;
-	ProcessingText.SetText(TextItem.SelectedText);
-
-	For j = 1 To ProcessingText.LineCount() Do
-		ProcessingText.ReplaceLine(j, "|" + ProcessingText.GetLine(j));
-	EndDo;
-
-	TextItem.SelectedText = ProcessingText.GetText();
-	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
-
+	UT_CodeEditorClient.AddEditorLineBreaksFormItem(ThisObject,TextItem );
 EndProcedure
 
 &AtClient
 Procedure RemoveLineFeedsFromText(TextItem)
-	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
-
-	SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBeginning, RowEnd,
-		ColumnEnd);
-
-	ProcessingText = New TextDocument;
-	ProcessingText.SetText(TextItem.SelectedText);
-
-	For j = 1 To ProcessingText.LineCount() Do
-		str = ProcessingText.GetLine(j);
-		If Left(TrimL(str), 1) = "|" Then
-			x = Find(str, "|");
-			ProcessingText.ReplaceLine(j, Left(str, x - 1) + Right(str, StrLen(str) - x));
-		EndIf;
-	EndDo;
-
-	TextItem.SelectedText = ProcessingText.GetText();
-	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
-
+		UT_CodeEditorClient.DeleteEditorLineBreaksFormItem(ThisObject,TextItem );
 EndProcedure
-
 
 
 &AtClient
 Procedure AddCommentsToText(TextItem)
-	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
-
-	SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBeginning, RowEnd,
-		ColumnEnd);
-
-	ProcessingText = New TextDocument;
-	ProcessingText.SetText(TextItem.SelectedText);
-
-	For j = 1 To ProcessingText.LineCount() Do
-		ProcessingText.ReplaceLine(j, "//" + ProcessingText.GetLine(j));
-	EndDo;
-
-	TextItem.SelectedText = ProcessingText.GetText();
-	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
+	
+	UT_CodeEditorClient.AddCommentsToEditorLinesFormItem(ThisObject,TextItem);
 
 EndProcedure
-
 
 
 &AtClient
 Procedure RemoveCommentsFromText(TextItem)
-	Var RowBeginning, ColumnBeginning, RowEnd, ColumnEnd;
-
-	SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBeginning, RowEnd,
-		ColumnEnd);
-
-	ProcessingText = New TextDocument;
-	ProcessingText.SetText(TextItem.SelectedText);
-
-	For j = 1 To ProcessingText.LineCount() Do
-		str = ProcessingText.GetLine(j);
-		If Left(TrimL(str), 2) = "//" Then
-			x = Find(str, "//");
-			ProcessingText.ReplaceLine(j, Left(str, x - 1) + Right(str, StrLen(str) - x - 1));
-		EndIf;
-	EndDo;
-
-	TextItem.SelectedText = ProcessingText.GetText();
-	TextItem.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
-
+	UT_CodeEditorClient.DeleteEditorLinesCommentsFormItem(ThisObject,TextItem);
 EndProcedure
 
-&НаКлиенте
-Процедура SortQueryResultTable(НаправлениеСортировки)
-	ИмяКолонки = Items.РезультатЗапроса.ТекущийЭлемент.Имя;
-	Если СтрЧислоВхождений(ИмяКолонки, "РезультатЗапроса") = 1 Тогда
-		ИмяКолонки = СтрЗаменить(ИмяКолонки, "РезультатЗапроса", "");
-		РезультатЗапроса.Сортировать(ИмяКолонки + " " + НаправлениеСортировки);
-	ИначеЕсли СтрЧислоВхождений(ИмяКолонки, "РезультатЗапроса") > 1 Тогда
-		ПоказатьПредупреждение(, "Нельза сортировать по колонке содержащей в названии ""РезультатЗапроса""");
-	КонецЕсли;
-КонецПроцедуры
 
-&НаКлиенте
-Процедура SortQueryResultTree(НаправлениеСортировки)
-	ИмяКолонки = Items.РезультатЗапросаДерево.ТекущийЭлемент.Имя;
-	Если СтрЧислоВхождений(ИмяКолонки, "РезультатЗапросаДерево") = 1 Тогда
-		ИмяКолонки = СтрЗаменить(ИмяКолонки, "РезультатЗапросаДерево", "");
-		СортироватьРезультатЗапросаДеревоНаСервере(ИмяКолонки, НаправлениеСортировки);
-	ИначеЕсли СтрЧислоВхождений(ИмяКолонки, "РезультатЗапросаДерево") > 1 Тогда 
-		ПоказатьПредупреждение(, "Нельза сортировать по колонке содержащей в названии ""РезультатЗапросаДерево""");			
+
+
+&AtClient
+Procedure SortQueryResultTable(SortDirection)
+	ColumnName = Items.QueryResult.CurrentItem.Name;
+	If StrOccurrenceCount(ColumnName, "QueryResult") = 1 Then
+		ColumnName = StrReplace(ColumnName, "QueryResult", "");
+		QueryResult.Sort(ColumnName + " " + SortDirection);
+	ElsIf StrOccurrenceCount(ColumnName, "QueryResult") > 1 Then
+		ShowMessageBox(, "ru = 'Нельзя сортировать по колонке содержащей в названии ""QueryResult""';en = 'It is not possible to sort by the column containing ""QueryResult"" in the name'");
+	Endif;
+EndProcedure
+
+&AtClient
+Procedure SortQueryResultTree(SortDirection)
+	ColumnName = Items.QueryResultTree.CurrentItem.Name;
+	If StrOccurrenceCount(ColumnName, "QueryResultTree") = 1 Then
+		ColumnName = StrReplace(ColumnName, "QueryResultTree", "");
+		СортироватьРезультатЗапросаДеревоНаСервере(ColumnName, SortDirection);
+	ИначеЕсли StrOccurrenceCount(ColumnName, "QueryResultTree") > 1 Тогда 
+		ShowMessageBox(, "Нельза сортировать по колонке содержащей в названии ""QueryResultTree""");			
 	КонецЕсли;
 КонецПроцедуры
 
 &НаСервере
-Процедура СортироватьРезультатЗапросаДеревоНаСервере(ИмяКолонки, НаправлениеСортировки)
-	ДеревоРезультат = РеквизитФормыВЗначение("РезультатЗапросаДерево");
-	ДеревоРезультат.Строки.Сортировать(ИмяКолонки + " " + НаправлениеСортировки, Истина);
-	ЗначениеВРеквизитФормы(ДеревоРезультат, "РезультатЗапросаДерево");
+Процедура СортироватьРезультатЗапросаДеревоНаСервере(ColumnName, SortDirection)
+	ДеревоРезультат = РеквизитФормыВЗначение("QueryResultTree");
+	ДеревоРезультат.Строки.Sort(ColumnName + " " + SortDirection, Истина);
+	ЗначениеВРеквизитФормы(ДеревоРезультат, "QueryResultTree");
 КонецПроцедуры
 
 #Region ExecuteDataProcessor_Command
@@ -5740,7 +5684,7 @@ EndFunction
 	КонецЕсли;
 КонецПроцедуры
 
-&НаКлиенте
+&AtClient
 Процедура SetAlgorithmTextBeforeExecution(НовыйТекст, УстанавливатьОригинальныйТекст = Ложь,
 	НовыйОригинальныйТекст = "")
 	Если УИ_ВходитВСоставУниверсальныхИнструментов Тогда
@@ -5760,7 +5704,7 @@ EndFunction
 КонецПроцедуры
 
 
-&НаКлиенте
+&AtClient
 Процедура SetQueryText(НовыйТекст, УстанавливатьОригинальныйТекст = Ложь, НовыйОригинальныйТекст = "")
 	Если УИ_ВходитВСоставУниверсальныхИнструментов Тогда
 		УИ_РедакторКодаКлиент.УстановитьТекстРедактора(ЭтотОбъект, "Запрос", НовыйТекст);
