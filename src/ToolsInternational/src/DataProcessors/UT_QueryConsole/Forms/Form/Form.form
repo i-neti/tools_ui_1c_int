@@ -5657,6 +5657,68 @@ Example:
             <placementArea>UserCmds</placementArea>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTreeSortAsc</name>
+            <id>561</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTreeSortAscExtendedTooltip</name>
+              <id>562</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTreeSortAsc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTreeSortDesc</name>
+            <id>563</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTreeSortDescExtendedTooltip</name>
+              <id>564</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTreeSortDesc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
@@ -5777,6 +5839,68 @@ Example:
             <autoMaxHeight>true</autoMaxHeight>
             <placementArea>UserCmds</placementArea>
             <picture xsi:type="form:FormPicture"/>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTableSortAsc</name>
+            <id>565</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTableSortAscExtendedTooltip</name>
+              <id>566</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTableSortAsc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTableSortDesc</name>
+            <id>567</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTableSortDescExtendedTooltip</name>
+              <id>568</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTableSortDesc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
@@ -11132,10 +11256,14 @@ Example:
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>РезультатЗапросаТаблицаСортироватьУбыв</name>
+    <name>QueryResultTableSortDesc</name>
     <title>
       <key>en</key>
-      <value>Соритровать по убыванию</value>
+      <value>Sort descending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по убыванию</value>
     </title>
     <id>41</id>
     <toolTip>
@@ -11150,7 +11278,7 @@ Example:
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Команда_РезультатЗапросаТаблицаСортироватьУбыв</name>
+        <name>QueryResultTableSortDesc_Command</name>
       </handler>
     </action>
     <representation>Picture</representation>
@@ -11158,10 +11286,14 @@ Example:
     <associatedTableElementId>4</associatedTableElementId>
   </formCommands>
   <formCommands>
-    <name>РезультатЗапросаТаблицаСортироватьВозр</name>
+    <name>QueryResultTableSortAsc</name>
     <title>
       <key>en</key>
-      <value>Сортировать по возрвстанию</value>
+      <value>Sort ascending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по возрастанию</value>
     </title>
     <id>42</id>
     <toolTip>
@@ -11176,17 +11308,21 @@ Example:
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Команда_РезультатЗапросаТаблицаСортироватьВозр</name>
+        <name>QueryResultTableSortAsc_Command</name>
       </handler>
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>РезультатЗапросаДеревоСортироватьВозр</name>
+    <name>QueryResultTreeSortAsc</name>
     <title>
       <key>en</key>
-      <value>Сортировать по возрвстанию</value>
+      <value>Sort ascending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по возрастанию</value>
     </title>
     <id>43</id>
     <use>
@@ -11197,16 +11333,20 @@ Example:
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Команда_РезультатЗапросаДеревоСортироватьВозр</name>
+        <name>QueryResultTreeSortAsc_Command</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <formCommands>
-    <name>РезультатЗапросаДеревоСортироватьУбыв</name>
+    <name>QueryResultTreeSortDesc</name>
     <title>
       <key>en</key>
-      <value>Соритровать по убыванию</value>
+      <value>Sort descending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по убыванию</value>
     </title>
     <id>44</id>
     <toolTip>
@@ -11221,7 +11361,7 @@ Example:
     </picture>
     <action xsi:type="form:FormCommandHandlerContainer">
       <handler>
-        <name>Команда_РезультатЗапросаДеревоСортироватьУбыв</name>
+        <name>QueryResultTreeSortDesc_Command</name>
       </handler>
     </action>
     <currentRowUse>Auto</currentRowUse>
