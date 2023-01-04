@@ -4441,61 +4441,75 @@ EndFunction
 &AtClient
 Procedure RowEditEnd(Result, AdditionalParameters) Export
 
-	If Result <> Undefined Then
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	
+	If AdditionalParameters.Field = "Container" Then
+		If AdditionalParameters.Table = "QueryParameters" Then
+			QueryParameters_SaveValue(AdditionalParameters.Row, Result.Value);
+		ElsIf AdditionalParameters.Table = "TempTables" Then
+			TableRow = TempTables.FindByID(AdditionalParameters.Row);
+			
+			Container = Новый Структура("Type, RowCount, Value, Presentation", "ValueTable",
+				Result.RowCount, Result.Value, Result.Presentation);
+			
+			TableRow.Container = Container;
+			TableRow.Value = TableRow.Container.Presentation;
+			Modified = True;
+		EndIf;
+	ElsIf AdditionalParameters.Field = "ContainerAsType" Then
+		QueryParameters_SaveValue(AdditionalParameters.Row, Result.ContainerDescription);
+	ElsIf AdditionalParameters.Field = "ValueType" Then
 
-		If AdditionalParameters.Field = "Container" Then
-			If AdditionalParameters.Table = "QueryParameters" Then
-				QueryParameters_SaveValue(AdditionalParameters.Row, Result.Value);
-			ElsIf AdditionalParameters.Table = "TempTables" Then
-				TableRow = TempTables.FindByID(AdditionalParameters.Row);
-				TableRow.Container = Result.Value;
-				TableRow.Value = TableRow.Container.Presentation;
-				Modified = True;
-			EndIf;
-		ElsIf AdditionalParameters.Field = "ContainerAsType" Then
-			QueryParameters_SaveValue(AdditionalParameters.Row, Result.ContainerDescription);
-		ElsIf AdditionalParameters.Field = "ValueType" Then
+		ContainerDescription = Result.ContainerDescription;
 
-			ContainerDescription = Result.ContainerDescription;
+		idParameterRow = AdditionalParameters.Row;
+		If idParameterRow = Undefined Then
+			//adding new parameter
+			ParameterRow = AddParameterWithNameCheck(Result.ParameterName);
+			ParameterRow.ContainerType = Result.ContainerType;
+			idParameterRow = ParameterRow.GetID();
+		Endif;
 
-			idParameterRow = AdditionalParameters.Row;
-			If idParameterRow = Undefined Then
-				//adding new parameter
-				ParameterRow = AddParameterWithNameCheck(Result.ParameterName);
-				ParameterRow.ContainerType = Result.ContainerType;
-				idParameterRow = ParameterRow.GetID();
-			EndIf;
+		QueryParameters_SetType(idParameterRow, Result.ContainerType, ContainerDescription);
 
-			QueryParameters_SetType(idParameterRow, Result.ContainerType, ContainerDescription);
-
-			strQueryText = Undefined;
-			If Result.Property("QueryText", strQueryText) Then
+		strQueryText = Undefined;
+		If Result.Property("QueryText", strQueryText) Then
 
 				If ParameterRow <> Undefined And ParameterRow.Name <> Result.ParameterName Then
 					strQueryText = StrReplace(strQueryText, "&" + Result.ParameterName, "&"
 						+ ParameterRow.Name);
 				EndIf;
 
-				nTextSize = StrLen(QueryText);
-				Items.QueryText.SetTextSelectionBounds(nTextSize + 1, nTextSize + 1);
-				Items.QueryText.SelectedText = strQueryText;
+			nTextSize = StrLen(CurrentQueryText());
+			УстановитьГраницыВыделенияЗапросаПоПозиции(nTextSize + 1, nTextSize + 1);
+			ВставитьТекстПоПозицииКурсораЗапроса(strQueryText);
 
-				Items.QueryGroupPages.CurrentPage = Items.QueryPage;
-				CurrentItem = Items.QueryText;
+			Items.QueryGroupPages.CurrentPage = Items.QueryPage;
+			CurrentItem = Items.QueryText;
 
-			EndIf;
+		EndIf;
 
-			SetValueInputParameters();
+		SetValueInputParameters();
 
 		ElsIf AdditionalParameters.Field = "Value" Then
 			Items.QueryParameters.CurrentData.Value = Result.Value;
 			Items.QueryParameters.CurrentData.Container = Result.Value;
 			Modified = True;
 		EndIf;
-
-	EndIf;
-
+	
+	
 EndProcedure
+
+
+
+
+
+
+
+
+
 
 &AtClient
 Procedure ResultInBatchOnChange(Item)
@@ -4511,6 +4525,9 @@ Procedure SetItemsStates()
 	Items.OutputLinesLimitOption.Enabled = OutputLinesLimitEnabled;
 
 EndProcedure
+
+
+
 
 
 &AtClient
@@ -4531,6 +4548,17 @@ Procedure QueryParametersValueChoiceProcessing(Item, SelectedValue, StandardProc
 
 EndProcedure
 
+
+
+
+
+
+
+
+
+
+
+
 &AtClient
 Function ResultRecordStructureGetInsertText(Row)
 
@@ -4545,6 +4573,11 @@ Function ResultRecordStructureGetInsertText(Row)
 	Return StrConcat(arValueText, ".");
 
 EndFunction
+
+
+
+
+
 
 &AtClient
 Procedure QueryResultBatchIdleHandlerOnActivateRow()
@@ -4587,10 +4620,8 @@ Function FillFromXMLReader(XMLReader)
 	XMLReader.Close();
 
 	If ValueIsFilled(strError) Then
-		Return NStr("ru = 'Не возможно сформировать запрос - ошибка структуры введенного XML.
-					|Техническая информация: '; 
-					|en = 'Unable to generate a query. XML structure error.
-					|Details: '") + strError;
+		Return NStr("ru = 'Не возможно сформировать запрос - ошибка структуры введенного XML. Техническая информация: ';
+		|en = 'Unable to generate a query. XML structure error.Details: '") + strError;
 	EndIf;
 	
 	//Reading query parameters
@@ -4843,10 +4874,6 @@ Procedure SetSelectionBoundsForRowProcessing(TextItem, RowBeginning, ColumnBegin
 
 EndProcedure
 
-
-
-
-
 &AtClient
 Procedure SaveQueryBatch(Context)
 
@@ -4868,8 +4895,6 @@ EndProcedure
 Procedure SaveQueryBatchContinue(Result, Context) Export
 	QueryBatchSaveAs(Context);
 EndProcedure
-
-
 
 &AtClient
 Procedure QueryBatchSaveAs(Context)
@@ -4925,6 +4950,10 @@ Procedure AfterSaveQueryBatch(FileToMove, AdditionalParameters) Export
 		Закрыть();
 	ElsIf AdditionalParameters.Property("New") Then
 		QueryBatch_New();
+	Else
+		UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject,"Query" );
+		UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject,"Algorithm" );
+		UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject,"AlgorithmBeforeExecution" );
 	EndIf;
 
 EndProcedure
