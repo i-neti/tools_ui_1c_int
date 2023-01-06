@@ -4483,8 +4483,8 @@ Procedure RowEditEnd(Result, AdditionalParameters) Export
 				EndIf;
 
 			nTextSize = StrLen(CurrentQueryText());
-			УстановитьГраницыВыделенияЗапросаПоПозиции(nTextSize + 1, nTextSize + 1);
-			ВставитьТекстПоПозицииКурсораЗапроса(strQueryText);
+			SetQuerySelectionBoundsByPosition(nTextSize + 1, nTextSize + 1);
+			InsertTextInQueryCursorLocation(strQueryText);
 
 			Items.QueryGroupPages.CurrentPage = Items.QueryPage;
 			CurrentItem = Items.QueryText;
@@ -5018,14 +5018,14 @@ Procedure ExecuteQuery(fUseSelection)
 	Если fEntireText Тогда
 		strQueryText =CurrentQueryText();
 	Иначе
-		strQueryText =ВыделенныйТекстЗапроса();
+		strQueryText = ВыделенныйТекстЗапроса();
 	КонецЕсли;
 
 	If AutoSaveBeforeQueryExecutionOption And Modified Then
 		AutoSave();
 	EndIf;
 
-	stResult = ExecuteQueryAtServer(strQueryText, ТекущийАлгоритмПередВыполнением());
+	stResult = ExecuteQueryAtServer(strQueryText, CurrentAlgorithmBeforeExecution());
 	Если ValueIsFilled(stResult.ErrorDescription) Тогда
 		ShowConsoleMessageBox(stResult.ErrorDescription);
 		CurrentItem = Items.QueryText;
@@ -5145,18 +5145,18 @@ Procedure SortQueryResultTree(SortDirection)
 	ColumnName = Items.QueryResultTree.CurrentItem.Name;
 	If StrOccurrenceCount(ColumnName, "QueryResultTree") = 1 Then
 		ColumnName = StrReplace(ColumnName, "QueryResultTree", "");
-		СортироватьРезультатЗапросаДеревоНаСервере(ColumnName, SortDirection);
-	ИначеЕсли StrOccurrenceCount(ColumnName, "QueryResultTree") > 1 Тогда 
-		ShowMessageBox(, "Нельза сортировать по колонке содержащей в названии ""QueryResultTree""");			
-	КонецЕсли;
-КонецПроцедуры
+		 SortQueryResultTreeAtServer(ColumnName, SortDirection);
+	ElsIf StrOccurrenceCount(ColumnName, "QueryResultTree") > 1 Then 
+		ShowMessageBox(, "ru = 'Нельзя сортировать по колонке содержащей в названии """"QueryResultTree""""';en = 'It is not possible to sort by the column containing """"QueryResultTree"""" in the name'");			
+	EndIf;
+EndProcedure
 
-&НаСервере
-Процедура СортироватьРезультатЗапросаДеревоНаСервере(ColumnName, SortDirection)
-	ДеревоРезультат = РеквизитФормыВЗначение("QueryResultTree");
-	ДеревоРезультат.Строки.Sort(ColumnName + " " + SortDirection, Истина);
-	ЗначениеВРеквизитФормы(ДеревоРезультат, "QueryResultTree");
-КонецПроцедуры
+&AtServer
+Procedure SortQueryResultTreeAtServer(ColumnName, SortDirection)
+	ResultTree = FormAttributeToValue("QueryResultTree");
+	ResultTree.Rows.Sort(ColumnName + " " + SortDirection, True);
+	ValueToFormAttribute(ResultTree, "QueryResultTree");
+EndProcedure
 
 #Region ExecuteDataProcessor_Command
 
@@ -5481,28 +5481,19 @@ Procedure InterruptBackgroundJob()
 	BackgroundJobID = "";
 EndProcedure
 
-
-
 #EndRegion
 
 &AtClient
 Procedure ChoicePredefinedCompletion(Result, AdditionalParameters) Export
 	If ValueIsFilled(Result) Then
 		FormDataChoicePredefined = Result.FormData;
-		Items.QueryText.SelectedText = Result.Result;
+		InsertTextInQueryCursorLocation(Result.Result)
 	EndIf;
 EndProcedure
 
-
-
-
 #Region GetCodeWithParameters_Command
 
-
-
 #EndRegion //GetCodeWithParameters_Command
-
-
 
 &AtServer
 Procedure QueryParametersNextToTextAtServer()
@@ -5512,8 +5503,6 @@ Procedure QueryParametersNextToTextAtServer()
 		Items.Move(Items.QueryParameters, Items.ParametersPage);
 	EndIf;
 EndProcedure
-
-
 
 #Region TechnologicalLog_Command
 
@@ -5598,16 +5587,12 @@ Procedure TechnologicalLog_WaitingForDisable() Export
 				TechLogSwitchingPollingPeriodOption, True);
 		Else
 			//Cannot delete technological log directory.
-			//Assume that technological log is disabled.
+			//Assume that technological log is disabled. Because 60 seconds left
 			TechnologicalLog_EnablingIndication(False);
 		EndIf;
 	EndIf;
 
 EndProcedure
-
-
-
-
 
 #EndRegion //TechnologicalLog_Command
 
@@ -5672,54 +5657,50 @@ EndFunction
 #Region Algorithms
 
 &AtClient
-Процедура SetAlgorithmText(NewText, УстанавливатьОригинальныйТекст = Ложь, НовыйОригинальныйТекст = "")
-	Если UT_IncludedInUniversalTools Тогда
-		UT_CodeEditorClient.SetEditorText(ЭтотОбъект, "Algorithm", НовыйТекст, УстанавливатьОригинальныйТекст);
+Procedure SetAlgorithmText(NewText, SetOriginalText = False, NewOriginalText = "")
+	If UT_IncludedInUniversalTools Then
+		UT_CodeEditorClient.SetEditorText(ThisObject, "Algorithm", NewText, SetOriginalText);
 		
-		Если УстанавливатьОригинальныйТекст Тогда
-			UT_CodeEditorClient.УстановитьОригинальныйТекстРедактора(ЭтотОбъект, "Алгоритм", НовыйОригинальныйТекст);
-		КонецЕсли;
-	Иначе
+		If SetOriginalText Then
+			UT_CodeEditorClient.SetEditorOriginalText(ThisObject, "Algorithm", NewOriginalText);
+		EndIf;
+	Else
 		AlgorithmText = NewText;
-	КонецЕсли;
-КонецПроцедуры
+	Endif;
+EndProcedure
 
 &AtClient
-Процедура SetAlgorithmTextBeforeExecution(НовыйТекст, УстанавливатьОригинальныйТекст = Ложь,
-	НовыйОригинальныйТекст = "")
-	Если УИ_ВходитВСоставУниверсальныхИнструментов Тогда
-		УИ_РедакторКодаКлиент.УстановитьТекстРедактора(ЭтотОбъект, "АлгоритмПередВыполнением", НовыйТекст,
-			УстанавливатьОригинальныйТекст);
+Procedure SetAlgorithmTextBeforeExecution(NewText, SetOriginalText = False,
+	NewOriginalText = "")
+	If UT_IncludedInUniversalTools Then
+		UT_CodeEditorClient.SetEditorText(ThisObject, "AlgorithmBeforeExecution", NewText,
+			SetOriginalText);
 
-		Если УстанавливатьОригинальныйТекст Тогда
-			УИ_РедакторКодаКлиент.УстановитьОригинальныйТекстРедактора(ЭтотОбъект, "АлгоритмПередВыполнением",
-				НовыйОригинальныйТекст);
+		If SetOriginalText Then
+			UT_CodeEditorClient.SetEditorOriginalText(ThisObject, "AlgorithmBeforeExecution",
+				NewOriginalText);
 				
-			УИ_ДобавитьКонтекстАлгоритмаПередВыполнением();
+			UT_AddAlgorithmContextBeforeExecution();
 			
-		КонецЕсли;
-	Иначе
-		ТекстАлгоритм = НовыйТекст;
-	КонецЕсли;
-КонецПроцедуры
+		EndIf;
+	Else
+		AlgorithmText = NewText;
+	EndIf;
+EndProcedure
 
 
 &AtClient
-Процедура SetQueryText(НовыйТекст, УстанавливатьОригинальныйТекст = Ложь, НовыйОригинальныйТекст = "")
-	Если УИ_ВходитВСоставУниверсальныхИнструментов Тогда
-		УИ_РедакторКодаКлиент.УстановитьТекстРедактора(ЭтотОбъект, "Запрос", НовыйТекст);
+Procedure SetQueryText(NewText, SetOriginalText = False, NewOriginalText = "")
+	If UT_IncludedInUniversalTools Then
+		UT_CodeEditorClient.SetEditorText(ThisObject, "Query", NewText);
 		
-		Если УстанавливатьОригинальныйТекст Тогда
-			УИ_РедакторКодаКлиент.УстановитьОригинальныйТекстРедактора(ЭтотОбъект, "Запрос", НовыйОригинальныйТекст);
-		КонецЕсли;
-	Иначе
-		ТекстЗапроса = НовыйТекст;
-	КонецЕсли;
-КонецПроцедуры
-
-
-
-
+		If SetOriginalText Then
+			UT_CodeEditorClient.SetEditorOriginalText(ThisObject, "Query", NewOriginalText);
+		EndIf;
+	Else
+		QueryText = NewText;
+	EndIf;
+EndProcedure
 
 &AtClient
 Function AlgorithmCurrentText()
@@ -5732,7 +5713,16 @@ EndFunction
 
 &AtClient
 Function CurrentQueryText()
-	Return QueryText;
+	If UT_IncludedInUniversalTools Then
+		Return UT_CodeEditorClient.EditorCodeText(ThisObject,"Query");
+	Else
+		Return QueryText;
+	EndIf;
+EndFunction
+
+&AtClient
+Function CurrentAlgorithmBeforeExecution()
+	Return UT_CodeEditorClient.EditorCodeText(ThisObject, "AlgorithmBeforeExecution");
 EndFunction
 
 &AtClient
@@ -5761,8 +5751,18 @@ EndProcedure
 
 &AtClient
 Procedure SetQuerySelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd)
+	If UT_IncludedInUniversalTools Then
+		UT_CodeEditorClient.SetTextSelectionBorders(ThisObject, "Query", RowBeginning, ColumnBeginning,
+			RowEnd, ColumnEnd);
+	Else
+		Items.QueryText.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure SetQuerySelectionBoundsByPosition(Begin, End)
 	
-	Items.QueryText.SetTextSelectionBounds(RowBeginning, ColumnBeginning, RowEnd, ColumnEnd);
+	Items.QueryText.SetTextSelectionBounds(Begin, End);
 	
 EndProcedure
 
@@ -5777,11 +5777,11 @@ EndFunction
 
 &AtClient 
 Function QuerySelectionBoundaries()
-//	If UT_IncludedInUniversalTools Then
-//		Return UT_CodeEditorClient.EditorSelectionBorders(ThisObject, "Algorithm");
-//	Else
+	If UT_IncludedInUniversalTools Then
+		Return UT_CodeEditorClient.EditorSelectionBorders(ThisObject, "Query");
+	Else
 		Return ItemSelectionBounds(Items.QueryText);	
-//	EndIf;
+	EndIf;
 EndFunction
 
 &AtClient
@@ -5795,9 +5795,27 @@ Procedure InsertTextInAlgorithmCursorPosition (Text)
 EndProcedure
 
 &AtClient
+Procedure InsertTextInQueryCursorLocation(Text)
+	If UT_IncludedInUniversalTools Then
+		UT_CodeEditorClient.InsertTextInCursorLocation(ThisObject, "Query", Text);
+	Else
+		InsertTextInItemCursorLocation(Items.QueryText, Text);	
+	EndIf;
+EndProcedure
+
+&AtClient
 Procedure InsertTextInItemCursorLocation(Item, Text)
 	Item.SelectedText = Text;
 EndProcedure
+
+&AtClient
+Function ВыделенныйТекстЗапроса()
+	If UT_IncludedInUniversalTools Then
+		Return UT_CodeEditorClient.EditorSelectedText(ThisObject, "Query");
+	Else
+		Return Items.QueryText.SelectedText;	
+	EndIf;
+КонецФункции
 
 #EndRegion
 
@@ -5837,6 +5855,7 @@ Procedure UT_AddResultStructureContextAlgorithm()
 	
 	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "Algorithm", AdditionalContextStructure);
 
+
 EndProcedure
 
 &AtClient
@@ -5845,6 +5864,7 @@ Procedure UT_AddAlgorithmContextBeforeExecution()
 	AdditionalContextStructure.Insert("mQuery", "classes.Query");
 
 	UT_CodeEditorClient.AddCodeEditorContext(ThisObject, "AlgorithmBeforeExecution", AdditionalContextStructure);
+	
 	
 EndProcedure
 
