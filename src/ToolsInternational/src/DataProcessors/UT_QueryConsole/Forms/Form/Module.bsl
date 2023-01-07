@@ -1614,7 +1614,7 @@ EndProcedure
 
 //@skip-warning
 &AtClient
-Procedure EditorFieldDocumentGenerated(Item)
+Procedure Attachable_EditorFieldDocumentGenerated(Item)
 	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
 EndProcedure
 
@@ -3981,25 +3981,25 @@ EndFunction
 
 &AtClient
 Function Query_GetQueryData(QueryID)
-
 	If QueryID = Undefined Then
 		Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn, CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn,QueryOriginal, CodeTextOriginal",
 			"", "", "", 2, Undefined, False, 1, 1, 1, 1, 1, 1, 1, 1);
 	EndIf;
-
 	QueryRow = QueryBatch.FindByID(QueryID);
-	Return New Structure("Name, Query, CodeText, CodeExecutionMethod, Parameters, TempTables, 
-	|InWizard, CursorBeginRow, CursorBeginColumn, CursorEndRow, CursorEndColumn,
-	|CodeCursorBeginRow, CodeCursorBeginColumn, CodeCursorEndRow, CodeCursorEndColumn
-	|QueryOriginal, CodeTextOriginal,AlgorithmBeforeExecution,AlgorithmBeforeExecutionOriginal",
-		QueryRow.Name, QueryRow.QueryText, QueryRow.CodeText, QueryRow.CodeExecutionMethod,
-		QueryRow.QueryParameters, QueryRow.TempTables, QueryRow.InWizard,
-		QueryRow.CursorBeginRow + 1, QueryRow.CursorBeginColumn + 1, QueryRow.CursorEndRow
-		+ 1, QueryRow.CursorEndColumn + 1, QueryRow.CodeCursorBeginRow + 1,
-		QueryRow.CodeCursorBeginColumn + 1, QueryRow.CodeCursorEndRow + 1,
-		QueryRow.CodeCursorEndColumn + 1,QueryRow.QueryTextOriginal, QueryRow.CodeTextOriginal,
-		QueryRow.AlgorithmBeforeExecution, QueryRow.AlgorithmBeforeExecutionOriginal);
-
+	ReturnStructure = New Structure("Name,Query,CodeText,CodeExecutionMethod",QueryRow.Name,QueryRow.QueryText,QueryRow.CodeText,QueryRow.CodeExecutionMethod);
+	ReturnStructure.Insert("Parameters",QueryRow.QueryParameters); 	ReturnStructure.Insert("TempTables",QueryRow.TempTables);
+	ReturnStructure.Insert("InWizard",QueryRow.InWizard); 	ReturnStructure.Insert("CursorBeginRow",QueryRow.CursorBeginRow + 1);
+	ReturnStructure.Insert("CursorBeginColumn",QueryRow.CursorBeginColumn + 1); 	
+	ReturnStructure.Insert("CursorEndRow",QueryRow.CursorEndRow+ 1);
+	ReturnStructure.Insert("CursorEndColumn",QueryRow.CursorEndColumn + 1); 	
+	ReturnStructure.Insert("CodeCursorBeginRow",QueryRow.CodeCursorBeginRow + 1);
+	ReturnStructure.Insert("CodeCursorBeginColumn",QueryRow.CodeCursorBeginColumn + 1); 
+	ReturnStructure.Insert("CodeCursorEndRow",QueryRow.CodeCursorEndRow + 1);
+	ReturnStructure.Insert("CodeCursorEndColumn",QueryRow.CodeCursorEndColumn + 1); 	
+	ReturnStructure.Insert("QueryOriginal",QueryRow.QueryTextOriginal);
+	ReturnStructure.Insert("CodeTextOriginal",QueryRow.CodeTextOriginal); 	
+	ReturnStructure.Insert("AlgorithmBeforeExecution",QueryRow.AlgorithmBeforeExecution); 	ReturnStructure.Insert("AlgorithmBeforeExecutionOriginal",QueryRow.AlgorithmBeforeExecutionOriginal);
+	Return ReturnStructure;
 EndFunction
 
 &AtClient
@@ -5015,11 +5015,11 @@ Procedure ExecuteQuery(fUseSelection)
 	fEntireText = Not fUseSelection
 				 Or (QuerySelectionBoundaries.RowBeginning = QuerySelectionBoundaries.RowEnd
 					  And QuerySelectionBoundaries.ColumnBeginning = QuerySelectionBoundaries.ColumnEnd);
-	Если fEntireText Тогда
+	If fEntireText Then
 		strQueryText =CurrentQueryText();
-	Иначе
-		strQueryText = ВыделенныйТекстЗапроса();
-	КонецЕсли;
+	Else
+		strQueryText = QuerySelectedText();
+	EndIf;
 
 	If AutoSaveBeforeQueryExecutionOption And Modified Then
 		AutoSave();
@@ -5809,13 +5809,13 @@ Procedure InsertTextInItemCursorLocation(Item, Text)
 EndProcedure
 
 &AtClient
-Function ВыделенныйТекстЗапроса()
+Function QuerySelectedText()
 	If UT_IncludedInUniversalTools Then
 		Return UT_CodeEditorClient.EditorSelectedText(ThisObject, "Query");
 	Else
 		Return Items.QueryText.SelectedText;	
 	EndIf;
-КонецФункции
+EndFunction
 
 #EndRegion
 
@@ -5840,14 +5840,14 @@ Procedure UT_AddResultStructureContextAlgorithm()
 			VariableStructure.Insert("Type", "Structure");
 		EndIf;
 		
-		VariableStructure.Insert("ChildProperties", New Array);
+		VariableStructure.Insert("ChildProperties", New Structure);
 		
 		For Each CurVariableAttribute In Variable.GetItems() Do
 			NewProperty = New Structure;
-			NewProperty.Insert("Name", CurVariableAttribute.Name);
+			NewProperty.Insert("ChildProperties", New Structure);
 			NewProperty.Insert("Type", CurVariableAttribute.Type);
 			
-			VariableStructure.ChildProperties.Add(NewProperty);
+			VariableStructure.ChildProperties.Insert(CurVariableAttribute.Name,NewProperty);
 		EndDo;
 		
 		AdditionalContextStructure.Insert(Variable.Name, VariableStructure);

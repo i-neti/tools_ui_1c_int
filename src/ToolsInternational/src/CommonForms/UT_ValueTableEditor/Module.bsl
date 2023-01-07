@@ -48,7 +48,7 @@ Procedure TableColumnsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
 		Return;
 	EndIf;
 
-	CurrentRow=Items.TableColumns.CurrentLine;
+	CurrentRow=Items.TableColumns.CurrentRow;
 
 	UT_CommonClient.EditType(CurrentData.ValueType, 1, StandardProcessing, ThisObject,
 		New NotifyDescription("TableColumnsValueTypeStartChoiceEND", ThisObject,
@@ -86,7 +86,7 @@ EndProcedure
 Procedure FillValueTableColumns(VT)
 	TableColumns.Clear();
 
-	For Each Column In VT.Cols Do
+	For Each Column In VT.Columns Do
 		NewRow=TableColumns.Add();
 		NewRow.Name=Column.Name;
 		NewRow.ValueType=Column.ValueType;

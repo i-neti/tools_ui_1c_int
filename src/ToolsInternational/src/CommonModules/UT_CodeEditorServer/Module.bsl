@@ -1,6 +1,7 @@
 #Region Public
 
 #Region FormItemsCreate
+
 // Form on create at server.
 // 
 // Parameters:
@@ -40,19 +41,20 @@ Procedure FormOnCreateAtServer(Form, EditorType = Undefined) Export
 	AttributeNameCodeEditorInitialInitializationPassed = UT_CodeEditorClientServer.AttributeNameCodeEditorInitialInitializationPassed();
 	
 	AttributesArray=New Array;
-	AttributesArray.Add(New FormAttribute(AttributeNameEditorType, New TypeDescription("String", , New StringQualifiers(20,
-		AllowedLength.Variable)), "", "", True));
-	AttributesArray.Add(New FormAttribute(AttributeNameLibraryURL, New TypeDescription("String", , New StringQualifiers(0,
-	AllowedLength.Variable)), "", "", True));
-	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorFormCodeEditors, New TypeDescription, "", "", True));	
+	AttributesArray.Add(New FormAttribute(AttributeNameEditorType, New TypeDescription("String", , 
+		New StringQualifiers(20,AllowedLength.Variable)), "", "", True));
+	AttributesArray.Add(New FormAttribute(AttributeNameLibraryURL, New TypeDescription("String", , 
+		New StringQualifiers(0,	AllowedLength.Variable)), "", "", True));
+	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorFormCodeEditors, New TypeDescription, 
+		"", "", True));	
 	AttributesArray.Add(New FormAttribute(AttributeNameCodeEditorInitialInitializationPassed, New TypeDescription("Boolean"),
 		"", "", Истина));
 
-		
 	Form.ChangeAttributes(AttributesArray);
 	
 	Form[AttributeNameEditorType]=EditorType;
-	Form[AttributeNameLibraryURL] = PutLibraryToTempStorage(Form.UUID, IsWindowsClient, IsWebClient, EditorType);
+	Form[AttributeNameLibraryURL] = PutLibraryToTempStorage(Form.UUID, 
+		IsWindowsClient, IsWebClient, EditorType);
 	Form[AttributeNameCodeEditorFormCodeEditors] = New Structure;
 EndProcedure
 
@@ -67,13 +69,10 @@ EndProcedure
 //  CommandBarGroup - FormGroup - Command bar group to add  buttons . Still in development
 Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Undefined, EditorLanguage = "bsl",
 	CommandBarGroup = Undefined) Export
-	//AttributeNameEditorType=UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor();
-	
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 	
 	EditorData = New Structure;
 	EditorData.Insert("EditorEvents",EditorEvents);
-	
 	If EditorData.EditorEvents = Undefined Then 
 		EditorData.EditorEvents = NewEditorEventsParameters();
 	EndIf;
@@ -113,7 +112,8 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Unde
 		EndDo;
 	EndIf;
 	
-	Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()].Insert(EditorID,  EditorData);
+	Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()].Insert(
+	   EditorID,  EditorData);
 	
 	If CommandBarGroup = Undefined Then 
 		Return;
@@ -139,6 +139,7 @@ Procedure CreateCodeEditorItems(Form, EditorID, EditorField, EditorEvents = Unde
  //18 - Save as dataprocessors
 
 EndProcedure
+
 // new parameters of editor events .
 // 
 // return:
@@ -153,7 +154,8 @@ EndFunction
 
 #EndRegion
 
-Function PutLibraryToTempStorage(FormID, IsWindowsClient, IsWebClient, EditorType=Undefined) Export
+Function PutLibraryToTempStorage(FormID, IsWindowsClient, IsWebClient, 
+    EditorType=Undefined) Export
 	If EditorType = Undefined Then
 		EditorType = CodeEditor1CCurrentVariant();
 	EndIf;
@@ -186,8 +188,6 @@ Function PutLibraryToTempStorage(FormID, IsWindowsClient, IsWebClient, EditorTyp
 
 	ZipReader=New ZipFileReader(Stream);
 	ZipReader.ExtractAll(DirectoryAtServer, ZIPRestoreFilePathsMode.Restore);
-
-
 	ArchiveFiles=FindFiles(DirectoryAtServer, "*", True);
 	For Each LibraryFile In ArchiveFiles Do
 		FileKey=StrReplace(LibraryFile.FullName, DirectoryAtServer + GetPathSeparator(), "");
@@ -210,7 +210,6 @@ Function PutLibraryToTempStorage(FormID, IsWindowsClient, IsWebClient, EditorTyp
 EndFunction
 
 #Region ToolsSettings
-
 Function CodeEditor1CCurrentVariant() Export
 	CodeEditorSettings = CodeEditorCurrentSettings();
 	
@@ -253,6 +252,7 @@ Function CodeEditorCurrentSettings() Export
 	Return DefaultSettings;
 
 EndFunction
+
 #EndRegion
 
 #Region WorkWithMetaData
@@ -293,7 +293,6 @@ Function MetadataObjectHasVirtualTables(MetadataTypeName)
 	
 EndFunction
 
-
 Function MetadataObjectAttributeDescription(Attribute,AllRefsType)
 	Description = New Structure;
 	Description.Insert("Name", Attribute.Name);
@@ -317,7 +316,8 @@ Function ConfigurationMetadataObjectDescriptionByName(ObjectType, ObjectName) Ex
 	Return ConfigurationMetadataObjectDescription(Metadata[ObjectType][ObjectName], ObjectType, AllRefsType);	
 EndFunction
 
-Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, AllRefsType, IncludeAttributesDescription = True) Export
+Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, AllRefsType, 
+IncludeAttributesDescription = True) Export
 	ItemDescription = New Structure;
 	ItemDescription.Insert("ObjectType", ObjectType);
 	ItemDescription.Insert("Name", ObjectOfMetadata.Name);
@@ -400,8 +400,6 @@ Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, Al
 
 		ItemDescription.Insert(KeyValue.Key, TabularSectionCollectionDescription);
 	EndDo;
-
-
 	If MetadataObjectHasPredefined(ObjectType) Then
 
 		Predefined = ObjectOfMetadata.GetPredefinedNames();
@@ -417,11 +415,13 @@ Function ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, Al
 	Return ItemDescription;
 EndFunction
 
-Function ConfigurationMetadataCollectionDescription(Collection, ObjectType, TypesMap, AllRefsType, IncludeAttributesDescription) 
+Function ConfigurationMetadataCollectionDescription(Collection, ObjectType, TypesMap, AllRefsType, 
+IncludeAttributesDescription) 
 	CollectionDescription = New Structure;
 
 	For Each ObjectOfMetadata In Collection Do
-		ItemDescription = ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, AllRefsType, IncludeAttributesDescription);
+		ItemDescription = ConfigurationMetadataObjectDescription(ObjectOfMetadata, ObjectType, AllRefsType,
+		      IncludeAttributesDescription);
 			
 		CollectionDescription.Insert(ObjectOfMetadata.Name, ItemDescription);
 		
@@ -469,25 +469,47 @@ Function ConfigurationMetadataDescription(IncludeAttributesDescription = True) E
 	MetadataDescription.Insert("Version", Metadata.Version);
 	MetadataDescription.Insert("AllRefsType", AllRefsType);
 	
-	MetadataDescription.Insert("Catalogs", ConfigurationMetadataCollectionDescription(Metadata.Catalogs, "Catalog", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("Documents", ConfigurationMetadataCollectionDescription(Metadata.Documents, "Document", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("InformationRegisters", ConfigurationMetadataCollectionDescription(Metadata.InformationRegisters, "InformationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("AccumulationRegisters", ConfigurationMetadataCollectionDescription(Metadata.AccumulationRegisters, "AccumulationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("AccountingRegisters", ConfigurationMetadataCollectionDescription(Metadata.AccountingRegisters, "AccountingRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("CalculationRegisters", ConfigurationMetadataCollectionDescription(Metadata.CalculationRegisters, "CalculationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("DataProcessors", ConfigurationMetadataCollectionDescription(Metadata.DataProcessors, "DataProcessor", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("Reports", ConfigurationMetadataCollectionDescription(Metadata.Reports, "Report", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("Enums", ConfigurationMetadataCollectionDescription(Metadata.Enums, "Enum", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("CommonModules", ConfigurationMetadataCollectionDescription(Metadata.CommonModules, "CommonModule", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("ChartsOfAccounts", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfAccounts, "ChartOfAccounts", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("BusinessProcesses", ConfigurationMetadataCollectionDescription(Metadata.BusinessProcesses, "BusinessProcess", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("Tasks", ConfigurationMetadataCollectionDescription(Metadata.Tasks, "Task", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("ChartsOfAccounts", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfAccounts, "ChartOfAccounts", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("ExchangePlans", ConfigurationMetadataCollectionDescription(Metadata.ExchangePlans, "ExchangePlan", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("ChartsOfCharacteristicTypes", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfCharacteristicTypes, "ChartOfCharacteristicTypes", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("ChartsOfCalculationTypes", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfCalculationTypes, "ChartOfCalculationTypes", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("Constants", ConfigurationMetadataCollectionDescription(Metadata.Constants, "Constant", TypesMap, AllRefsType, IncludeAttributesDescription));
-	MetadataDescription.Insert("SessionParameters", ConfigurationMetadataCollectionDescription(Metadata.SessionParameters, "SessionParameter", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("Catalogs", ConfigurationMetadataCollectionDescription(Metadata.Catalogs, 
+	    "Catalog", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("Documents", ConfigurationMetadataCollectionDescription(Metadata.Documents, "Document",
+		 TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("InformationRegisters", ConfigurationMetadataCollectionDescription(
+		Metadata.InformationRegisters, "InformationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("AccumulationRegisters", ConfigurationMetadataCollectionDescription(
+		Metadata.AccumulationRegisters, "AccumulationRegister", TypesMap, AllRefsType, 
+		IncludeAttributesDescription));
+	MetadataDescription.Insert("AccountingRegisters", ConfigurationMetadataCollectionDescription(
+		Metadata.AccountingRegisters, "AccountingRegister", TypesMap, AllRefsType, 
+		IncludeAttributesDescription));
+	MetadataDescription.Insert("CalculationRegisters", ConfigurationMetadataCollectionDescription(Metadata.CalculationRegisters,
+		 "CalculationRegister", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("DataProcessors", ConfigurationMetadataCollectionDescription(Metadata.DataProcessors, "DataProcessonr",
+		 TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("Reports", ConfigurationMetadataCollectionDescription(Metadata.Reports, "Report", 
+		 TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("Enums", ConfigurationMetadataCollectionDescription(Metadata.Enums, 
+		"Enum", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("CommonModules", ConfigurationMetadataCollectionDescription(Metadata.CommonModules,
+		 "CommonModule", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("ChartsOfAccounts", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfAccounts, 
+		"ChartOfAccounts", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("BusinessProcesses", ConfigurationMetadataCollectionDescription(Metadata.BusinessProcesses, 
+		"BusinessProcess", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("Tasks", ConfigurationMetadataCollectionDescription(Metadata.Tasks, "Task", 
+		TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("ChartsOfAccounts", ConfigurationMetadataCollectionDescription(Metadata.ChartsOfAccounts, 
+		"ChartOfAccounts", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("ExchangePlans", ConfigurationMetadataCollectionDescription(Metadata.ExchangePlans,
+		 "ExchangePlan", TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("ChartsOfCharacteristicTypes", ConfigurationMetadataCollectionDescription(
+		Metadata.ChartsOfCharacteristicTypes, "ChartOfCharacteristicTypes", TypesMap, AllRefsType, 
+		IncludeAttributesDescription));
+	MetadataDescription.Insert("ChartsOfCalculationTypes", ConfigurationMetadataCollectionDescription(
+		Metadata.ChartsOfCalculationTypes, "ChartOfCalculationTypes", TypesMap, AllRefsType,IncludeAttributesDescription));
+	MetadataDescription.Insert("Constants", ConfigurationMetadataCollectionDescription(Metadata.Constants, "Constant", 
+		TypesMap, AllRefsType, IncludeAttributesDescription));
+	MetadataDescription.Insert("SessionParameters", ConfigurationMetadataCollectionDescription(Metadata.SessionParameters, 
+		"SessionParameter", TypesMap, AllRefsType, IncludeAttributesDescription));
 	
 	MetadataDescription.Insert("ReferenceTypesMap", TypesMap);
 	
@@ -532,15 +554,15 @@ Function ReferenceTypesMap() Export
 	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.Tasks, "Task");
 	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ChartsOfAccounts, "ChartOfAccounts");
 	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ExchangePlans, "ExchangePlan");
-	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ChartsOfCharacteristicTypes, "ChartOfCharacteristicTypes");
-	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ChartsOfCalculationTypes, "ChartOfCalculationTypes");
+	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ChartsOfCharacteristicTypes, 
+		"ChartOfCharacteristicTypes");
+	AddMetadataCollectionToReferenceTypesMap(Map, Metadata.ChartsOfCalculationTypes, 
+		"ChartOfCalculationTypes");
 
 	Return Map;
 EndFunction
 
 #EndRegion
-
-
 #EndRegion
 
 #Region Internal

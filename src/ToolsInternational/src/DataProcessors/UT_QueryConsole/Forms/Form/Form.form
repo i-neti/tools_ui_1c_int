@@ -4152,6 +4152,10 @@ Example:
                   <textEdit>true</textEdit>
                   <choiceList>
                     <presentation>
+                      <key>en</key>
+                      <value>simple execution</value>
+                    </presentation>
+                    <presentation>
                       <key>ru</key>
                       <value>простое выполнение</value>
                     </presentation>
@@ -4161,6 +4165,10 @@ Example:
                   </choiceList>
                   <choiceList>
                     <presentation>
+                      <key>en</key>
+                      <value>line by line without indication</value>
+                    </presentation>
+                    <presentation>
                       <key>ru</key>
                       <value>построчно без индикации</value>
                     </presentation>
@@ -4169,6 +4177,10 @@ Example:
                     </value>
                   </choiceList>
                   <choiceList>
+                    <presentation>
+                      <key>en</key>
+                      <value>line by line with indication</value>
+                    </presentation>
                     <presentation>
                       <key>ru</key>
                       <value>построчно с индикацией</value>

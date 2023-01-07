@@ -1730,6 +1730,23 @@
       </itemValueType>
     </extInfo>
   </attributes>
+  <attributes>
+    <name>ChoiceMode</name>
+    <title>
+      <key>en</key>
+      <value>Choice mode</value>
+    </title>
+    <id>18</id>
+    <valueType>
+      <types>Boolean</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
   <formCommands>
     <name>Apply</name>
     <title>
