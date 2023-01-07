@@ -22486,6 +22486,72 @@
     </action>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
+  <formCommands>
+    <name>CommandCheckAbilityToConnectToSourceA</name>
+    <title>
+      <key>en</key>
+      <value>Connection test</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </title>
+    <id>46</id>
+    <toolTip>
+      <key>en</key>
+      <value>Connection test</value>
+    </toolTip>
+    <toolTip>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.ExternalDataSource</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>CommandCheckAbilityToConnectToSourceA</name>
+      </handler>
+    </action>
+    <representation>TextPicture</representation>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>CommandCheckAbilityToConnectToSourceB</name>
+    <title>
+      <key>en</key>
+      <value>Connection test</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </title>
+    <id>47</id>
+    <toolTip>
+      <key>en</key>
+      <value>Connection test</value>
+    </toolTip>
+    <toolTip>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.ExternalDataSource</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>CommandCheckAbilityToConnectToSourceB</name>
+      </handler>
+    </action>
+    <representation>TextPicture</representation>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
   <commandInterface>
     <navigationPanel/>
     <commandBar/>
