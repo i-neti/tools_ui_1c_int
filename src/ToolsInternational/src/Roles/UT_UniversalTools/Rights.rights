@@ -155,7 +155,7 @@
 		</right>
 	</object>
 	<object>
-		<name>DataProcessor.UT_ConsoleComparisonData</name>
+		<name>DataProcessor.UT_ComparisonDataConsole</name>
 		<right>
 			<name>Use</name>
 			<value>true</value>

@@ -169,6 +169,6 @@
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
   <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ConsoleComparisonData</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
 </mdclass:Configuration>
