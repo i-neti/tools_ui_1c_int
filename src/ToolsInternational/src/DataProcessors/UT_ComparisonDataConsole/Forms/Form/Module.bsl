@@ -527,60 +527,60 @@ Procedure SourcePreviewAtClient(BaseID, MaximumRowsCount = 0, OnlyDuplicates = F
 EndProcedure
 
 &AtClient
-Procedure SourcePreviewAtClientTransferFileEnd(Результат, Адрес, ВыбранноеИмяФайла, ДополнительныеПараметры) Экспорт
+Procedure SourcePreviewAtClientTransferFileEnd(Result, Address, SelectedFileName, AdditionalParameters) Export
 	
-	BaseID = ДополнительныеПараметры.BaseID;
-	MaximumRowsCount = ДополнительныеПараметры.MaximumRowsCount;
-	OnlyDuplicates = ДополнительныеПараметры.OnlyDuplicates;
+	BaseID = AdditionalParameters.BaseID;
+	MaximumRowsCount = AdditionalParameters.MaximumRowsCount;
+	OnlyDuplicates = AdditionalParameters.OnlyDuplicates;
 
-	Если Результат Тогда
-		SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, Адрес);
-	Иначе
-		ТекстОшибок = "Не удалось поместить во временное хранилище файл: """ + Object["ConnectingToExternalBase" + BaseID + "PathToFile"] + """";
-		Сообщить(Формат(ТекущаяДата(),"ДЛФ=DT") + ": " + ТекстОшибок);
-	КонецЕсли;
+	If Result Then
+		SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, Address);
+	Else
+		ErrorsText = "ru = 'Не удалось поместить во временное хранилище файл: ';en = 'Failed to put a file in temporary storage:'" + Object["ConnectingToExternalBase" + BaseID + "PathToFile"] + """";
+		Message(Format(CurrentDate(),"DLF=DT;") + ": " + ErrorsText);
+	EndIf;
 	
 EndProcedure
 
 &AtClient
-Процедура SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile = "")
+Procedure SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile = "")
 	
-	ТабличныйДокумент = GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile);
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile);
 	
-	Если ТабличныйДокумент <> Неопределено Тогда
-		ТабличныйДокумент.Показать(СтрШаблон("Источник %1 (%2)", BaseID, ?(MaximumRowsCount = 0, "все строки", "" + MaximumRowsCount + "строк")));
-	КонецЕсли;
+	If SpreadsheetDocument <> Undefined Then
+		SpreadsheetDocument.Show(StrTemplate("ru = 'Источник %1 (%2)';en = 'Source %1 (%2)'", BaseID, ?(MaximumRowsCount = 0, "ru = 'все строки';en = 'all rows'", "" + MaximumRowsCount + "ru = 'строк';en = 'rows'")));
+	Endif;
 	
-КонецПроцедуры
+EndProcedure
 
 &AtServer
-Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyDuplicates = False, Connection = Undefined)
+Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyDuplicates = False, Connection = Undefined,TemporaryStorageAddressFile="")
 
 
-	//Если источник - файл, хранящийся на клиентском компьютере
-	Если Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Тогда
-		//Сохранение пути к исходному файлу
-		ПутьКФайлуНаКлиенте = Object.ConnectingToExternalBaseАПутьКФайлу;
-		//Создание временного файла на сервере
-		ФайлНаСервере = ПолучитьИзВременногоХранилища(TemporaryStorageAddressFile); 
-		ПутьКФайлуНаСервере = ПолучитьИмяВременногоФайла(Object["ConnectingToExternalBase" + BaseID + "ФорматФайла"]);
-		ФайлНаСервере.Записать(ПутьКФайлуНаСервере);
-		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = ПутьКФайлуНаСервере;
-	КонецЕсли;
+	//If source is file stored at client computer
+	If Object["BaseType" + BaseID] = 3 And Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+		//Saving the path to the source file
+		PathToFileAtClient = Object.ConnectionToExternalBaseAPathToFile;
+		//Create temp file at client
+		FileAtServer = GetFromTempStorage(TemporaryStorageAddressFile); 
+		PathToFileAtServer = GetTempFileName(Object["ConnectingToExternalBase" + BaseID + "FileFormat"]);
+		FileAtServer.Write(PathToFileAtServer);
+		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtServer;
+	EndIf;
 	
 	TextError = "";
 	ProcessingObject = FormAttributeToValue("Object");
 		
 	If Not ProcessingObject.CheckFillingAttributes(BaseID) Then
-		//Если источник - файл, хранящийся на клиентском компьютере
-		Если Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Тогда
-			//Удаление временного файла на сервере
-			Попытка
-				УдалитьФайлы(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
-			Исключение КонецПопытки;
-			//Восстановление пути к исходному файлу
-			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = ПутьКФайлуНаКлиенте;
-		КонецЕсли;
+		//If source is file stored at client computer
+		If Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+			//Delete temp file at client
+			Try
+				DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+			Except EndTry;
+			//Restore path to source file
+			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+		EndIf;
 		
 		Return Undefined;
 	EndIf;
@@ -591,15 +591,15 @@ Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyD
 	If ValueTable = Undefined Then
 		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextError);
 		
-		//Если источник - файл, хранящийся на клиентском компьютере
-		Если Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Тогда
-			//Удаление временного файла на сервере
-			Попытка
-				УдалитьФайлы(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
-			Исключение КонецПопытки;
-			//Восстановление пути к исходному файлу
-			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = ПутьКФайлуНаКлиенте;
-		КонецЕсли;
+		///If source is file stored at client computer
+		If Object["BaseType" + BaseID] = 3 and Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+			//Delete temp file at client
+			Try
+				DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+			Except EndTry;
+			//Restore path to source file
+			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+		EndIf;
 		
 		Return Undefined;
 	EndIf;
@@ -723,32 +723,32 @@ Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyD
 	SpreadsheetDocument.ReadOnly = True;
 	SpreadsheetDocument.FitToPage = True;
 	
-	//Если источник - файл, хранящийся на клиентском компьютере
-	Если Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Тогда
-		//Удаление временного файла на сервере
-		Попытка
-			УдалитьФайлы(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
-		Исключение КонецПопытки;
-		//Восстановление пути к исходному файлу
-		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = ПутьКФайлуНаКлиенте;
-	КонецЕсли;
+	///If source is file stored at client computer
+	If Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 then
+		//Delete temp file at client
+		Try
+			DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+		Except Endtry;
+		//Restore path to source file
+		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+	Endif;
 	
 	Return SpreadsheetDocument;
 		
 EndFunction
 
-Процедура ПроверитьВозможностьПодключенияКИсточникуНаСервере(BaseID)
+Procedure CheckAbilityToConnectToSourceAtServer(BaseID)
 	
-	ТекстОшибок = "";
-	ОбработкаОбъект = РеквизитФормыВЗначение("Object");
-	ПодключениеВыполненоУспешно = ОбработкаОбъект.ПроверитьВозможностьПодключенияКИсточнику(BaseID, ТекстОшибок);
-	Если ПодключениеВыполненоУспешно Тогда
-		Сообщить("Подключение к источнику " + BaseID + " выполнено успешно");
-	Иначе
-		Сообщить("Ошибка при подключении к источнику " + BaseID + ": " + ТекстОшибок);
-	КонецЕсли; 
+	ErrorsText = "";
+	DataProcessorObject = FormAttributeToValue("Object");
+	ConnectionCompletedSuccessfully = DataProcessorObject.CheckAbilityToConnectToSource(BaseID, ErrorsText);
+	If ConnectionCompletedSuccessfully Then
+		Message("ru = 'Подключение к источнику ';en = 'Connection to source'" + BaseID + "ru = 'выполнено успешно';en = 'executed successfully'");
+	Else
+		Message("ru = 'Ошибка при подключении к источнику ';en = 'Error connecting to the source'" + BaseID + ": " + ErrorsText);
+	EndIf; 
 	
-КонецПроцедуры
+EndProcedure
 
 
 #Region Visibility_Availability_of_form_elements
@@ -859,7 +859,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;	
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= False;
@@ -897,7 +897,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= Nstr("ru = 'Имя базы данных';en = 'Database name'");
 		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= True;
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;		
 		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
 		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
@@ -950,7 +950,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 			, Nstr("ru = 'Номер таблицы';en = 'Table number'"));
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= ConnectionToExternalBaseTitle;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= True;		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= True;		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -994,7 +994,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= True;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible							= True;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible							= True;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -1038,7 +1038,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= False;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;     		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;     		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		
@@ -1086,7 +1086,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= False;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= True;		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= True;		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -1127,7 +1127,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= False;
@@ -1277,7 +1277,6 @@ Procedure UpdateVisibilityAvailabilityOrderSortTableDifferences()
 	Items.OrderSortTableDifferences.ReadOnly = Not Object.SortTableDifferences;
 	
 EndProcedure
-
 #EndRegion 
 
 
@@ -1319,19 +1318,13 @@ EndProcedure
 Procedure SaveSettingsToDatabaseAtClient(SaveSpreadsheetDocuments = False);
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation)  Then
-	
 		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'")
 			, Object.RelatedDataComparisonOperation);
-		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd"
-				, ThisObject
-				, New Structure("SelectCatalogItemToSave, SaveSpreadsheetDocuments", True, SaveSpreadsheetDocuments))
-			, QueryText
-			, QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave, SaveSpreadsheetDocuments", True, SaveSpreadsheetDocuments))
+			, QueryText, QuestionDialogMode.YesNo);
 		
 	Else
-		
 		OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments);
-		
 	EndIf;
 	
 EndProcedure
@@ -1397,7 +1390,6 @@ Procedure SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments = Fa
 	ValueToFormAttribute(FormObject, "Object");
 		
 EndProcedure
-
 #EndRegion 
 
 
@@ -1413,9 +1405,7 @@ Procedure OpenSettingsFromFileAtClient(Val Notification, UploadSpreadsheetDocume
 	SelectionDialog.Title = Nstr("ru = 'Укажите файл с настройками';en = 'Specify the settings file'");   
 
 	SelectionDialog.Show(New NotifyDescription("OpenSettingsFromFileAtClientEnd"
-		, ThisForm
-		, New Structure("SelectionDialog, Notification, UploadSpreadsheetDocuments", SelectionDialog, Notification, UploadSpreadsheetDocuments)));
-
+		, ThisForm, New Structure("SelectionDialog, Notification, UploadSpreadsheetDocuments", SelectionDialog, Notification, UploadSpreadsheetDocuments)));
 EndProcedure
 
 &AtClient
@@ -1538,13 +1528,10 @@ EndProcedure
 
 &AtClient
 Procedure OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments = False)
-
 	//SelectedItem = Undefined;
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
-		,,,,,
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,,,,
 		, New NotifyDescription("SaveSelectedOperationEnd", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments))
 		, FormWindowOpeningMode.LockWholeInterface);
-	
 EndProcedure
 
 &AtClient
@@ -1553,7 +1540,6 @@ Procedure OpenSettingsFromBaseEnd(Result, AdditionalParameters) Export
 	SelectedItem = Result;
 	UploadSpreadsheetDocuments = AdditionalParameters <> Undefined And AdditionalParameters.Property("UploadSpreadsheetDocuments") 
 		And AdditionalParameters.UploadSpreadsheetDocuments;
-	
 	If SelectedItem <> Undefined Then
 		
 		OpenSettingsFromBaseAtServer(SelectedItem, UploadSpreadsheetDocuments);
@@ -1582,13 +1568,10 @@ Procedure OnStartChoiceParameterValue(BaseID, StandardProcessing)
 		ListAvailableTypes.Add("Date");
 		ListAvailableTypes.Add("Boolean");
 		//SelectedType = Undefined;
-
 		ShowChooseFromList(New NotifyDescription("OnStartChoiceParameterValueEnd4", ThisForm, New Structure("BaseID", BaseID))
-			, ListAvailableTypes
-			, Items["ParameterList" + BaseID + "ParameterValue"]);
-	
-	EndIf;
+			, ListAvailableTypes, Items["ParameterList" + BaseID + "ParameterValue"]);
 
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -1717,7 +1700,6 @@ Procedure OnStartChoiceParameterValueFragment(Val CurrentParameterValue, Val Cur
 	CurrentData.ParameterValue = CurrentParameterValue;
 
 EndProcedure
-
 #EndRegion 
 
 #EndRegion
@@ -1789,7 +1771,7 @@ Procedure OpenSettingsFromBase(Command)
 	
 	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -1798,14 +1780,7 @@ Procedure LoadSettingsAndSpreadsheetDocumentsFromDatabase(Command)
 	
 	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
-		,
-		,
-		,
-		,
-		,
-		, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True))
-		, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,	,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True)), FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -1862,7 +1837,9 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_AllRows(Command)	
+	
 	SourcePreviewAtClient("A");
+	
 EndProcedure
 
 &AtClient
@@ -1882,12 +1859,12 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_Duplicates(Command)
-	SourcePreviewAtClient("A", , Истина);
+	SourcePreviewAtClient("A", , True);
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_Duplicates(Command)
-	SourcePreviewAtClient("B", , Истина);
+	SourcePreviewAtClient("B", , True);
 EndProcedure
 
 &AtClient
@@ -1904,11 +1881,11 @@ EndProcedure
 
 
 #Region Event_handlers
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	NumberOfAttributes = 5;
+	
 	ColorBackgroundFormDefault = StyleColors.FormBackColor;
 	
 	If Parameters.Property("UserMode") And Parameters.UserMode Then
@@ -2035,6 +2012,7 @@ Procedure OnOpen(Cancel)
 	UpdateVisibilityAvailabilityItemsRelationalOperation();
 	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 	UpdateVisibilityAvailabilityOrderSortTableDifferences();
+	
 	UpdateCodeToOutputAndProhibitOutputRows();
 		
 EndProcedure
@@ -2052,8 +2030,7 @@ EndProcedure
 Procedure BeforeClose(Cancel, StandardProcessing)
 	If Not ClosingFormConfirmed Then
 		Cancel = True;
-		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm)
-			, Nstr("ru = 'Закрыть консоль сравнения данных?';en = 'Close Data Compare Console?'"), QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm), Nstr("ru = 'Закрыть консоль сравнения данных?';en = 'Close Data Compare Console?'"), QuestionDialogMode.YesNo);
 	EndIf;
 EndProcedure
 
@@ -2063,16 +2040,16 @@ Procedure OnClose(Exit)
 	If ValueIsFilled(Object.RelatedDataComparisonOperation) And Not Object.UserMode  Then
 		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'"), Object.RelatedDataComparisonOperation);
 		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave,SaveSpreadsheetDocuments,OnCloseForm",True,False,True))
-			, QueryText
-			, QuestionDialogMode.YesNo);
-	
+			, QueryText, QuestionDialogMode.YesNo);
 	EndIf; 
-	
+
 EndProcedure
 
 &AtClient
 Procedure VisitPage(ReturnCode, AdditionalParameters) Export
-	
+
+
+
 EndProcedure
 
 &AtClient
@@ -2084,9 +2061,7 @@ Procedure CodeForOutputRowsEditedManuallyOnChange(Item)
 			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
 			, QuestionDialogMode.YesNo);
         Return;
-		
 	EndIf;
-	
 	CodeForOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
@@ -2120,9 +2095,7 @@ Procedure CodeForProhibitingOutputRowsEditedManuallyOnChange(Item)
 			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
 			, QuestionDialogMode.YesNo);
         Return;
-		
 	EndIf;
-	
 	CodeForProhibitingOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
@@ -2176,6 +2149,14 @@ Procedure CommandVisibilityColumnTP(Command)
 	
 	UpdateVisibilityAttributeTP(AttributeName);
 		
+EndProcedure
+
+&AtClient
+Procedure ParameterTypePeriodOnChange(Item)
+	
+	RefreshDataPeriod();
+	UpdateVisibilityAccessibilityFormItems();
+	
 EndProcedure
 
 &AtClient
@@ -2628,23 +2609,21 @@ Procedure OrderSortTableDifferencesStartChoiceEnd(Result, AdditionalParameters) 
 
 EndProcedure
 
+&AtClient
+Procedure CommandCheckAbilityToConnectToSourceA(Command)
+	CheckAbilityToConnectToSourceAtServer("A");
+EndProcedure
+
+&AtClient
+Procedure CommandCheckAbilityToConnectToSourceB(Command)
+	CheckAbilityToConnectToSourceAtServer("B");
+EndProcedure
+
 //@skip-warning
 &AtClient
 Procedure Attachable_ExecuteToolsCommonCommand(Command) 
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
-
-&AtClient
-Procedure CommandCheckAbilityToConnectToSourceA(Command)
-	ПроверитьВозможностьПодключенияКИсточникуНаСервере("А");
-EndProcedure
-
-&AtClient
-Procedure CommandCheckAbilityToConnectToSourceB(Command)
-	ПроверитьВозможностьПодключенияКИсточникуНаСервере("Б");
-EndProcedure
-
-
 
 #EndRegion
 
