@@ -1163,7 +1163,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9b866b27-744b-4f68-ba25-52a65bd9523b">
-    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
+    <name>ConnectionToExternalBaseANumberTableInFile</name>
     <synonym>
       <key>en</key>
       <value>Table number</value>
@@ -1183,7 +1183,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c5df2846-b28b-45a7-958b-ed382319459c">
-    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
+    <name>ConnectionToExternalBaseBNumberTableInFile</name>
     <synonym>
       <key>en</key>
       <value>Table number</value>

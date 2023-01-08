@@ -7569,7 +7569,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
+                    <name>ConnectionToExternalBaseANumberTableInFile</name>
                     <id>1098</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7578,11 +7578,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Object.ConnectionToExternalDatabaseANumberTableInFile</segments>
+                        <segments>Object.ConnectionToExternalBaseANumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ConnectionToExternalDatabaseANumberTableInFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseANumberTableInFileExtendedTooltip</name>
                       <id>1100</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7597,7 +7597,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectionToExternalDatabaseANumberTableInFileContextMenu</name>
+                      <name>ConnectionToExternalBaseANumberTableInFileContextMenu</name>
                       <id>1099</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12235,12 +12235,12 @@
               <common>true</common>
             </userVisible>
             <title>
-              <key>ru</key>
-              <value>Предварительный просмотр данных из источника Б</value>
+              <key>en</key>
+              <value>Data preview from source B</value>
             </title>
             <title>
-              <key>en</key>
-              <value>Group preview b1</value>
+              <key>ru</key>
+              <value>Предварительный просмотр данных из источника Б</value>
             </title>
             <toolTip>
               <key>ru</key>
@@ -13967,7 +13967,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
+                    <name>ConnectionToExternalBaseBNumberTableInFile</name>
                     <id>1101</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13976,11 +13976,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Object.ConnectionToExternalDatabaseBNumberTableInFile</segments>
+                        <segments>Object.ConnectionToExternalBaseBNumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ConnectionToExternalDatabaseBNumberTableInFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseBNumberTableInFileExtendedTooltip</name>
                       <id>1103</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13995,7 +13995,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectionToExternalDatabaseBNumberTableInFileContextMenu</name>
+                      <name>ConnectionToExternalBaseBNumberTableInFileContextMenu</name>
                       <id>1102</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -18301,6 +18301,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Table</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Таблица</value>
             </title>
@@ -20732,6 +20736,38 @@
       <pagesRepresentation>TabsOnTop</pagesRepresentation>
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
+  </items>
+  <items xsi:type="form:Button">
+    <name>CommandCheckAbilityToConnectToSourceB1</name>
+    <id>1253</id>
+    <visible>true</visible>
+    <enabled>true</enabled>
+    <userVisible>
+      <common>true</common>
+    </userVisible>
+    <extendedTooltip>
+      <name>CommandCheckAbilityToConnectToSourceB1ExtendedTooltip</name>
+      <id>1254</id>
+      <visible>true</visible>
+      <enabled>true</enabled>
+      <userVisible>
+        <common>true</common>
+      </userVisible>
+      <type>Label</type>
+      <autoMaxWidth>true</autoMaxWidth>
+      <autoMaxHeight>true</autoMaxHeight>
+      <extInfo xsi:type="form:LabelDecorationExtInfo">
+        <horizontalAlign>Left</horizontalAlign>
+      </extInfo>
+    </extendedTooltip>
+    <type>UsualButton</type>
+    <commandName>Form.Command.CommandCheckAbilityToConnectToSourceB</commandName>
+    <representation>Auto</representation>
+    <autoMaxWidth>true</autoMaxWidth>
+    <autoMaxHeight>true</autoMaxHeight>
+    <placementArea>UserCmds</placementArea>
+    <toolTipRepresentation>Auto</toolTipRepresentation>
+    <representationInContextMenu>Auto</representationInContextMenu>
   </items>
   <autoCommandBar>
     <name>ФормаКоманднаяПанель</name>

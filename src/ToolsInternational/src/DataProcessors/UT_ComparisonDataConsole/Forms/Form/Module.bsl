@@ -989,9 +989,9 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible				= False;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= True;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible				= False;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= True;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		
 		//Items["FileColumnsParametersGroup" + BaseID].Visible							= True;
@@ -1080,9 +1080,9 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= True;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= False;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible 				= True;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible 					= False;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= False;
 		
@@ -1919,8 +1919,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.NumberOfRowsWithEmptyKeysToBreakReading = 2;
 		Object.ConnectingToExternalBaseADeviceStorageFile = 0;
 		Object.ConnectingToExternalBaseBDeviceStorageFile = 0;
-		Object.ConnectionToExternalDatabaseANumberTableInFile = 1;
-		Object.ConnectionToExternalDatabaseBNumberTableInFile = 1;
+		Object.ConnectionToExternalBaseANumberTableInFile = 1;
+		Object.ConnectionToExternalBaseBNumberTableInFile = 1;
 		
 		Object.VisibilityKey1 = True;
 		Object.VisibilityKey2 = Object.NumberColumnsInKey > 1;

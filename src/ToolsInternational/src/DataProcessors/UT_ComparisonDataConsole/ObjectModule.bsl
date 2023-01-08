@@ -3586,12 +3586,12 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 				//For xls and doc files the book/table number must be specified
 				If BaseTypeA = 3 And (ConnectionToExternalBaseAFileFormat = "XLS" Or ConnectionToExternalBaseAFileFormat = "DOC") Then
 					
-					If ConnectionToExternalDatabaseANumberTableInFile = 0 Then
+					If ConnectionToExternalBaseANumberTableInFile = 0 Then
 						AttributesFilledOutCorrectly = False;						
 						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер %1 файла А';en = 'The %1 number of file A is not filled'"), ?(ConnectionToExternalBaseAFileFormat = "XLS", Nstr("ru = 'книги';en = 'book'"), Nstr("ru = 'таблицы';en = 'table'")));
 						UserMessage = New UserMessage;
 						UserMessage.Text = ErrorText;
-						UserMessage.Field = "Object.ConnectionToExternalDatabaseANumberTableInFile";
+						UserMessage.Field = "Object.ConnectionToExternalBaseANumberTableInFile";
 						UserMessage.Message();
 						ErrorsText = ErrorsText + Chars.LF + ErrorText;
 					EndIf;
@@ -3728,7 +3728,7 @@ Function CheckFillingAttributes(SourceForPreview = "", ErrorsText = "") Export
 				If BaseTypeB = 3 And (ConnectionToExternalBaseBFileFormat = "XLS" Or ConnectionToExternalBaseBFileFormat = "DOC") Then
 					
 					//For files xls and doc should be specified number of book/table
-					If ConnectionToExternalDatabaseBNumberTableInFile = 0 Then
+					If ConnectionToExternalBaseBNumberTableInFile = 0 Then
 						AttributesFilledOutCorrectly = False;
 						ErrorText = StrTemplate(Nstr("ru = 'Не заполнен номер %1 файла А';en = 'The %1 number of file A is not filled'"), ?(ConnectionToExternalBaseAFileFormat = "XLS", Nstr("ru = 'книги';en = 'book'"), Nstr("ru = 'таблицы';en = 'table'")));
 						UserMessage = New UserMessage;
@@ -4250,8 +4250,8 @@ Function GetDataAsStructureOnServer(SaveSpreadsheetDocuments = False) Export
 	DataStructure.Insert("ConnectionToExternalBaseBPathToFile",					ConnectionToExternalBaseBPathToFile);
 	DataStructure.Insert("ConnectingToExternalBaseADeviceStorageFile",			ConnectingToExternalBaseADeviceStorageFile);
 	DataStructure.Insert("ConnectingToExternalBaseBDeviceStorageFile",			ConnectingToExternalBaseBDeviceStorageFile);
-	DataStructure.Insert("ConnectionToExternalDatabaseANumberTableInFile",		ConnectionToExternalDatabaseANumberTableInFile);
-	DataStructure.Insert("ConnectionToExternalDatabaseBNumberTableInFile",		ConnectionToExternalDatabaseBNumberTableInFile);
+	DataStructure.Insert("ConnectionToExternalBaseANumberTableInFile",		ConnectionToExternalBaseANumberTableInFile);
+	DataStructure.Insert("ConnectionToExternalDatabaseBNumberTableInFile",		ConnectionToExternalBaseBNumberTableInFile);
 	
 	DataStructure.Insert("CodeForOutputRows", 									CodeForOutputRows);
 	DataStructure.Insert("CodeForProhibitingOutputRows", 						CodeForProhibitingOutputRows);
