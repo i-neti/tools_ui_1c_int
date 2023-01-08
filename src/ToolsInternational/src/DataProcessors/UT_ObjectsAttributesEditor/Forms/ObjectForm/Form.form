@@ -1518,7 +1518,7 @@
       <name>PagesGroup</name>
       <id>13</id>
       <items xsi:type="form:FormGroup">
-        <name>ObjectAttributesPage</name>
+        <name>PageObjectAttributes</name>
         <id>15</id>
         <items xsi:type="form:Decoration">
           <name>ObjectAttributesDecoration</name>
@@ -2253,7 +2253,7 @@
           <value>Реквизиты объекта</value>
         </toolTip>
         <extendedTooltip>
-          <name>ObjectAttributesPageExtendedTooltip</name>
+          <name>PageObjectAttributesExtendedTooltip</name>
           <id>16</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2274,7 +2274,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>SettingsPage</name>
+        <name>PageSettings</name>
         <id>149</id>
         <items xsi:type="form:Decoration">
           <name>AdditionalPropertiesDecoration</name>
@@ -2351,7 +2351,7 @@
           <value>ДополнительныеСвойства</value>
         </toolTip>
         <extendedTooltip>
-          <name>SettingsPageExtendedTooltip</name>
+          <name>PageSettingsExtendedTooltip</name>
           <id>150</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -2372,7 +2372,7 @@
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
-        <name>DocumentRecordsPage</name>
+        <name>PageDocumentRecords</name>
         <id>91</id>
         <items xsi:type="form:FormGroup">
           <name>Group1</name>
@@ -3281,7 +3281,7 @@
           <value>Стр движения документа</value>
         </toolTip>
         <extendedTooltip>
-          <name>DocumentRecordsPageExtendedTooltip</name>
+          <name>PageDocumentRecordsExtendedTooltip</name>
           <id>92</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5400,9 +5400,8 @@
   </formCommands>
   <parameters>
     <name>mObjectRef</name>
-    <valueType>
-      <types>AnyRef</types>
-    </valueType>
+    <valueType/>
+    <keyParameter>true</keyParameter>
   </parameters>
   <commandInterface>
     <navigationPanel/>

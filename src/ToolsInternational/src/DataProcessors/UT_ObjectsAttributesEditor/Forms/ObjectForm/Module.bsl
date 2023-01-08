@@ -21,19 +21,18 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	_ConfigurationAllowsAdditionalRecords = (Metadata.Documents.Find("CalculationRecorder") <> Undefined);
 	mPreviousObjectRef = Undefined;
 
-	Items.DocumentRecordsPage.Visible = False;
+	Items.PageDocumentRecords.Visible = False;
 	Items._OpenAdditionalRecordsEditor.Visible = False;
 
 	If Not UT_Users.IsFullUser() Then
 		Items.Form_DeleteObject.Visible = False;
 	EndIf;
-
-	If Parameters.Property("mObjectRef") Then
-		mObjectRef = Parameters.mObjectRef;
-	ElsIf Parameters.Property("DebugData") Then
+		
+	If Parameters.Property("DebugData") Then
 		DataToDebug = GetFromTempStorage(Parameters.DebugData);
-		mObjectRef = DataToDebug.Object;
-
+		mObjectRef = DataToDebug.Object;	
+	ElsIf Parameters.Property("mObjectRef") Then
+		mObjectRef = Parameters.mObjectRef;
 	EndIf;
 
 	UT_Forms.CreateWriteParametersAttributesFormOnCreateAtServer(ThisObject,
@@ -1094,7 +1093,7 @@ Procedure vFillObjectData(CreateAttributes)
 				EndDo;
 			EndDo;
 		EndIf;
-		Items.DocumentRecordsPage.Visible = RecordSectionVisibility;
+		Items.PageDocumentRecords.Visible = RecordSectionVisibility;
 
 		If ArrayToCreate.Count() <> 0 Or ArrayToDelete.Count() <> 0 Then
 			ChangeAttributes(ArrayToCreate, ArrayToDelete);
@@ -1926,7 +1925,7 @@ EndProcedure
 &AtClient
 Procedure _FillCurrentColumnData(Command)
 	CurrPage = Items.PagesGroup.CurrentPage;
-	If CurrPage.Name = "ObjectAttributesPage" Or CurrPage.Name = "SettingsPage" Then
+	If CurrPage.Name = "PageObjectAttributes" Or CurrPage.Name = "PageSettings" Then
 		Return;
 	EndIf;
 
@@ -2048,8 +2047,8 @@ Procedure vPostDocumentNext(QueryResult, AdditionalParameters = Undefined) Expor
 EndProcedure
 
 &AtClient
-Procedure vUndoPostingNext(РезультатВопроса, ДопПараметры = Undefined) Export
-	If РезультатВопроса = DialogReturnCode.Да Then
+Procedure vUndoPostingNext(QueryResult, AdditionalParameters = Undefined) Export
+	If QueryResult = DialogReturnCode.Yes Then
 		If vPostUndoPostingDocument(mObjectRef, False) Then
 			RefreshObjectData(Undefined);
 		EndIf;
@@ -2453,7 +2452,7 @@ Procedure RefreshTabularSectionPageTitle(TabularSectionItem)
 	EndIf;
 
 	TableName = Mid(TabularSectionItem.Name, StrLen(_PrefixForNewItems) + 1);
-	Items["Стр" + TabularSectionItem.Name].Title = TabularSectionPageTitle(TableName,
+	Items["Page" + TabularSectionItem.Name].Title = TabularSectionPageTitle(TableName,
 		ThisObject[TabularSectionItem.Name]);
 
 EndProcedure

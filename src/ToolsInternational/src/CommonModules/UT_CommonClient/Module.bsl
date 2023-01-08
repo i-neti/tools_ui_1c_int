@@ -1,3 +1,4 @@
+#Region ProgramInterface
 #Region ConfigurationMethodsEvents
 
 Procedure OnStart() Export
@@ -315,8 +316,8 @@ Procedure OpenValueListChoiceItemsForm(List, OnCloseNotifyDescription, Title = "
 EndProcedure
 
 Procedure EditObject(ObjectRef) Export
-	AvalibleForEditingObjectsArray=UT_CommonClientCached.DataBaseObjectEditorAvalibleObjectsTypes();
-	If AvalibleForEditingObjectsArray.Find(TypeOf(ObjectRef)) = Undefined Then
+	AvailableForEditingObjectsArray=UT_CommonClientCached.DataBaseObjectEditorAvailableObjectsTypes();
+	If AvailableForEditingObjectsArray.Find(TypeOf(ObjectRef)) = Undefined Then
 		Return;
 	EndIf;
 
@@ -1073,7 +1074,7 @@ EndFunction
 //
 // Return value:
 //  Structure - Sesstion file variables
-//  	*FILE_VARIABLES - String -
+//  	*TempFilesDirectory - String -
 //  	*UserDataWorkingDirectory - String -
 Function SessionFileVariablesStructure() Export
 	CurrentApplicationParameters=UT_ApplicationParameters;
@@ -1110,8 +1111,7 @@ EndProcedure
 Procedure ReadMainSessionFileVariablesToApplicationParametersOnEndGettingUserDataWorkDir(DirectoryName,
 	AdditionalParameters) Export
 	FileVariablesStructure=SessionFileVariablesStructure();
-	FileVariablesStructure.Insert("UserDataWorkDir", DirectoryName);
-
+	FileVariablesStructure.Insert("UserDataWorkingDirectory", DirectoryName);
 	ExecuteNotifyProcessing(AdditionalParameters.OnEndNotifyDescription, True);
 EndProcedure
 
@@ -1227,4 +1227,5 @@ Procedure Run1CSessionEndLaunch(ReturnCode, AdditionalParameters) Export
 		AdditionalParameters.User, AdditionalParameters.StoredIBUserPasswordData);
 EndProcedure
 
+#EndRegion
 #EndRegion

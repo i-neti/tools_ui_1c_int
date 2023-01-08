@@ -680,6 +680,7 @@
     <edit>
       <common>true</common>
     </edit>
+    <savedData>true</savedData>
   </attributes>
   <attributes>
     <name>TableColumns</name>
@@ -701,6 +702,7 @@
     <edit>
       <common>true</common>
     </edit>
+    <savedData>true</savedData>
     <columns>
       <name>Name</name>
       <title>
@@ -766,6 +768,23 @@
         <common>true</common>
       </edit>
     </columns>
+  </attributes>
+  <attributes>
+    <name>SerializeToXML</name>
+    <title>
+      <key>en</key>
+      <value>Serialize to XML</value>
+    </title>
+    <id>8</id>
+    <valueType>
+      <types>Boolean</types>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
   </attributes>
   <formCommands>
     <name>Apply</name>

@@ -190,7 +190,7 @@ Procedure SetDynamicListParametersAtServer(RowSelected)
 	If HaveDisplayedAttributes Then
 		Items.GroupDynamicListChoosePages.CurrentPage = Items.GroupDynamicList;
 	Else
-		Items.GroupDynamicListChoosePages.CurrentPage = Items.GroupNotAvalibleTable;
+		Items.GroupDynamicListChoosePages.CurrentPage = Items.GroupNotAvailableTable;
 	EndIf;
 EndProcedure
 

@@ -2101,7 +2101,7 @@
                 <name>UnavailableGroupFieldsSettings</name>
                 <id>22</id>
                 <items xsi:type="form:Decoration">
-                  <name>LabelUnavalibleGroupFields</name>
+                  <name>LabelUnavailableGroupFields</name>
                   <id>23</id>
                   <title>
                     <key>en</key>
@@ -2119,7 +2119,7 @@ Browse the structure tree and select a grouping to view or edit grouping field s
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>LabelUnavalibleGroupFieldsExtendedTooltip</name>
+                    <name>LabelUnavailableGroupFieldsExtendedTooltip</name>
                     <id>463</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -2134,7 +2134,7 @@ Browse the structure tree and select a grouping to view or edit grouping field s
                     </extInfo>
                   </extendedTooltip>
                   <contextMenu>
-                    <name>LabelUnavalibleGroupFieldsContextMenu</name>
+                    <name>LabelUnavailableGroupFieldsContextMenu</name>
                     <id>24</id>
                     <visible>true</visible>
                     <enabled>true</enabled>

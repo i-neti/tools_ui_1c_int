@@ -12,7 +12,8 @@ Procedure FormOnOpen(Form, CompletionNotifyDescription = Undefined) Export
 	AdditionalParameters.Insert("Form", Form);
 
 	UT_CommonClient.AttachFileSystemExtensionWithPossibleInstallation(
-			New NotifyDescription("FormOnOpenEndAttachFileSystemExtension", ThisObject, AdditionalParameters));
+			New NotifyDescription("FormOnOpenEndAttachFileSystemExtension", ThisObject, 
+			AdditionalParameters));
 EndProcedure
 
 Procedure HTMLEditorFieldDocumentGenerated(Form, Item) Export
@@ -67,6 +68,7 @@ Procedure EditorEventsDeferProcessing(Form) Export
 		Elsif CurrentEvent.EventName = "EVENT_CONTENT_CHANGED" Then
 			FormEditors = Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
 			EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form,CurrentEvent.Item);
+			
 			EditorEvents = FormEditors[EditorID].EditorEvents;
 
 			If ValueIsFilled(EditorEvents.OnChange) Then
@@ -104,7 +106,7 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 			Continue;
 		EndIf;
 		
-		EditorFormItem = Form.Item[EditorSettings.EditorField];
+		EditorFormItem = Form.Items[EditorSettings.EditorField];
 
 		If EditorType = EditorTypes.Text Then
 			If ValueIsFilled(EditorSettings.EditorSettings.FontSize) Then
@@ -145,10 +147,12 @@ Procedure InitializeFormEditorsAfterFieldsGeneration(Form, FormEditors, EditorTy
 			DocumentView.setOption("generateDefinitionEvent", True);
 //			DocumentView.setOption("generateSnippetEvent", True);
 			DocumentView.setOption("autoResizeEditorLayout", True);
+			
+			
 			DocumentView.setOption("dragAndDrop", True);
 
 			EditorThemes = UT_CodeEditorClientServer.MonacoEditorThemeVariants();
-			If EditorSettings.EditorSettings.Тема = EditorThemes.Dark Then
+			If EditorSettings.EditorSettings.Theme = EditorThemes.Dark Then
 				If EditorSettings.EditorLanguage = "bsl_query" Then
 					DocumentView.setTheme("bsl-dark-query");
 				Else
@@ -227,13 +231,11 @@ EndProcedure
 
 // Sets a text of an editor by a form item.
 // 
-// Параметры:
 //  Parameters:
 //  Form - ClientApplicationForm.
 //  Item - FormField -An editor form field.
 //  Text - String - An editor new text.
 //  SetOriginalText - Boolean - if True, an original text of an editor is also sets.
-//
 Procedure SetFormItemEditorText(Form, Item, Text, SetOriginalText = False) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -245,13 +247,11 @@ EndProcedure
 
 // Sets a text of an editor by an editor ID.
 // 
-// Параметры:
 //  Parameters:
 //  Form - ClientApplicationForm - A form.
 //  EditorID - String - An editor ID.
 //  Text - String - An editor new text.
 //  SetOriginalText - Boolean - if True, an original text of an editor is also sets.
-//
 Procedure SetEditorText(Form, EditorID, Text, SetOriginalText = False) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -287,7 +287,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  Item - FormField -An editor form field.
 //  Text - String - An editor original text.
-//
 Procedure SetFormItemEditorOriginalText(Form, Item, Text) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -304,7 +303,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
 //  Text - String - An editor original text.
-//
 Procedure SetEditorOriginalText(Form, EditorID, Text) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -330,7 +328,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  EditorID - String -An editor ID.
-//
 Procedure SetEditorOriginalTextEqualToCurrent(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -360,7 +357,6 @@ EndProcedure
 // 
 // Return value:
 //  String - A form item editor code text.
-//
 Function EditorCodeText(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType    = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -403,7 +399,6 @@ EndFunction
 // 
 // Return value:
 //  String - A form item editor code text.
-//
 Function EditorCodeTextItemForm(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -422,7 +417,6 @@ EndFunction
 // 
 // Return Value :
 //  String
-//
 Function CodeEditorOriginalText(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -469,13 +463,13 @@ Function CodeEditorOriginalTextFormItem(Form, Item) Export
 EndFunction
 
 // Return current selection borders at editor.
+// 
 // Parameters:
 //  Form - ClientApplicationForm -
 //  EditorID - String - string of ID
 // 
 // Return Value :
 //  SelectionBounds
-//
 Function EditorSelectionBorders(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -490,7 +484,7 @@ Function EditorSelectionBorders(Form, EditorID) Export
 	SelectionBounds = NewSelectionBorders();
 	If Not EditorSettings.Initialized Then
 		Return SelectionBounds;
-	EndIf	;
+	EndIf;
 		
 	If EditorType = EditorsTypes.Text Then
 		EditorItem = Form.Items[EditorSettings.EditorField];
@@ -584,8 +578,8 @@ EndProcedure
 //  ColumnBeginning - Number - Beginning of a column.
 //  RowEnd - Number - End of a row.
 //  ColumnEnd - Number - End of a column.
-//
-Procedure SetTextSelectionBordersFormItem(Form, Item, RowBeginning, ColumnBeginning, LineEnd, ColumnEnd) Export
+Procedure SetTextSelectionBordersFormItem(Form, Item, RowBeginning, ColumnBeginning, LineEnd, 
+	ColumnEnd) Export
 
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -602,7 +596,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
 //  Text - String - A text to insert.
-//
 Procedure InsertTextInCursorLocation(Form, EditorID, Text) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -635,7 +628,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form field.
 //  Text - String - A text to insert.
-//
 Procedure InsertTextInCursorLocationFormItem(Form, Item, Text) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -691,7 +683,6 @@ EndFunction
 // 
 // Return 
 //  String - An editor selected text.
-// 
 Function EditorSelectedTextFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -707,7 +698,6 @@ EndFunction
 // Parameters:
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
-//
 Procedure AddCommentsToEditorLines(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -760,7 +750,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form item.
-//
 Procedure AddCommentsToEditorLinesFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -775,7 +764,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
-//
 Procedure DeleteEditorLinesComments(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -828,7 +816,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form field.
-//
 Procedure DeleteEditorLinesCommentsFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -843,7 +830,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
-//
 Procedure AddEditorLineBreaks(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -896,7 +882,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form item.
-//
 Procedure AddEditorLineBreaksFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -911,7 +896,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
-//
 Procedure DeleteEditorLineBreaks(Form, EditorID) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
@@ -964,7 +948,6 @@ EndProcedure
 // Parameters:
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form item.
-//
 Procedure DeleteEditorLineBreaksFormItem(Form, Item) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -982,7 +965,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  EditorID - String - An editor ID.
 //  NewVisibility -  Boolean - (optional) an editor item new visibility.
-// 
 Procedure SwitchEditorVisibility(Form, EditorID, NewVisibility = Undefined) Export
 	EditorType = UT_CodeEditorClientServer.FormCodeEditorType(Form);
 
@@ -1020,7 +1002,6 @@ EndProcedure
 //  Form - ClientApplicationForm.
 //  Item - FormField - An editor form item.
 //  NewVisibility -  Boolean - (optional) an editor item new visibility.
-// 
 Procedure SwitchFormItemEditorVisibility(Form, Item, NewVisibility = Undefined) Export
 	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(Form, Item);
 	If EditorID = Undefined Then
@@ -1031,7 +1012,11 @@ Procedure SwitchFormItemEditorVisibility(Form, Item, NewVisibility = Undefined) 
 	
 EndProcedure
 
+
+
 #EndRegion
+
+
 
 Procedure AddCodeEditorContext(Form, EditorID, AddedContext) Export
 	EditorsTypes = UT_CodeEditorClientServer.CodeEditorVariants();
@@ -1049,10 +1034,15 @@ Procedure AddCodeEditorContext(Form, EditorID, AddedContext) Export
 
 	If EditorType = EditorsTypes.Monaco Then
 		HTMLDocument=Form.Items[EditorSettings.EditorField].Document.defaultView;
+		
 		TypesMap = ConfigurationReferenceTypesMap();
+		
 		AddingObjects = New Structure;
+		
 		FillMonacoCodeEditorContextStructure(AddingObjects, AddedContext, TypesMap);
-		HTMLDocument.updateMetadata(UT_CommonClientServer.mWriteJSON(New Structure("customObjects", AddingObjects)));
+		
+		HTMLDocument.updateMetadata(UT_CommonClientServer.mWriteJSON(New Structure("customObjects", 
+		AddingObjects)));
 	EndIf;
 EndProcedure
 
@@ -1071,6 +1061,7 @@ Procedure OpenQueryWizard(QueryText, CompletionNotifyDescription, CompositionMod
 			Return;
 		EndTry;
 	EndIf;
+	
 	Wizard.Show(CompletionNotifyDescription);
 #EndIf
 EndProcedure
@@ -1081,8 +1072,7 @@ Procedure OpenFormatStringWizard(FormatString, CompletionNotifyDescription) Expo
 		Wizard.Text = FormatString;
 	Except
 		Info = ErrorInfo();
-		ShowMessageBox( , NStr("ru = 'Ошибка в тексте форматной строки:';
-							   |en = 'Error in the text of the format string:'") + Chars.LF + Info.Reason.Description);
+		ShowMessageBox( , NStr("ru = 'Ошибка в тексте форматной строки:';|en = 'Error in the text of the format string:'") + Chars.LF + Info.Reason.Description);
 		Return;
 	EndTry;
 	Wizard.Show(CompletionNotifyDescription);
@@ -1134,8 +1124,9 @@ Procedure FormOnOpenEndAttachFileSystemExtension(Result, AdditionalParameters) E
 	Else
 		EditorType = UT_CodeEditorClientServer.FormCodeEditorType(AdditionalParameters.Form);
 
-		SaveEditorLibraryToDisk(LibraryURL, EditorType, New NotifyDescription("FormOnOpenEndEditorLibrarySaving",
-			ThisObject, AdditionalParameters));
+		SaveEditorLibraryToDisk(LibraryURL, EditorType,
+			 New NotifyDescription("FormOnOpenEndEditorLibrarySaving",ThisObject, 
+			 AdditionalParameters));
 	EndIf;
 EndProcedure
 
@@ -1149,7 +1140,8 @@ Procedure FormOnOpenEndEditorLibrarySaving(Result, AdditionalParameters) Export
 			//EditorAttributeName = UT_CodeEditorClientServer.AttributeNameCodeEditor(KeyValue.Value.AttributeName);	
 
 			If EditorType = EditorsTypes.Monaco Then
-				Form[KeyValue.Value.AttributeName] = EditorSaveDirectory(EditorType) + GetPathSeparator() + "index.html";
+				Form[KeyValue.Value.AttributeName] = EditorSaveDirectory(EditorType) 
+				+ GetPathSeparator() + "index.html";
 			ElsIf EditorType = EditorsTypes.Ace Then
 				Form[KeyValue.Value.AttributeName] = AceEditorFileNameForLanguage(KeyValue.Value.EditorLanguage);
 			EndIf;
@@ -1176,12 +1168,18 @@ Procedure SaveEditorLibraryToDiskEndLibraryDirectoryCreation(DirectoryName, Addi
 	LibraryFilesMap=GetFromTempStorage(LibraryURL);
 
 	If AdditionalParameters.EditorType = "Ace" Then
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "bsl");
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "css");
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "xml");
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "bsl_query");
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "javascript");
-		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, LibrarySavingDirectory, "html");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "bsl");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "css");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "xml");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "bsl_query");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "javascript");
+		AddToSavingFilesTextDocumentForAceCodeEditorLanguage(LibraryFilesMap, 
+			LibrarySavingDirectory, "html");
 	EndIf;
 
 	AdditionalParameters.Insert("SavedFilesArray", SavedFilesArray);
@@ -1190,18 +1188,21 @@ Procedure SaveEditorLibraryToDiskEndLibraryDirectoryCreation(DirectoryName, Addi
 	SaveEditorLibraryWriteBeginWritingNextFile(AdditionalParameters);
 EndProcedure
 
-Procedure SaveEditorLibraryUnpackEditorLibraryToDirectory(AdditionalParameters, NotifyDescriptionOnCompletion) Export
+Procedure SaveEditorLibraryUnpackEditorLibraryToDirectory(AdditionalParameters, 
+	NotifyDescriptionOnCompletion) Export
 #If Not WebClient And Not MobileClient Then
 	Stream=AdditionalParameters.LibraryFilesMap[AdditionalParameters.CurrentFileKey].OpenStreamForRead();
 
 	ZipReader=New ZipFileReader(Stream);
-	ZipReader.ExtractAll(AdditionalParameters.LibrarySavingDirectory, ZIPRestoreFilePathsMode.Restore);
+	ZipReader.ExtractAll(AdditionalParameters.LibrarySavingDirectory, 
+		ZIPRestoreFilePathsMode.Restore);
 
 #EndIf
 
 EndProcedure
 
-Procedure SaveEditorLibraryUnpackEditorLibraryToDirectoryEnd(Result, AdditionalParameters) Export
+Procedure SaveEditorLibraryUnpackEditorLibraryToDirectoryEnd(Result, 
+	AdditionalParameters) Export
 
 EndProcedure
 
@@ -1221,14 +1222,16 @@ Procedure SaveEditorLibraryWriteBeginWritingNextFileEnd(AdditionalParameters) Ex
 	//EndIf;
 EndProcedure
 
-Procedure SaveEditorLibraryWriteBeginWritingNextFileOfTextDocumentEnd(Result, AdditionalParameters) Export
+Procedure SaveEditorLibraryWriteBeginWritingNextFileOfTextDocumentEnd(Result, 
+	AdditionalParameters) Export
 	SavedFilesArray = AdditionalParameters.SavedFilesArray;
 	SavedFilesArray.Add(AdditionalParameters.CurrentFileKey);
 
 	SaveEditorLibraryWriteBeginWritingNextFile(AdditionalParameters);
 EndProcedure
 
-Procedure SaveEditorLibraryToDiskEndCheckOfLibraryExistOnDisk(Exists, AdditionalParameters) Export
+Procedure SaveEditorLibraryToDiskEndCheckOfLibraryExistOnDisk(Exists, 
+	AdditionalParameters) Export
 	If Exists Then
 		ExecuteNotifyProcessing(AdditionalParameters.CompletionNotifyDescription);
 		Return;
@@ -1242,7 +1245,8 @@ Procedure SaveEditorLibraryToDiskEndCheckOfLibraryExistOnDisk(Exists, Additional
 
 EndProcedure
 
-Procedure SaveConfigurationModulesToFilesEndAttachFileSystemExtension(Result, AdditionalParameters) Export
+Procedure SaveConfigurationModulesToFilesEndAttachFileSystemExtension(Result, 
+	AdditionalParameters) Export
 	FormParameters = New Structure;
 	FormParameters.Insert("CurrentDirectories", AdditionalParameters.CurrentDirectories);
 
@@ -1358,8 +1362,7 @@ Procedure SaveConfigurationModulesToFilesSaveMetadataListWithModules(SaveOptions
 	EndDo;
 
 	SessionFileVariablesStructure = UT_CommonClient.SessionFileVariablesStructure();
-	SaveFileName = SessionFileVariablesStructure.TempFilesDirectory + GetPathSeparator()
-		+ "tools_ui_1c_int_list_metadata.txt";
+	SaveFileName = SessionFileVariablesStructure.TempFilesDirectory + GetPathSeparator()+ "tools_ui_1c_int_list_metadata.txt";
 	SaveOptions.Insert("MetadataListFileName", SaveFileName);
 	MetadataText.BeginWriting(
 		New NotifyDescription("SaveConfigurationModulesToFilesSaveMetadataListWithModulesEnd", ThisObject,
@@ -1372,7 +1375,6 @@ Procedure SaveConfigurationModulesToFilesSaveMetadataListWithModulesEnd(Result, 
 		Message(Nstr("ru = 'Не удалось сохранить список метаданных с модулями в файл для источника';
 					 |en = 'The list of metadata with modules could not be saved to a file for the source'")
 			+ SaveOptions.SourceDirectoryDescription.Source);
-
 		SaveOptions.DirectoryIndex = SaveOptions.DirectoryIndex + 1;
 		SaveConfigurationModulesToFilesBeginProcessingSourceDirectory(SaveOptions);
 		Return;
@@ -1403,11 +1405,13 @@ Procedure SaveConfigurationModulesToFilesRunDesignerForMetadataDump(SaveOptions)
 	EndIf;
 	RunAppString = RunAppString + " /DisableStartupMessages /DisableStartupDialogs";
 
-	RunAppString = RunAppString + " /DumpConfigToFiles " + UT_StringFunctionsClientServer.WrapInOuotationMarks(
-		SaveOptions.SourceDirectoryDescription.Directory) + " -format Hierarchical";
+	RunAppString = RunAppString + " /DumpConfigToFiles " 
+		+ UT_StringFunctionsClientServer.WrapInOuotationMarks(SaveOptions.SourceDirectoryDescription.Directory) 
+		+ " -format Hierarchical";
 
 	If SaveOptions.SourceDirectoryDescription.Source <> "MainConfiguration" Then
-		RunAppString = RunAppString + " -Extension " + SaveOptions.SourceDirectoryDescription.Source;
+		RunAppString = RunAppString + " -Extension " 
+		+ SaveOptions.SourceDirectoryDescription.Source;
 	EndIf;
 	If SaveOptions.SourceDirectoryDescription.OnlyModules Then
 		RunAppString = RunAppString + " -listFile " + UT_StringFunctionsClientServer.WrapInOuotationMarks(
@@ -1416,18 +1420,20 @@ Procedure SaveConfigurationModulesToFilesRunDesignerForMetadataDump(SaveOptions)
 	EndIf;
 	SessionFileVariablesStructure = UT_CommonClient.SessionFileVariablesStructure();
 
-	SaveOptions.Insert("RunDesignerLogFileName", SessionFileVariablesStructure.TempFilesDirectory + GetPathSeparator()
+	SaveOptions.Insert("RunDesignerLogFileName", 
+		SessionFileVariablesStructure.TempFilesDirectory + GetPathSeparator()
 		+ "tools_ui_1c_int_list_metadata_out.txt");
 
 	RunAppString = RunAppString + " /Out " + UT_StringFunctionsClientServer.WrapInOuotationMarks(
 		SaveOptions.RunDesignerLogFileName);
 
 	BeginRunningApplication(
-		New NotifyDescription("SaveConfigurationModulesToFilesOnEndMetadataDumpToDirectory", ThisObject, SaveOptions),
-		RunAppString, , True);
+		New NotifyDescription("SaveConfigurationModulesToFilesOnEndMetadataDumpToDirectory", 
+		ThisObject, SaveOptions),RunAppString, , True);
 EndProcedure
 
-Procedure SaveConfigurationModulesToFilesOnEndMetadataDumpToDirectory(CompletionCode, SaveOptions) Export
+Procedure SaveConfigurationModulesToFilesOnEndMetadataDumpToDirectory(CompletionCode, 
+	SaveOptions) Export
 	If CompletionCode <> 0 Then
 		TextDocument = New TextDocument;
 
@@ -1450,7 +1456,6 @@ Procedure SaveConfigurationModulesToFilesOnEndMetadataDumpToDirectoryEndLogReadi
 	Message(Nstr("ru = 'Не удалось сохранить исходные файлы для источника';
 				 |en = 'Could not save the source files for the source'")
 		+ SaveOptions.SourceDirectoryDescription.Source + ":" + Chars.LF + TextDocument.GetText());
-
 	SaveOptions.DirectoryIndex = SaveOptions.DirectoryIndex + 1;
 	SaveConfigurationModulesToFilesBeginProcessingSourceDirectory(SaveOptions);
 
@@ -1495,6 +1500,7 @@ Procedure BeginReadingCodeTemplateFileCompletion(AdditionalParameters) Export
 	
 	BeginReadingCodeTemplateFile(AdditionalParameters);
 EndProcedure
+
 
 Procedure BeginReadingCodeTemplateFileCheckingExistenceCompletion(Exists, AdditionalParameters) Export
 
@@ -1543,7 +1549,6 @@ Procedure OnEndEditMonacoFormattedString(Text, AdditionalParameters) Export
 EndProcedure
 
 Procedure OnEndEditMonacoQuery(Text, AdditionalParameters) Export
-
 	If Text = Undefined Then
 		Return;
 	EndIf;
@@ -1574,14 +1579,14 @@ Procedure OnEndEditMonacoQuery(Text, AdditionalParameters) Export
 	Else
 		SetTextMonaco(DocumentView, QueryText, , True);
 	EndIf;
-	
 EndProcedure
 
 Procedure OpenMonacoQueryWizardQuestionCompletion(Result, AdditionalParameters) Export
 	If Result <> DialogReturnCode.Yes Then
 		Return;
 	EndIf;
-	OpenQueryWizard("", New NotifyDescription("OnEndEditMonacoQuery", ThisObject, AdditionalParameters));
+	OpenQueryWizard("", New NotifyDescription("OnEndEditMonacoQuery", ThisObject, 
+		AdditionalParameters));
 
 EndProcedure
 
@@ -1703,6 +1708,7 @@ Function NewSelectionBorders()
 EndFunction
 
 #Region Monaco
+
 Procedure FillMonacoCodeEditorContextStructure(AddingObjects, AddedContext, TypesMap)
 	For Each KeyValue In AddedContext Do
 		AddedObject = New Structure("ref,name");
@@ -1710,11 +1716,14 @@ Procedure FillMonacoCodeEditorContextStructure(AddingObjects, AddedContext, Type
 		If TypeOf(KeyValue.Value) = Type("Structure") Then
 			TypeName = KeyValue.Value.Type;
 
-			If KeyValue.Value.Property("ChildProperties") And KeyValue.Value.ChildProperties.Count() > 0 Then
+			If KeyValue.Value.Property("ChildProperties") 
+				And KeyValue.Value.ChildProperties.Count() > 0 Then
 
 				AddedObject.Insert("properties", New Structure);
 
-				FillMonacoCodeEditorContextStructure(AddedObject.properties, KeyValue.Value.ChildProperties, TypesMap);
+				FillMonacoCodeEditorContextStructure(AddedObject.properties,
+													 KeyValue.Value.ChildProperties, 
+													 TypesMap);
 //				For each Property In KeyValue.Value.ChildProperties Do
 //					AddAttributeDescriptionForMonacoEditor(AddedObject.properties,
 //																Property,
@@ -1757,11 +1766,9 @@ Procedure OpenMonacoFormatStringWizard(EventParameters, AdditionalParameters)
 			New NotifyDescription("OpenMonacoFormatStringWizardQuestionCompletion", ThisObject, AdditionalParameters),
 			Nstr("ru = 'Форматная строка не найдена.';
 				 |en = 'Format string was not found.'") + Chars.LF + NSTR("ru = 'Создать новую форматную строку?';
-																		  |en = 'Create a new format string?'"),
-			QuestionDialogMode.YesNo);
+																		  |en = 'Create a new format string?'"),QuestionDialogMode.YesNo);
 	Else
 		FormatString = StrReplace(StrReplace(EventParameters.text, "|", ""), """", "");
-
 		NotificationParameters = AdditionalParameters;
 
 		Position = New Structure;
@@ -1772,7 +1779,8 @@ Procedure OpenMonacoFormatStringWizard(EventParameters, AdditionalParameters)
 
 		NotificationParameters.Insert("Position", Position);
 
-		OpenFormatStringWizard(FormatString, New NotifyDescription("OnEndEditMonacoFormattedString", ThisObject,
+		OpenFormatStringWizard(FormatString, 
+			New NotifyDescription("OnEndEditMonacoFormattedString", ThisObject,
 			NotificationParameters));
 	EndIf;
 EndProcedure
@@ -1780,19 +1788,18 @@ EndProcedure
 Procedure OpenMonacoQueryWizard(EventParameters, AdditionalParameters)
 	If EventParameters = Undefined Then
 		UT_CommonClient.ShowQuestionToUser(
-			New NotifyDescription("OpenMonacoQueryWizardQuestionCompletion", ThisObject, AdditionalParameters), NSTR("ru = 'Не найден текст запроса';
-																													 |en = 'Query text not found'")
+			New NotifyDescription("OpenMonacoQueryWizardQuestionCompletion", ThisObject, 
+			AdditionalParameters), NSTR("ru = 'Не найден текст запроса';
+			|en = 'Query text not found'")
 			+ Chars.LF + NSTR("ru = 'Создать новый запрос?';
 							  |en = 'Create a new query?'"), QuestionDialogMode.YesNo);
 	Else
-
 		If EventParameters.isQueryMode Then
 			QueryText = EventParameters.text;
 		Else
 			QueryText = PrepareTextForQueryWizard(EventParameters.text);
 		EndIf;
 		NotificationParameters = AdditionalParameters;
-
 		Position = New Structure;
 		Position.Insert("startLineNumber", EventParameters.startLineNumber);
 		Position.Insert("startColumn", EventParameters.startColumn);
@@ -1801,13 +1808,14 @@ Procedure OpenMonacoQueryWizard(EventParameters, AdditionalParameters)
 
 		NotificationParameters.Insert("Position", Position);
 		NotificationParameters.Insert("isQueryMode", EventParameters.isQueryMode);
-		OpenQueryWizard(QueryText, New NotifyDescription("OnEndEditMonacoQuery", ThisObject, NotificationParameters));
+		
+		OpenQueryWizard(QueryText, New NotifyDescription("OnEndEditMonacoQuery", 
+			ThisObject, NotificationParameters));
 	EndIf;
 EndProcedure
 
 Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing)
-	
-		Event = EventData.Event.eventData1C;
+	Event = EventData.Event.eventData1C;
 
 	If Event = Undefined Then
 		Return;
@@ -1826,6 +1834,7 @@ Procedure HTMLEditorFieldOnClickMonaco(Form, Item, EventData, StandardProcessing
 		If DataOfEventForProcessing.EventSource = "snippet" Then
 			DataOfEventForProcessing.Insert("TemplateID", Event.params.snippet_guid);
 		EndIf;
+		
 	ElsIf Event.event = "EVENT_QUERY_CONSTRUCT" Then 
 		QueryParameters = Event.params;
 		DocumentHTMLView = EventData.Document.defaultView;
@@ -1942,7 +1951,8 @@ Procedure SetModuleDescriptionForMonacoEditor(UpdatedMetadataObject, AdditionalP
 	EndIf;
 
 	FormEditors = AdditionalParameters.Form[UT_CodeEditorClientServer.AttributeNameCodeEditorFormCodeEditors()];
-	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(AdditionalParameters.Form, AdditionalParameters.Item);
+	EditorID = UT_CodeEditorClientServer.EditorIDByFormItem(
+		AdditionalParameters.Form, AdditionalParameters.Item);
 	EditorSettings = FormEditors[EditorID];
 	AdditionalParameters.Insert("SourcesDirectories", EditorSettings.EditorSettings.SourceFilesDirectories);
 
@@ -1990,7 +2000,8 @@ Procedure SetModuleDescriptionForMonacoEditor(UpdatedMetadataObject, AdditionalP
 
 	StartSearchOfModuleFileInSourceFilesDirectory(AdditionalParameters);
 EndProcedure
-Procedure SetModuleDescriptionForMonacoEditorOnEndModuleFilesSeacrh(FoundFiles, AdditionalParameters) Export
+Procedure SetModuleDescriptionForMonacoEditorOnEndModuleFilesSeacrh(FoundFiles, 
+AdditionalParameters) Export
 	If FoundFiles = Undefined Then
 		AdditionalParameters.SourcesDirectoryIndex = AdditionalParameters.SourcesDirectoryIndex + 1;
 		StartSearchOfModuleFileInSourceFilesDirectory(AdditionalParameters);
@@ -2010,8 +2021,8 @@ Procedure SetModuleDescriptionForMonacoEditorOnEndModuleFilesSeacrh(FoundFiles, 
 
 	AdditionalParameters.Insert("TextDocument", TextDocument);
 	TextDocument.BeginReading(
-		New NotifyDescription("SetModuleDescriptionForMonacoEditorEndFileReading", ThisObject, AdditionalParameters),
-		AdditionalParameters.FileName);
+		New NotifyDescription("SetModuleDescriptionForMonacoEditorEndFileReading", ThisObject,
+		 AdditionalParameters),AdditionalParameters.FileName);
 
 EndProcedure
 
@@ -2025,8 +2036,9 @@ Procedure SetModuleDescriptionForMonacoEditorEndFileReading(AdditionalParameters
 	Else
 		UpdatedMetadataObjectsMap = MapOfMonacoEditorUpdatedMetadataObjectsAndMetadataUpdateEventParameters();
 		UpdatedEditorCollection = UpdatedMetadataObjectsMap[AdditionalParameters.MetadataObjectDescription.ObjectType];
-		UpdatedEditorCollection = UpdatedEditorCollection + "." + AdditionalParameters.MetadataObjectDescription.Name + "."
-			+ AdditionalParameters.MetadataNamesArray[1];
+		UpdatedEditorCollection = UpdatedEditorCollection + "." 
+		+ AdditionalParameters.MetadataObjectDescription.Name + "."
+		+ AdditionalParameters.MetadataNamesArray[1];
 
 		DocumentView.parseMetadataModule(ModuleText, UpdatedEditorCollection);
 	EndIf;
@@ -2146,7 +2158,8 @@ Function GetLinkToMetadataObjectForMonacoEditor(Attribute, TypesMap)
 
 EndFunction
 
-Procedure AddAttributeDescriptionForMonacoEditor(AttributesDescription, Attribute, GetAttributeLinks, TypesMap)
+Procedure AddAttributeDescriptionForMonacoEditor(AttributesDescription, Attribute, GetAttributeLinks,
+	TypesMap)
 
 	Link = "";
 	If GetAttributeLinks Then
@@ -2171,22 +2184,26 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 	TabularSectionsDescription = New Structure;
 	AdditionalProperties = New Structure;
 
-	If MetadataObjectDescription.ObjectType = "Enum" Or MetadataObjectDescription.ObjectType = "enums" Then
+	If MetadataObjectDescription.ObjectType = "Enum" Or MetadataObjectDescription.ObjectType 
+	= "enums" Then
 
 		For Each EmunValueKeyValue In MetadataObjectDescription.EnumValues Do
-			AttributesDescription.Insert(EmunValueKeyValue.Key, New Structure("name", EmunValueKeyValue.Value));
+			AttributesDescription.Insert(EmunValueKeyValue.Key, New Structure("name", 
+			EmunValueKeyValue.Value));
 		EndDo;
 
 	Else
 
 		If MetadataObjectDescription.Property("Attributes") Then
 			For Each AttributeKeyValue In MetadataObjectDescription.Attributes Do
-				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, TypesMap);
+				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, 
+				TypesMap);
 			EndDo;
 		EndIf;
 		If MetadataObjectDescription.Property("StandardAttributes") Then
 			For Each AttributeKeyValue In MetadataObjectDescription.StandardAttributes Do
-				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, False, TypesMap);
+				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, False, 
+				TypesMap);
 			EndDo;
 		EndIf;
 		If MetadataObjectDescription.Property("Predefined") Then
@@ -2222,10 +2239,12 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 		If MetadataObjectDescription.Property("Dimensions") Then
 
 			For Each AttributeKeyValue In MetadataObjectDescription.Dimensions Do
-				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, TypesMap);
+				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, 
+					TypesMap);
 			EndDo;
 			For Each AttributeKeyValue In MetadataObjectDescription.Resources Do
-				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, TypesMap);
+				AddAttributeDescriptionForMonacoEditor(AttributesDescription, AttributeKeyValue.Value, True, 
+					TypesMap);
 			EndDo;
 				
 				//FillRegisterType(AdditionalProperties, MetadataObject, FullName);				
@@ -2238,13 +2257,11 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 
 				TabularSection = TabularSectionKeyValue.Value;
 				
-
 				TabularSectionDescription = New Structure;
 
 				If TabularSection.Property("StandardAttributes") Then
 					For Each TabularSectionAttribute In TabularSection.StandardAttributes Do
-						TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,
-							TabularSectionAttribute.Value.Synonym);
+						TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,TabularSectionAttribute.Value.Synonym);
 					EndDo;
 				EndIf;
 
@@ -2265,12 +2282,12 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 			For Each TabularSectionKeyValue In MetadataObjectDescription.StandardTabularSections Do
 
 				TabularSection = TabularSectionKeyValue.Value;
+				
 				TabularSectionDescription = New Structure;
 
 				If TabularSection.Property("StandardAttributes") Then
 					For Each TabularSectionAttribute In TabularSection.StandardAttributes Do
-						TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,
-							TabularSectionAttribute.Value.Synonym);
+						TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,TabularSectionAttribute.Value.Synonym);
 					EndDo;
 				EndIf;
 
@@ -2328,7 +2345,8 @@ Function DescribeMetadataObjectsCollectionForMonacoEditor(Collection, TypesMap)
 		If MetadataObject.ObjectType = "Enum" Then
 
 			For Each EmunValueKeyValue In MetadataObject.EnumValues Do
-				AttributesDescription.Insert(EmunValueKeyValue.Key, New Structure("name", EmunValueKeyValue.Value));
+				AttributesDescription.Insert(EmunValueKeyValue.Key, New Structure("name", 
+					EmunValueKeyValue.Value));
 			EndDo;
 
 		Else
@@ -2368,7 +2386,8 @@ Function DescribeMetadataObjectsCollectionForMonacoEditor(Collection, TypesMap)
 				//	
 				//Else				
 				For Each NameKeyValue In MetadataObject.Predefined Do
-					PredefinedDescription.Insert(NameKeyValue.Key, New Structure("name, ref", NameKeyValue.Key, ""));
+					PredefinedDescription.Insert(NameKeyValue.Key, New Structure("name, ref",
+					 NameKeyValue.Key, ""));
 				EndDo;
 				
 				//EndIf;
@@ -2402,8 +2421,7 @@ Function DescribeMetadataObjectsCollectionForMonacoEditor(Collection, TypesMap)
 
 					If TabularSection.Property("StandardAttributes") Then
 						For Each TabularSectionAttribute In TabularSection.StandardAttributes Do
-							TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,
-								TabularSectionAttribute.Value.Synonym);
+							TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,TabularSectionAttribute.Value.Synonym);
 						EndDo;
 					EndIf;
 
@@ -2431,8 +2449,7 @@ Function DescribeMetadataObjectsCollectionForMonacoEditor(Collection, TypesMap)
 
 					If TabularSection.Property("StandardAttributes") Then
 						For Each TabularSectionAttribute In TabularSection.StandardAttributes Do
-							TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,
-								TabularSectionAttribute.Value.Synonym);
+							TabularSectionDescription.Insert(TabularSectionAttribute.Value.Name,TabularSectionAttribute.Value.Synonym);
 						EndDo;
 					EndIf;
 
@@ -2610,7 +2627,8 @@ Procedure SaveEditorLibraryToDisk(LibraryURL, EditorType, CompletionNotifyDescri
 	AdditionalParameters.Insert("EditorType", EditorType);
 	AdditionalParameters.Insert("CompletionNotifyDescription", CompletionNotifyDescription);
 	EditorFile.BeginCheckingExistence(
-		New NotifyDescription("SaveEditorLibraryToDiskEndCheckOfLibraryExistOnDisk", ThisObject, AdditionalParameters));
+		New NotifyDescription("SaveEditorLibraryToDiskEndCheckOfLibraryExistOnDisk", 
+		ThisObject, AdditionalParameters));
 EndProcedure
 
 Procedure SaveEditorLibraryWriteBeginWritingNextFile(AdditionalParameters)
@@ -2634,6 +2652,7 @@ Procedure SaveEditorLibraryWriteBeginWritingNextFile(AdditionalParameters)
 			CompletionNotify = New NotifyDescription("SaveEditorLibraryWriteBeginWritingNextFileEnd", ThisObject,
 				AdditionalParameters);
 		EndIf;
+		
 		If TypeOf(KeyValue.Value) = Type("TextDocument") Then
 			KeyValue.Value.BeginWriting(CompletionNotify, FileName);
 		ElsIf TypeOf(KeyValue.Value) = Type("BinaryData") Then

@@ -429,7 +429,7 @@
     <name>Object</name>
     <id>1</id>
     <valueType>
-      <types>DataProcessorObject.UT_ConsoleComparisonData</types>
+      <types>DataProcessorObject.UT_ComparisonDataConsole</types>
     </valueType>
     <view>
       <common>true</common>

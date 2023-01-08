@@ -1,7 +1,11 @@
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 #Region EventHandlers
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	
 	FillParametersTable();
 
 	If Not Parameters.Key.IsEmpty() Then
@@ -20,11 +24,12 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillFormFieldsChoiceLists();
 
 	SetVisibleAndEnabled();
-EndProcedure
-
-&AtServer
-Procedure BeforeWriteAtServer(Cancel, CurrentObject, WriteParameters)
-	//TODO: Insert the handler content
+	
+	// CodeEditor
+	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject);
+	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,"Algorithm" ,Items.FieldAlgorithmText);
+	//CodeEditor
+	
 EndProcedure
 
 &AtServer
@@ -60,6 +65,7 @@ EndProcedure
 Procedure AtClientOnChange(Item)
 	SetVisibleAndEnabled();
 EndProcedure
+
 #EndRegion
 
 #Region FormTableItemsEventHandlers_Parameters
@@ -85,7 +91,7 @@ EndProcedure
 &AtClient
 Procedure ParametersTableParameterOpening(Item, StandardProcessing)
 		StandardProcessing = False;
-	If Item.Parent.CurrentData.TypeDescription = "Value Table"
+	If Item.Parent.CurrentData.TypeDescription = "Value table"
 		Or Item.Parent.CurrentData.TypeDescription = "Binary data" Then
 		Return;
 	EndIf;
@@ -95,6 +101,90 @@ Procedure ParametersTableParameterOpening(Item, StandardProcessing)
 	Except
 		Message(ErrorDescription());
 	EndTry;
+EndProcedure
+
+&AtClient
+Procedure ParametersTableOnActivateRow(Item)
+		If Item.CurrentData = Undefined Then
+		Return;	
+	EndIf;
+	If SelectedParameter <> Item.CurrentData.Parameter Then
+		SelectedParameter = Item.CurrentData.Parameter;	
+		AttachIdleHandler("RepresentParameterValue", 0.1, True);
+	EndIf;
+EndProcedure
+
+&AtClient
+Procedure EditParametersEnd(Result, AdditionalParameters) Export
+	
+	AttachIdleHandler("RepresentParameterValue", 0.1, True);
+
+EndProcedure
+
+
+&AtClient
+Procedure RepresentParameterValue()
+	
+	If  Items.ParametersTable.CurrentData = Undefined Then
+		Return;	
+	EndIf;
+	
+	Items.ParameterCollection.Visible = False;
+	Items.DecorationGapParameterValues.Visible = False;
+	Items.PrimitiveTypeParameterValue.Visible = False;
+	
+	RepresentParameterValueServer(Items.ParametersTable.CurrentData.Parameter, Items.ParametersTable.CurrentData.TypeDescription);	
+EndProcedure
+
+&AtServer
+Procedure RepresentParameterValueServer(ParameterName, TypeOfStringParameter)
+	SelectedObject=FormAttributeToValue("Object");
+	Parameter = SelectedObject.GetParameter(ParameterName);
+    TypeDescription = New TypeDescription();
+	
+	Map = New Map;
+	Map.Insert("Array", "Collection");
+	Map.Insert("Structure", "Collection");
+	Map.Insert("Map", "Collection");
+	Map.Insert("Value Table", "Collection");
+	Map.Insert("Binary data", "ExternalFile");
+	Map.Insert(Undefined, "AvailableTypes");
+	ParameterType = Map.Get(TypeOfStringParameter);
+	If ParameterType = Undefined Then
+		PrimitiveTypeParameterValue = Parameter;
+		Items.PrimitiveTypeParameterValue.Visible = True;
+	ElsIf ParameterType = "Collection" Then
+		ItemsToDeletion = New Array;
+		For Each CollectionItem In Items.ParameterCollection.ChildItems Do
+			ItemsToDeletion.Add(CollectionItem.Name);
+		EndDo;
+        UT_Forms.DeleteColumnsNL(ThisObject, ItemsToDeletion, "ParameterCollection");		
+		If TypeOfStringParameter = "Array" Then
+			UT_Forms.AddColumnNL(ThisObject, "Value", TypeDescription, "ParameterCollection");
+			Table = UT_Common.CollectionToValueTable(Parameter);
+			ParameterCollection.Load(Table);
+		ElsIf TypeOfStringParameter = "Structure" Then
+			TD = New TypeDescription("String", , New StringQualifiers(20, AllowedLength.Variable));
+			UT_Forms.AddColumnNL(ThisObject, "Key", TD, "ParameterCollection");
+			UT_Forms.AddColumnNL(ThisObject, "Value", TypeDescription, "ParameterCollection");
+			Table = UT_Common.CollectionToValueTable(Parameter);
+			ParameterCollection.Load(Table);
+		ElsIf TypeOfStringParameter = "Map" Then
+			UT_Forms.AddColumnNL(ThisObject, "Key", TypeDescription, "ParameterCollection");
+			UT_Forms.AddColumnNL(ThisObject, "Value", TypeDescription, "ParameterCollection");
+			Table = UT_Common.CollectionToValueTable(Parameter);
+			ParameterCollection.Load(Table);
+		Else
+			For Each Column In Parameter.Columns Do
+				UT_Forms.AddColumnNL(ThisObject, Column.Name, Column.ValueType, "ParameterCollection");
+			EndDo;
+			ParameterCollection.Load(Parameter);
+		EndIf;
+		Items.ParameterCollection.Visible = True;
+	Else
+		Parameters.ParameterType="ExternalFile";
+	EndIf;
+	Items.DecorationGapParameterValues.Visible = True;	
 EndProcedure
 
 #EndRegion
@@ -119,42 +209,37 @@ EndProcedure
 
 &AtClient
 Procedure EditValue(Command)
-	If Items.ParametersTable.CurrentData <> Undefined Then
+		If Items.ParametersTable.CurrentData <> Undefined Then
+		Notify = New NotifyDescription("EditParametersEnd", ThisObject);
 		FormParameters = New Structure;
 		FormParameters.Insert("Key", Parameters.Key);
 		FormParameters.Insert("ParameterName", Items.ParametersTable.CurrentData.Parameter);
-		FormParameters.Insert("ParameterType", Items.ParametersTable.CurrentData.ОписаниеТипа);
-		OpenForm("Catalog.UT_Algorithms.Form.ParameterForm", FormParameters, ThisObject);
-	EndIf;
+		FormParameters.Insert("ParameterType", Items.ParametersTable.CurrentData.TypeDescription);
+		OpenForm("Catalog.UT_Algorithms.Form.ParameterForm", FormParameters, ThisObject,,,, Notify);
+	Endif;
 EndProcedure
 
 ///
 &AtClient
 Procedure ExecuteProcedure(Command)
-
-	If Modified Then
-		Write();
-	EndIf;
+	//TODO    When changing the code when using monako, there is no sign of modification
+   // this is why there is a record every time, it is necessary to find out how changing the text can change this flag	
+	Write();
 
 	StartTime = CurrentUniversalDateInMilliseconds();
 
 	Error = False;
 	ErrorMessage = "";
-
+	TransmittedStructure = New Structure;
+	
 	If Object.AtClient Then
-		UT_CommonClient.ExecuteAlgorithm(Object.Ref, , Error, ErrorMessage);
-	Else
-		UT_CommonServerCall.ExecuteAlgorithm(Object.Ref, , Error, ErrorMessage);
-	EndIf;
-	If Error Then
-		UT_CommonClientServer.MessageToUser(ErrorMessage);
+		ExecuteAlgorithmAtClient(TransmittedStructure);
+	else
+		UT_AlgorithmsServerCall.ExecuteAlgorithm(Object.Ref);
+	Endif;
 
-		Items.EventLog.Title = NSTR("ru = 'ПОСМОТРЕТЬ ОШИБКИ';en = 'VIEW ERRORS'");
-		MarkError(ErrorMessage);
-	Else
-		Items.EventLog.Title = " ";
-	EndIf;
-		Items.ExecuteProcedure.Title = StrTemplate("ru = 'Выполнить процедуру %1 мс.';en = 'Execute procedure %1 ms.'", String(CurrentUniversalDateInMilliseconds()- StartTime));
+	Items.ExecuteProcedure.Title =StrTemplate(NStr("ru = 'Выполнить процедуру (%1 мс.)';en = 'Execute procedure (%1 ms.)'"),Строка(CurrentUniversalDateInMilliseconds()
+		- StartTime));
 EndProcedure
 
 ///
@@ -215,9 +300,6 @@ Procedure FormatText(Command)
 			FormatAfter = Chars.LF + TabulationString;
 		EndIf;
 
-		//If WordType["LeftTransfer"] And Not WasType["RightTransfer"]  Then 
-		//	FormatBefore =  Chars.LF + TabulationString ;
-		//EndIf;
 		FormattedText = FormattedText + FormatBefore + WordsArray[Iterator] + Char(32) + FormatAfter;
 
 		WasType = WordType;
@@ -248,8 +330,8 @@ Procedure EventLog(Command)
 	ConnectExternalDataProcessorAtServer();
 	OpenParameters = New Structure;
 	OpenParameters.Insert("Data", Object.Ref);
-	OpenParameters.Insert("ValidFrom", BegOfDay(CurrentDate()));
-	OpenForm("ExternalDataProcessors.StandardEventLog.Form", OpenParameters);
+	OpenParameters.Insert("StartDate", BegOfDay(CurrentDate()));
+	OpenForm("ExternalDataProcessor.StandardEventLog.Form", OpenParameters);
 EndProcedure
 
 #EndRegion
@@ -295,9 +377,22 @@ Function DeleteParameterAtServer(Key)
 EndFunction
 
 &AtServer
-Function GetParameterAtServer(ParameterName)
+Function GetParameterAtServer(ParameterName, IsJSON = False)
 	SelectedObject = FormAttributeToValue("Object");
-	Return SelectedObject.GetParameter(ParameterName);
+	ReceivedParameterValue = SelectedObject.GetParameter(ParameterName);
+	If TypeOf(ReceivedParameterValue) = Type("ValueTable") Then
+		
+
+		ReceivedParameterValue = Common.ValueTableToArray(ReceivedParameterValue);
+		IsJSON = True;
+		JSONWriter = New JSONWriter;
+		JSONWriter.SetString();
+		WriteJSON(JSONWriter, ReceivedParameterValue); 
+		JsonResponseString = JSONWriter.Close();
+
+		Return JsonResponseString;	
+	EndIf;
+	Return ReceivedParameterValue;
 EndFunction
 
 &AtServer
@@ -322,13 +417,6 @@ Procedure ChangeParameter(NewData) Export
 	Else
 		ParameterValue = NewData.ParameterValue;
 	EndIf;
-//	Parameters = Storage.Get();
-//	If Parameters = Undefined ИЛИ Typeof(Parameters) <> Type("Structure") Then
-//		Parameters = New Structure;
-//	EndIf;
-//	Parameters.Insert(ParameterName, ParameterValue);
-//	Storage = New ValueStorage(Parameters);
-//	Write();
 EndProcedure
 
 #EndRegion
@@ -389,8 +477,6 @@ EndProcedure
 
 &AtClient
 Procedure HighlightChangedCode()
-      //Items.AlgorithmText.BorderColor=New Color(255,99,71);
-	//Items.Write.BgColor=New Color(255,99,71);
 	Modified = True;
 EndProcedure
 
@@ -483,9 +569,6 @@ EndProcedure
 &AtServer
 Procedure FillFormFieldsChoiceLists()
 
-       //ChoiceList MetadataObject  CommandInterface
-
-	// ChoiceLists  Parameters
 	Query = New Query;
 	Query.Text = "SELECT DISTINCT
   					|UT_AlgorithmsParameters.ParameterType
@@ -512,6 +595,50 @@ Procedure SetVisibleAndEnabled()
 
 	Items.GroupServer.Visible=Not Object.AtClient;
 EndProcedure
+
+
+&AtClient
+Procedure ExecuteAlgorithmAtClient(TransmittedStructure)
+	If Not ValueIsFilled(TrimAll(Object.AlgorithmText)) Then
+		Return;
+	EndIf;
+	Try
+		ExecutionContext = AlgorithmExecutionContext(TransmittedStructure);
+	Except
+		Raise  NSTR("ru = 'Нет возможности получить на клиенте текущие параметры';en = 'There is no way to get the current parameters At Client'") ;
+	EndTry;
+	ExecutionResult = UT_CodeEditorClientServer.ExecuteAlgorithm(Object.AlgorithmText, ExecutionContext);
+
+EndProcedure
+
+&AtServer
+Procedure ExecuteAlgorithmAtServer(TransmittedStructure)
+	If Not ValueIsFilled(TrimAll(Object.AlgorithmText)) Then
+		Return;
+	Endif;
+	
+	ExecutionContext = AlgorithmExecutionContext(TransmittedStructure);
+
+	ExecutionResult =  UT_CodeEditorClientServer.ExecuteAlgorithm(Object.AlgorithmText, ExecutionContext);
+
+EndProcedure
+
+&AtServer
+Function AlgorithmExecutionContext(TransmittedStructure)
+	ExecutionContext = New Structure;
+	ExecutionContext.Insert("TransmittedStructure", TransmittedStructure);
+	
+	SelectedObject = FormAttributeToValue("Object");
+	Variables = SelectedObject.Storage.Get();
+	If ValueIsFilled(Variables) Then
+		For Each Item In Variables Do
+			ExecutionContext.Insert(Item.Key, Item.Value);
+		EndDo;
+	Endif;
+	
+	Return ExecutionContext;	
+EndFunction
+
 #Region ImportExport
 //Import
 &AtClient
@@ -552,8 +679,6 @@ Procedure ReadAtServer(StorageURL, SelectedFileName, AdditionalParameters)
 		Raise NSTR("ru = 'Ошибка записи файла XML';en = 'Error writing XML file'") + ErrorDescription();
 	EndTry;
 EndProcedure
-
-// readatserver()
 
 //Export
 &AtClient
@@ -694,5 +819,47 @@ Procedure DeleteScheduledJobAtServer()
 		Message(Nstr("ru = 'Удалено регламентное задание';en = 'Deleted scheluded job'")+ Object.Title);
 	EndIf;
 EndProcedure
+
+&AtClient
+Procedure OnOpen(Cancel)
+	// CodeEditor
+	UT_CodeEditorClient.FormOnOpen(ThisObject,Undefined);
+   	// CodeEditor
+EndProcedure
+
+
+//@skip-warning
+&AtClient
+Процедура Attachable_EditorFieldDocumentGenerated(Item)
+	UT_CodeEditorClient.HTMLEditorFieldDocumentGenerated(ThisObject, Item);
+КонецПроцедуры
+
+//@skip-warning
+&AtClient
+Procedure Attachable_EditorFieldOnClick(Item, EventData, StandardProcessing)
+	UT_CodeEditorClient.HTMLEditorFieldOnClick(ThisObject, Item, EventData, StandardProcessing);
+EndProcedure
+
+//@skip-warning
+&AtClient
+Procedure Attachable_CodeEditorDeferredInitializingEditors()
+	UT_CodeEditorClient.CodeEditorDeferredInitializingEditors(ThisObject);
+EndProcedure
+
+&AtClient
+Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
+	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
+EndProcedure
+
+&AtClient 
+Procedure Attachable_CodeEditorInitializingCompletion() Export
+	UT_CodeEditorClient.SetEditorText(ThisObject, "Algorithm", Object.AlgorithmText, True);
+EndProcedure
+
+&AtClient
+Procedure BeforeWrite(Cancel, WriteParameters)
+	Object.AlgorithmText = UT_CodeEditorClient.EditorCodeText(ThisObject, "Algorithm");
+EndProcedure
+
 
 #EndRegion

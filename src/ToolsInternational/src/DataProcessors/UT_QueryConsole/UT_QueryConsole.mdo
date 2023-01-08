@@ -504,7 +504,11 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="e65e86dc-0bea-44a1-becb-d194fad43f79">
-    <name>ВыборМакроКолонки</name>
+    <name>MacroColumnChoice</name>
+    <synonym>
+      <key>en</key>
+      <value>Macro column choice</value>
+    </synonym>
     <synonym>
       <key>ru</key>
       <value>Выбор макро колонки</value>

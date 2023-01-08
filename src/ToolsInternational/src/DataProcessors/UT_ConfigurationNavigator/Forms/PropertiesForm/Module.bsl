@@ -2395,8 +2395,8 @@ Function vRunTotalsManagementCommand(Val FullName, Val CommandName, Val pSetting
 		ElsIf CommandName = "RecalcPresentTotals" Then
 			pManager.RecalcPresentTotals();
 		ElsIf CommandName = "RecalcTotalsForPeriod" Then
-			Date1 = pSettingsStructure.PeriodRecalculationTotals.ValidFrom;
-			Date2 = pSettingsStructure.PeriodRecalculationTotals.ValidTo;
+			Date1 = pSettingsStructure.PeriodRecalculationTotals.StartDate;
+			Date2 = pSettingsStructure.PeriodRecalculationTotals.EndDate;
 			pManager.RecalcTotalsForPeriod(Date1, Date2);
 		ElsIf CommandName = "SetMinTotalsPeriod" Then
 			pManager.SetMinTotalsPeriod(pSettingsStructure.MinimumPeriodOfCalculatedTotals);

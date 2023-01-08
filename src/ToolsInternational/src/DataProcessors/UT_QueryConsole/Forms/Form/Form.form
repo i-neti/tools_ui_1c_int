@@ -3303,7 +3303,6 @@ Example:
               <segments>TempTables</segments>
             </dataPath>
             <titleLocation>None</titleLocation>
-            <excludedCommands>Add</excludedCommands>
             <items xsi:type="form:FormField">
               <name>TempTablesName</name>
               <id>159</id>
@@ -3413,6 +3412,37 @@ Example:
             <autoCommandBar>
               <name>TempTablesCommandBar</name>
               <id>148</id>
+              <items xsi:type="form:Button">
+                <name>TempTablesAdd</name>
+                <id>559</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <extendedTooltip>
+                  <name>TempTablesAddExtendedTooltip</name>
+                  <id>560</id>
+                  <visible>true</visible>
+                  <enabled>true</enabled>
+                  <userVisible>
+                    <common>true</common>
+                  </userVisible>
+                  <type>Label</type>
+                  <autoMaxWidth>true</autoMaxWidth>
+                  <autoMaxHeight>true</autoMaxHeight>
+                  <extInfo xsi:type="form:LabelDecorationExtInfo">
+                    <horizontalAlign>Left</horizontalAlign>
+                  </extInfo>
+                </extendedTooltip>
+                <commandName>Form.Item.TempTables.StandardCommand.Add</commandName>
+                <representation>Auto</representation>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <placementArea>UserCmds</placementArea>
+                <toolTipRepresentation>Auto</toolTipRepresentation>
+                <representationInContextMenu>Auto</representationInContextMenu>
+              </items>
               <items xsi:type="form:Button">
                 <name>TempTablesCopyButton</name>
                 <id>338</id>
@@ -3747,6 +3777,146 @@ Example:
           </extInfo>
         </items>
         <items xsi:type="form:FormGroup">
+          <name>AlgorithmTextBeforeExecutionPage</name>
+          <id>549</id>
+          <items xsi:type="form:FormField">
+            <name>AlgorithmTextBeforeExecution</name>
+            <id>551</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>AlgorithmTextBeforeExecution</segments>
+            </dataPath>
+            <titleLocation>None</titleLocation>
+            <extendedTooltip>
+              <name>AlgorithmTextBeforeExecutionExtendedTooltip</name>
+              <id>553</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>AlgorithmTextBeforeExecutionContextMenu</name>
+              <id>552</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>TextDocumentField</type>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:TextDocFieldExtInfo">
+              <width>50</width>
+              <autoMaxWidth>true</autoMaxWidth>
+              <height>10</height>
+              <autoMaxHeight>true</autoMaxHeight>
+              <horizontalStretch>true</horizontalStretch>
+              <verticalStretch>true</verticalStretch>
+            </extInfo>
+          </items>
+          <items xsi:type="form:FormField">
+            <name>AlgorithmHintBeforeExecution</name>
+            <id>554</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <dataPath xsi:type="form:DataPath">
+              <segments>AlgorithmHintBeforeExecution</segments>
+            </dataPath>
+            <titleLocation>None</titleLocation>
+            <extendedTooltip>
+              <name>AlgorithmHintBeforeExecutionExtendedTooltip</name>
+              <id>556</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <contextMenu>
+              <name>AlgorithmHintBeforeExecutionContextMenu</name>
+              <id>555</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <autoFill>true</autoFill>
+            </contextMenu>
+            <type>InputField</type>
+            <readOnly>true</readOnly>
+            <editMode>Enter</editMode>
+            <showInHeader>true</showInHeader>
+            <headerHorizontalAlign>Left</headerHorizontalAlign>
+            <showInFooter>true</showInFooter>
+            <extInfo xsi:type="form:InputFieldExtInfo">
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <wrap>true</wrap>
+              <chooseType>true</chooseType>
+              <typeDomainEnabled>true</typeDomainEnabled>
+              <textEdit>true</textEdit>
+            </extInfo>
+          </items>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <title>
+            <key>en</key>
+            <value>Algorithm before execution</value>
+          </title>
+          <title>
+            <key>ru</key>
+            <value>Алгоритм перед выполнением</value>
+          </title>
+          <extendedTooltip>
+            <name>AlgorithmTextBeforeExecutionPageExtendedTooltip</name>
+            <id>550</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <type>Page</type>
+          <extInfo xsi:type="form:PageGroupExtInfo">
+            <group>Vertical</group>
+            <showTitle>true</showTitle>
+          </extInfo>
+        </items>
+        <items xsi:type="form:FormGroup">
           <name>AlgorithmPage</name>
           <id>356</id>
           <items xsi:type="form:FormGroup">
@@ -3982,6 +4152,10 @@ Example:
                   <textEdit>true</textEdit>
                   <choiceList>
                     <presentation>
+                      <key>en</key>
+                      <value>simple execution</value>
+                    </presentation>
+                    <presentation>
                       <key>ru</key>
                       <value>простое выполнение</value>
                     </presentation>
@@ -3991,6 +4165,10 @@ Example:
                   </choiceList>
                   <choiceList>
                     <presentation>
+                      <key>en</key>
+                      <value>line by line without indication</value>
+                    </presentation>
+                    <presentation>
                       <key>ru</key>
                       <value>построчно без индикации</value>
                     </presentation>
@@ -3999,6 +4177,10 @@ Example:
                     </value>
                   </choiceList>
                   <choiceList>
+                    <presentation>
+                      <key>en</key>
+                      <value>line by line with indication</value>
+                    </presentation>
                     <presentation>
                       <key>ru</key>
                       <value>построчно с индикацией</value>
@@ -4517,6 +4699,7 @@ Example:
               <autoInsertNewRow>true</autoInsertNewRow>
               <searchOnInput>Auto</searchOnInput>
               <initialListView>Auto</initialListView>
+              <initialTreeView>ExpandTopLevel</initialTreeView>
               <horizontalStretch>true</horizontalStretch>
               <verticalStretch>true</verticalStretch>
               <enableStartDrag>true</enableStartDrag>
@@ -4578,11 +4761,11 @@ Example:
           </userVisible>
           <title>
             <key>en</key>
-            <value>Algorithm</value>
+            <value>Result processing</value>
           </title>
           <title>
             <key>ru</key>
-            <value>Алгоритм</value>
+            <value>Обработка результата</value>
           </title>
           <toolTip>
             <key>en</key>
@@ -5486,6 +5669,68 @@ Example:
             <placementArea>UserCmds</placementArea>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTreeSortAsc</name>
+            <id>561</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTreeSortAscExtendedTooltip</name>
+              <id>562</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTreeSortAsc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTreeSortDesc</name>
+            <id>563</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTreeSortDescExtendedTooltip</name>
+              <id>564</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTreeSortDesc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
@@ -5606,6 +5851,68 @@ Example:
             <autoMaxHeight>true</autoMaxHeight>
             <placementArea>UserCmds</placementArea>
             <picture xsi:type="form:FormPicture"/>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTableSortAsc</name>
+            <id>565</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTableSortAscExtendedTooltip</name>
+              <id>566</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTableSortAsc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
+            <representationInContextMenu>Auto</representationInContextMenu>
+          </items>
+          <items xsi:type="form:Button">
+            <name>QueryResultTableSortDesc</name>
+            <id>567</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <extendedTooltip>
+              <name>QueryResultTableSortDescExtendedTooltip</name>
+              <id>568</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <type>Label</type>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <extInfo xsi:type="form:LabelDecorationExtInfo">
+                <horizontalAlign>Left</horizontalAlign>
+              </extInfo>
+            </extendedTooltip>
+            <commandName>Form.Command.QueryResultTableSortDesc</commandName>
+            <representation>Auto</representation>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <placementArea>UserCmds</placementArea>
+            <toolTipRepresentation>Auto</toolTipRepresentation>
             <representationInContextMenu>Auto</representationInContextMenu>
           </items>
           <items xsi:type="form:Button">
@@ -8034,6 +8341,86 @@ Example:
         <common>true</common>
       </edit>
     </columns>
+    <columns>
+      <name>AlgorithmBeforeExecution</name>
+      <title>
+        <key>en</key>
+        <value>Algorithm before execution</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Алгоритм перед выполнением</value>
+      </title>
+      <id>62</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>AlgorithmBeforeExecutionOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Algorithm before execution</value>
+      </title>
+      <title>
+        <key>ru</key>
+        <value>Алгоритм перед выполнением</value>
+      </title>
+      <id>63</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>QueryTextOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Query text original</value>
+      </title>
+      <id>64</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
+    <columns>
+      <name>CodeTextOriginal</name>
+      <title>
+        <key>en</key>
+        <value>Code text original</value>
+      </title>
+      <id>65</id>
+      <valueType>
+        <types>String</types>
+        <stringQualifiers/>
+      </valueType>
+      <view>
+        <common>true</common>
+      </view>
+      <edit>
+        <common>true</common>
+      </edit>
+    </columns>
   </attributes>
   <attributes>
     <name>QueryParameters</name>
@@ -9574,6 +9961,50 @@ Example:
       <common>true</common>
     </edit>
   </attributes>
+  <attributes>
+    <name>AlgorithmTextBeforeExecution</name>
+    <title>
+      <key>en</key>
+      <value>Algorithm text before execution</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Текст алгоритм перед выполнением</value>
+    </title>
+    <id>60</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
+  <attributes>
+    <name>AlgorithmHintBeforeExecution</name>
+    <title>
+      <key>en</key>
+      <value>Algorithm hint before execution</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Подсказка алгоритма перед выполнением</value>
+    </title>
+    <id>61</id>
+    <valueType>
+      <types>String</types>
+      <stringQualifiers/>
+    </valueType>
+    <view>
+      <common>true</common>
+    </view>
+    <edit>
+      <common>true</common>
+    </edit>
+  </attributes>
   <formCommands>
     <name>ExecuteQuery</name>
     <title>
@@ -10835,6 +11266,118 @@ Example:
     </action>
     <representation>Picture</representation>
     <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>QueryResultTableSortDesc</name>
+    <title>
+      <key>en</key>
+      <value>Sort descending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по убыванию</value>
+    </title>
+    <id>41</id>
+    <toolTip>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListDesc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>QueryResultTableSortDesc_Command</name>
+      </handler>
+    </action>
+    <representation>Picture</representation>
+    <currentRowUse>Auto</currentRowUse>
+    <associatedTableElementId>4</associatedTableElementId>
+  </formCommands>
+  <formCommands>
+    <name>QueryResultTableSortAsc</name>
+    <title>
+      <key>en</key>
+      <value>Sort ascending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по возрастанию</value>
+    </title>
+    <id>42</id>
+    <toolTip>
+      <key>en</key>
+      <value>Сортировать по возрвстанию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListAsc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>QueryResultTableSortAsc_Command</name>
+      </handler>
+    </action>
+    <representation>Picture</representation>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>QueryResultTreeSortAsc</name>
+    <title>
+      <key>en</key>
+      <value>Sort ascending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по возрастанию</value>
+    </title>
+    <id>43</id>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListAsc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>QueryResultTreeSortAsc_Command</name>
+      </handler>
+    </action>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>QueryResultTreeSortDesc</name>
+    <title>
+      <key>en</key>
+      <value>Sort descending</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Сортировать по убыванию</value>
+    </title>
+    <id>44</id>
+    <toolTip>
+      <key>en</key>
+      <value>Соритровать по убыванию</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.SortListDesc</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>QueryResultTreeSortDesc_Command</name>
+      </handler>
+    </action>
+    <currentRowUse>Auto</currentRowUse>
+    <associatedTableElementId>4</associatedTableElementId>
   </formCommands>
   <commandInterface>
     <navigationPanel/>

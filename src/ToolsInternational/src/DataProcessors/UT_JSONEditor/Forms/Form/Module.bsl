@@ -91,18 +91,18 @@ Procedure Attachable_ExecuteToolsCommonToolsCommand(Command)
 EndProcedure
 
 
-
 #EndRegion
 
 #Region Private
 
 &AtClient
 Procedure OnOpenComplеtion(Result, AdditionalParameters) Export
-	FileVarsStructure=UT_CommonClient.SessionFileVariablesStructure();
-	LibrarySavingDirectory=FileVarsStructure.TempFilesDirectory + "tools_ui_1c_int"
-		+ GetPathSeparator() + Format(UT_CommonClientServer.Version(), "NG=0;") + GetPathSeparator() + "jsoneditor";
+	LibrarySavingDirectory = UT_CommonClient.UT_AssistiveLibrariesDirectory()
+		+GetPathSeparator()+"jsoneditor";
+	
 	EditorFile=New File(LibrarySavingDirectory);
-	EditorFile.BeginCheckingExistence(New NotifyDescription("OnOpenCheckExistLibraryCompletion", ThisForm));
+	EditorFile.BeginCheckingExistence(
+		New NotifyDescription("OnOpenCheckExistLibraryCompletion", ThisForm));
 
 EndProcedure
 

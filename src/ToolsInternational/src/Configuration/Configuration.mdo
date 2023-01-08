@@ -26,7 +26,7 @@
   <configurationExtensionCompatibilityMode>8.3.12</configurationExtensionCompatibilityMode>
   <configurationExtensionPurpose>AddOn</configurationExtensionPurpose>
   <vendor>Neti LLC </vendor>
-  <version>2.4.13</version>
+  <version>2.4.14</version>
   <defaultLanguage>Language.English</defaultLanguage>
   <languages uuid="66bef324-e854-4c33-879a-3c081f6686cd">
     <name>Russian</name>
@@ -138,6 +138,7 @@
   <commonForms>CommonForm.UT_WriteSettings</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentEditor</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentsComparison</commonForms>
+  <commonForms>CommonForm.UT_DynamicListSettings</commonForms>
   <catalogs>Catalog.UT_Algorithms</catalogs>
   <catalogs>Catalog.AdditionalReportsAndDataProcessors</catalogs>
   <reports>Report.UT_ReportsConsole</reports>
@@ -168,6 +169,6 @@
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
   <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
   <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ConsoleComparisonData</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
 </mdclass:Configuration>

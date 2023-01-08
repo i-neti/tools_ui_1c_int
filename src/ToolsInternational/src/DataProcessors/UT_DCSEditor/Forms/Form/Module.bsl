@@ -360,14 +360,14 @@ Procedure DataSetsFieldsBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Para
 		If Not Clone Then
 		Cancel=True;
 	Else
-		Cancel=Not DataSetFieldCloneDeleteIsAvalible(Items.DataSets.CurrentData,
+		Cancel=Not DataSetFieldCloneDeleteIsAvailable(Items.DataSets.CurrentData,
 			Items.DataSetsFields.CurrentData);
 	EndIf;
 EndProcedure
 
 &AtClient
 Procedure DataSetsFieldsBeforeDeleteRow(Item, Cancel)
-	Cancel=Not DataSetFieldCloneDeleteIsAvalible(Items.DataSets.CurrentData,
+	Cancel=Not DataSetFieldCloneDeleteIsAvailable(Items.DataSets.CurrentData,
 		Items.DataSetsFields.CurrentData);
 EndProcedure
 
@@ -1720,7 +1720,7 @@ Function AvailableToAddDataSetFieldSet(DataSetCurrentRow)
 EndFunction
 
 &AtClient
-Function DataSetFieldCloneDeleteIsAvalible(DataSetCurrentRow, CurrentFieldRow)
+Function DataSetFieldCloneDeleteIsAvailable(DataSetCurrentRow, CurrentFieldRow)
 	If CurrentFieldRow = Undefined Then
 		Return False;
 	EndIf;
@@ -1742,7 +1742,7 @@ Procedure SetAvailableOfAddDataSetFieldButtons()
 
 	AddFieldAvailable=AvailableToAddDataSetFieldField(CurrentDataSet);
 	AddSetAvailable=AvailableToAddDataSetFieldSet(CurrentDataSet);
-	CloneAvailable=DataSetFieldCloneDeleteIsAvalible(CurrentDataSet, Items.DataSetsFields.CurrentData);
+	CloneAvailable=DataSetFieldCloneDeleteIsAvailable(CurrentDataSet, Items.DataSetsFields.CurrentData);
 	DeleteAvailable=CloneAvailable;
 
 	Items.DataSetsFieldsAddDataSetFieldField.Enabled=AddFieldAvailable;

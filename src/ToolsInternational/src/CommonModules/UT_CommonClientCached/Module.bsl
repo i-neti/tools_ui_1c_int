@@ -6,8 +6,8 @@ Function RefsByPredefinedItemsNames(FullMetadataObjectName) Export
 
 EndFunction
 
-Function DataBaseObjectEditorAvalibleObjectsTypes() Export
-	Return UT_CommonCached.DataBaseObjectEditorAvalibleObjectsTypes();
+Function DataBaseObjectEditorAvailableObjectsTypes() Export
+	Return UT_CommonCached.DataBaseObjectEditorAvailableObjectsTypes();
 EndFunction
 
 Function HTMLFieldBasedOnWebkit() Export

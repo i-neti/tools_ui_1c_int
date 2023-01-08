@@ -4,22 +4,22 @@
     <objectType typeId="5bda7b2e-548f-11ea-a08b-e86a6452d1f2" valueTypeId="5bda7b2f-548f-11ea-a08b-e86a6452d1f2"/>
     <managerType typeId="5bda7b30-548f-11ea-a08b-e86a6452d1f2" valueTypeId="5bda7b31-548f-11ea-a08b-e86a6452d1f2"/>
   </producedTypes>
-  <name>UT_ConsoleComparisonData</name>
+  <name>UT_ComparisonDataConsole</name>
   <synonym>
     <key></key>
     <value>Console comparison data</value>
   </synonym>
   <synonym>
     <key>en</key>
-    <value>Console comparison data</value>
+    <value>Comparison data console [UT]</value>
   </synonym>
   <synonym>
     <key>ru</key>
     <value>Консоль сравнения данных [УИ]</value>
   </synonym>
-  <comment>15.4.55</comment>
+  <comment>15.9.63</comment>
   <useStandardCommands>true</useStandardCommands>
-  <defaultForm>DataProcessor.UT_ConsoleComparisonData.Form.Form</defaultForm>
+  <defaultForm>DataProcessor.UT_ComparisonDataConsole.Form.Form</defaultForm>
   <help>
     <pages>
       <lang>ru</lang>
@@ -29,9 +29,17 @@
     </pages>
   </help>
   <extendedPresentation>
+    <key>en</key>
+    <value>Comparison data console [UT]</value>
+  </extendedPresentation>
+  <extendedPresentation>
     <key>ru</key>
     <value>Консоль сравнения данных</value>
   </extendedPresentation>
+  <explanation>
+    <key>en</key>
+    <value>It is designed to compare data obtained from different data sources: 1C 8, 1C 7.7 information databases, SQL databases, CSV/TXT/DBF/XLS/DOC/XML files, JSON strings, manually filled in tabular document.</value>
+  </explanation>
   <explanation>
     <key>ru</key>
     <value>Предназначена для сравнения данных, полученных из разных источников данных: информационных баз 1С 8, 1С 7.7, баз данных SQL, файлов формата CSV/TXT/DBF/XLS/DOC/XML, строки JSON, вручную заполненного табличного документа</value>
@@ -1155,7 +1163,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="9b866b27-744b-4f68-ba25-52a65bd9523b">
-    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
+    <name>ConnectionToExternalBaseANumberTableInFile</name>
     <synonym>
       <key>en</key>
       <value>Table number</value>
@@ -1175,7 +1183,7 @@
     <maxValue xsi:type="core:UndefinedValue"/>
   </attributes>
   <attributes uuid="c5df2846-b28b-45a7-958b-ed382319459c">
-    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
+    <name>ConnectionToExternalBaseBNumberTableInFile</name>
     <synonym>
       <key>en</key>
       <value>Table number</value>

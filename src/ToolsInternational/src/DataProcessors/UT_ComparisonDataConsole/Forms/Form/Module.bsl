@@ -103,25 +103,20 @@ Procedure CompareDataOnClientTransferFileA_End(Result, Address, SelectedFileName
 		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 		Return;
 	EndIf;
-	
 EndProcedure
 
 &AtClient
 Procedure CompareDataOnClientTransferFileB(StructureParametersOnClient, TextErrors)
-	
 	// Transfer file B from client to server
 	If Object.BaseTypeB = 3 And Object.ConnectingToExternalBaseBDeviceStorageFile = 1 Then
 		TemporaryStorageAddressFileB = "";
-		BeginPutFile(New NotifyDescription("CompareDataOnClientTransferFileB_End"
-				, ThisForm
+		BeginPutFile(New NotifyDescription("CompareDataOnClientTransferFileB_End", ThisForm
 				, New Structure("StructureParametersOnClient, TextErrors", StructureParametersOnClient, TextErrors))
-			, TemporaryStorageAddressFileB,Object.ConnectionToExternalBaseBPathToFile
-			, False);
+			, TemporaryStorageAddressFileB,Object.ConnectionToExternalBaseBPathToFile, False);
 		Return;
 	Else
 		CompareDataOnClientEnd(StructureParametersOnClient, TextErrors);
 	EndIf;
-	
 EndProcedure
 
 &AtClient
@@ -138,7 +133,6 @@ Procedure CompareDataOnClientTransferFileB_End(Result, Address, SelectedFileName
 		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextErrors);
 		Return;
 	EndIf;
-	
 	CompareDataOnClientEnd(StructureParametersOnClient, TextErrors);
 
 EndProcedure
@@ -164,7 +158,6 @@ Procedure RefreshDataPeriod()
 	ValueToFormAttribute(ProcessingObject, "Object");
 			
 EndProcedure
-
 #EndRegion 
 
 &AtClient
@@ -225,15 +218,12 @@ Procedure OpenQueryConstructor(BaseID)
 				+ """;Usr=""" + Object["ConnectingToExternalBase" + BaseID + "Login"] 
 				+ """;Pwd=""" + Object["ConnectingToExternalBase" + BaseID + "Password"] + """;";
 		EndIf;
-
-		
 		Try
 			Application = New COMObject(StrReplace(Object["VersionPlatformExternalBase" + BaseID],".","") + ".Application");
 			Connection = Application.Connect(ParameterConnections);
 		Except
 			MessageText = StrTemplate(Nstr("ru = '%1 : Ошибка при подключении к внешней базе: %2';en = '%1 : Error connecting to external database: %2'")
-				, Format(CurrentDate(),"DLF=DT")
-				, ErrorDescription());
+				, Format(CurrentDate(),"DLF=DT"), ErrorDescription());
 			Message(MessageText);
 			Return;
 		EndTry;
@@ -383,10 +373,8 @@ Procedure GetParametersFromQueryOnServer(BaseID)
 	If IsBlankString(Object["QueryText" + BaseID]) Then	
 		Return;
 	EndIf;
-	
 	TextErrors = "";
-	
-	//Current
+		//Current
 	If Object["BaseType" + BaseID] = 0 Then
 		
 		Query = New Query();
@@ -412,25 +400,20 @@ Procedure GetParametersFromQueryOnServer(BaseID)
 			Connection = COMConnector.Connect(ParameterConnections);
 		Except
 			TextError = StrTemplate(Nstr("ru = '%1: Ошибка при подключении к внешней базе: %2';en = '%1: Error connecting to external database: %2'")
-				, Format(CurrentDate(),"DLF=DT")
-				, ErrorDescription());
+				, Format(CurrentDate(),"DLF=DT"), ErrorDescription());
 			Message(TextError);
 			TextErrors = TextErrors + Chars.LF + TextError;
 			Return;
 		EndTry;
-
 		Query = Connection.NewObject("Query");		
 	
 	EndIf;
 	
 	Query.Text = Object["QueryText" + BaseID];
-	
 	Try
 		QueryOptions = Query.FindParameters();
 	Except
-		TextError = StrTemplate(Nstr("ru = '%1: Ошибка при получении списка параметров: %2';en = '%1: Error getting parameter list: %2'")
-			, Format(CurrentDate(),"DLF=DT")
-			,  ErrorDescription());
+		TextError = StrTemplate(Nstr("ru = '%1: Ошибка при получении списка параметров: %2';en = '%1: Error getting parameter list: %2'"), Format(CurrentDate(),"DLF=DT"),  ErrorDescription());
 		Message(TextError);
 		Return;
 	EndTry;
@@ -438,7 +421,7 @@ Procedure GetParametersFromQueryOnServer(BaseID)
 	For Each QueryParameter In QueryOptions Do
 		
 		ParameterName = QueryParameter.Name;
-		If ParameterName = "ValidFrom" Or ParameterName = "ValidTo" Then
+		If ParameterName = "StartDate" Or ParameterName = "EndDate" Then
 			Continue;
 		EndIf;
 		
@@ -512,7 +495,6 @@ EndProcedure
 
 &AtClient
 Procedure CommandUploadResultToFileOnClientEnd(SelectedFiles, AdditionalParameters) Export
-	
 	FileData = AdditionalParameters.FileData;
 	SaveFileDialog = AdditionalParameters.SaveFileDialog;
 	         	
@@ -523,23 +505,83 @@ Procedure CommandUploadResultToFileOnClientEnd(SelectedFiles, AdditionalParamete
 			, Format(CurrentDate(),"DF='yyyy.MM.dd HH.mm.ss'")
 			, SaveFileDialog.FullFileName);
 		Message(MessageText);		
-		
 	Else
 		MessageText = StrTemplate(NStr("ru = '%1: Выгрузка в файл отменена';en = '%1: Upload to file canceled'")
 			, Format(CurrentDate(),"DF='yyyy.MM.dd HH.mm.ss'"));
 		Message(MessageText);		
-		
 	EndIf;
+EndProcedure
 
+&AtClient
+Procedure SourcePreviewAtClient(BaseID, MaximumRowsCount = 0, OnlyDuplicates = False)
+
+	//Transfer files from client to server
+	//If Source file that stored at client computer
+	If Object["BaseType" + BaseID] = 3 and Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+		TemporaryStorageAddressFile = "";
+		BeginPutFile(New NotifyDescription("SourcePreviewAtClientTransferFileEnd", ThisForm, New Structure("BaseID, MaximumRowsCount, OnlyDuplicates", BaseID, MaximumRowsCount, OnlyDuplicates)), TemporaryStorageAddressFile, Object["ConnectingToExternalBase" + BaseID + "PathToFile"],False);
+	Else
+		SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates)
+	EndIf;
+		
+EndProcedure
+
+&AtClient
+Procedure SourcePreviewAtClientTransferFileEnd(Result, Address, SelectedFileName, AdditionalParameters) Export
+	
+	BaseID = AdditionalParameters.BaseID;
+	MaximumRowsCount = AdditionalParameters.MaximumRowsCount;
+	OnlyDuplicates = AdditionalParameters.OnlyDuplicates;
+
+	If Result Then
+		SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, Address);
+	Else
+		ErrorsText = "ru = 'Не удалось поместить во временное хранилище файл: ';en = 'Failed to put a file in temporary storage:'" + Object["ConnectingToExternalBase" + BaseID + "PathToFile"] + """";
+		Message(Format(CurrentDate(),"DLF=DT;") + ": " + ErrorsText);
+	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure SourcePreviewAtClientEnd(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile = "")
+	
+	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaximumRowsCount, OnlyDuplicates, TemporaryStorageAddressFile);
+	
+	If SpreadsheetDocument <> Undefined Then
+		SpreadsheetDocument.Show(StrTemplate("ru = 'Источник %1 (%2)';en = 'Source %1 (%2)'", BaseID, ?(MaximumRowsCount = 0, "ru = 'все строки';en = 'all rows'", "" + MaximumRowsCount + "ru = 'строк';en = 'rows'")));
+	Endif;
+	
 EndProcedure
 
 &AtServer
-Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyDuplicates = False, Connection = Undefined)
+Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyDuplicates = False, Connection = Undefined,TemporaryStorageAddressFile="")
 
+
+	//If source is file stored at client computer
+	If Object["BaseType" + BaseID] = 3 And Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+		//Saving the path to the source file
+		PathToFileAtClient = Object.ConnectionToExternalBaseAPathToFile;
+		//Create temp file at client
+		FileAtServer = GetFromTempStorage(TemporaryStorageAddressFile); 
+		PathToFileAtServer = GetTempFileName(Object["ConnectingToExternalBase" + BaseID + "FileFormat"]);
+		FileAtServer.Write(PathToFileAtServer);
+		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtServer;
+	EndIf;
+	
 	TextError = "";
 	ProcessingObject = FormAttributeToValue("Object");
 		
 	If Not ProcessingObject.CheckFillingAttributes(BaseID) Then
+		//If source is file stored at client computer
+		If Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+			//Delete temp file at client
+			Try
+				DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+			Except EndTry;
+			//Restore path to source file
+			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+		EndIf;
+		
 		Return Undefined;
 	EndIf;
 	
@@ -548,6 +590,17 @@ Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyD
 	
 	If ValueTable = Undefined Then
 		Message(Format(CurrentDate(),"DLF=DT") + ": " + TextError);
+		
+		///If source is file stored at client computer
+		If Object["BaseType" + BaseID] = 3 and Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 Then
+			//Delete temp file at client
+			Try
+				DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+			Except EndTry;
+			//Restore path to source file
+			Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+		EndIf;
+		
 		Return Undefined;
 	EndIf;
 	
@@ -670,9 +723,32 @@ Function GetSpreadsheetDocumentDataFromSourceAtServer(BaseID, MaxRows = 0, OnlyD
 	SpreadsheetDocument.ReadOnly = True;
 	SpreadsheetDocument.FitToPage = True;
 	
+	///If source is file stored at client computer
+	If Object["BaseType" + BaseID] = 3 И Object["ConnectingToExternalBase" + BaseID + "DeviceStorageFile"] = 1 then
+		//Delete temp file at client
+		Try
+			DeleteFiles(Object["ConnectingToExternalBase" + BaseID + "PathToFile"]);
+		Except Endtry;
+		//Restore path to source file
+		Object["ConnectingToExternalBase" + BaseID + "PathToFile"] = PathToFileAtClient;
+	Endif;
+	
 	Return SpreadsheetDocument;
 		
 EndFunction
+
+Procedure CheckAbilityToConnectToSourceAtServer(BaseID)
+	
+	ErrorsText = "";
+	DataProcessorObject = FormAttributeToValue("Object");
+	ConnectionCompletedSuccessfully = DataProcessorObject.CheckAbilityToConnectToSource(BaseID, ErrorsText);
+	If ConnectionCompletedSuccessfully Then
+		Message("ru = 'Подключение к источнику ';en = 'Connection to source'" + BaseID + "ru = 'выполнено успешно';en = 'executed successfully'");
+	Else
+		Message("ru = 'Ошибка при подключении к источнику ';en = 'Error connecting to the source'" + BaseID + ": " + ErrorsText);
+	EndIf; 
+	
+EndProcedure
 
 
 #Region Visibility_Availability_of_form_elements
@@ -734,7 +810,7 @@ EndProcedure
 &AtClient
 Procedure UpdateHeader()
 	
-	ThisForm.Title = "КСД: " + Object.Title;
+	ThisForm.Title =NSTR("ru = 'КСД:';en = 'Data comparison console:'") + Object.Title;
 	
 EndProcedure
 
@@ -764,17 +840,17 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 	//Table 
 	Items["GroupPageTable" + BaseID].Visible = Object["BaseType" + BaseID] = 4;
 		
-//#Region _1C_8_внешняя
+//#Region _1C_8_External
 	If Object["BaseType" + BaseID] = 1 Then
 		
 		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= True;
 		Items["GroupVariantVersionPlatformsBase" + BaseID].Visible 						= True;
 		If Object["WorkOptionExternalBase" + BaseID] = 1 Then
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= True;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Имя базы';en = 'Base name'");
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Имя базы';en = 'Database name'");
 		Else
 			Items["ConnectionToExternalBase" + BaseID + "Server"].Visible 				= False;
-			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Путь к базе';en = 'Path to base'");
+			Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 			= Nstr("ru = 'Путь к базе';en = 'Path to Database'");
 		EndIf;
 		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= False;
 		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
@@ -783,7 +859,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;	
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= False;
@@ -809,7 +885,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["KeyLength3WhenCastingToString" + BaseID].ReadOnly 					= Not Object["CastKey3ToString" + BaseID];
 		
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
-							
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;					
 //#EndRegion
 
 //#Region SQL
@@ -821,7 +897,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["ConnectionToExternalBase" + BaseID + "PathBase"].Title 				= Nstr("ru = 'Имя базы данных';en = 'Database name'");
 		Items["ConnectionToExternalBase" + BaseID + "DriverSQL"].Visible 				= True;
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;		
 		Items["GroupPageTextQuery" + BaseID].Visible 							= True;
 		Items["GroupPageTextQuery" + BaseID].Title							= Nstr("ru = 'Тект запроса';en = 'Query text'");
@@ -849,7 +925,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
 		
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
-				                                                                       						
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;		                                                                       						
 //#EndRegion 
 
 //#Region Файл
@@ -864,9 +940,9 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= True;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= FileFormatXML;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= FileFormatXML;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= Not FileFormatXML;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible 				= FileFormatXML;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible 					= FileFormatXML;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= Not FileFormatXML;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= FileFormatXLS Or FileFormatDOC;
 		
 		ConnectionToExternalBaseTitle = ?(FileFormatXLS
@@ -874,7 +950,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 			, Nstr("ru = 'Номер таблицы';en = 'Table number'"));
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= ConnectionToExternalBaseTitle;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= True;		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= True;		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -900,6 +976,8 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= Not FileFormatXML;
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= FileFormatXML;
+		
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;
 							
 //#EndRegion 
 
@@ -911,12 +989,12 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible				= False;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= True;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible				= False;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= True;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible							= True;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible							= True;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -942,6 +1020,8 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
 		
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;
+		
 //#EndRegion 
 
 //#Region _1C_7_7_external
@@ -958,7 +1038,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= False;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;     		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;     		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		
@@ -982,6 +1062,8 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["KeyLength3WhenCastingToString" + BaseID].Visible 						= False;
 		
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
+		
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;
 
 //#EndRegion 
 
@@ -998,13 +1080,13 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= False;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= True;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= False;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= False;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible 				= True;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible 					= False;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= False;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Title		= False;
 		
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= True;		
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= True;		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= True;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= True;
@@ -1030,10 +1112,12 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= True;
+		
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;
 							
 //#EndRegion 
 
-//#Region _1С_8_текущая
+//#Region _1C_8_Current
 	Else 
 		
 		Items["GroupOptionSettingsConnectionsBase" + BaseID].Visible 				= False;
@@ -1043,7 +1127,7 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["GroupQueryText" + BaseID + "Commands"].Visible 						= True;
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= False;
-		//Items["ГруппаПараметрыКолонокФайла" + BaseID].Visible 							= False;
+		//Items["FileColumnsParametersGroup" + BaseID].Visible 							= False;
 		Items["SettingsFile" + BaseID + "NumberColumn"].Visible						= False;
 		
 		Items["GroupCollapseTable" + BaseID].Visible 								= False;
@@ -1070,6 +1154,8 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		Items["KeyLength3WhenCastingToString" + BaseID].ReadOnly 					= Not Object["CastKey3ToString" + BaseID];
 		
 		Items["SettingsFile" + BaseID + "ColumnName"].Visible							= False;
+		
+		Items["CommandCheckAbilityToConnectToSource"+BaseID].Visible = True;
 							
 	EndIf;
 
@@ -1174,14 +1260,14 @@ EndProcedure
 &AtClient
 Procedure UpdateVisibilityAvailabilityPage_GroupConditionsOutputRows()
 	
-	Items.GroupConditionsOutputRows.BgColor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
+	Items.GroupConditionsOutputRows.backcolor = ?(Object.ConditionsOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
 &AtClient
 Procedure UpdateVisibilityAvailabilityPage_GroupConditionsProhibitOutputRows()
 	
-	Items.GroupConditionsProhibitOutputRows.BgColor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
+	Items.GroupConditionsProhibitOutputRows.backcolor = ?(Object.ConditionsProhibitOutputRowsDisabled, WebColors.Pink, ColorBackgroundFormDefault);;
 		
 EndProcedure
 
@@ -1191,7 +1277,6 @@ Procedure UpdateVisibilityAvailabilityOrderSortTableDifferences()
 	Items.OrderSortTableDifferences.ReadOnly = Not Object.SortTableDifferences;
 	
 EndProcedure
-
 #EndRegion 
 
 
@@ -1233,19 +1318,13 @@ EndProcedure
 Procedure SaveSettingsToDatabaseAtClient(SaveSpreadsheetDocuments = False);
 	
 	If ValueIsFilled(Object.RelatedDataComparisonOperation)  Then
-	
 		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'")
 			, Object.RelatedDataComparisonOperation);
-		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd"
-				, ThisObject
-				, New Structure("SelectCatalogItemToSave, SaveSpreadsheetDocuments", True, SaveSpreadsheetDocuments))
-			, QueryText
-			, QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave, SaveSpreadsheetDocuments", True, SaveSpreadsheetDocuments))
+			, QueryText, QuestionDialogMode.YesNo);
 		
 	Else
-		
 		OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments);
-		
 	EndIf;
 	
 EndProcedure
@@ -1311,7 +1390,6 @@ Procedure SaveSettingsToBaseAtServer(SelectedItem, SaveSpreadsheetDocuments = Fa
 	ValueToFormAttribute(FormObject, "Object");
 		
 EndProcedure
-
 #EndRegion 
 
 
@@ -1327,9 +1405,7 @@ Procedure OpenSettingsFromFileAtClient(Val Notification, UploadSpreadsheetDocume
 	SelectionDialog.Title = Nstr("ru = 'Укажите файл с настройками';en = 'Specify the settings file'");   
 
 	SelectionDialog.Show(New NotifyDescription("OpenSettingsFromFileAtClientEnd"
-		, ThisForm
-		, New Structure("SelectionDialog, Notification, UploadSpreadsheetDocuments", SelectionDialog, Notification, UploadSpreadsheetDocuments)));
-
+		, ThisForm, New Structure("SelectionDialog, Notification, UploadSpreadsheetDocuments", SelectionDialog, Notification, UploadSpreadsheetDocuments)));
 EndProcedure
 
 &AtClient
@@ -1452,13 +1528,10 @@ EndProcedure
 
 &AtClient
 Procedure OpenOperationSelectionFormForRecording(SaveSpreadsheetDocuments = False)
-
 	//SelectedItem = Undefined;
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
-		,,,,,
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,,,,
 		, New NotifyDescription("SaveSelectedOperationEnd", ThisForm, New Structure("SaveSpreadsheetDocuments",SaveSpreadsheetDocuments))
 		, FormWindowOpeningMode.LockWholeInterface);
-	
 EndProcedure
 
 &AtClient
@@ -1467,7 +1540,6 @@ Procedure OpenSettingsFromBaseEnd(Result, AdditionalParameters) Export
 	SelectedItem = Result;
 	UploadSpreadsheetDocuments = AdditionalParameters <> Undefined And AdditionalParameters.Property("UploadSpreadsheetDocuments") 
 		And AdditionalParameters.UploadSpreadsheetDocuments;
-	
 	If SelectedItem <> Undefined Then
 		
 		OpenSettingsFromBaseAtServer(SelectedItem, UploadSpreadsheetDocuments);
@@ -1496,13 +1568,10 @@ Procedure OnStartChoiceParameterValue(BaseID, StandardProcessing)
 		ListAvailableTypes.Add("Date");
 		ListAvailableTypes.Add("Boolean");
 		//SelectedType = Undefined;
-
 		ShowChooseFromList(New NotifyDescription("OnStartChoiceParameterValueEnd4", ThisForm, New Structure("BaseID", BaseID))
-			, ListAvailableTypes
-			, Items["ParameterList" + BaseID + "ParameterValue"]);
-	
-	EndIf;
+			, ListAvailableTypes, Items["ParameterList" + BaseID + "ParameterValue"]);
 
+	EndIf;
 EndProcedure
 
 &AtClient
@@ -1631,7 +1700,6 @@ Procedure OnStartChoiceParameterValueFragment(Val CurrentParameterValue, Val Cur
 	CurrentData.ParameterValue = CurrentParameterValue;
 
 EndProcedure
-
 #EndRegion 
 
 #EndRegion
@@ -1703,7 +1771,7 @@ Procedure OpenSettingsFromBase(Command)
 	
 	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm), FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -1712,14 +1780,7 @@ Procedure LoadSettingsAndSpreadsheetDocumentsFromDatabase(Command)
 	
 	//SelectedItem = Undefined; 
 	
-	OpenForm("Catalog.ВС_ОперацииСравненияДанных.ChoiceForm"
-		,
-		,
-		,
-		,
-		,
-		, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True))
-		, FormWindowOpeningMode.LockWholeInterface);
+	OpenForm("Catalog.VS_DataComparisonOperations.ChoiceForm",,	,,,, New NotifyDescription("OpenSettingsFromBaseEnd", ThisForm, New Structure("UploadSpreadsheetDocuments", True)), FormWindowOpeningMode.LockWholeInterface);
 	
 EndProcedure
 
@@ -1776,77 +1837,55 @@ EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_AllRows(Command)	
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A");
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник А';en = 'Source A'"));	
-	EndIf;
+	
+	SourcePreviewAtClient("A");
+	
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_100Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",100);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (100 строк)';en = 'Source A (100 rows)'"));
-	EndIf;
+	SourcePreviewAtClient("A", 100);	
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_100Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",100);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (100 строк)';en = 'Source B (100 rows)'"));
-	EndIf;
+	SourcePreviewAtClient("B", 100);
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_AllRows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B");
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б';en = 'Source B'"));
-	EndIf;
+	SourcePreviewAtClient("B");
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_Duplicates(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",,True);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (дубликаты)';en = 'Source A (duplicates)'"));
-	EndIf;
+	SourcePreviewAtClient("A", , True);
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_Duplicates(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",,True);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (дубликаты)';en = 'Source B (duplicates)'"));
-	EndIf;
+	SourcePreviewAtClient("B", , True);
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceA_1000Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("A",1000);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник А (1000 строк)';en = 'Source A (1000 rows)'"));
-	EndIf;
+	SourcePreviewAtClient("A", 1000);
 EndProcedure
 
 &AtClient
 Procedure CommandPreviewSourceB_1000Rows(Command)
-	SpreadsheetDocument = GetSpreadsheetDocumentDataFromSourceAtServer("B",1000);
-	If SpreadsheetDocument <> Undefined Then
-		SpreadsheetDocument.Show(Nstr("ru = 'Источник Б (1000 строк)';en = 'Source B (1000 rows)'"));
-	EndIf;
+	SourcePreviewAtClient("B", 1000);
 EndProcedure
 
 #EndRegion
 
 
 #Region Event_handlers
-
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	
 	NumberOfAttributes = 5;
+	
 	ColorBackgroundFormDefault = StyleColors.FormBackColor;
 	
 	If Parameters.Property("UserMode") And Parameters.UserMode Then
@@ -1867,8 +1906,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		Object.NumberColumnsInKey = 1;
 		Object.PeriodType = 0;
-		Object.AbsolutePeriodValue.ValidFrom = BegOfMonth(CurrentDate());
-		Object.AbsolutePeriodValue.ValidTo = EndOfDay(CurrentDate());
+		Object.AbsolutePeriodValue.StartDate = BegOfMonth(CurrentDate());
+		Object.AbsolutePeriodValue.EndDate = EndOfDay(CurrentDate());
 		Object.RelativePeriodValue = 0;
 		Object.ValueOfSlaveRelativePeriod = 0;
 		Object.DiscretenessOfRelativePeriod = "month";
@@ -1880,8 +1919,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		Object.NumberOfRowsWithEmptyKeysToBreakReading = 2;
 		Object.ConnectingToExternalBaseADeviceStorageFile = 0;
 		Object.ConnectingToExternalBaseBDeviceStorageFile = 0;
-		Object.ConnectionToExternalDatabaseANumberTableInFile = 1;
-		Object.ConnectionToExternalDatabaseBNumberTableInFile = 1;
+		Object.ConnectionToExternalBaseANumberTableInFile = 1;
+		Object.ConnectionToExternalBaseBNumberTableInFile = 1;
 		
 		Object.VisibilityKey1 = True;
 		Object.VisibilityKey2 = Object.NumberColumnsInKey > 1;
@@ -1896,8 +1935,8 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		For Counter = 1 To 20 Do 
 			
-			Object.TableA.Region(1,Counter,1,Counter).Text = Counter;
-			Object.TableB.Region(1,Counter,1,Counter).Text = Counter;
+			Object.TableA.Area(1,Counter,1,Counter).Text = Counter;
+			Object.TableB.Area(1,Counter,1,Counter).Text = Counter;
 			
 		EndDo;
 		
@@ -1964,9 +2003,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ActiveOperationA5 = 	PutToTempStorage(TemplatePictureActiveOperationA5, UUID);
 	EndIf;
 
-	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing,
-		Items.GroupPanel2);
-
 EndProcedure
 
 &AtClient
@@ -1976,6 +2012,7 @@ Procedure OnOpen(Cancel)
 	UpdateVisibilityAvailabilityItemsRelationalOperation();
 	UpdateVisibilityAvailabilityItemsOutputAndInhibitRowOutput();
 	UpdateVisibilityAvailabilityOrderSortTableDifferences();
+	
 	UpdateCodeToOutputAndProhibitOutputRows();
 		
 EndProcedure
@@ -1993,8 +2030,7 @@ EndProcedure
 Procedure BeforeClose(Cancel, StandardProcessing)
 	If Not ClosingFormConfirmed Then
 		Cancel = True;
-		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm)
-			, Nstr("ru = 'Закрыть консоль сравнения данных?';en = 'Close Data Compare Console?'"), QuestionDialogMode.YesNo);
+		ShowQueryBox(New NotifyDescription("BeforeCloseEnd", ThisForm), Nstr("ru = 'Закрыть консоль сравнения данных?';en = 'Close Data Compare Console?'"), QuestionDialogMode.YesNo);
 	EndIf;
 EndProcedure
 
@@ -2004,16 +2040,16 @@ Procedure OnClose(Exit)
 	If ValueIsFilled(Object.RelatedDataComparisonOperation) And Not Object.UserMode  Then
 		QueryText = StrTemplate(Nstr("ru = 'Обновить элемент справочника ""%1""?';en = 'Update catalog item ""%1""?'"), Object.RelatedDataComparisonOperation);
 		ShowQueryBox(New NotifyDescription("SaveToRelatedOperationEnd", ThisObject, New Structure("SelectCatalogItemToSave,SaveSpreadsheetDocuments,OnCloseForm",True,False,True))
-			, QueryText
-			, QuestionDialogMode.YesNo);
-	
+			, QueryText, QuestionDialogMode.YesNo);
 	EndIf; 
-	
+
 EndProcedure
 
 &AtClient
 Procedure VisitPage(ReturnCode, AdditionalParameters) Export
-	
+
+
+
 EndProcedure
 
 &AtClient
@@ -2025,9 +2061,7 @@ Procedure CodeForOutputRowsEditedManuallyOnChange(Item)
 			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
 			, QuestionDialogMode.YesNo);
         Return;
-		
 	EndIf;
-	
 	CodeForOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
@@ -2061,9 +2095,7 @@ Procedure CodeForProhibitingOutputRowsEditedManuallyOnChange(Item)
 			, Nstr("ru = 'Код, внесенный вручную будет утерян. Продолжить?';en = 'Code entered manually will be lost. Continue?'")
 			, QuestionDialogMode.YesNo);
         Return;
-		
 	EndIf;
-	
 	CodeForProhibitingOutputRowsEditedManuallyOnChangeFragment();
 EndProcedure
 
@@ -2117,6 +2149,14 @@ Procedure CommandVisibilityColumnTP(Command)
 	
 	UpdateVisibilityAttributeTP(AttributeName);
 		
+EndProcedure
+
+&AtClient
+Procedure ParameterTypePeriodOnChange(Item)
+	
+	RefreshDataPeriod();
+	UpdateVisibilityAccessibilityFormItems();
+	
 EndProcedure
 
 &AtClient
@@ -2567,6 +2607,16 @@ Procedure OrderSortTableDifferencesStartChoiceEnd(Result, AdditionalParameters) 
 		Object.OrderSortTableDifferences = ReturnValue;
 	EndIf;
 
+EndProcedure
+
+&AtClient
+Procedure CommandCheckAbilityToConnectToSourceA(Command)
+	CheckAbilityToConnectToSourceAtServer("A");
+EndProcedure
+
+&AtClient
+Procedure CommandCheckAbilityToConnectToSourceB(Command)
+	CheckAbilityToConnectToSourceAtServer("B");
 EndProcedure
 
 //@skip-warning

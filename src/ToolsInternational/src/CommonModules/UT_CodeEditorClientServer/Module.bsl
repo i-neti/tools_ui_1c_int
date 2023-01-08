@@ -1,3 +1,5 @@
+
+
 #Region Public
 
 Function CodeEditorItemsPrefix() Export
@@ -19,6 +21,7 @@ EndFunction
 Function AttributeNameCodeEditorFormCodeEditors() Export
 	Return CodeEditorItemsPrefix()+"_FormEditorsList";
 EndFunction
+
 // Attribute Name Code Editor Initial Initialization Passed.
 // 
 // Return :
@@ -109,6 +112,7 @@ EndFunction
 Function FormCodeEditorType(Form) Export
 	Return Form[UT_CodeEditorClientServer.AttributeNameCodeEditorTypeOfEditor()];
 EndFunction
+
 // New Text Cache Of Editor.
 // 
 // Return:

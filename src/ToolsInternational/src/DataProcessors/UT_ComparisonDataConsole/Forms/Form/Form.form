@@ -1374,6 +1374,10 @@
               <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>1</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>1</value>
                   </presentation>
@@ -1383,6 +1387,10 @@
                 </choiceList>
                 <choiceList>
                   <presentation>
+                    <key>en</key>
+                    <value>2</value>
+                  </presentation>
+                  <presentation>
                     <key>ru</key>
                     <value>2</value>
                   </presentation>
@@ -1391,6 +1399,10 @@
                   </value>
                 </choiceList>
                 <choiceList>
+                  <presentation>
+                    <key>en</key>
+                    <value>3</value>
+                  </presentation>
                   <presentation>
                     <key>ru</key>
                     <value>3</value>
@@ -1975,11 +1987,11 @@
               <id>1189</id>
               <title>
                 <key>en</key>
-                <value>The discrepancy table can be sorted by any columns, but this will increase the overall operation time</value>
+                <value>The discrepancy table can be sorted by any columns, but this will increase the overall time</value>
               </title>
               <title>
                 <key>ru</key>
-                <value>Таблица расхождений может быть отсортирована по любым столбцам, но это увеличит общее время выполнения операции</value>
+                <value>Таблица расхождений может быть отсортирована по любым столбцам, но это увеличит общее время выполнения</value>
               </title>
               <visible>true</visible>
               <enabled>true</enabled>
@@ -5651,115 +5663,25 @@
       <name>GroupBaseAPage</name>
       <id>61</id>
       <items xsi:type="form:FormGroup">
-        <name>GroupPreviewA</name>
-        <id>1137</id>
+        <name>GroupSourceACommands</name>
+        <id>1245</id>
         <items xsi:type="form:FormGroup">
-          <name>GroupPreviewA1</name>
-          <id>1139</id>
-          <items xsi:type="form:Button">
-            <name>CommandPreviewSourceA_100Rows</name>
-            <id>1123</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <extendedTooltip>
-              <name>CommandPreviewSourceA_100RowsExtendedTooltip</name>
-              <id>1124</id>
-              <visible>true</visible>
-              <enabled>true</enabled>
-              <userVisible>
-                <common>true</common>
-              </userVisible>
-              <type>Label</type>
-              <autoMaxWidth>true</autoMaxWidth>
-              <autoMaxHeight>true</autoMaxHeight>
-              <extInfo xsi:type="form:LabelDecorationExtInfo">
-                <horizontalAlign>Left</horizontalAlign>
-              </extInfo>
-            </extendedTooltip>
-            <commandName>Form.Command.CommandPreviewSourceA_100Rows</commandName>
-            <representation>Auto</representation>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <placementArea>UserCmds</placementArea>
-            <representationInContextMenu>Auto</representationInContextMenu>
-          </items>
-          <items xsi:type="form:Button">
-            <name>CommandPreviewSourceA_1000Rows</name>
-            <id>1145</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <extendedTooltip>
-              <name>CommandPreviewSourceA_1000RowsExtendedTooltip</name>
-              <id>1146</id>
-              <visible>true</visible>
-              <enabled>true</enabled>
-              <userVisible>
-                <common>true</common>
-              </userVisible>
-              <type>Label</type>
-              <autoMaxWidth>true</autoMaxWidth>
-              <autoMaxHeight>true</autoMaxHeight>
-              <extInfo xsi:type="form:LabelDecorationExtInfo">
-                <horizontalAlign>Left</horizontalAlign>
-              </extInfo>
-            </extendedTooltip>
-            <commandName>Form.Command.CommandPreviewSourceA_1000Rows</commandName>
-            <representation>Auto</representation>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <placementArea>UserCmds</placementArea>
-            <representationInContextMenu>Auto</representationInContextMenu>
-          </items>
-          <items xsi:type="form:Button">
-            <name>CommandPreviewSourceA_AllRows</name>
-            <id>1121</id>
-            <visible>true</visible>
-            <enabled>true</enabled>
-            <userVisible>
-              <common>true</common>
-            </userVisible>
-            <extendedTooltip>
-              <name>CommandPreviewSourceA_AllRowsExtendedTooltip</name>
-              <id>1122</id>
-              <visible>true</visible>
-              <enabled>true</enabled>
-              <userVisible>
-                <common>true</common>
-              </userVisible>
-              <type>Label</type>
-              <autoMaxWidth>true</autoMaxWidth>
-              <autoMaxHeight>true</autoMaxHeight>
-              <extInfo xsi:type="form:LabelDecorationExtInfo">
-                <horizontalAlign>Left</horizontalAlign>
-              </extInfo>
-            </extendedTooltip>
-            <commandName>Form.Command.CommandPreviewSourceA_AllRows</commandName>
-            <representation>Auto</representation>
-            <autoMaxWidth>true</autoMaxWidth>
-            <autoMaxHeight>true</autoMaxHeight>
-            <placementArea>UserCmds</placementArea>
-            <representationInContextMenu>Auto</representationInContextMenu>
-          </items>
+          <name>GroupPreviewA</name>
+          <id>1137</id>
           <items xsi:type="form:FormGroup">
-            <name>GroupPreviewSourceA_Duplicates</name>
-            <id>1147</id>
+            <name>GroupPreviewA1</name>
+            <id>1139</id>
             <items xsi:type="form:Button">
-              <name>CommandPreviewSourceA_Duplicates</name>
-              <id>1133</id>
+              <name>CommandPreviewSourceA_100Rows</name>
+              <id>1123</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
                 <common>true</common>
               </userVisible>
               <extendedTooltip>
-                <name>CommandPreviewSourceA_DuplicatesExtendedTooltip</name>
-                <id>1134</id>
+                <name>CommandPreviewSourceA_100RowsExtendedTooltip</name>
+                <id>1124</id>
                 <visible>true</visible>
                 <enabled>true</enabled>
                 <userVisible>
@@ -5772,12 +5694,139 @@
                   <horizontalAlign>Left</horizontalAlign>
                 </extInfo>
               </extendedTooltip>
-              <commandName>Form.Command.CommandPreviewSourceA_Duplicates</commandName>
+              <commandName>Form.Command.CommandPreviewSourceA_100Rows</commandName>
               <representation>Auto</representation>
               <autoMaxWidth>true</autoMaxWidth>
               <autoMaxHeight>true</autoMaxHeight>
               <placementArea>UserCmds</placementArea>
               <representationInContextMenu>Auto</representationInContextMenu>
+            </items>
+            <items xsi:type="form:Button">
+              <name>CommandPreviewSourceA_1000Rows</name>
+              <id>1145</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <extendedTooltip>
+                <name>CommandPreviewSourceA_1000RowsExtendedTooltip</name>
+                <id>1146</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <commandName>Form.Command.CommandPreviewSourceA_1000Rows</commandName>
+              <representation>Auto</representation>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <placementArea>UserCmds</placementArea>
+              <representationInContextMenu>Auto</representationInContextMenu>
+            </items>
+            <items xsi:type="form:Button">
+              <name>CommandPreviewSourceA_AllRows</name>
+              <id>1121</id>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <extendedTooltip>
+                <name>CommandPreviewSourceA_AllRowsExtendedTooltip</name>
+                <id>1122</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <commandName>Form.Command.CommandPreviewSourceA_AllRows</commandName>
+              <representation>Auto</representation>
+              <autoMaxWidth>true</autoMaxWidth>
+              <autoMaxHeight>true</autoMaxHeight>
+              <placementArea>UserCmds</placementArea>
+              <representationInContextMenu>Auto</representationInContextMenu>
+            </items>
+            <items xsi:type="form:FormGroup">
+              <name>GroupPreviewSourceA_Duplicates</name>
+              <id>1147</id>
+              <items xsi:type="form:Button">
+                <name>CommandPreviewSourceA_Duplicates</name>
+                <id>1133</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <extendedTooltip>
+                  <name>CommandPreviewSourceA_DuplicatesExtendedTooltip</name>
+                  <id>1134</id>
+                  <visible>true</visible>
+                  <enabled>true</enabled>
+                  <userVisible>
+                    <common>true</common>
+                  </userVisible>
+                  <type>Label</type>
+                  <autoMaxWidth>true</autoMaxWidth>
+                  <autoMaxHeight>true</autoMaxHeight>
+                  <extInfo xsi:type="form:LabelDecorationExtInfo">
+                    <horizontalAlign>Left</horizontalAlign>
+                  </extInfo>
+                </extendedTooltip>
+                <commandName>Form.Command.CommandPreviewSourceA_Duplicates</commandName>
+                <representation>Auto</representation>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <placementArea>UserCmds</placementArea>
+                <representationInContextMenu>Auto</representationInContextMenu>
+              </items>
+              <visible>true</visible>
+              <enabled>true</enabled>
+              <userVisible>
+                <common>true</common>
+              </userVisible>
+              <title>
+                <key>ru</key>
+                <value>Группа предварительный просмотр а дубликаты</value>
+              </title>
+              <title>
+                <key>en</key>
+                <value>Group preview source a duplicates</value>
+              </title>
+              <toolTip>
+                <key>ru</key>
+                <value>Группа предварительный просмотр а дубликаты</value>
+              </toolTip>
+              <extendedTooltip>
+                <name>GroupPreviewSourceA_DuplicatesExtendedTooltip</name>
+                <id>1148</id>
+                <visible>true</visible>
+                <enabled>true</enabled>
+                <userVisible>
+                  <common>true</common>
+                </userVisible>
+                <type>Label</type>
+                <autoMaxWidth>true</autoMaxWidth>
+                <autoMaxHeight>true</autoMaxHeight>
+                <extInfo xsi:type="form:LabelDecorationExtInfo">
+                  <horizontalAlign>Left</horizontalAlign>
+                </extInfo>
+              </extendedTooltip>
+              <extInfo xsi:type="form:ButtonGroupExtInfo"/>
             </items>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5785,20 +5834,20 @@
               <common>true</common>
             </userVisible>
             <title>
-              <key>ru</key>
-              <value>Группа предварительный просмотр а дубликаты</value>
+              <key>en</key>
+              <value>Data preview from source A</value>
             </title>
             <title>
-              <key>en</key>
-              <value>Group preview source a duplicates</value>
+              <key>ru</key>
+              <value>Предварительный просмотр данных из источника А</value>
             </title>
             <toolTip>
               <key>ru</key>
-              <value>Группа предварительный просмотр а дубликаты</value>
+              <value>Группа предварительный просмотр а1</value>
             </toolTip>
             <extendedTooltip>
-              <name>GroupPreviewSourceA_DuplicatesExtendedTooltip</name>
-              <id>1148</id>
+              <name>GroupPreviewA1ExtendedTooltip</name>
+              <id>1140</id>
               <visible>true</visible>
               <enabled>true</enabled>
               <userVisible>
@@ -5811,7 +5860,13 @@
                 <horizontalAlign>Left</horizontalAlign>
               </extInfo>
             </extendedTooltip>
-            <extInfo xsi:type="form:ButtonGroupExtInfo"/>
+            <type>Popup</type>
+            <extInfo xsi:type="form:PopupGroupExtInfo">
+              <picture xsi:type="core:PictureRef">
+                <picture>StdPicture.ShowData</picture>
+              </picture>
+              <representation>Auto</representation>
+            </extInfo>
           </items>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -5819,20 +5874,21 @@
             <common>true</common>
           </userVisible>
           <title>
-            <key>en</key>
-            <value>Data preview from source A</value>
+            <key>ru</key>
+            <value>Группа предварительный просмотр А</value>
           </title>
           <title>
-            <key>ru</key>
-            <value>Предварительный просмотр данных из источника А</value>
+            <key>en</key>
+            <value>Group preview A</value>
           </title>
           <toolTip>
             <key>ru</key>
-            <value>Группа предварительный просмотр а1</value>
+            <value>Группа предварительный просмотр А</value>
           </toolTip>
+          <horizontalStretch>false</horizontalStretch>
           <extendedTooltip>
-            <name>GroupPreviewA1ExtendedTooltip</name>
-            <id>1140</id>
+            <name>GroupPreviewAExtendedTooltip</name>
+            <id>1138</id>
             <visible>true</visible>
             <enabled>true</enabled>
             <userVisible>
@@ -5845,34 +5901,51 @@
               <horizontalAlign>Left</horizontalAlign>
             </extInfo>
           </extendedTooltip>
-          <type>Popup</type>
-          <extInfo xsi:type="form:PopupGroupExtInfo">
-            <picture xsi:type="core:PictureRef">
-              <picture>StdPicture.ShowData</picture>
-            </picture>
-            <representation>Auto</representation>
+          <type>CommandBar</type>
+          <extInfo xsi:type="form:CommandBarExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
           </extInfo>
+        </items>
+        <items xsi:type="form:Button">
+          <name>CommandCheckAbilityToConnectToSourceA</name>
+          <id>1247</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>CommandCheckAbilityToConnectToSourceAExtendedTooltip</name>
+            <id>1248</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <type>UsualButton</type>
+          <commandName>Form.Command.CommandCheckAbilityToConnectToSourceA</commandName>
+          <representation>Auto</representation>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <toolTipRepresentation>Auto</toolTipRepresentation>
+          <representationInContextMenu>Auto</representationInContextMenu>
         </items>
         <visible>true</visible>
         <enabled>true</enabled>
         <userVisible>
           <common>true</common>
         </userVisible>
-        <title>
-          <key>ru</key>
-          <value>Группа предварительный просмотр А</value>
-        </title>
-        <title>
-          <key>en</key>
-          <value>Group preview A</value>
-        </title>
-        <toolTip>
-          <key>ru</key>
-          <value>Группа предварительный просмотр А</value>
-        </toolTip>
         <extendedTooltip>
-          <name>GroupPreviewAExtendedTooltip</name>
-          <id>1138</id>
+          <name>GroupSourceACommandsExtendedTooltip</name>
+          <id>1246</id>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
@@ -5885,9 +5958,13 @@
             <horizontalAlign>Left</horizontalAlign>
           </extInfo>
         </extendedTooltip>
-        <type>CommandBar</type>
-        <extInfo xsi:type="form:CommandBarExtInfo">
-          <horizontalAlign>Left</horizontalAlign>
+        <type>UsualGroup</type>
+        <extInfo xsi:type="form:UsualGroupExtInfo">
+          <group>AlwaysHorizontal</group>
+          <showLeftMargin>true</showLeftMargin>
+          <united>true</united>
+          <throughAlign>Auto</throughAlign>
+          <currentRowUse>Auto</currentRowUse>
         </extInfo>
       </items>
       <items xsi:type="form:FormGroup">
@@ -6210,6 +6287,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>file</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>файловый</value>
                         </presentation>
@@ -6218,6 +6299,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>client-server</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>клиент-серверный</value>
@@ -6274,6 +6359,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>8.1</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>8.1</value>
                         </presentation>
@@ -6282,6 +6371,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>8.2</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>8.2</value>
@@ -6292,6 +6385,10 @@
                       </choiceList>
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>8.3</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>8.3</value>
                         </presentation>
@@ -6300,6 +6397,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>8.4</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>8.4</value>
@@ -6358,7 +6459,7 @@
                     <name>GroupConnectionToExternalBaseAAttributes</name>
                     <id>1080</id>
                     <items xsi:type="form:FormField">
-                      <name>ConnectingToExternalBaseADriverSQL</name>
+                      <name>ConnectionToExternalBaseADriverSQL</name>
                       <id>405</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -6371,7 +6472,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ConnectingToExternalBaseADriverSQLExtendedTooltip</name>
+                        <name>ConnectionToExternalBaseADriverSQLExtendedTooltip</name>
                         <id>407</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -6386,7 +6487,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ConnectingToExternalBaseADriverSQLContextMenu</name>
+                        <name>ConnectionToExternalBaseADriverSQLContextMenu</name>
                         <id>406</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -7009,7 +7110,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectingToExternalBaseADeviceStorageFile</name>
+                    <name>ConnectionToExternalBaseADeviceStorageFile</name>
                     <id>1092</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7023,7 +7124,7 @@
                     </dataPath>
                     <titleLocation>Left</titleLocation>
                     <extendedTooltip>
-                      <name>ConnectingToExternalBaseADeviceStorageFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseADeviceStorageFileExtendedTooltip</name>
                       <id>1094</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7038,7 +7139,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectingToExternalBaseADeviceStorageFileContextMenu</name>
+                      <name>ConnectionToExternalBaseADeviceStorageFileContextMenu</name>
                       <id>1093</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7055,6 +7156,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>server</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>сервере</value>
                         </presentation>
@@ -7063,6 +7168,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>client</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>клиенте</value>
@@ -7397,7 +7506,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>GroupSettingsConnectionsToNonXMLAFile</name>
+                  <name>GroupSettingsConnectionsToNonXMLFileA</name>
                   <id>722</id>
                   <items xsi:type="form:FormField">
                     <name>NumberFirstRowFileA</name>
@@ -7460,7 +7569,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectionToExternalDatabaseANumberTableInFile</name>
+                    <name>ConnectionToExternalBaseANumberTableInFile</name>
                     <id>1098</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -7469,11 +7578,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Object.ConnectionToExternalDatabaseANumberTableInFile</segments>
+                        <segments>Object.ConnectionToExternalBaseANumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ConnectionToExternalDatabaseANumberTableInFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseANumberTableInFileExtendedTooltip</name>
                       <id>1100</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7488,7 +7597,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectionToExternalDatabaseANumberTableInFileContextMenu</name>
+                      <name>ConnectionToExternalBaseANumberTableInFileContextMenu</name>
                       <id>1099</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -7530,14 +7639,14 @@
                   </title>
                   <title>
                     <key>en</key>
-                    <value>Group settings connections to non XMLAFile</value>
+                    <value>Group settings connections to non XMLFile A</value>
                   </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLА</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>GroupSettingsConnectionsToNonXMLAFileExtendedTooltip</name>
+                    <name>GroupSettingsConnectionsToNonXMLFileAExtendedTooltip</name>
                     <id>723</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -11398,7 +11507,7 @@
                 <name>ParameterListACommandBar</name>
                 <id>621</id>
                 <items xsi:type="form:Button">
-                  <name>СписокПараметровАКомандаПолучитьПараметрыЗапросаА</name>
+                  <name>ParameterListACommandGetQueryParametersA</name>
                   <id>647</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -11406,7 +11515,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>СписокПараметровАКомандаПолучитьПараметрыЗапросаАРасширеннаяПодсказка</name>
+                    <name>ParameterListACommandGetQueryParametersAExtendedTooltip</name>
                     <id>648</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -11955,8 +12064,8 @@
       <name>GroupBaseBPage</name>
       <id>63</id>
       <items xsi:type="form:FormGroup">
-        <name>GroupBaseB</name>
-        <id>67</id>
+        <name>GroupSourceBCommands</name>
+        <id>1249</id>
         <items xsi:type="form:FormGroup">
           <name>GroupPreviewB</name>
           <id>1141</id>
@@ -12126,12 +12235,12 @@
               <common>true</common>
             </userVisible>
             <title>
-              <key>ru</key>
-              <value>Предварительный просмотр данных из источника Б</value>
+              <key>en</key>
+              <value>Data preview from source B</value>
             </title>
             <title>
-              <key>en</key>
-              <value>Group preview b1</value>
+              <key>ru</key>
+              <value>Предварительный просмотр данных из источника Б</value>
             </title>
             <toolTip>
               <key>ru</key>
@@ -12178,6 +12287,7 @@
             <key>ru</key>
             <value>Группа предварительный просмотр Б</value>
           </toolTip>
+          <horizontalStretch>false</horizontalStretch>
           <extendedTooltip>
             <name>GroupPreviewBExtendedTooltip</name>
             <id>1142</id>
@@ -12198,6 +12308,70 @@
             <horizontalAlign>Left</horizontalAlign>
           </extInfo>
         </items>
+        <items xsi:type="form:Button">
+          <name>CommandCheckAbilityToConnectToSourceB</name>
+          <id>1251</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <extendedTooltip>
+            <name>CommandCheckAbilityToConnectToSourceBExtendedTooltip</name>
+            <id>1252</id>
+            <visible>true</visible>
+            <enabled>true</enabled>
+            <userVisible>
+              <common>true</common>
+            </userVisible>
+            <type>Label</type>
+            <autoMaxWidth>true</autoMaxWidth>
+            <autoMaxHeight>true</autoMaxHeight>
+            <extInfo xsi:type="form:LabelDecorationExtInfo">
+              <horizontalAlign>Left</horizontalAlign>
+            </extInfo>
+          </extendedTooltip>
+          <type>UsualButton</type>
+          <commandName>Form.Command.CommandCheckAbilityToConnectToSourceB</commandName>
+          <representation>Auto</representation>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <placementArea>UserCmds</placementArea>
+          <toolTipRepresentation>Auto</toolTipRepresentation>
+          <representationInContextMenu>Auto</representationInContextMenu>
+        </items>
+        <visible>true</visible>
+        <enabled>true</enabled>
+        <userVisible>
+          <common>true</common>
+        </userVisible>
+        <extendedTooltip>
+          <name>GroupSourceBCommandsExtendedTooltip</name>
+          <id>1250</id>
+          <visible>true</visible>
+          <enabled>true</enabled>
+          <userVisible>
+            <common>true</common>
+          </userVisible>
+          <type>Label</type>
+          <autoMaxWidth>true</autoMaxWidth>
+          <autoMaxHeight>true</autoMaxHeight>
+          <extInfo xsi:type="form:LabelDecorationExtInfo">
+            <horizontalAlign>Left</horizontalAlign>
+          </extInfo>
+        </extendedTooltip>
+        <type>UsualGroup</type>
+        <extInfo xsi:type="form:UsualGroupExtInfo">
+          <group>HorizontalIfPossible</group>
+          <showLeftMargin>true</showLeftMargin>
+          <united>true</united>
+          <throughAlign>Auto</throughAlign>
+          <currentRowUse>Auto</currentRowUse>
+        </extInfo>
+      </items>
+      <items xsi:type="form:FormGroup">
+        <name>GroupBaseB</name>
+        <id>67</id>
         <items xsi:type="form:FormGroup">
           <name>GroupPagesBaseB</name>
           <id>578</id>
@@ -12511,6 +12685,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>file</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>файловый</value>
                         </presentation>
@@ -12519,6 +12697,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>client-server</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>клиент-серверный</value>
@@ -12575,6 +12757,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>8.1</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>8.1</value>
                         </presentation>
@@ -12583,6 +12769,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>8.2</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>8.2</value>
@@ -12593,6 +12783,10 @@
                       </choiceList>
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>8.3</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>8.3</value>
                         </presentation>
@@ -12601,6 +12795,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>8.4</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>8.4</value>
@@ -12659,7 +12857,7 @@
                     <name>GroupConnectionToExternalBaseBAttributes</name>
                     <id>1078</id>
                     <items xsi:type="form:FormField">
-                      <name>ConnectingToExternalBaseBDriverSQL</name>
+                      <name>ConnectionToExternalBaseBDriverSQL</name>
                       <id>408</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -12672,7 +12870,7 @@
                         </paths>
                       </dataPath>
                       <extendedTooltip>
-                        <name>ConnectingToExternalBaseBDriverSQLExtendedTooltip</name>
+                        <name>ConnectionToExternalBaseBDriverSQLExtendedTooltip</name>
                         <id>410</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -12687,7 +12885,7 @@
                         </extInfo>
                       </extendedTooltip>
                       <contextMenu>
-                        <name>ConnectingToExternalBaseBDriverSQLContextMenu</name>
+                        <name>ConnectionToExternalBaseBDriverSQLContextMenu</name>
                         <id>409</id>
                         <visible>true</visible>
                         <enabled>true</enabled>
@@ -13123,7 +13321,7 @@
                 </extInfo>
               </items>
               <items xsi:type="form:FormGroup">
-                <name>GroupOptionSettingsConnectionsFileA</name>
+                <name>GroupSettingsConnectionsFileB</name>
                 <id>419</id>
                 <items xsi:type="form:FormGroup">
                   <name>GroupSettingsConnectionsToFileGeneralB</name>
@@ -13310,7 +13508,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectingToExternalBaseBDeviceStorageFile</name>
+                    <name>ConnectionToExternalBaseBDeviceStorageFile</name>
                     <id>1095</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13324,7 +13522,7 @@
                     </dataPath>
                     <titleLocation>Left</titleLocation>
                     <extendedTooltip>
-                      <name>ConnectingToExternalBaseBDeviceStorageFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseBDeviceStorageFileExtendedTooltip</name>
                       <id>1097</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13339,7 +13537,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectingToExternalBaseBDeviceStorageFileContextMenu</name>
+                      <name>ConnectionToExternalBaseBDeviceStorageFileContextMenu</name>
                       <id>1096</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13356,6 +13554,10 @@
                     <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
                       <choiceList>
                         <presentation>
+                          <key>en</key>
+                          <value>server</value>
+                        </presentation>
+                        <presentation>
                           <key>ru</key>
                           <value>сервере</value>
                         </presentation>
@@ -13364,6 +13566,10 @@
                         </value>
                       </choiceList>
                       <choiceList>
+                        <presentation>
+                          <key>en</key>
+                          <value>client</value>
+                        </presentation>
                         <presentation>
                           <key>ru</key>
                           <value>клиенте</value>
@@ -13698,7 +13904,7 @@
                   </extInfo>
                 </items>
                 <items xsi:type="form:FormGroup">
-                  <name>GroupSettingsConnectionsToNonXMLBFile</name>
+                  <name>GroupSettingsConnectionsToNonXMLFileB</name>
                   <id>726</id>
                   <items xsi:type="form:FormField">
                     <name>NumberFirstRowFileB</name>
@@ -13761,7 +13967,7 @@
                     </extInfo>
                   </items>
                   <items xsi:type="form:FormField">
-                    <name>ConnectionToExternalDatabaseBNumberTableInFile</name>
+                    <name>ConnectionToExternalBaseBNumberTableInFile</name>
                     <id>1101</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13770,11 +13976,11 @@
                     </userVisible>
                     <dataPath xsi:type="form:MultiLanguageDataPath">
                       <paths xsi:type="form:DataPath">
-                        <segments>Object.ConnectionToExternalDatabaseBNumberTableInFile</segments>
+                        <segments>Object.ConnectionToExternalBaseBNumberTableInFile</segments>
                       </paths>
                     </dataPath>
                     <extendedTooltip>
-                      <name>ConnectionToExternalDatabaseBNumberTableInFileExtendedTooltip</name>
+                      <name>ConnectionToExternalBaseBNumberTableInFileExtendedTooltip</name>
                       <id>1103</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13789,7 +13995,7 @@
                       </extInfo>
                     </extendedTooltip>
                     <contextMenu>
-                      <name>ConnectionToExternalDatabaseBNumberTableInFileContextMenu</name>
+                      <name>ConnectionToExternalBaseBNumberTableInFileContextMenu</name>
                       <id>1102</id>
                       <visible>true</visible>
                       <enabled>true</enabled>
@@ -13831,14 +14037,14 @@
                   </title>
                   <title>
                     <key>en</key>
-                    <value>Group settings connections to non XMLBFile</value>
+                    <value>Group settings connections to non XMLFile B</value>
                   </title>
                   <toolTip>
                     <key>ru</key>
                     <value>Группа параметры подключения к файлу не XMLБ</value>
                   </toolTip>
                   <extendedTooltip>
-                    <name>GroupSettingsConnectionsToNonXMLBFileExtendedTooltip</name>
+                    <name>GroupSettingsConnectionsToNonXMLFileBExtendedTooltip</name>
                     <id>727</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -13871,14 +14077,14 @@
                 </title>
                 <title>
                   <key>en</key>
-                  <value>Group option settings connections file A</value>
+                  <value>Group settings connections file B</value>
                 </title>
                 <toolTip>
                   <key>ru</key>
                   <value>Группа параметры файла А</value>
                 </toolTip>
                 <extendedTooltip>
-                  <name>GroupOptionSettingsConnectionsFileAExtendedTooltip</name>
+                  <name>GroupSettingsConnectionsFileBExtendedTooltip</name>
                   <id>420</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -17691,7 +17897,7 @@
                 <name>ParameterListBCommandBar</name>
                 <id>653</id>
                 <items xsi:type="form:Button">
-                  <name>СписокПараметровБКомандаПолучитьПараметрыЗапросаБ</name>
+                  <name>ParameterListBCommandGetQueryParametersB</name>
                   <id>679</id>
                   <visible>true</visible>
                   <enabled>true</enabled>
@@ -17699,7 +17905,7 @@
                     <common>true</common>
                   </userVisible>
                   <extendedTooltip>
-                    <name>СписокПараметровБКомандаПолучитьПараметрыЗапросаБРасширеннаяПодсказка</name>
+                    <name>ParameterListBCommandGetQueryParametersBExtendedTooltip</name>
                     <id>680</id>
                     <visible>true</visible>
                     <enabled>true</enabled>
@@ -18095,6 +18301,10 @@
               <common>true</common>
             </userVisible>
             <title>
+              <key>en</key>
+              <value>Table</value>
+            </title>
+            <title>
               <key>ru</key>
               <value>Таблица</value>
             </title>
@@ -18309,9 +18519,6 @@
           <showInHeader>true</showInHeader>
           <headerHorizontalAlign>Left</headerHorizontalAlign>
           <showInFooter>true</showInFooter>
-          <footerDataPath xsi:type="form:DataPath">
-            <segments>Object.Result.RowsCount</segments>
-          </footerDataPath>
           <extInfo xsi:type="form:InputFieldExtInfo">
             <autoMaxWidth>true</autoMaxWidth>
             <autoMaxHeight>true</autoMaxHeight>
@@ -20369,12 +20576,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Таблица расхождений</value>
+        <key>en</key>
+        <value>Table of differences</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group result comparison</value>
+        <key>ru</key>
+        <value>Таблица расхождений</value>
       </title>
       <toolTip>
         <key>ru</key>
@@ -20530,6 +20737,38 @@
       <currentRowUse>Auto</currentRowUse>
     </extInfo>
   </items>
+  <items xsi:type="form:Button">
+    <name>CommandCheckAbilityToConnectToSourceB1</name>
+    <id>1253</id>
+    <visible>true</visible>
+    <enabled>true</enabled>
+    <userVisible>
+      <common>true</common>
+    </userVisible>
+    <extendedTooltip>
+      <name>CommandCheckAbilityToConnectToSourceB1ExtendedTooltip</name>
+      <id>1254</id>
+      <visible>true</visible>
+      <enabled>true</enabled>
+      <userVisible>
+        <common>true</common>
+      </userVisible>
+      <type>Label</type>
+      <autoMaxWidth>true</autoMaxWidth>
+      <autoMaxHeight>true</autoMaxHeight>
+      <extInfo xsi:type="form:LabelDecorationExtInfo">
+        <horizontalAlign>Left</horizontalAlign>
+      </extInfo>
+    </extendedTooltip>
+    <type>UsualButton</type>
+    <commandName>Form.Command.CommandCheckAbilityToConnectToSourceB</commandName>
+    <representation>Auto</representation>
+    <autoMaxWidth>true</autoMaxWidth>
+    <autoMaxHeight>true</autoMaxHeight>
+    <placementArea>UserCmds</placementArea>
+    <toolTipRepresentation>Auto</toolTipRepresentation>
+    <representationInContextMenu>Auto</representationInContextMenu>
+  </items>
   <autoCommandBar>
     <name>ФормаКоманднаяПанель</name>
     <id>-1</id>
@@ -20584,7 +20823,7 @@
     </title>
     <id>1</id>
     <valueType>
-      <types>DataProcessorObject.UT_ConsoleComparisonData</types>
+      <types>DataProcessorObject.UT_ComparisonDataConsole</types>
     </valueType>
     <view>
       <common>true</common>
@@ -22484,6 +22723,72 @@
         <name>CommandVisibilityColumnTP</name>
       </handler>
     </action>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>CommandCheckAbilityToConnectToSourceA</name>
+    <title>
+      <key>en</key>
+      <value>Connection test</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </title>
+    <id>46</id>
+    <toolTip>
+      <key>en</key>
+      <value>Connection test</value>
+    </toolTip>
+    <toolTip>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.ExternalDataSource</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>CommandCheckAbilityToConnectToSourceA</name>
+      </handler>
+    </action>
+    <representation>TextPicture</representation>
+    <currentRowUse>Auto</currentRowUse>
+  </formCommands>
+  <formCommands>
+    <name>CommandCheckAbilityToConnectToSourceB</name>
+    <title>
+      <key>en</key>
+      <value>Connection test</value>
+    </title>
+    <title>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </title>
+    <id>47</id>
+    <toolTip>
+      <key>en</key>
+      <value>Connection test</value>
+    </toolTip>
+    <toolTip>
+      <key>ru</key>
+      <value>Тест подключения</value>
+    </toolTip>
+    <use>
+      <common>true</common>
+    </use>
+    <picture xsi:type="core:PictureRef">
+      <picture>StdPicture.ExternalDataSource</picture>
+    </picture>
+    <action xsi:type="form:FormCommandHandlerContainer">
+      <handler>
+        <name>CommandCheckAbilityToConnectToSourceB</name>
+      </handler>
+    </action>
+    <representation>TextPicture</representation>
     <currentRowUse>Auto</currentRowUse>
   </formCommands>
   <commandInterface>

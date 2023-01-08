@@ -2,12 +2,24 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	If Parameters.Property("SerializeToXML") Then
+		SerializeToXML = Parameters.SerializeToXML;
+	EndIf; 
+	
 	If ValueIsFilled(Parameters.ValueTableAsString) Then
-		Try
-			VT=ValueFromStringInternal(Parameters.ValueTableAsString);
-		Except
-			VT=New ValueTable;
-		EndTry;
+		If SerializeToXML Then
+			Try
+				VT=UT_Common.ValueFromXMLString(Parameters.ValueTableAsString);
+			Except
+				VT=New ValueTable;
+			EndTry;
+		Else
+			Try
+				VT=ValueFromStringInternal(Parameters.ValueTableAsString);
+			Except
+				VT=New ValueTable;
+			EndTry;
+		EndIf;
 	Else
 		VT=New ValueTable;
 	EndIf;
@@ -15,6 +27,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillValueTableColumns(VT);
 	CreateFormValueTableColumns();
 	FillFormValueTableByTable(VT);
+	
 EndProcedure
 
 #EndRegion
@@ -30,12 +43,12 @@ EndProcedure
 &AtClient
 Procedure TableColumnsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
 	
-		CurrentData=Items.TableColumns.CurrentData;
+	CurrentData=Items.TableColumns.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
 	EndIf;
 
-	CurrentRow=Items.TableColumns.CurrentLine;
+	CurrentRow=Items.TableColumns.CurrentRow;
 
 	UT_CommonClient.EditType(CurrentData.ValueType, 1, StandardProcessing, ThisObject,
 		New NotifyDescription("TableColumnsValueTypeStartChoiceEND", ThisObject,
@@ -73,7 +86,7 @@ EndProcedure
 Procedure FillValueTableColumns(VT)
 	TableColumns.Clear();
 
-	For Each Column In VT.Cols Do
+	For Each Column In VT.Columns Do
 		NewRow=TableColumns.Add();
 		NewRow.Name=Column.Name;
 		NewRow.ValueType=Column.ValueType;
@@ -227,7 +240,11 @@ Function ResultValueTableToString()
 	VT=FormAttributeToValue("ValueTable");
 	
 	ResultStructure=New Structure;
-	ResultStructure.Insert("Value", ValueToStringInternal(VT));
+	If SerializeToXML Then
+		ResultStructure.Insert("Value", UT_Common.ValueToXMLString(VT));
+	Else
+		ResultStructure.Insert("Value", ValueToStringInternal(VT));
+	EndIf;
 	ResultStructure.Insert("Presentation", StrTemplate(NSTR("ru = 'Строк: %1 Колонок: %2';en = 'Rows: %1 Columns: %2'"), VT.Count(), VT.Cols.Count()));
 	ResultStructure.Insert("LineCount", VT.Count());
 	ResultStructure.Insert("ColumnsCount", VT.Cols.Count());
