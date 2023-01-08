@@ -940,9 +940,9 @@ Procedure UpdateVisibilityAccessibilityFormItemsByBaseID(BaseID)
 		
 		Items["GroupSettingsConnectionsFile" + BaseID].Visible 						= True;
 		Items["GroupSettingsConnectionsToFileGeneral" + BaseID].Visible					= True;
-		Items["GroupSettingsConnectionsToXMLJSONA" + BaseID].Visible 				= FileFormatXML;
-		Items["GroupSettingsConnectionsToXMLA" + BaseID].Visible 					= FileFormatXML;
-		Items["GroupSettingsConnectionsToNonXMLAFile" + BaseID].Visible					= Not FileFormatXML;
+		Items["GroupSettingsConnectionsToXMLJSON" + BaseID].Visible 				= FileFormatXML;
+		Items["GroupSettingsConnectionsToXML" + BaseID].Visible 					= FileFormatXML;
+		Items["GroupSettingsConnectionsToNonXMLFile" + BaseID].Visible					= Not FileFormatXML;
 		Items["ConnectionToExternalBase" + BaseID + "NumberTableInFile"].Visible		= FileFormatXLS Or FileFormatDOC;
 		
 		ConnectionToExternalBaseTitle = ?(FileFormatXLS
