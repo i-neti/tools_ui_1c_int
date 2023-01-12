@@ -53,6 +53,10 @@
       <extInfo xsi:type="form:RadioButtonsFieldExtInfo">
         <choiceList>
           <presentation>
+            <key>en</key>
+            <value>Catalogs</value>
+          </presentation>
+          <presentation>
             <key>ru</key>
             <value>Справочники</value>
           </presentation>
@@ -61,6 +65,10 @@
           </value>
         </choiceList>
         <choiceList>
+          <presentation>
+            <key>en</key>
+            <value>Documents</value>
+          </presentation>
           <presentation>
             <key>ru</key>
             <value>Документы</value>

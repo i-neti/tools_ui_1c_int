@@ -2221,7 +2221,7 @@ Function MetadataObjectDescriptionForMonacoEditor(MetadataObjectDescription)
 				//						
 				//	Query.Text = StrReplace(Query.Text, "&Table", FullName);
 				//	
-				//	Selection = Query.Execute().StartChoosing();
+				//	Selection = Query.Execute().Select();
 				//	
 				//	While Selection.Next() Do 
 				//		PredefinedDescription.Insert(Selection.Name, StrTemplate("%1 (%2)", Selection.Name, Selection.Code));
@@ -2378,7 +2378,7 @@ Function DescribeMetadataObjectsCollectionForMonacoEditor(Collection, TypesMap)
 				//						
 				//	Query.Text = StrReplace(Query.Text, "&Table", FullName);
 				//	
-				//	Selection = Query.Execute().StartChoosing();
+				//	Selection = Query.Execute().Select();
 				//	
 				//	While Selection.Next() Do 
 				//		PredefinedDescription.Insert(Selection.Name, StrTemplate("%1 (%2)", Selection.Name, Selection.Code));

@@ -23,7 +23,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	// Analyzing form parameters.
 	If Parameters.CommandID = Undefined Then
 		// Starting the data processor in standalone mode.
-		ExchangeNodeRef = Parameters.УзелОбмена;
+		ExchangeNodeRef = Parameters.ExchangeNode;
 		Parameters.Property("SelectExchangeNodeProhibited", SelectExchangeNodeProhibited);
 //		OpenWithNodeParameter = True;
 

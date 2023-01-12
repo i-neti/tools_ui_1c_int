@@ -267,11 +267,11 @@ Procedure OnOpen(Cancel)
 		TreeLine.GetItems().Add();
 	EndDo;
 
-	_StorageAddresses = New Structure("RegisterRecords, Subscriptions, Commands, CommonCommand, Subsystems, RolesAndUsers");
+	_StorageAddresses = New Structure("RegisterRecords, Subscriptions, Commands, CommonCommands, Subsystems, RolesAndUsers");
 	_StorageAddresses.RegisterRecords = PutToTempStorage(-1, UUID);
 	_StorageAddresses.Subscriptions = PutToTempStorage(-1, UUID);
 	_StorageAddresses.Commands  = PutToTempStorage(-1, UUID);
-	_StorageAddresses.CommonCommand = PutToTempStorage(-1, UUID);
+	_StorageAddresses.CommonCommands = PutToTempStorage(-1, UUID);
 	_StorageAddresses.Subsystems = PutToTempStorage(-1, UUID);
 	_StorageAddresses.RolesAndUsers = "";
 	
@@ -280,7 +280,7 @@ Procedure OnOpen(Cancel)
 	TreeLines.Clear();
 
 	ValueTreeGroup = TreeLines.Add();
-	ValueTreeGroup.Presentation = "ru = 'Стандартные хранилища настроек';en = 'Standart settings storages'";
+	ValueTreeGroup.Presentation = NSTR("ru = 'Стандартные хранилища настроек';en = 'Standart settings storages'");
 
 	SectionStructure = New Structure("ReportsVariantsStorage, FormDataSettingsStorage, CommonSettingsStorage
 								   |, DynamicListsUserSettingsStorage, ReportsUserSettingsStorage, SystemSettingsStorage");
@@ -609,7 +609,7 @@ Procedure ObjectsTreeBeforeExpand(Item, String, Cancel)
 
 		ElsIf TreeNode.NodeType = "SectionGroupMD" Then
 			SectionStructure = New Structure("Subsystems, CommonModules, SessionParameters, Users, Roles, CommonAttributes, ExchangePlans, EventSubscriptions, ScheduledJobs
-										   |, FunctionalOptions, FunctionalOptionsParameters, DefinedTypes, SettingsStorages, CommonForms, CommonCommand, CommandGroups, OtherCommands, CommonTemplates, XDTOPackages, WebServices, HTTPServices");
+										   |, FunctionalOptions, FunctionalOptionsParameters, DefinedTypes, SettingsStorages, CommonForms, CommonCommands, CommandGroups, OtherCommands, CommonTemplates, XDTOPackages, WebServices, HTTPServices");
 
 			vCalculateNumberOfObjectsMD(SectionStructure);
 
@@ -1698,14 +1698,14 @@ Function vCalculateNumberOfObjects(ObjectsArray)
 
 		If pUseAttempt Then
 			Try
-				Selection = Query.Execute().StartChoosing();
-				Item.NumberOfObjects = ?(Selection.Next(), Selection.ObjectCount, 0);
+				Selection = Query.Execute().Select();
+				Item.NumberOfObjects = ?(Selection.Next(), Selection.NumberOfObjects, 0);
 			Except
 				Item.NumberOfObjects = 0;
 			EndTry;
 		Else
-			Selection = Query.Execute().StartChoosing();
-			Item.NumberOfObjects = ?(Selection.Next(), Selection.ObjectCount, 0);
+			Selection = Query.Execute().Select();
+			Item.NumberOfObjects = ?(Selection.Next(), Selection.NumberOfObjects, 0);
 		EndIf;
 
 	EndDo;

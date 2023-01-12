@@ -363,7 +363,7 @@ Procedure FillMetadataTree()
 	AddObjectTypeToTree(PictureLib.ChartOfAccounts, "ChartsOfAccounts", "ChartOfAccounts", "Charts of Accounts");
 	AddObjectTypeToTree(PictureLib.ChartOfCalculationTypes, "ChartsOfCalculationTypes", "ChartOfCalculationTypes",
 		"Charts of calculation types");
-	AddObjectTypeToTree(PictureLib.ExchangePlan, "ExchangePlans", "ExchangePlan", "Планы обмена");
+	AddObjectTypeToTree(PictureLib.ExchangePlan, "ExchangePlans", "ExchangePlan", "Exchange plans");
 	AddObjectTypeToTree(PictureLib.InformationRegister, "InformationRegisters", "InformationRegister",
 		"Information registers");
 	AddObjectTypeToTree(PictureLib.AccumulationRegister, "AccumulationRegisters", "AccumulationRegister",

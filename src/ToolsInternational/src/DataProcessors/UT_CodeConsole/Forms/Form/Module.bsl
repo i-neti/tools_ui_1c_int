@@ -221,7 +221,7 @@ Procedure OpenFileEnd(Result, AdditionalParameters) Export
 	Modified=False;
 	AlgorithmFileName = Result.FileName;
 
-	OpenAlgorithmAtServer(Result.Address);
+	OpenAlgorithmAtServer(Result.URL);
 
 	SetEditorText("Client",TextAlgorithmClient,True);
 	SetEditorText("Server",TextAlgorithmServer,True);

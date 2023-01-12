@@ -1247,7 +1247,7 @@ Procedure OnCreateAtServerDataInitialization(FormSettings)
 	
 	ChoiceList = Items.DuplicatesSearchArea.ChoiceList;
 	For Each TableRow In SettingsTable Do
-		ChoiceList.Add(TableRow.FullName, TableRow.ListPresentation, , PictureLib[TableRow.Kind]);
+		ChoiceList.Add(TableRow.FullName, TableRow.ListPresentation, , PictureLib[TableRow.Type]);
 	EndDo;
 	
 	AllComparisonOptions.Add("Equal",   NStr("ru = 'Совпадает'; en = 'Match'"));
