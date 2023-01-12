@@ -613,7 +613,7 @@ Procedure FormFieldValueStartChoiceTypeChoiceEnd(Result, AdditionalParameters) E
 	EndIf;
 	
 	ObjectName = UT_Common.TableNameByRef(EmptyTypeValue);
-	If Result.UseDynamicListForRefValueChoice Then
+	If Result.UseDynamicListForRefValueSelection Then  
 		FormParameters = New Structure;
 		FormParameters.Insert("MetadataObjectName", ObjectName);
 		FormParameters.Insert("ChoiceMode", True);

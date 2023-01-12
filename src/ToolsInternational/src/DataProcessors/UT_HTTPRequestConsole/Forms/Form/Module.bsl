@@ -388,7 +388,7 @@ Procedure LoadConsoleFileComplete(Result, AdditionalParameters) Export
 	Endif;
 
 	RequestsFileName = Result.FileName;
-	DoLoadByAddress(Result.Address);
+	DoLoadByAddress(Result.URL);
 
 EndProcedure
 

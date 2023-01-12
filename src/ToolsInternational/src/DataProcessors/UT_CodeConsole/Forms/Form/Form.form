@@ -135,12 +135,12 @@
           <common>true</common>
         </userVisible>
         <title>
-          <key>ru</key>
-          <value>Файл</value>
+          <key>en</key>
+          <value>File</value>
         </title>
         <title>
-          <key>en</key>
-          <value>Group file</value>
+          <key>ru</key>
+          <value>Файл</value>
         </title>
         <extendedTooltip>
           <name>GroupFileExtendedTooltip</name>
@@ -743,11 +743,11 @@
         <id>106</id>
         <title>
           <key>en</key>
-          <value>Procedure ExecuteAlgorithmAtClient()</value>
+          <value>Procedure &lt;b>ExecuteAlgorithmAtClient()&lt;/></value>
         </title>
         <title>
           <key>ru</key>
-          <value>Процедура ВыполнитьАлгоритмНаКлиенте()</value>
+          <value>Процедура &lt;b>ВыполнитьАлгоритмНаКлиенте()&lt;/></value>
         </title>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -779,6 +779,7 @@
           </userVisible>
           <autoFill>true</autoFill>
         </contextMenu>
+        <formatted>true</formatted>
         <type>Label</type>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -852,12 +853,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>&amp;&amp;НаКлиенте</value>
+        <key>en</key>
+        <value>&amp;AtClient</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group client</value>
+        <key>ru</key>
+        <value>&amp;&amp;НаКлиенте</value>
       </title>
       <titleFont xsi:type="core:FontDef">
         <height>10.0</height>
@@ -1297,11 +1298,11 @@
         <id>109</id>
         <title>
           <key>en</key>
-          <value>Procedure ExecuteAlgorithmAtServer(TransmittedStructure)</value>
+          <value>Procedure &lt;b>ExecuteAlgorithmAtServer(TransmittedStructure)&lt;/></value>
         </title>
         <title>
           <key>ru</key>
-          <value>Процедура ВыполнитьАлгоритмНаСервере(СтруктураПередачи)</value>
+          <value>Процедура &lt;b>ВыполнитьАлгоритмНаСервере(СтруктураПередачи)&lt;/></value>
         </title>
         <visible>true</visible>
         <enabled>true</enabled>
@@ -1333,6 +1334,7 @@
           </userVisible>
           <autoFill>true</autoFill>
         </contextMenu>
+        <formatted>true</formatted>
         <type>Label</type>
         <autoMaxWidth>true</autoMaxWidth>
         <autoMaxHeight>true</autoMaxHeight>
@@ -1402,12 +1404,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>&amp;&amp;НаСервере</value>
+        <key>en</key>
+        <value>&amp;AtServer</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group server</value>
+        <key>ru</key>
+        <value>&amp;&amp;НаСервере</value>
       </title>
       <titleFont xsi:type="core:FontDef">
         <height>10.0</height>

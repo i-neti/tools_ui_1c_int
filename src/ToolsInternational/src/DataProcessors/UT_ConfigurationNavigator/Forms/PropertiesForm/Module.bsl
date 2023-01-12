@@ -2587,8 +2587,8 @@ EndFunction
 Function vRolesAndUsersTable()
 	_TableRolesAndUsers = New ValueTable;
 	_TableRolesAndUsers.Columns.Add("NameR", New TypeDescription("String"));
-	_TableRolesAndUsers.Columns.Add("NameP", New TypeDescription("String"));
-	_TableRolesAndUsers.Columns.Add("FullNameP", New TypeDescription("String"));
+	_TableRolesAndUsers.Columns.Add("NameUsr", New TypeDescription("String"));
+	_TableRolesAndUsers.Columns.Add("FullNameUsr", New TypeDescription("String"));
 
 	For Each Usr In InfoBaseUsers.GetUsers() Do
 		For Each Role In Usr.Roles Do
@@ -3084,11 +3084,11 @@ EndProcedure
 &AtClient
 Procedure _RecordConstant(Command)
 	If вЗаписатьКонстанту() Then
-		пВидОбъекта = Left(_FullName, StrFind(_FullName, ".") - 1);
+		pObjectType = Left(_FullName, StrFind(_FullName, ".") - 1);
 
-		If пВидОбъекта = "Constant" Then
+		If pObjectType = "Constant" Then
 			ShowMessageBox( , "Value константы изменено!", 20);
-		ElsIf пВидОбъекта = "SessionParameter" Then
+		ElsIf pObjectType = "SessionParameter" Then
 			ShowMessageBox( , "Value параметра сеанса изменено!", 20);
 		EndIf;
 
@@ -3105,9 +3105,9 @@ Function вЗаписатьКонстанту()
 		Return False;
 	EndIf;
 
-	пВидОбъекта = Left(_FullName, StrFind(_FullName, ".") - 1);
+	pObjectType = Left(_FullName, StrFind(_FullName, ".") - 1);
 
-	If пВидОбъекта = "Constant" Then
+	If pObjectType = "Constant" Then
 		пМенеджерЗначения = Constants[пОбъектМД.Name].CreateValueManager();
 		If _UseTextWhenWritingConstants Then
 			пМенеджерЗначения.Value = _TextConstantValue;
@@ -3123,7 +3123,7 @@ Function вЗаписатьКонстанту()
 			Return False;
 		EndTry;
 
-	ElsIf пВидОбъекта = "SessionParameter" Then
+	ElsIf pObjectType = "SessionParameter" Then
 		Try
 			If _UseTextWhenWritingConstants Then
 				SessionParameters[пОбъектМД.Name] = _TextConstantValue;
@@ -3156,9 +3156,9 @@ Function vGetConstant(Val FullName)
 		Return pResult;
 	EndIf;
 
-	пВидОбъекта = Left(FullName, StrFind(FullName, ".") - 1);
+	pObjectType = Left(FullName, StrFind(FullName, ".") - 1);
 
-	If пВидОбъекта = "Constant" Then
+	If pObjectType = "Constant" Then
 		Query = New Query;
 		Query.Text = "ВЫБРАТЬ ПЕРВЫЕ 1
 					   |	т.Value КАК Value
@@ -3178,7 +3178,7 @@ Function vGetConstant(Val FullName)
 			Return pResult;
 		EndTry;
 
-	ElsIf пВидОбъекта = "SessionParameter" Then
+	ElsIf pObjectType = "SessionParameter" Then
 		Try
 			pResult.Value = SessionParameters[пОбъектМД.Name];
 			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
@@ -3191,7 +3191,7 @@ Function vGetConstant(Val FullName)
 	Else
 		pResult.Cancel = True;
 		pResult.ReadOnly = True;
-		pResult.ReasonForRefusal = пВидОбъекта + " не поддерживается!";
+		pResult.ReasonForRefusal = pObjectType + " не поддерживается!";
 		Return pResult;
 	EndIf;
 

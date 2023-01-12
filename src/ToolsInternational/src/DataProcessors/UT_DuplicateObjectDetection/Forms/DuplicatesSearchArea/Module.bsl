@@ -81,7 +81,7 @@ Procedure InitializeSearchForDuplicatesAreasList()
 	EndIf;
 	
 	For Each TableRow In SettingsTable Do
-		Item = DuplicatesSearchAreas.Add(TableRow.FullName, TableRow.ListPresentation, , PictureLib[TableRow.Kind]);
+		Item = DuplicatesSearchAreas.Add(TableRow.FullName, TableRow.ListPresentation, , PictureLib[TableRow.Type]);
 		If TableRow.FullName = DefaultArea Then
 			Items.DuplicatesSearchAreas.CurrentRow = Item.GetID();
 		EndIf;
