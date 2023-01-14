@@ -667,7 +667,7 @@ Procedure OnOpen(Cancel)
 	EndDo;
 
 	If StrFind(_FullName, "Role.") = 1 And Not IsBlankString(_AccessRightToObject) Then
-		_AccessRightToObjectOnChange(Items._ПравоДоступаКОбъекту);
+		_AccessRightToObjectOnChange(Items._AccessRightToObject);
 	EndIf;
 EndProcedure
 
@@ -1167,7 +1167,6 @@ Procedure vFillPredefinedObjectItems(MDObject, TreeNode)
 	If ValueTable.Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
 		TreeSection.Name = "Predefined (" + ValueTable.Count() + ")";
-
 		For Each Itm In ValueTable Do
 			TreeRow = TreeSection.GetItems().Add();
 			TreeRow.Name = Manager.GetPredefinedNames(Itm.Ref);
@@ -2721,19 +2720,19 @@ Function vGetAvailableObjectsForRole(Val pRole, Val pRight, Val DescriptionOfAcc
 EndFunction
 
 &AtServerNoContext
-Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
-	СтрукРезультат = New Structure("HasData, Roles, Users", False);
+Function vGetAccessRightsToObject(Val RigthName, Val FullName)
+	ResultStructure = New Structure("HasData, Roles, Users", False);
 
-	If IsBlankString(ИмяПрава) Then
-		Return СтрукРезультат;
+	If IsBlankString(RigthName) Then
+		Return ResultStructure;
 	EndIf;
 
 	vRestrictedObjects = vGetDescriptionOfRestrictionsForAccessParameters();
 
-	ТабРоли = New ValueTable;
-	ТабРоли.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
-	ТабРоли.Columns.Add("Name", New TypeDescription("String"));
-	ТабРоли.Columns.Add("Synonym", New TypeDescription("String"));
+	RigthsTable = New ValueTable;
+	RigthsTable.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
+	RigthsTable.Columns.Add("Name", New TypeDescription("String"));
+	RigthsTable.Columns.Add("Synonym", New TypeDescription("String"));
 
 	UsersTable = New ValueTable;
 	UsersTable.Columns.Add("Name", New TypeDescription("String"));
@@ -2749,7 +2748,7 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		MDObject = Metadata.FindByFullName(FullName);
 
 		If MDObject = Undefined Then
-			Return СтрукРезультат;
+			Return ResultStructure;
 		EndIf;
 	EndIf;
 
@@ -2758,34 +2757,34 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		vRestrictedObjects[MDType] = pField;
 	EndIf;
 
-	ЭтоОбычныйРежим = True;
+	IsOrdinaryMode = True;
 
-	If ЭтоОбычныйРежим And IsBlankString(ИмяПрава) Then
-		Return СтрукРезультат;
+	If IsOrdinaryMode And IsBlankString(RigthName) Then
+		Return ResultStructure;
 	EndIf;
-	If ЭтоОбычныйРежим Then
+	If IsOrdinaryMode Then
 		For Each Itm In Metadata.Roles Do
-			If AccessRight(ИмяПрава, MDObject, Itm) Then
-				NewLine = ТабРоли.Add();
+			If AccessRight(RigthName, MDObject, Itm) Then
+				NewLine = RigthsTable.Add();
 				FillPropertyValues(NewLine, Itm);
 
 				pField = vRestrictedObjects[MDType];
 				If pField <> Undefined Then
-					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, pField, Itm).RestrictionByCondition;
+					NewLine.RestrictionByCondition = AccessParameters(RigthName, MDObject, pField, Itm).RestrictionByCondition;
 				EndIf;
 			EndIf;
 		EndDo;
 
-		ТабРоли.Sort("Name");
+		RigthsTable.Sort("Name");
 	EndIf;
 
 	_TableRolesAndUsers = vRolesAndUsersTable();
 
-	If ЭтоОбычныйРежим Then
+	If IsOrdinaryMode Then
 		StructureR = New Structure("NameR");
 		StructureP = New Structure("Name");
 
-		For Each Row In ТабРоли Do
+		For Each Row In RigthsTable Do
 			StructureR.NameR = Row.Name;
 			For Each LineX In _TableRolesAndUsers.FindRows(StructureR) Do
 				StructureP.Name = LineX.NameP;
@@ -2800,30 +2799,30 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		UsersTable.Sort("Name");
 	EndIf;
 
-	СтрукРезультат.HasData = True;
-	СтрукРезультат.Roles = New Array;
-	СтрукРезультат.Users = New Array;
+	ResultStructure.HasData = True;
+	ResultStructure.Roles = New Array;
+	ResultStructure.Users = New Array;
 
-	For Each Row In ТабРоли Do
+	For Each Row In RigthsTable Do
 		Struc = New Structure("Name, Synonym, RestrictionByCondition");
 		FillPropertyValues(Struc, Row);
-		СтрукРезультат.Roles.Add(Struc);
+		ResultStructure.Roles.Add(Struc);
 	EndDo;
 
 	For Each Row In UsersTable Do
 		Struc = New Structure("Name, FullName");
 		FillPropertyValues(Struc, Row);
-		СтрукРезультат.Users.Add(Struc);
+		ResultStructure.Users.Add(Struc);
 	EndDo;
 
-	Return СтрукРезультат;
+	Return ResultStructure;
 EndFunction
 &AtClient
 Procedure _FillInDependentObjects(Command)
 	_DependentObjects.GetItems().Clear();
 	_WhereFound = "";
 
-	вЗаполнитьЗависимыеОбъекты();
+	FillDependingObjects();
 
 	For Each Itm In _DependentObjects.GetItems() Do
 		Items._DependentObjects.Expand(Itm.GetID(), False);
@@ -2831,16 +2830,16 @@ Procedure _FillInDependentObjects(Command)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьЗависимыеОбъекты()
+Procedure FillDependingObjects()
 
-	пОбъектМД = Metadata.FindByFullName(_FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(_FullName);
+	If pMetadataObject = Undefined Then
 		Return;
 	EndIf;
 	пКорневойУзел = _DependentObjects.GetItems().Add();
 	пКорневойУзел.NodeType = 1;
-	пКорневойУзел.Name = пОбъектМД.Name;
-	пКорневойУзел.Presentation = пОбъектМД.Presentation();
+	пКорневойУзел.Name = pMetadataObject.Name;
+	пКорневойУзел.Presentation = pMetadataObject.Presentation();
 	пКорневойУзел.FullName = _FullName;
 
 	Pos = StrFind(_FullName, ".");
@@ -2985,7 +2984,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 				EndDo;
 
 				If пЭтоПланОбмена Then
-					If MDObject.Content.Contains(пОбъектМД) Then
+					If MDObject.Content.Contains(pMetadataObject) Then
 						If пСчетчик = 0 Then
 							пГдеНайдено = "Object.Content";
 						Else
@@ -2998,7 +2997,7 @@ Procedure вЗаполнитьЗависимыеОбъекты()
 				EndIf;
 
 				If пЭтоПланСчетов And пНадоСмотретьВидыСубконтоПС Then
-					If MDObject.ExtDimensionTypes = пОбъектМД Then
+					If MDObject.ExtDimensionTypes = pMetadataObject Then
 						If пСчетчик = 0 Then
 							пГдеНайдено = "Object.ExtDimensionTypes";
 						Else
@@ -3100,15 +3099,15 @@ EndProcedure
 Function вЗаписатьКонстанту()
 	SetPrivilegedMode(True);
 
-	пОбъектМД = Metadata.FindByFullName(_FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(_FullName);
+	If pMetadataObject = Undefined Then
 		Return False;
 	EndIf;
 
 	pObjectType = Left(_FullName, StrFind(_FullName, ".") - 1);
 
 	If pObjectType = "Constant" Then
-		пМенеджерЗначения = Constants[пОбъектМД.Name].CreateValueManager();
+		пМенеджерЗначения = Constants[pMetadataObject.Name].CreateValueManager();
 		If _UseTextWhenWritingConstants Then
 			пМенеджерЗначения.Value = _TextConstantValue;
 		Else
@@ -3126,9 +3125,9 @@ Function вЗаписатьКонстанту()
 	ElsIf pObjectType = "SessionParameter" Then
 		Try
 			If _UseTextWhenWritingConstants Then
-				SessionParameters[пОбъектМД.Name] = _TextConstantValue;
+				SessionParameters[pMetadataObject.Name] = _TextConstantValue;
 			Else
-				SessionParameters[пОбъектМД.Name] = _ConstantValue;
+				SessionParameters[pMetadataObject.Name] = _ConstantValue;
 			EndIf;
 			Return True;
 		Except
@@ -3148,8 +3147,8 @@ Function vGetConstant(Val FullName)
 	pResult = New Structure("Cancel, ReasonForRefusal, ReadOnly, Text, Value, ValueType", False, "", False,
 		"");
 
-	пОбъектМД = Metadata.FindByFullName(FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(FullName);
+	If pMetadataObject = Undefined Then
 		pResult.Cancel = True;
 		pResult.ReadOnly = True;
 		pResult.ReasonForRefusal = "Not удалость найти объект метаданных!";
@@ -3170,7 +3169,7 @@ Function vGetConstant(Val FullName)
 
 			pResult.Value = ?(Выборка.Next(), Выборка.Value, Undefined);
 			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
-				пОбъектМД.Type);
+				pMetadataObject.Type);
 		Except
 			Message(BriefErrorDescription(ErrorInfo()));
 			pResult.Cancel = True;
@@ -3180,9 +3179,9 @@ Function vGetConstant(Val FullName)
 
 	ElsIf pObjectType = "SessionParameter" Then
 		Try
-			pResult.Value = SessionParameters[пОбъектМД.Name];
+			pResult.Value = SessionParameters[pMetadataObject.Name];
 			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
-				пОбъектМД.Type);
+				pMetadataObject.Type);
 		Except
 			pResult.Cancel = True;
 			pResult.ReasonForRefusal = "значение не установлено!";
@@ -3204,7 +3203,7 @@ Function vGetConstant(Val FullName)
 	pUnsupportedTypes.Add(Type("FixedMap"));
 
 	For Each Itm In pUnsupportedTypes Do
-		If пОбъектМД.Type.ContainsType(Itm) Then
+		If pMetadataObject.Type.ContainsType(Itm) Then
 			pResult.ReadOnly = True;
 			Break;
 		EndIf;
