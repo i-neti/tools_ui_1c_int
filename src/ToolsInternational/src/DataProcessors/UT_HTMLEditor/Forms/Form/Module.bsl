@@ -1,16 +1,17 @@
 #Region VariablesDescription
+
 &AtClient
 Var FormCloseConfirmed;
 
 &AtClient
 Var UT_CodeEditorClientData Export;
+
 #EndRegion
 
 #Region FormEvents
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
-	
 	UT_CodeEditorServer.FormOnCreateAtServer(ThisObject, "Ace");
 	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "BODY", Items.BODYEditor, "html");
 	UT_CodeEditorServer.CreateCodeEditorItems(ThisObject, "CSS", Items.CSSEditor, "css");
@@ -26,37 +27,36 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	UT_Common.ToolFormOnCreateAtServer(ThisObject, Cancel, StandardProcessing);
 	
 EndProcedure
-
 &AtClient
 Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
 	If Not FormCloseConfirmed Then
 		Cancel = True;
 	EndIf;
 EndProcedure
-
 &AtClient
 Procedure GeneratedHTMLPagesGroupOnCurrentPageChange(Item, CurrentPage)
-	
 	If CurrentPage = Items.ConsolePageGroup Then
 		UpdateResultConsoleOutput();
 	EndIf;
-	
 EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
-	
 	UT_CodeEditorClient.FormOnOpen(ThisObject, New NotifyDescription("OnOpenComplete", ThisObject));
 	
 EndProcedure
-
 #EndRegion
 
 #Region FormItemsEvents
 
 &AtClient
+Procedure GeneratedHTMLDocumentComplete(Item)
+	AlgoText = EditorItemText(Items.DocumentCompleteEventEditor);
+	UT_CodeEditorClientServer.ExecuteAlgorithm(AlgoText, New Structure);
+EndProcedure
+
+&AtClient
 Procedure GeneratedHTMLOnClick(Item, EventData, StandardProcessing)
-	
 	AlgoText = EditorItemText(Items.OnClickEventEditor);
 	Try
 		Execute (AlgoText);
@@ -64,21 +64,10 @@ Procedure GeneratedHTMLOnClick(Item, EventData, StandardProcessing)
 		ErrorDesc = ErrorDescription();
 		Message(ErrorDesc);
 	EndTry;
-	
 EndProcedure
-
-&AtClient
-Procedure GeneratedHTMLDocumentComplete(Item)
-	
-	AlgoText = EditorItemText(Items.DocumentCompleteEventEditor);
-	UT_CodeEditorClientServer.ExecuteAlgorithm(AlgoText, New Structure);
-	
-EndProcedure
-
 
 &AtClient
 Procedure LinkedLibrariesOnActivateRow(Item)
-	
 	CurrentData = Items.LinkedLibraries.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -92,12 +81,10 @@ Procedure LinkedLibrariesOnActivateRow(Item)
 	EndIf;
 
 	AttachIdleHandler("SetupLibraryEditorText", 1, True);
-	
 EndProcedure
 
 &AtClient
 Procedure LinkedLibrariesPathStartChoice(Item, ChoiceData, StandardProcessing)
-	
 	StandardProcessing = False;
 
 	CurrentData = Items.LinkedLibraries.CurrentData;
@@ -108,9 +95,7 @@ Procedure LinkedLibrariesPathStartChoice(Item, ChoiceData, StandardProcessing)
 	FileChooseDialog.CheckFileExist = True;
 	FileChooseDialog.Show(New NotifyDescription("LinkedLibrarySelection", ThisForm,
 		New Structure("CurrentData", CurrentData)));
-		
 EndProcedure
-
 &AtClient
 Procedure HEADEditorTitleCollapseClick(Item)
 	ToggleEditorVisibility(Items.HEADEditor);
@@ -130,14 +115,12 @@ EndProcedure
 Procedure JSEditorTitleCollapseClick(Item)
 	ToggleEditorVisibility(Items.JSEditor);
 EndProcedure
-
 #EndRegion
 
 #Region FormCommandsEvents
 
 &AtClient
 Procedure UpdateGeneratedHTML(Command)
-	
 	If Items.HTMLEditorPagesGroup.CurrentPage
 		= Items.EditorModeAllPagesGroup Then
 
@@ -175,7 +158,6 @@ Procedure UpdateGeneratedHTML(Command)
 						  |
 						  |" + TrimAll(HEADText);
 		EndIf;
-		
 		For Each LibraryRow In LinkedLibraries Do
 			File = New File(LibraryRow.Path);
 			If Lower(File.Extension) = ".css" Then
@@ -240,7 +222,6 @@ Procedure UpdateGeneratedHTML(Command)
 		SetupConsoleSupportIntoHTML(HTML);
 		GeneratedHTML=HTML;
 	EndIf;
-	
 EndProcedure
 
 &AtClient
@@ -276,7 +257,6 @@ EndProcedure
 Procedure LibrarySampleResetCSS(Command)
 	AddLinkedLibrary("https://unpkg.com/reset-css/reset.css", "");
 EndProcedure
-
 &AtClient
 Procedure LibrarySampleAnimateCSS(Command)
 	AddLinkedLibrary("https://cdn.jsdelivr.net/npm/animate.css/animate.min.css", "");
@@ -286,7 +266,6 @@ EndProcedure
 Procedure LibrarySampleSocketIO(Command)
 	AddLinkedLibrary("https://cdn.jsdelivr.net/npm/socket.io-client/dist/socket.io.js", "");
 EndProcedure
-
 &AtClient
 Procedure UpdateConsoleOutput(Command)
 	UpdateResultConsoleOutput();
@@ -294,30 +273,32 @@ EndProcedure
 
 &AtClient
 Procedure CollapseExpandViewportToForm(Command)
-	
-	ViewportScaledToForm = Not ViewportScaledToForm;
+	ViewPortScaledToForm=Not ViewPortScaledToForm;
 
-	If ViewportScaledToForm Then
-		Items.GeneratedHTMLPagesGroup.CurrentPage = Items.GeneratedHTMLPresentationGroup;
-		Items.GeneratedHTMLPagesGroup.PagesRepresentation = FormPagesRepresentation.None;
-
-		SavedEditorsValues.GeneratedHTMLEditor= EditorItemText(
-			Items.GeneratedHTMLEditor);
-		SavedEditorsValues.BODYEditor=EditorItemText(Items.BODYEditor);
-		SavedEditorsValues.HEADEditor= EditorItemText(Items.HEADEditor);
-		SavedEditorsValues.CSSEditor= EditorItemText(Items.CSSEditor);
-		SavedEditorsValues.JSEditor= EditorItemText(Items.JSEditor);
-		SavedEditorsValues.DocumentCompleteEventEditor= EditorItemText(
-			Items.DocumentCompleteEventEditor);
-		SavedEditorsValues.OnClickEventEditor= EditorItemText(
-			Items.OnClickEventEditor);
+	If ViewPortScaledToForm Then
+		Items.GeneratedHTMLPagesGroup.CurrentPage=Items.GeneratedHTMLPresentationGroup;
+		Items.GeneratedHTMLPagesGroup.PagesRepresentation=FormPagesRepresentation.None;
 	Else
-		Items.GeneratedHTMLPagesGroup.PagesRepresentation = FormPagesRepresentation.TabsOnTop;
-		AttachIdleHandler("SetupEditorsTexts", 0.1, True);
+		Items.GeneratedHTMLPagesGroup.PagesRepresentation=FormPagesRepresentation.TabsOnTop;
 	EndIf;
 
-	Items.HTMLEditorPagesGroup.Visible = Not ViewportScaledToForm;
+	Items.HTMLEditorPagesGroup.Visible=Not ViewPortScaledToForm;
 
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.GeneratedHTMLEditor,
+		Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.BODYEditor,
+		Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.HEADEditor,
+		Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.CSSEditor,
+		Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.JSEditor,
+		Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject,
+		Items.DocumentCompleteEventEditor, Not ViewPortScaledToForm);
+	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, Items.OnClickEventEditor,
+		Not ViewPortScaledToForm);
+	
 EndProcedure
 
 &AtClient
@@ -343,7 +324,6 @@ EndProcedure
 
 &AtClient
 Procedure SetupConsoleSupportIntoHTML(HTML)
-	
 	If Not UseConsole Then
 		Return;
 	EndIf;
@@ -352,18 +332,15 @@ Procedure SetupConsoleSupportIntoHTML(HTML)
 	If HeaderStartPosition = 0 Then
 		Return;
 	EndIf;
-	
 	NewText = Left(HTML, HeaderStartPosition + 5);
 	NewText = NewText + ConsoleSupportJSScript();
 	NewText = NewText + Mid(HTML, HeaderStartPosition + 6);
 
 	HTML = NewText;
-	
 EndProcedure
 
 &AtClient
 Function ConsoleSupportJSScript()
-	
 	Text =
 	"<script type=""text/javascript"" charset=""utf-8"">
 	|	console.output = []; // Take what U want 
@@ -378,47 +355,37 @@ Function ConsoleSupportJSScript()
 	|		return JSON.stringify(console.output);
 	|	}
 	|</script>";
-	
 	Return Text;
-	
 EndFunction
 
 &AtClient
 Function SavedFileDescriptionStructure()
-	
 	Structure = UT_CommonClient.EmptyDescriptionStructureOfSelectedFile();
-	Structure.ИмяФайла=ToolDataFileName;
+	Structure.FileName=ToolDataFileName;
 	
 //	UT_CommonClient.AddFormatToSavingFileDescription(Structure, "Данные редактора HTML(*.bslhtml)", "bslhtml");
-	UT_CommonClient.AddFormatToSavingFileDescription(Structure, "Файл HTML(*.html)", "html");
+	UT_CommonClient.AddFormatToSavingFileDescription(Structure, "File HTML(*.html)", "html");
 	Return Structure;
-	
 EndFunction
-
 &AtClient
 Procedure OpenFile(Command)
-	
-	UT_CommonClient.ReadConsoleFromFile("РедактовHTML", SavedFileDescriptionStructure(),
+	UT_CommonClient.ReadConsoleFromFile("HTMLEditor", SavedFileDescriptionStructure(),
 		New NotifyDescription("OpenFileComplete", ThisObject));
-		
 EndProcedure
 
 &AtClient
 Procedure OpenFileComplete(Result, AdditionalParams) Export
-	
 	If Result = Undefined Then
 		Return;
 	EndIf;
 
 	Modified = False;
-	ToolDataFileName = Result.ИмяФайла;
+	ToolDataFileName = Result.FileName;
 
-	FileData = GetFromTempStorage(Result.Адрес);
+	FileData = GetFromTempStorage(Result.URL);
 
 	Text = New TextDocument;
-	Text.BeginReading(New NotifyDescription("OpenFileTextReadingComplete", ThisForm, 
-		New Structure("Text", Text)), FileData.OpenStreamForRead());
-	 
+	Text.BeginReading(New NotifyDescription("OpenFileTextReadingComplete", ThisForm,New Structure("Text", Text)), FileData.OpenStreamForRead());
 EndProcedure
 
 &AtClient
@@ -444,30 +411,23 @@ EndProcedure
 
 &AtClient
 Procedure SaveFile(Command)
-	
 	SaveFileOnDisk();
-	
 EndProcedure
 
 &AtClient
 Procedure SaveFileAs(Command)
-	
 	SaveFileOnDisk(True);
-	
 EndProcedure
 
 &AtClient
 Procedure SaveFileOnDisk(SaveAs = False)
-	
-	UT_CommonClient.SaveConsoleDataToFile("РедакторHTML", SaveAs,
+	UT_CommonClient.SaveConsoleDataToFile("HTMLEditor", SaveAs,
 		SavedFileDescriptionStructure(), EditorItemText(Items.GeneratedHTMLEditor),
 		New NotifyDescription("SaveFileComplete", ThisObject));
-		
 EndProcedure
 
 &AtClient
 Procedure SaveFileComplete(SaveFileName, AdditionalParams) Export
-	
 	If SaveFileName = Undefined Then
 		Return;
 	EndIf;
@@ -479,12 +439,10 @@ Procedure SaveFileComplete(SaveFileName, AdditionalParams) Export
 	Modified = False;
 	ToolDataFileName = SaveFileName;
 	SetupTitle();
-	
 EndProcedure
 
 &AtClient
 Procedure CreateNewFile(Command)
-	
 	ToolDataFileName="";
 
 	SetEditorText(Items.CSSEditor, "");
@@ -493,18 +451,15 @@ Procedure CreateNewFile(Command)
 	SetEditorText(Items.JSEditor, "");
 	SetEditorText(Items.GeneratedHTMLEditor, "");
 
-	LinkedLibraries.Очистить();
+	LinkedLibraries.Clear();
 
 	SetupTitle();
-	
 EndProcedure
 
 &AtClient
 Procedure CloseTool(Command)
-	
 	ShowQueryBox(New NotifyDescription("CloseToolComplete", ThisForm), NStr("ru = 'Выйти из редактора?'; en = 'Exit editor?'"),
 		QuestionDialogMode.YesNo);
-		
 EndProcedure
 
 &AtClient
@@ -519,13 +474,10 @@ EndProcedure
 
 &AtClient
 Procedure SetupTitle()
-	
 	ThisObject.Title = ToolDataFileName;
-	
 EndProcedure
 
 #EndRegion
-
 #Region UtilizationProceduresAndFunctions
 
 &AtClient
@@ -548,6 +500,7 @@ EndProcedure
 Procedure Attachable_CodeEditorInitializingCompletion() Export
 	
 EndProcedure
+
 &AtClient
 Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
 	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
@@ -560,7 +513,6 @@ EndProcedure
 
 &AtClient
 Procedure UpdateResultConsoleOutput()
-	
 	Try
 		DocumentResultView=Items.GeneratedHTML.Document.defaultView;
 
@@ -574,7 +526,6 @@ EndProcedure
 
 &AtServer
 Function GeneratedHTMLConsoleText()
-	
 	Text =
 	"<!DOCTYPE html>
 	|<html>
@@ -612,35 +563,26 @@ Function GeneratedHTMLConsoleText()
 	|</html>";
 
 	Return Text;
-	
 EndFunction
-
 &AtClient
 Function EditorItemText(EditorItemField)
-	
 	Return UT_CodeEditorClient.EditorCodeTextItemForm(ThisObject,EditorItemField);
-	
 EndFunction
 
 &AtClient
 Procedure SetEditorText(EditorItem, SetupText)
-	
 	UT_CodeEditorClient.SetFormItemEditorText(ThisObject, EditorItem, SetupText);
-	
 EndProcedure
 
 &AtClient
 Procedure AddLinkedLibrary(Path, AdditionalParameters)
-	
 	Rec 						= LinkedLibraries.Add();
 	Rec.Path					= Path;
 	Rec.AdditionalParameters	= AdditionalParameters;
-	
 EndProcedure
 
 &AtClient
 Procedure SetupLibraryEditorText()
-	
 	CurrentData = Items.LinkedLibraries.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -654,54 +596,19 @@ Procedure SetupLibraryEditorText()
 	FileReading.Close();
 	
 	SetEditorText(Items.LibraryEditor, LibraryEditorText);
-	
 EndProcedure
-
 &AtClient
 Procedure LinkedLibrarySelection(SelectedFiles, AdditionalParams) Export
-	
 	If SelectedFiles = Undefined Then
 		Return;
 	EndIf;
 	AdditionalParams.CurrentData.Path = SelectedFiles[0];
-	
 EndProcedure
 
 &AtClient
 Procedure ToggleEditorVisibility(EditorItem)
-	
 	UT_CodeEditorClient.SwitchFormItemEditorVisibility(ThisObject, EditorItem);	
-	
 EndProcedure
-
-&AtClient 
-Procedure SetupEditorTextForCurrentEditor()
-	
-	If ValueIsFilled(CurrentEditorName) And ValueIsFilled(SavedEditorText) Then
-		SetEditorText(Items[CurrentEditorName], SavedEditorText);
-		CurrentEditorName = "";
-		SavedEditorText = "";
-		DetachIdleHandler("SetupEditorTextForCurrentEditor");
-	EndIf;	
-		
-EndProcedure
-
-//append
-&AtClient
-Procedure SetupEditorsTexts()
-	
-	SetEditorText(Items.GeneratedHTMLEditor, 			SavedEditorsValues.GeneratedHTMLEditor);	
-	SetEditorText(Items.BODYEditor, 					SavedEditorsValues.BODYEditor);	
-	SetEditorText(Items.HEADEditor, 					SavedEditorsValues.HEADEditor);	
-	SetEditorText(Items.CSSEditor, 						SavedEditorsValues.CSSEditor);	
-	SetEditorText(Items.JSEditor, 						SavedEditorsValues.JSEditor);	
-	SetEditorText(Items.DocumentCompleteEventEditor, 	SavedEditorsValues.DocumentCompleteEventEditor);	
-	SetEditorText(Items.OnClickEventEditor, 			SavedEditorsValues.OnClickEventEditor);	
-	DetachIdleHandler("SetupEditorsTexts");	
-		
-EndProcedure	
-	
-
 #EndRegion
 
 FormCloseConfirmed = False;
