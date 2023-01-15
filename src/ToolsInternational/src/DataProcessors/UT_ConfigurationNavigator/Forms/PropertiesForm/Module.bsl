@@ -2787,11 +2787,11 @@ Function vGetAccessRightsToObject(Val RigthName, Val FullName)
 		For Each Row In RigthsTable Do
 			StructureR.NameR = Row.Name;
 			For Each LineX In _TableRolesAndUsers.FindRows(StructureR) Do
-				StructureP.Name = LineX.NameP;
+				StructureP.Name = LineX.NameUsr;
 				If UsersTable.FindRows(StructureP).Count() = 0 Then
 					NewLine = UsersTable.Add();
-					NewLine.Name = LineX.NameP;
-					NewLine.FullName = LineX.FullNameP;
+					NewLine.Name = LineX.NameUsr;
+					NewLine.FullName = LineX.FullNameUsr;
 				EndIf;
 			EndDo;
 		EndDo;
@@ -2921,7 +2921,7 @@ Procedure FillDependingObjects()
 
 		pIsChartOfAccount = (pItem.Key = "ChartsOfAccounts");
 		pIsExchangePlan = (pItem.Key = "ExchangePlans");
-		pIsRegister = (StrFind(pItem.Key, "Registers") = 1);
+		pIsRegister = (StrFind(pItem.Key, "Registers") > 1);
 
 		For Each MDObject In pMetadataSection Do
 			pFullName = MDObject.FullName();

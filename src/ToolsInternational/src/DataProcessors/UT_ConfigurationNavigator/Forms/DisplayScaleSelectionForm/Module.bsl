@@ -21,7 +21,7 @@ EndProcedure
 Procedure SetScaleVariant(Command)
 	If Not IsBlankString(ScaleVariant) Then
 		ShowQueryBox(New NotifyDescription("SetScaleVariantAfter", ThisForm),
-			"ru = 'Масштаб отображения форм будет изменен. Продолжить?';en = 'Forms scale variant will be changed. Continue?'", QuestionDialogMode.YesNoCancel, 20);
+			NSTR("ru = 'Масштаб отображения форм будет изменен. Продолжить?';en = 'Forms scale variant will be changed. Continue?'"), QuestionDialogMode.YesNoCancel, 20);
 	EndIf;
 EndProcedure
 
@@ -29,9 +29,9 @@ EndProcedure
 Procedure SetScaleVariantAfter(QuestionResult, AdditionalParameters) Export
 	If QuestionResult = DialogReturnCode.Yes Then
 		If SetScaleVariantAtServer(ScaleVariant, UserName) Then
-			ShowMessageBox( , "ru = 'Масштаб отображения форм изменен.
-							  |Чтобы изменения вступили в силу надо перезайти в 1С:Предприятие.';en = 'Forms scale variant has been changed
-							  | Restart application to apply changes.'", 20);
+			ShowMessageBox( ,NSTR("ru = 'Масштаб отображения форм изменен.
+								  |Чтобы изменения вступили в силу надо перезайти в 1С:Предприятие.';en = 'Forms scale variant has been changed
+								  | Restart application to apply changes.'"), 20);
 		EndIf;
 	EndIf;
 EndProcedure

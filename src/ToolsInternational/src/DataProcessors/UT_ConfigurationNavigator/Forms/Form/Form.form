@@ -4762,7 +4762,7 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_DBUserList.AuthenticationOS</segments>
+            <segments>_DBUserList.OSAuthentication</segments>
           </dataPath>
           <extendedTooltip>
             <name>_DBUserListAuthenticationOSExtendedTooltip</name>
@@ -4886,7 +4886,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_DBUserListShowSelectionList</name>
+          <name>_DBUserListShowInList</name>
           <id>544</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4894,10 +4894,10 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_DBUserList.ShowSelectionList</segments>
+            <segments>_DBUserList.ShowInList</segments>
           </dataPath>
           <extendedTooltip>
-            <name>_DBUserListShowSelectionListExtendedTooltip</name>
+            <name>_DBUserListShowInListExtendedTooltip</name>
             <id>546</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4912,7 +4912,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_DBUserListShowSelectionListContextMenu</name>
+            <name>_DBUserListShowInListContextMenu</name>
             <id>545</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4930,7 +4930,7 @@
           <extInfo xsi:type="form:CheckBoxFieldExtInfo"/>
         </items>
         <items xsi:type="form:FormField">
-          <name>_DBUserListLaunchMode</name>
+          <name>_DBUserListRunMode</name>
           <id>547</id>
           <visible>true</visible>
           <enabled>true</enabled>
@@ -4938,10 +4938,10 @@
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_DBUserList.LaunchMode</segments>
+            <segments>_DBUserList.RunMode</segments>
           </dataPath>
           <extendedTooltip>
-            <name>_DBUserListLaunchModeExtendedTooltip</name>
+            <name>_DBUserListRunModeExtendedTooltip</name>
             <id>549</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -4956,7 +4956,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_DBUserListLaunchModeContextMenu</name>
+            <name>_DBUserListRunModeContextMenu</name>
             <id>548</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5032,17 +5032,17 @@
           </extInfo>
         </items>
         <items xsi:type="form:FormField">
-          <name>_DBUserListListOfRoles</name>
+          <name>_DBUserListRoles</name>
           <id>650</id>
           <enabled>true</enabled>
           <userVisible>
             <common>true</common>
           </userVisible>
           <dataPath xsi:type="form:DataPath">
-            <segments>_DBUserList.ListOfRoles</segments>
+            <segments>_DBUserList.Roles</segments>
           </dataPath>
           <extendedTooltip>
-            <name>_DBUserListListOfRolesExtendedTooltip</name>
+            <name>_DBUserListRolesExtendedTooltip</name>
             <id>652</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5057,7 +5057,7 @@
             </extInfo>
           </extendedTooltip>
           <contextMenu>
-            <name>_DBUserListListOfRolesContextMenu</name>
+            <name>_DBUserListRolesContextMenu</name>
             <id>651</id>
             <visible>true</visible>
             <enabled>true</enabled>
@@ -5450,12 +5450,12 @@
               <common>true</common>
             </userVisible>
             <title>
-              <key>ru</key>
-              <value>Запуск под пользователем</value>
+              <key>en</key>
+              <value>Run under User</value>
             </title>
             <title>
-              <key>en</key>
-              <value>DBUser list group run under user</value>
+              <key>ru</key>
+              <value>Запуск под пользователем</value>
             </title>
             <extendedTooltip>
               <name>_DBUserListGroupRunUnderUserExtendedTooltip</name>
@@ -12976,14 +12976,14 @@
       </edit>
     </columns>
     <columns>
-      <name>AuthenticationOS</name>
+      <name>OSAuthentication</name>
       <title>
         <key>ru</key>
         <value>Аутентификация ОС</value>
       </title>
       <title>
         <key>en</key>
-        <value>Authentication OS</value>
+        <value>OSAuthentication</value>
       </title>
       <id>5</id>
       <valueType>
@@ -13039,14 +13039,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ShowSelectionList</name>
+      <name>ShowInList</name>
       <title>
         <key>ru</key>
         <value>Показывать в списке выбора</value>
       </title>
       <title>
         <key>en</key>
-        <value>Show selection list</value>
+        <value>Show in list</value>
       </title>
       <id>8</id>
       <valueType>
@@ -13060,14 +13060,14 @@
       </edit>
     </columns>
     <columns>
-      <name>LaunchMode</name>
+      <name>RunMode</name>
       <title>
         <key>ru</key>
         <value>Режим запуска</value>
       </title>
       <title>
         <key>en</key>
-        <value>Launch mode</value>
+        <value>Run mode</value>
       </title>
       <id>9</id>
       <valueType>
@@ -13104,14 +13104,14 @@
       </edit>
     </columns>
     <columns>
-      <name>ListOfRoles</name>
+      <name>Roles</name>
       <title>
         <key>ru</key>
         <value>Список ролей</value>
       </title>
       <title>
         <key>en</key>
-        <value>List of roles</value>
+        <value>Roles</value>
       </title>
       <id>11</id>
       <valueType>

@@ -1,3 +1,5 @@
+#Region VariablesDescription
+
 &AtClient
 Var DataSetsTypes;
 
@@ -6,6 +8,8 @@ Var DataSetFieldsTypes;
 
 &AtClient
 Var UT_CodeEditorClientData;
+
+#EndRegion
 
 #Region FormEvents
 &AtServer
@@ -41,7 +45,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		EditorEvents = UT_CodeEditorServer.NewEditorEventsParameters();
 		EditorEvents.OnChange = "DataSetsOueryOnChange" ;
-		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,"Query" ,Items.DataSetsQuery,EditorEvents,"bsl_query");
+		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,
+												  "Query" ,
+												  Items.DataSetsQuery,
+												  EditorEvents,
+												  "bsl_query");
 
 EndProcedure
 &AtClient
@@ -49,6 +57,7 @@ Procedure OnOpen(Cancel)
 	If IsTempStorageURL(InitialDataCompositionSchemaURL) Then
 		FillResourcesAuxuliaryData();
 	EndIf;
+	
 	UT_CodeEditorClient.FormOnOpen(ThisObject);
 EndProcedure
 #EndRegion
@@ -3040,7 +3049,7 @@ Function IsCorrectQueryOfSet(DataSetRowID)
 EndFunction
 
 #EndRegion
-
+#EndRegion
 
 DataSetsTypes=DataSetsTypes();
 DataSetFieldsTypes=DataSetFieldsTypes();
