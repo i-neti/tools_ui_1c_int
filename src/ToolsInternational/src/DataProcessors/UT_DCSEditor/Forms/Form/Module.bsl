@@ -7,7 +7,7 @@ Var DataSetsTypes;
 Var DataSetFieldsTypes;
 
 &AtClient
-Var UT_CodeEditorClientData;
+Var UT_CodeEditorClientData Export;
 
 #EndRegion
 
@@ -1785,6 +1785,21 @@ Procedure SaveQueryTextToCurrentDataSet()
 
 EndProcedure
 
+&AtClient
+Procedure FieldsPresentationExpressionOpeningOnEnd(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	DataSetRow=Items.DataSets.CurrentData;
+	If DataSetRow = Undefined Then
+		Return;
+	EndIf;
+	
+	CurrentRowData=DataSetRow.Fields.FindByID(AdditionalParameters.RowID);
+	CurrentRowData.PresentationExpression=Result;
+EndProcedure
+
+
 #EndRegion
 
 #Region DataSetLinks
@@ -2267,6 +2282,8 @@ EndProcedure
 
 #EndRegion
 
+#Region CodeEditor
+
 &AtClient
 Procedure SetQueryText(NewText, SetOriginalText = False, NewOriginalText = "")
 	UT_CodeEditorClient.SetEditorText(ThisObject, "Query", NewText);
@@ -2314,96 +2331,97 @@ Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
 	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject);
 EndProcedure
 
+#EndRegion
+
 &AtClient
-Функция ПоляДляФормыРедактированияВыражения(ДобавлятьПараметры)
-	Поля = Новый Массив;
+Function FieldsForEditExpressionForm(AddParameters)
+	Fields = New Array;
 	
-	НаборыДанныхВерхнегоУровня=НаборыДанныхВерхнегоУровня();
+	TopLevelDataSets=TopLevelDataSets();
 
-	МассивПутей=Новый Массив;
+	DataPathsArray=New Array;
 
-	Для Каждого Набор Из НаборыДанныхВерхнегоУровня Цикл
-		Для Каждого Поле Из Набор.Поля Цикл
-			Если МассивПутей.Найти(Поле.DataPath) <> Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
+	For Each DataSet In TopLevelDataSets Do
+		For Each Field In DataSet.Fields Do
+			If DataPathsArray.Find(Field.DataPath) <> Undefined Then
+				Continue;
+			Endif;
 
-			ТекПоле = Новый Структура;
-			ТекПоле.Вставить("Вид", Поле.Вид);
-			ТекПоле.Вставить("Поле", Поле.Поле);
-			ТекПоле.Вставить("DataPath", Поле.DataPath);
-			ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
-			ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначенияЗапроса);
-			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
-			Поля.Добавить(ТекПоле);
+			CurrentField = New Structure;
+			CurrentField.Insert("Type", Field.Type);
+			CurrentField.Insert("Field", Field.Field);
+			CurrentField.Insert("DataPath", Field.DataPath);
+			CurrentField.Insert("ValueType", Field.ValueType);
+			CurrentField.Insert("QueryValueType", Field.QueryValueType);
+			CurrentField.Insert("CalculatedField", False);
+			Fields.Add(CurrentField);
 
-			МассивПутей.Добавить(Поле.DataPath);
-		КонецЦикла;
-	КонецЦикла;
+			DataPathsArray.Add(Field.DataPath);
+		EndDo;
+	EndDo;
 
-	Для Каждого Поле Из ВычисляемыеПоля Цикл
-		Если МассивПутей.Найти(Поле.DataPath) <> Неопределено Тогда
-			Продолжить;
-		КонецЕсли;
+	For each Field In CalculatedFields Do
+		If DataPathsArray.Find(Field.DataPath) <> Undefined Then
+			Continue;
+		EndIf;
 		
-		ТекПоле = Новый Структура;
-		ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
-		ТекПоле.Вставить("Поле", Поле.DataPath);
-		ТекПоле.Вставить("DataPath", Поле.DataPath);
-		ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
-		ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначения);
-		ТекПоле.Вставить("ВычисляемоеПоле", Истина);
-		Поля.Добавить(ТекПоле);
+		CurrentField = New Structure;
+		CurrentField.Insert("Type", DataSetFieldsTypes.Field);
+		CurrentField.Insert("Поле", Field.DataPath);
+		CurrentField.Insert("DataPath", Field.DataPath);
+		CurrentField.Insert("ValueType", Field.ValueType);
+		CurrentField.Insert("QueryValueType", Field.ValueType);
+		CurrentField.Insert("CalculatedField", True);
+		Fields.Add(CurrentField);
 
-		МассивПутей.Добавить(Поле.DataPath);
+		DataPathsArray.Add(Field.DataPath);
 
-	КонецЦикла;
+	EndDo;
 
-	Если ДобавлятьПараметры Тогда
-		Для Каждого ТекПараметр Из ПараметрыСКД Цикл
-			ТекПоле = Новый Структура;
-			ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
-			ТекПоле.Вставить("Поле", ТекПараметр.Имя);
-			ТекПоле.Вставить("DataPath", "ПараметрыДанных." + ТекПараметр.Имя);
-			ТекПоле.Вставить("ТипЗначения", ТекПараметр.ТипЗначения);
-			ТекПоле.Вставить("ТипЗначенияЗапроса", ТекПараметр.ТипЗначения);
-			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
-			Поля.Добавить(ТекПоле);
-		КонецЦикла;
-	КонецЕсли;
+	If AddParameters Then
+		For Each CurrentParameter In DCSParameters Do
+			CurrentField = New Structure;
+			CurrentField.Insert("Type", DataSetFieldsTypes.Field);
+			CurrentField.Insert("Field", CurrentParameter.Name);
+			CurrentField.Insert("DataPath", "DataParameters." + CurrentParameter.Name);
+			CurrentField.Insert("ValueType", CurrentParameter.ValueType);
+			CurrentField.Insert("QueryValueType", CurrentParameter.ValueType);
+			CurrentField.Insert("CalculatedField", False);
+			Fields.Add(CurrentField);
+		EndDo;
+	EndIf;
 
-	Возврат Поля;	
-КонецФункции
+	Return Fields;	
+EndFunction
 
 &AtClient
-Procedure OpenEditExpressionForm(Текст, ОписаниеОповещенияОЗакрытии, ДобавлятьПараметры, Заголовок = "",
-	РежимОткрытия = Неопределено) Export
-	ПараметрыФормы = Новый Структура;
-	ПараметрыФормы.Вставить("Текст", Текст);
-	ПараметрыФормы.Вставить("Заголовок", Заголовок);
-	ПараметрыФормы.Вставить("ВидыПолейНаборовДанных", ВидыПолейНаборовДанных);
-	ПараметрыФормы.Вставить("Поля", ПоляДляФормыРедактированияВыражения(ДобавлятьПараметры));
+Procedure OpenEditExpressionForm(Text, OnCloseNotifyDescription, AddParameters, Title = "",
+	OpeningMode = Undefined) Export
+	FormParameters = New Structure;
+	FormParameters.Insert("Text", Text);
+	FormParameters.Insert("Title", Title);
+	FormParameters.Insert("DataSetFieldsTypes", DataSetFieldsTypes);
+	FormParameters.Insert("Fields", FieldsForEditExpressionForm(AddParameters));
 
-	Если РежимОткрытия = Неопределено Тогда
-		ОткрытьФорму("Обработка.УИ_РедакторСКД.Форма.ФормаРедактированияВыражения",
-					 ПараметрыФормы,
+	If OpeningMode = Undefined Then
+		OpenForm("DataProcessor.UT_DCSEditor.Form.EditExpression",
+					 FormParameters,
 					 ,
 					 ,
 					 ,
 					 ,
-					 ОписаниеОповещенияОЗакрытии);
-	Иначе
-		ОткрытьФорму("Обработка.УИ_РедакторСКД.Форма.ФормаРедактированияВыражения",
-					 ПараметрыФормы,
+					 OnCloseNotifyDescription);
+	Else
+		OpenForm("DataProcessor.UT_DCSEditor.Form.EditExpression",
+					 FormParameters,
 					 ,
 					 ,
 					 ,
 					 ,
-					 ОписаниеОповещенияОЗакрытии,
-					 РежимОткрытия);
-	КонецЕсли;
+					 OnCloseNotifyDescription,
+					 OpeningMode);
+	EndIf;
 EndProcedure
-
 
 &AtServer
 Procedure InitializeForm()
@@ -2629,6 +2647,7 @@ Procedure ReadDCSDataSetsToFormData(DCSDataSets, ParentDataSetRow = Undefined)
 		EndIf;
 		FillPropertyValues(NewSet, DataSetRow, , "Fields");
 		NewSet.QueryOriginal = NewSet.Query;
+		
 		ReadDCSDataSetFieldsToFormData(NewSet, DataSetRow);
 
 		If NewSet.Type = SetsTypes.Union Then
@@ -2993,21 +3012,6 @@ Procedure AssembleDCSFromFormData(EnableSettingsVariants = False)
 	InitializeSettingsComposerByAssembledDCS();
 EndProcedure
 
-
-&AtClient
-Procedure FieldsPresentationExpressionOpeningOnEnd(Result, AdditionalParameters) Export
-	If Result = Undefined Then
-		Return;
-	EndIf;
-	DataSetRow=Items.DataSets.CurrentData;
-	If DataSetRow = Undefined Then
-		Return;
-	EndIf;
-	
-	ТекДанныеСтроки=DataSetRow.Поля.FindByID(AdditionalParameters.RowID);
-	ТекДанныеСтроки.PresentationExpression=Result;
-EndProcedure
-
 &AtServer
 Function IsCorrectQueryOfSet(DataSetRowID)
 	DataSetRow=DataSets.FindByID(DataSetRowID);
@@ -3026,7 +3030,7 @@ Function IsCorrectQueryOfSet(DataSetRowID)
 EndFunction
 
 #EndRegion
-#EndRegion
 
+#EndRegion
 DataSetsTypes=DataSetsTypes();
 DataSetFieldsTypes=DataSetFieldsTypes();

@@ -6,6 +6,9 @@ Var mTypesOfProcessedObjects Export;
 &AtClient
 Var mSetting;
 
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 ////////////////////////////////////////////////////////////////////////////////
 // AUXILIARY PROCEDURES AND FUNCTIONS
 
