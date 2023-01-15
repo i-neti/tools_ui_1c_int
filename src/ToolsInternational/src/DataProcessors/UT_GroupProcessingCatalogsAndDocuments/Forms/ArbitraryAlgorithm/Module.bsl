@@ -48,7 +48,7 @@ Function ExecuteProcessing() Export
 
 		RowFoundObjects = FoundObjects.Get(IndexOf);
 
-		If RowFoundObjects.StartChoosing Then//
+		If RowFoundObjects.Choose Then//
 
 			ProcessObject(RowFoundObjects.Object, IndexOf, ArbitraryAlgorithmText);
 		EndIf;

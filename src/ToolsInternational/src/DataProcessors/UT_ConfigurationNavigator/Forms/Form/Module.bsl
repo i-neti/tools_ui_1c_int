@@ -1038,7 +1038,7 @@ Function vUpdateTableSettings(Val NodeType, Val Name)
 	EndIf;
 
 	Try
-		Selection = StorageManager.StartChoosing(Filter);
+		Selection = StorageManager.Select(Filter);
 		While Selection.Next() Do
 			NewRow = SettingsTable.Add();
 			NewRow.SettingsKey = Selection.SettingsKey;

@@ -81,7 +81,7 @@ Function ExecuteProcessing(ParametersWriteObjects) Export
 
 		RowFound = FoundObjectsTP.Get(IndexOf);
 
-		If RowFound.StartChoosing Then//
+		If RowFound.Choose Then//
 
 			ProcessObject(RowFound.Object, IndexOf, ParametersWriteObjects);
 		EndIf;
