@@ -76,7 +76,6 @@ Procedure GroupEditorTabsOnCurrentPageChange(Item, CurrentPage)
 EndProcedure
 
 #Region DataSets
-
 &AtClient
 Procedure DataSetsSelection(Item, RowSelected, Field, StandardProcessing)
 	If RowSelected <> ZerothDataSetURL Then
@@ -90,7 +89,6 @@ Procedure DataSetsSelection(Item, RowSelected, Field, StandardProcessing)
 	Else
 		Items.DataSets.Expand(RowSelected, True);
 	EndIf;
-	
 EndProcedure
 
 &AtClient
@@ -180,6 +178,7 @@ Procedure DataSetsDrag(Item, DragParameters, StandardProcessing, Row, Field)
 		FillDataSetUnionFieldsByChildQuerys(DestinationDataSetRow.GetID());
 	EndIf;
 	
+	
 	//Now we need to refill fields in data sets - union	
 EndProcedure
 
@@ -203,13 +202,13 @@ Procedure DataSetsDragCheck(Item, DragParameters, StandardProcessing, Row, Field
 		DragParameters.Action=DragAction.Cancel;
 	EndIf;
 EndProcedure
-
 &AtClient
 Procedure DataSetsOnActivateRow(Item)
 	DataSetCurrentData=Items.DataSets.CurrentData;
 	If DataSetCurrentData = Undefined Then
 		Return;
 	EndIf;
+	
 	If DataSetCurrentData.Type = DataSetsTypes.Root Then
 		Items.GroupDataSetsRightPanel.CurrentPage=Items.GroupDataSetsRightPanelDataSources;
 		Return;
@@ -224,7 +223,6 @@ Procedure DataSetsOnActivateRow(Item)
 		
 		SaveQueryTextToCurrentDataSet();
 		SetQueryText(DataSetCurrentData.Query, True, DataSetCurrentData.QueryOriginal);
-	
 	ElsIf DataSetCurrentData.Type = DataSetsTypes.Object Then
 		Items.GroupDataSetSettingsEditingPanel.CurrentPage=Items.GroupPageDataSetObjectEditingPage;
 	EndIf;
@@ -245,6 +243,7 @@ Procedure DataSetsOnActivateRow(Item)
       FillDatDataSetDataSourceChoiceList();
 	SetAvailableOfAddDataSetFieldButtons();
 EndProcedure
+
 &AtClient
 Procedure DataSetsFieldsOnActivateRow(Item)
 	SetAvailableOfAddDataSetFieldButtons();
@@ -255,7 +254,6 @@ Procedure DataSetsQueryOnChange(Item, AdditionalData = Undefined) Export
 	SaveQueryTextToCurrentDataSet();
 	FillDataSetFieldsOnQueryChange(CurrentDataSetRowID);
 EndProcedure
-
 &AtClient
 Procedure DataSetsFieldsRolePresentationStartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing=False;
@@ -287,7 +285,6 @@ Procedure DataSetsFieldsRolePresentationStartChoice(Item, ChoiceData, StandardPr
 	OpenForm("DataProcessor.UT_DCSEditor.Form.EditDataSetFieldRole", FormParameters, ThisObject, ,
 		, , New NotifyDescription("DataSetsFieldsRolePresentationStartChoiceEND", ThisObject,
 		NotifyParameters), FormWindowOpeningMode.LockOwnerWindow);
-	
 EndProcedure
 
 &AtClient
@@ -307,7 +304,6 @@ Procedure FieldsAvailableValuesStartChoice(Item, ChoiceData, StandardProcessing)
 		New NotifyDescription("FieldsAvailableValuesStartChoiceEND", ThisObject, AdditionalParameters),
 		NSTR("ru = 'Редактирование списка значений';en = 'Edit values list'"), CurrentData.ValueType, False, True, True, False,
 		FormWindowOpeningMode.LockOwnerWindow);
-	
 EndProcedure
 
 &AtClient
@@ -363,7 +359,6 @@ Procedure DataSetsAutoFillAvailableFieldsOnChange(Item)
 	SetAvailableOfAddDataSetFieldButtons();
 	FillDataSetFieldsOnQueryChangeAtServer(Items.DataSets.CurrentRow);
 EndProcedure
-
 &AtClient
 Procedure DataSetsFieldsBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Parameter)
 		If Not Clone Then
@@ -401,21 +396,34 @@ Procedure DataSetsFieldsOnEditEnd(Item, NewRow, CancelEdit)
 	If DataSetRowParent.Type=DataSetsTypes.Union Then
 		FillDataSetUnionFieldsByChildQuerys(DataSetRowParent.GetID());
 	EndIf;
-	
 EndProcedure
 
 &AtClient
 Procedure FieldsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
-	
 	CurrentData=Items.DataSetsFields.CurrentData;
 	If CurrentData=Undefined Then
 		Return;
 	EndIf;
 	
 	UT_CommonClient.EditType(CurrentData.ValueType, 2,StandardProcessing,ThisObject, New NotifyDescription("FieldsValueTypeStartChoiceEND",ThisObject, New Structure("CurrentRow",Items.DataSetsFields.CurrentRow)));
-
 EndProcedure
 
+&AtClient
+Procedure FieldsPresentationExpressionOpening(Item, StandardProcessing)
+	StandardProcessing=False;
+	CurrentData=Items.DataSetsFields.CurrentData;
+	If CurrentData = Undefined Then
+		Return;
+	EndIf;
+
+	AdditionalParameters=New Structure;
+	AdditionalParameters.Insert("RowID", CurrentData.GetID());
+
+	OpenEditExpressionForm(CurrentData.PresentationExpression,
+		New NotifyDescription("FieldsPresentationExpressionOpeningOnEnd", ThisObject, AdditionalParameters), False,
+		StrTemplate(NSTR("ru = 'Редактирование выражения ресурса для %1';en = 'Editing resource expression for %1'"),CurrentData.DataPath));
+	 
+EndProcedure
 #EndRegion
 
 #Region DataSetLinks
@@ -2332,38 +2340,38 @@ EndProcedure
 
 	Для Каждого Набор Из НаборыДанныхВерхнегоУровня Цикл
 		Для Каждого Поле Из Набор.Поля Цикл
-			Если МассивПутей.Найти(Поле.ПутьКДанным) <> Неопределено Тогда
+			Если МассивПутей.Найти(Поле.DataPath) <> Неопределено Тогда
 				Продолжить;
 			КонецЕсли;
 
 			ТекПоле = Новый Структура;
 			ТекПоле.Вставить("Вид", Поле.Вид);
 			ТекПоле.Вставить("Поле", Поле.Поле);
-			ТекПоле.Вставить("ПутьКДанным", Поле.ПутьКДанным);
+			ТекПоле.Вставить("DataPath", Поле.DataPath);
 			ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
 			ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначенияЗапроса);
 			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
 			Поля.Добавить(ТекПоле);
 
-			МассивПутей.Добавить(Поле.ПутьКДанным);
+			МассивПутей.Добавить(Поле.DataPath);
 		КонецЦикла;
 	КонецЦикла;
 
 	Для Каждого Поле Из ВычисляемыеПоля Цикл
-		Если МассивПутей.Найти(Поле.ПутьКДанным) <> Неопределено Тогда
+		Если МассивПутей.Найти(Поле.DataPath) <> Неопределено Тогда
 			Продолжить;
 		КонецЕсли;
 		
 		ТекПоле = Новый Структура;
 		ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
-		ТекПоле.Вставить("Поле", Поле.ПутьКДанным);
-		ТекПоле.Вставить("ПутьКДанным", Поле.ПутьКДанным);
+		ТекПоле.Вставить("Поле", Поле.DataPath);
+		ТекПоле.Вставить("DataPath", Поле.DataPath);
 		ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
 		ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначения);
 		ТекПоле.Вставить("ВычисляемоеПоле", Истина);
 		Поля.Добавить(ТекПоле);
 
-		МассивПутей.Добавить(Поле.ПутьКДанным);
+		МассивПутей.Добавить(Поле.DataPath);
 
 	КонецЦикла;
 
@@ -2372,7 +2380,7 @@ EndProcedure
 			ТекПоле = Новый Структура;
 			ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
 			ТекПоле.Вставить("Поле", ТекПараметр.Имя);
-			ТекПоле.Вставить("ПутьКДанным", "ПараметрыДанных." + ТекПараметр.Имя);
+			ТекПоле.Вставить("DataPath", "ПараметрыДанных." + ТекПараметр.Имя);
 			ТекПоле.Вставить("ТипЗначения", ТекПараметр.ТипЗначения);
 			ТекПоле.Вставить("ТипЗначенияЗапроса", ТекПараметр.ТипЗначения);
 			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
@@ -3001,34 +3009,19 @@ Procedure AssembleDCSFromFormData(EnableSettingsVariants = False)
 	InitializeSettingsComposerByAssembledDCS();
 EndProcedure
 
+
 &AtClient
-Procedure FieldsPresentationExpressionOpening(Item, StandardProcessing)
-//	 StandardProcessing=Ложь;
-//	ТекДанные=Элементы.НаборыДанныхПоля.ТекущиеДанные;
-//	Если ТекДанные = Неопределено Тогда
-//		Возврат;
-//	КонецЕсли;
-//
-//	ДопПараметры=Новый Структура;
-//	ДопПараметры.Вставить("ИдентификаторСтроки", ТекДанные.ПолучитьИдентификатор());
-//
-//	OpenEditExpressionForm(ТекДанные.ВыражениеПредставления,
-//		Новый ОписаниеОповещения("ПоляВыражениеПредставленияОткрытиеЗавершение", ThisObject, ДопПараметры), Ложь,
-//		"Редактирование выражения ресурса для " + ТекДанные.ПутьКДанным);
-//	 
-EndProcedure
-&AtClient
-Procedure ПоляВыражениеПредставленияОткрытиеЗавершение(Result, AdditionalParameters) Export
-	Если Result = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-	DataSetRow=Элементы.DataSets.ТекущиеДанные;
-	Если DataSetRow = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
+Procedure FieldsPresentationExpressionOpeningOnEnd(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	DataSetRow=Items.DataSets.CurrentData;
+	If DataSetRow = Undefined Then
+		Return;
+	EndIf;
 	
-	ТекДанныеСтроки=DataSetRow.Поля.FindByID(AdditionalParameters.ИдентификаторСтроки);
-	ТекДанныеСтроки.ВыражениеПредставления=Result;
+	ТекДанныеСтроки=DataSetRow.Поля.FindByID(AdditionalParameters.RowID);
+	ТекДанныеСтроки.PresentationExpression=Result;
 EndProcedure
 
 &AtServer
