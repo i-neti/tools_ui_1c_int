@@ -93,8 +93,14 @@
   <commonModules>CommonModule.AdditionalReportsAndDataProcessors</commonModules>
   <commonModules>CommonModule.AttachableCommandsOverridable</commonModules>
   <commonModules>CommonModule.UT_</commonModules>
+  <commonModules>CommonModule.UT_AlgorithmsServerCall</commonModules>
+  <commonModules>CommonModule.UT_AlgorithmsServer</commonModules>
   <commonModules>CommonModule.UT_AlgorithmsClientServer</commonModules>
   <commonModules>CommonModule.UT_ClipboardClient</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperations</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsGlobal</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsClient</commonModules>
   <commonModules>CommonModule.UT_CodeEditorClient</commonModules>
   <commonModules>CommonModule.UT_CodeEditorClientServer</commonModules>
   <commonModules>CommonModule.UT_CodeEditorServer</commonModules>
@@ -111,16 +117,10 @@
   <commonModules>CommonModule.UT_ScheduledJobsInternal</commonModules>
   <commonModules>CommonModule.UT_ScheduledJobsServer</commonModules>
   <commonModules>CommonModule.UT_StringFunctionsClientServer</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperations</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsClient</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsGlobal</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
   <commonModules>CommonModule.UT_Users</commonModules>
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
   <commonModules>CommonModule.UT_FormsClient</commonModules>
   <commonModules>CommonModule.UT_FormsServer</commonModules>
-  <commonModules>CommonModule.UT_AlgorithmsServerCall</commonModules>
-  <commonModules>CommonModule.UT_AlgorithmsServer</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
   <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>

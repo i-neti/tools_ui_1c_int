@@ -6,9 +6,11 @@ Function UT_AttachExternalDataProcessor(Ref) Export
 	If DebugSettings.DebugEnabled And ValueIsFilled(DebugSettings.FileNameOnServer) Then
 		If DebugSettings.User=Undefined 
 			Or Not ValueIsFilled(DebugSettings.User) Then
+				
 			HasDebug=True;
 		ElsIf DebugSettings.User=Users.CurrentUser() Then
 			HasDebug=True;
+			
 		EndIf;
 	EndIf;
 
@@ -37,6 +39,8 @@ Function UT_AttachExternalDataProcessor(Ref) Export
 		
 		Return TrimAll(DataProcessorObject.Metadata().Name);
 
+
 		Return DebugSettings.FileNameOnServer;
 	EndIf;
+	
 EndFunction

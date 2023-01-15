@@ -61,8 +61,7 @@ Procedure WaitForCompletion(Val TimeConsumingOperation, Val CompletionNotificati
 		FormParameters.Delete("OwnerForm");
 		
 		OpenForm("CommonForm.UT_TimeConsumingOperation", FormParameters, 
-			?(IdleParameters <> Undefined, IdleParameters.OwnerForm, Undefined),
-			,,,CompletionNotification);
+			?(IdleParameters <> Undefined, IdleParameters.OwnerForm, Undefined),,,,CompletionNotification);
 	Else
 		FormParameters.Insert("CompletionNotification", CompletionNotification);
 		FormParameters.Insert("CurrentInterval", ?(FormParameters.Interval <> 0, FormParameters.Interval, 1));
