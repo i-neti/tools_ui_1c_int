@@ -34,7 +34,7 @@ EndProcedure
 
 &AtServerNoContext
 Procedure vFillInFormContext(_FormContext)
-	_FormContext.Insert("SubsystemVersions", (Metadata.InformationRegisters.Find("SubsystemVersions") <> Undefined));
+	_FormContext.Insert("SubsystemsVersions", (Metadata.InformationRegisters.Find("SubsystemsVersions") <> Undefined));
 	_FormContext.Insert("ExclusiveMode", ExclusiveMode());
 EndProcedure
 
@@ -91,7 +91,7 @@ Procedure SetConditionalAppearance()
 	FilterItem.LeftValue = New DataCompositionField("ServiceTree.Enabled");
 	FilterItem.ComparisonType = DataCompositionComparisonType.Equal;
 	FilterItem.RightValue = False;
-	AppearanceItem.Appearance.SetParameterValue("Text", New Color(83, 106, 194));
+	AppearanceItem.Appearance.SetParameterValue("TextColor", New Color(83, 106, 194));
 	AppearanceItem.Fields.Items.Add().Field = New DataCompositionField("ServiceTreePresentation");
 
 	AppearanceItem = ThisForm.ConditionalAppearance.Items.Add();
@@ -194,7 +194,7 @@ Procedure OnLoadDataFromSettingsAtServer(Settings)
 		EndIf;
 	EndIf;
 
-	Items._DBUserListListOfRoles.Visible = _ShowUserRolesList;
+	Items._DBUserListRoles.Visible = _ShowUserRolesList;
 EndProcedure
 
 &AtServer
@@ -1038,7 +1038,7 @@ Function vUpdateTableSettings(Val NodeType, Val Name)
 	EndIf;
 
 	Try
-		Selection = StorageManager.StartChoosing(Filter);
+		Selection = StorageManager.Select(Filter);
 		While Selection.Next() Do
 			NewRow = SettingsTable.Add();
 			NewRow.SettingsKey = Selection.SettingsKey;
@@ -1187,7 +1187,7 @@ EndProcedure
 
 &AtClient
 Procedure vProcessServiceCommand(TreeLine)
-	If TreeLine.Name = "SubsystemVersions" Then
+	If TreeLine.Name = "SubsystemsVersions" Then
 		OpenForm("InformationRegister.SubsystemsVersions.ListForm");
 	ElsIf TreeLine.Name = "RefreshReusableValues" Then
 		RefreshReusableValues();
@@ -1234,9 +1234,9 @@ EndProcedure
 
 &AtServerNoContext
 Procedure vClearFavoritesServer()
-	Favorites = SystemSettingsStorage.Load("Common/UserWorkFavorites");
+	Favorites = SystemSettingsStorage.Load("Общее/ИзбранноеРаботыПользователя");
 	Favorites.Clear();
-	SystemSettingsStorage.Save("Common/UserWorkFavorites", "", Favorites);
+	SystemSettingsStorage.Save("Общее/ИзбранноеРаботыПользователя", "", Favorites);
 EndProcedure
 
 &AtServerNoContext
@@ -1922,9 +1922,9 @@ EndProcedure
 Procedure _FillInDBUsersList(Command)
 	_DBUserList.Clear();
 
-	pFieldList = "OpenIDAuthentication, AuthenticationOS, StandartAuthentication, Name, PasswordIsSet,
-					 |StandartAuthentication, FullName, OSUser, LaunchMode, UUID,
-					 |ListOfRoles";
+	pFieldList = "OpenIDAuthentication, OSAuthentication, StandartAuthentication, Name, PasswordIsSet,
+					 |StandardAuthentication, FullName, OSUser, RunMode, UUID,
+					 |Roles";
 
 	pArray = vGetDataBaseUsers(pFieldList, _ShowUserRolesList);
 	For Each Item In pArray Do
@@ -1933,8 +1933,8 @@ Procedure _FillInDBUsersList(Command)
 
 	_DBUserList.Sort("Name");
 
-	If Items._DBUserListListOfRoles.Visible <> _ShowUserRolesList Then
-		Items._DBUserListListOfRoles.Visible = _ShowUserRolesList;
+	If Items._DBUserListRoles.Visible <> _ShowUserRolesList Then
+		Items._DBUserListRoles.Visible = _ShowUserRolesList;
 	EndIf;
 
 	Items.DBUsers.Title = "Users (" + pArray.Count() + ")";
@@ -1959,7 +1959,7 @@ Function vGetDataBaseUsers(Val pFieldList, Val pFillRolesList = False)
 			For Each pRole In pRolesList Do
 				pRolesString = pRolesString + ", " + pRole.Value;
 			EndDo;
-			pStructure.ListOfRoles = Mid(pRolesString, 2);
+			pStructure.Roles = Mid(pRolesString, 2);
 		EndIf;
 
 		pResult.Add(pStructure);

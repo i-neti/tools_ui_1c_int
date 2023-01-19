@@ -6,6 +6,9 @@ Var mTypesOfProcessedObjects Export;
 &AtClient
 Var mSetting;
 
+&AtClient
+Var UT_CodeEditorClientData Export;
+
 ////////////////////////////////////////////////////////////////////////////////
 // AUXILIARY PROCEDURES AND FUNCTIONS
 
@@ -48,7 +51,7 @@ Function ExecuteProcessing() Export
 
 		RowFoundObjects = FoundObjects.Get(IndexOf);
 
-		If RowFoundObjects.StartChoosing Then//
+		If RowFoundObjects.Choose Then//
 
 			ProcessObject(RowFoundObjects.Object, IndexOf, ArbitraryAlgorithmText);
 		EndIf;

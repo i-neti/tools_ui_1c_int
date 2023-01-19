@@ -704,7 +704,8 @@ Function ConvertNumberIntoArabicNotation(RomanNumber, UseLatinChars = True) Expo
 		ElsIf Mid(RomanNumber,Cnt,1) = c500 Then
 			ArabicNumber = ArabicNumber+500;
 		ElsIf Mid(RomanNumber,Cnt,1) = c100 Then
-			If (Cnt < CountOfChars) AND ((Mid(RomanNumber,Cnt+1,1) = c500) Or (Mid(RomanNumber,Cnt+1,1) = c1000)) Then
+			If (Cnt < CountOfChars) AND ((Mid(RomanNumber,Cnt+1,1) = c500) Or (Mid(RomanNumber,Cnt+1,1) 
+			= c1000)) Then
 				ArabicNumber = ArabicNumber-100;
 			Else
 				ArabicNumber = ArabicNumber+100;
@@ -712,7 +713,8 @@ Function ConvertNumberIntoArabicNotation(RomanNumber, UseLatinChars = True) Expo
 		ElsIf Mid(RomanNumber,Cnt,1) = c50 Then
 			ArabicNumber = ArabicNumber+50;
 		ElsIf Mid(RomanNumber,Cnt,1) = c10 Then
-			If (Cnt < CountOfChars) AND ((Mid(RomanNumber,Cnt+1,1) = c50) Or (Mid(RomanNumber,Cnt+1,1) = c100)) Then
+			If (Cnt < CountOfChars) AND ((Mid(RomanNumber,Cnt+1,1) = c50) Or (Mid(RomanNumber,Cnt+1,1) 
+			= c100)) Then
 				ArabicNumber = ArabicNumber-10;
 			Else
 				ArabicNumber = ArabicNumber+10;

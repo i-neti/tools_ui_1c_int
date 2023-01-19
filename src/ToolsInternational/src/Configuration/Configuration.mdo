@@ -93,82 +93,82 @@
   <commonModules>CommonModule.AdditionalReportsAndDataProcessors</commonModules>
   <commonModules>CommonModule.AttachableCommandsOverridable</commonModules>
   <commonModules>CommonModule.UT_</commonModules>
+  <commonModules>CommonModule.UT_AlgorithmsServerCall</commonModules>
   <commonModules>CommonModule.UT_AlgorithmsClientServer</commonModules>
+  <commonModules>CommonModule.UT_AlgorithmsServer</commonModules>
   <commonModules>CommonModule.UT_ClipboardClient</commonModules>
-  <commonModules>CommonModule.UT_CodeEditorClient</commonModules>
-  <commonModules>CommonModule.UT_CodeEditorClientServer</commonModules>
-  <commonModules>CommonModule.UT_CodeEditorServer</commonModules>
-  <commonModules>CommonModule.UT_CodeEditorServerCall</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperations</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsGlobal</commonModules>
+  <commonModules>CommonModule.UT_TimeConsumingOperationsClient</commonModules>
+  <commonModules>CommonModule.UT_HTTPConnector</commonModules>
   <commonModules>CommonModule.UT_Common</commonModules>
-  <commonModules>CommonModule.UT_CommonCached</commonModules>
+  <commonModules>CommonModule.UT_CommonServerCall</commonModules>
   <commonModules>CommonModule.UT_CommonClient</commonModules>
   <commonModules>CommonModule.UT_CommonClientCached</commonModules>
   <commonModules>CommonModule.UT_CommonClientServer</commonModules>
-  <commonModules>CommonModule.UT_CommonServerCall</commonModules>
-  <commonModules>CommonModule.UT_Forms</commonModules>
-  <commonModules>CommonModule.UT_HTTPConnector</commonModules>
-  <commonModules>CommonModule.UT_RegexpsClientServer</commonModules>
-  <commonModules>CommonModule.UT_ScheduledJobsInternal</commonModules>
-  <commonModules>CommonModule.UT_ScheduledJobsServer</commonModules>
-  <commonModules>CommonModule.UT_StringFunctionsClientServer</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperations</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsClient</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsGlobal</commonModules>
-  <commonModules>CommonModule.UT_TimeConsumingOperationsServerCall</commonModules>
-  <commonModules>CommonModule.UT_Users</commonModules>
+  <commonModules>CommonModule.UT_CommonCached</commonModules>
   <commonModules>CommonModule.UT_XMLParcer</commonModules>
+  <commonModules>CommonModule.UT_Users</commonModules>
+  <commonModules>CommonModule.UT_Forms</commonModules>
+  <commonModules>CommonModule.UT_ScheduledJobsServer</commonModules>
+  <commonModules>CommonModule.UT_ScheduledJobsInternal</commonModules>
+  <commonModules>CommonModule.UT_RegexpsClientServer</commonModules>
+  <commonModules>CommonModule.UT_CodeEditorServerCall</commonModules>
+  <commonModules>CommonModule.UT_CodeEditorClient</commonModules>
+  <commonModules>CommonModule.UT_CodeEditorClientServer</commonModules>
+  <commonModules>CommonModule.UT_CodeEditorServer</commonModules>
+  <commonModules>CommonModule.UT_StringFunctionsClientServer</commonModules>
   <commonModules>CommonModule.UT_FormsClient</commonModules>
   <commonModules>CommonModule.UT_FormsServer</commonModules>
-  <commonModules>CommonModule.UT_AlgorithmsServerCall</commonModules>
-  <commonModules>CommonModule.UT_AlgorithmsServer</commonModules>
   <httpServices>HTTPService.UT_PublishedFunctions</httpServices>
   <commonCommands>CommonCommand.UT_Settings</commonCommands>
-  <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>
-  <commonForms>CommonForm.UT_ConfigurationSourseFilesSaveSettings</commonForms>
-  <commonForms>CommonForm.UT_MetadataSelectionForm</commonForms>
+  <commonForms>CommonForm.UT_TimeConsumingOperation</commonForms>
+  <commonForms>CommonForm.UT_ValueTableForm</commonForms>
   <commonForms>CommonForm.UT_SpecialValueForm</commonForms>
   <commonForms>CommonForm.UT_TextEditingForm</commonForms>
-  <commonForms>CommonForm.UT_TimeConsumingOperation</commonForms>
-  <commonForms>CommonForm.UT_ToolsSettings</commonForms>
-  <commonForms>CommonForm.UT_ValueListEditingForm</commonForms>
   <commonForms>CommonForm.UT_ValueStorageForm</commonForms>
-  <commonForms>CommonForm.UT_ValueTableEditor</commonForms>
-  <commonForms>CommonForm.UT_ValueTableForm</commonForms>
-  <commonForms>CommonForm.UT_ValueTypeEditor</commonForms>
+  <commonForms>CommonForm.UT_MetadataSelectionForm</commonForms>
   <commonForms>CommonForm.UT_WriteSettings</commonForms>
+  <commonForms>CommonForm.UT_ValueListEditingForm</commonForms>
+  <commonForms>CommonForm.UT_ValueTypeEditor</commonForms>
+  <commonForms>CommonForm.UT_ValueTableEditor</commonForms>
+  <commonForms>CommonForm.UT_AdditionalDataProcessorDebugSettings</commonForms>
+  <commonForms>CommonForm.UT_ToolsSettings</commonForms>
+  <commonForms>CommonForm.UT_ConfigurationSourseFilesSaveSettings</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentEditor</commonForms>
   <commonForms>CommonForm.UT_SpreadsheetDocumentsComparison</commonForms>
   <commonForms>CommonForm.UT_DynamicListSettings</commonForms>
   <catalogs>Catalog.UT_Algorithms</catalogs>
   <catalogs>Catalog.AdditionalReportsAndDataProcessors</catalogs>
   <reports>Report.UT_ReportsConsole</reports>
-  <dataProcessors>DataProcessor.UT_CodeConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ConsoleWebServices</dataProcessors>
+  <dataProcessors>DataProcessor.UT_GroupProcessingCatalogsAndDocuments</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConstantsEditor</dataProcessors>
   <dataProcessors>DataProcessor.UT_DatabaseStorageStructure</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DCSEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DuplicateObjectDetection</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DynamicList</dataProcessors>
-  <dataProcessors>DataProcessor.UT_FileManager</dataProcessors>
-  <dataProcessors>DataProcessor.UT_GroupProcessingCatalogsAndDocuments</dataProcessors>
-  <dataProcessors>DataProcessor.UT_HTMLEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_HTTPRequestConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_JobsConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_JSONEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_LicenseInformation1C</dataProcessors>
   <dataProcessors>DataProcessor.UT_MarkedObjectsDeletion</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectReferencesSearch</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectsAttributesEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectsComparison</dataProcessors>
   <dataProcessors>DataProcessor.UT_PerformingSheduledJobsOnTheClient</dataProcessors>
   <dataProcessors>DataProcessor.UT_QueryConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_JobsConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_RegisterChangesForDataExchange</dataProcessors>
-  <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_CodeConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DuplicateObjectDetection</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectReferencesSearch</dataProcessors>
   <dataProcessors>DataProcessor.UT_Support</dataProcessors>
-  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectsAttributesEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DynamicList</dataProcessors>
+  <dataProcessors>DataProcessor.UT_HTTPRequestConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
+  <dataProcessors>DataProcessor.UT_FileManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_LicenseInformation1C</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ConsoleWebServices</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
+  <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_JSONEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_HTMLEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DCSEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectsComparison</dataProcessors>
 </mdclass:Configuration>

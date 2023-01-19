@@ -1771,6 +1771,10 @@
       <headerHorizontalAlign>Left</headerHorizontalAlign>
       <showInFooter>true</showInFooter>
       <extInfo xsi:type="form:SpreadSheetDocFieldExtInfo">
+        <handlers>
+          <event>OnActivateArea</event>
+          <name>DistributedTemplateOnActivate</name>
+        </handlers>
         <width>50</width>
         <autoMaxWidth>true</autoMaxWidth>
         <height>10</height>
@@ -1845,6 +1849,10 @@
       <headerHorizontalAlign>Left</headerHorizontalAlign>
       <showInFooter>true</showInFooter>
       <extInfo xsi:type="form:SpreadSheetDocFieldExtInfo">
+        <handlers>
+          <event>OnActivateArea</event>
+          <name>SpreadsheetDocumentOnActivate</name>
+        </handlers>
         <width>50</width>
         <autoMaxWidth>true</autoMaxWidth>
         <height>10</height>

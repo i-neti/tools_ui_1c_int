@@ -61,8 +61,7 @@ Procedure WaitForCompletion(Val TimeConsumingOperation, Val CompletionNotificati
 		FormParameters.Delete("OwnerForm");
 		
 		OpenForm("CommonForm.UT_TimeConsumingOperation", FormParameters, 
-			?(IdleParameters <> Undefined, IdleParameters.OwnerForm, Undefined),
-			,,,CompletionNotification);
+			?(IdleParameters <> Undefined, IdleParameters.OwnerForm, Undefined),,,,CompletionNotification);
 	Else
 		FormParameters.Insert("CompletionNotification", CompletionNotification);
 		FormParameters.Insert("CurrentInterval", ?(FormParameters.Interval <> 0, FormParameters.Interval, 1));
@@ -87,7 +86,8 @@ Function TimeConsumingOperationsInProgress() Export
 
 EndFunction
 
-Procedure CheckParametersWaitForCompletion(Val TimeConsumingOperation, Val CompletionNotification, Val IdleParameters)
+Procedure CheckParametersWaitForCompletion(Val TimeConsumingOperation, Val CompletionNotification, 
+Val IdleParameters)
 	
 	UT_CommonClientServer.CheckParameter("UT_TimeConsumingOperationsClient.WaitForCompletion",
 		"TimeConsumingOperation", TimeConsumingOperation, Type("Structure"));
@@ -116,7 +116,8 @@ Procedure CheckParametersWaitForCompletion(Val TimeConsumingOperation, Val Compl
 		UT_CommonClientServer.Validate(IdleParameters.Interval = 0 Or IdleParameters.Interval >= 1, 
 			NStr("ru = 'Параметр ПараметрыОжидания.Интервал должен быть больше или равен 1'; en = 'The IdleParameters.Interval parameter must be equal to or greater than 1.'"),
 			"UT_TimeConsumingOperationsClient.WaitForCompletion");
-		UT_CommonClientServer.Validate(Not (IdleParameters.ExecutionProgressNotification <> Undefined AND IdleParameters.OutputIdleWindow), 
+		UT_CommonClientServer.Validate(Not (IdleParameters.ExecutionProgressNotification <> Undefined 
+		AND IdleParameters.OutputIdleWindow), 
 			NStr("ru = 'Если параметр ПараметрыОжидания.ВыводитьОкноОжидания установлен в Истина, то параметр ПараметрыОжидания.ОповещениеОПрогрессеВыполнения не поддерживается'; en = 'If the IdleParameters.OutputIdleWindow parameter is True, the IdleParameters.ExecutionProgressNotification parameter is ignored.'"),
 			"UT_TimeConsumingOperationsClient.WaitForCompletion");
 	EndIf;

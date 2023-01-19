@@ -43,14 +43,12 @@ Function GetScheduledJob(Val ID) Export
 	Else
 		ScheduledJob = ScheduledJobs.FindByUUID(ID);
 	EndIf;
-	
 	If ScheduledJob = Undefined Then
 		Raise( NStr("ru = 'Регламентное задание не найдено.
 		                              |Возможно, оно удалено другим пользователем.'; 
 		                              |en = 'The scheduled job is not found.
 		                              |Probably it was deleted by another user.'") );
 	EndIf;
-	
 	Return ScheduledJob;
 	
 EndFunction
@@ -114,8 +112,7 @@ Function AddJob(Parameters) Export
 			Job.Description = JobMetadata.Description;
 		EndIf;
 		
-
-	If JobParameters.Property("Use") Then
+		If JobParameters.Property("Use") Then
 			Job.Use = JobParameters.Use;
 		Else
 			Job.Use = JobMetadata.Use;
@@ -223,12 +220,14 @@ EndProcedure
 Function GetScheduledJobObject(JobUniqueNumber) Export
 	
 	Try
+		
 		If Not IsBlankString(JobUniqueNumber) Then
 			JobUUID = New UUID(JobUniqueNumber);
 			CurrentScheduledJob = ScheduledJobs.FindByUUID(JobUUID);
 		Else
 			CurrentScheduledJob = Undefined;
 		EndIf;
+		
 		
 	Except
 		CurrentScheduledJob = Undefined;

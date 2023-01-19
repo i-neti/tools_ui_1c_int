@@ -19,6 +19,8 @@
 //
 //  ConsiderPrivilegedMode - Boolean - if True, returns True for current user if privileged mode is set.
 //
+//
+//
 // Returning value:
 //  Boolean - if True, user have full access rights.
 //

@@ -6,6 +6,7 @@ Var mLastUUID;
 &AtClient
 Var UT_CodeEditorClientData Export;
 
+
 #EndRegion
 
 #Region EventHandlers
@@ -22,11 +23,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	EndIf;
 EndProcedure
 
+
 &AtClient
 Procedure OnOpen(Cancel)
 	UT_CodeEditorClient.FormOnOpen(ThisObject, New NotifyDescription("OnOpenEnd",ThisObject));
 EndProcedure
-
 
 &AtClient
 Procedure OnOpenEnd(Result, AdditionalParameters) Export
@@ -80,7 +81,6 @@ Procedure ProcessUUIDInput(Result, AdditionalParameters) Export
 		|en = 'The value cannot be converted to a Unique identifier (UUID)!'"), 20);
 		Return;
 	EndTry;
-
 	CurrentData = AdditionalParameters.FindByID(AdditionalParameters.CurrentRow);
 	If CurrentData <> Undefined Then
 		CurrentData.Value = pValue;
@@ -123,4 +123,7 @@ EndProcedure
 Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
 	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject)
 EndProcedure
+
+
+
 #EndRegion

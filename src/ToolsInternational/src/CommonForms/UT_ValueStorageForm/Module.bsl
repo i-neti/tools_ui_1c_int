@@ -59,11 +59,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		_DataForRepresentation = New Structure("Value, ValueType", ValueStorageData, "SpreadsheetDocument");
 	 ElsIf ValueStorageDataType = Type("TextDocument") Then
 		_DataForRepresentation = New Structure("Value, ValueType", ValueStorageData, "TextDocument");
-	Иначе
+	Else
 		Cancel = True;
 	EndIf;
 EndProcedure
-
 
 &AtClient
 Procedure OnOpen(Cancel)
@@ -78,7 +77,6 @@ Procedure OnOpen(Cancel)
 
 		Cancel = True;
 	EndIf;
-	
 EndProcedure
 
 &AtServer
@@ -232,7 +230,7 @@ Function ShowValueList(ValueStorageData)
 
 		If NeedToConvertValue(Item.Value) Then
 			NewRow.Value = New ValueStorage(Item.Value);
-		Иначе
+		Else
 			NewRow.Value = Item.Value;
 		EndIf;
 	EndDo;
@@ -306,25 +304,6 @@ Function ShowValueTree(ValueStorageData)
 	Return True;
 EndFunction
 
-&AtClient
-Procedure _ValueTreeSelection(Item, RowSelected, Field, StandardProcessing)
-	
-	StandardProcessing = False;
-
-	CurrentData = Item.CurrentData;
-	If CurrentData <> Undefined Then
-		ColumnName = Mid(Field.Name, StrLen(Item.Name) + 2);
-		Value = CurrentData[ColumnName];
-
-		If TypeOf(Value) = mValueStorageType Then
-			ShowValueOfValueStorage(Value);
-		Иначе
-			ShowValue( , Value);
-		EndIf;
-	EndIf;
-	
-EndProcedure
-
 &AtServer
 Function FillValueTreeNode (Val Receiver, Val Source, Val ColumnCollection)
 	For Each Item In Source.Rows Do
@@ -382,6 +361,22 @@ Procedure ShowValueOfValueStorage(Value)
 	OpenForm("CommonForm.UT_ValueStorageForm", ParametersStructure, , CurrentDate());
 EndProcedure
 
+&AtClient
+Procedure _ValueTreeSelection(Item, RowSelected, Field, StandardProcessing)
+	StandardProcessing = False;
+
+	CurrentData = Item.CurrentData;
+	If CurrentData <> Undefined Then
+		ColumnName = Mid(Field.Name, StrLen(Item.Name) + 2);
+		Value = CurrentData[ColumnName];
+
+		If TypeOf(Value) = mValueStorageType Then
+			ShowValueOfValueStorage(Value);
+		Else
+			ShowValue( , Value);
+		EndIf;
+	EndIf;
+EndProcedure
 
 &AtClient
 Procedure _ValueTableSelection(Item, RowSelected, Field, StandardProcessing)

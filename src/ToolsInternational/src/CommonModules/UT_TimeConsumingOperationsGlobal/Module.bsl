@@ -33,7 +33,8 @@ Procedure MonitorTimeConsumingOperations(TimeConsumingOperationsInProgress)
 		If TimeConsumingOperation.OwnerForm <> Undefined AND Not TimeConsumingOperation.OwnerForm.IsOpen() Then
 			ActionCancelled = True;
 		EndIf;
-		If TimeConsumingOperation.CompletionNotification <> Undefined AND TypeOf(TimeConsumingOperation.CompletionNotification.Module) = UT_CommonClientServer.ManagedFormType()
+		If TimeConsumingOperation.CompletionNotification <> Undefined AND TypeOf(
+		    TimeConsumingOperation.CompletionNotification.Module) = UT_CommonClientServer.ManagedFormType()
 			AND Not TimeConsumingOperation.CompletionNotification.Module.IsOpen() Then
 			ActionCancelled = True;
 		EndIf;

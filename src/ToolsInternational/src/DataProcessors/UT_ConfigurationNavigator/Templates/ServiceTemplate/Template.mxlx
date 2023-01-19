@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document xmlns="http://v8.1c.ru/8.2/data/spreadsheet" xmlns:style="http://v8.1c.ru/8.1/data/ui/style" xmlns:v8="http://v8.1c.ru/8.1/data/core" xmlns:v8ui="http://v8.1c.ru/8.1/data/ui" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<languageSettings>
-		<currentLanguage>ru</currentLanguage>
+		<currentLanguage>en</currentLanguage>
 		<defaultLanguage>en</defaultLanguage>
 		<languageInfo>
 			<id>ru</id>
@@ -169,12 +169,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -192,7 +192,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>Subsystem versions</v8:content>
+							<v8:content>Subsystems versions</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -212,22 +212,7 @@
 						</v8:item>
 						<v8:item>
 							<v8:lang>en</v8:lang>
-							<v8:content>SubsystemVersions</v8:content>
-						</v8:item>
-					</tl>
-				</c>
-			</c>
-			<c>
-				<c>
-					<f>3</f>
-					<tl>
-						<v8:item>
-							<v8:lang>ru</v8:lang>
-							<v8:content>_КонтекстФормы.ВерсииПодсистем</v8:content>
-						</v8:item>
-						<v8:item>
-							<v8:lang>en</v8:lang>
-							<v8:content>_FormContext.SubsystemVersions</v8:content>
+							<v8:content>SubsystemsVersions</v8:content>
 						</v8:item>
 					</tl>
 				</c>
@@ -235,6 +220,21 @@
 			<c>
 				<c>
 					<f>12</f>
+					<tl>
+						<v8:item>
+							<v8:lang>ru</v8:lang>
+							<v8:content>_КонтекстФормы.ВерсииПодсистем</v8:content>
+						</v8:item>
+						<v8:item>
+							<v8:lang>en</v8:lang>
+							<v8:content>_FormContext.SubsystemsVersions</v8:content>
+						</v8:item>
+					</tl>
+				</c>
+			</c>
+			<c>
+				<c>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -289,12 +289,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -339,12 +339,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -399,12 +399,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -459,12 +459,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -519,12 +519,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -549,12 +549,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -599,12 +599,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -659,12 +659,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -709,12 +709,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -759,12 +759,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -809,12 +809,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -859,12 +859,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -899,12 +899,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -949,12 +949,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 				</c>
 			</c>
 		</row>
@@ -999,12 +999,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -1059,12 +1059,12 @@
 			</c>
 			<c>
 				<c>
-					<f>3</f>
+					<f>12</f>
 				</c>
 			</c>
 			<c>
 				<c>
-					<f>12</f>
+					<f>13</f>
 					<tl>
 						<v8:item>
 							<v8:lang>ru</v8:lang>
@@ -1094,7 +1094,7 @@
 		<width>271</width>
 	</format>
 	<format>
-		<width>224</width>
+		<width>311</width>
 	</format>
 	<format>
 		<width>337</width>
@@ -1134,6 +1134,9 @@
 	</format>
 	<format>
 		<width>207</width>
+	</format>
+	<format>
+		<width>224</width>
 	</format>
 	<format>
 		<width>298</width>

@@ -15,14 +15,12 @@
 // Translated to  english variant of 1C script by Neti  company ( i-neti.ru)
 
 // Reads xml data into
-//
 // Параметры:
 //   FilePath - String - path to the xml data file
 //   SimplifyElements - Boolean - do I need to simplify the resulting object
 //
 // Return value:
 // Map, Structure - result of reading xml data
-//
 
 Function mRead(Val ReaderPath, SimplifyElements = True) Export
 #If WebClient Then

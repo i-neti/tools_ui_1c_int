@@ -1,3 +1,5 @@
+#Region VariablesDescription
+
 &AtClient
 Var DataSetsTypes;
 
@@ -5,7 +7,9 @@ Var DataSetsTypes;
 Var DataSetFieldsTypes;
 
 &AtClient
-Var UT_CodeEditorClientData;
+Var UT_CodeEditorClientData Export;
+
+#EndRegion
 
 #Region FormEvents
 &AtServer
@@ -41,7 +45,11 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		
 		EditorEvents = UT_CodeEditorServer.NewEditorEventsParameters();
 		EditorEvents.OnChange = "DataSetsOueryOnChange" ;
-		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,"Query" ,Items.DataSetsQuery,EditorEvents,"bsl_query");
+		UT_CodeEditorServer.CreateCodeEditorItems(ThisObject,
+												  "Query" ,
+												  Items.DataSetsQuery,
+												  EditorEvents,
+												  "bsl_query");
 
 EndProcedure
 &AtClient
@@ -49,6 +57,7 @@ Procedure OnOpen(Cancel)
 	If IsTempStorageURL(InitialDataCompositionSchemaURL) Then
 		FillResourcesAuxuliaryData();
 	EndIf;
+	
 	UT_CodeEditorClient.FormOnOpen(ThisObject);
 EndProcedure
 #EndRegion
@@ -67,7 +76,6 @@ Procedure GroupEditorTabsOnCurrentPageChange(Item, CurrentPage)
 EndProcedure
 
 #Region DataSets
-
 &AtClient
 Procedure DataSetsSelection(Item, RowSelected, Field, StandardProcessing)
 	If RowSelected <> ZerothDataSetURL Then
@@ -81,7 +89,6 @@ Procedure DataSetsSelection(Item, RowSelected, Field, StandardProcessing)
 	Else
 		Items.DataSets.Expand(RowSelected, True);
 	EndIf;
-	
 EndProcedure
 
 &AtClient
@@ -171,6 +178,7 @@ Procedure DataSetsDrag(Item, DragParameters, StandardProcessing, Row, Field)
 		FillDataSetUnionFieldsByChildQuerys(DestinationDataSetRow.GetID());
 	EndIf;
 	
+	
 	//Now we need to refill fields in data sets - union	
 EndProcedure
 
@@ -194,13 +202,13 @@ Procedure DataSetsDragCheck(Item, DragParameters, StandardProcessing, Row, Field
 		DragParameters.Action=DragAction.Cancel;
 	EndIf;
 EndProcedure
-
 &AtClient
 Procedure DataSetsOnActivateRow(Item)
 	DataSetCurrentData=Items.DataSets.CurrentData;
 	If DataSetCurrentData = Undefined Then
 		Return;
 	EndIf;
+	
 	If DataSetCurrentData.Type = DataSetsTypes.Root Then
 		Items.GroupDataSetsRightPanel.CurrentPage=Items.GroupDataSetsRightPanelDataSources;
 		Return;
@@ -215,7 +223,6 @@ Procedure DataSetsOnActivateRow(Item)
 		
 		SaveQueryTextToCurrentDataSet();
 		SetQueryText(DataSetCurrentData.Query, True, DataSetCurrentData.QueryOriginal);
-	
 	ElsIf DataSetCurrentData.Type = DataSetsTypes.Object Then
 		Items.GroupDataSetSettingsEditingPanel.CurrentPage=Items.GroupPageDataSetObjectEditingPage;
 	EndIf;
@@ -236,6 +243,7 @@ Procedure DataSetsOnActivateRow(Item)
       FillDatDataSetDataSourceChoiceList();
 	SetAvailableOfAddDataSetFieldButtons();
 EndProcedure
+
 &AtClient
 Procedure DataSetsFieldsOnActivateRow(Item)
 	SetAvailableOfAddDataSetFieldButtons();
@@ -246,7 +254,6 @@ Procedure DataSetsQueryOnChange(Item, AdditionalData = Undefined) Export
 	SaveQueryTextToCurrentDataSet();
 	FillDataSetFieldsOnQueryChange(CurrentDataSetRowID);
 EndProcedure
-
 &AtClient
 Procedure DataSetsFieldsRolePresentationStartChoice(Item, ChoiceData, StandardProcessing)
 	StandardProcessing=False;
@@ -278,7 +285,6 @@ Procedure DataSetsFieldsRolePresentationStartChoice(Item, ChoiceData, StandardPr
 	OpenForm("DataProcessor.UT_DCSEditor.Form.EditDataSetFieldRole", FormParameters, ThisObject, ,
 		, , New NotifyDescription("DataSetsFieldsRolePresentationStartChoiceEND", ThisObject,
 		NotifyParameters), FormWindowOpeningMode.LockOwnerWindow);
-	
 EndProcedure
 
 &AtClient
@@ -298,7 +304,6 @@ Procedure FieldsAvailableValuesStartChoice(Item, ChoiceData, StandardProcessing)
 		New NotifyDescription("FieldsAvailableValuesStartChoiceEND", ThisObject, AdditionalParameters),
 		NSTR("ru = 'Редактирование списка значений';en = 'Edit values list'"), CurrentData.ValueType, False, True, True, False,
 		FormWindowOpeningMode.LockOwnerWindow);
-	
 EndProcedure
 
 &AtClient
@@ -354,7 +359,6 @@ Procedure DataSetsAutoFillAvailableFieldsOnChange(Item)
 	SetAvailableOfAddDataSetFieldButtons();
 	FillDataSetFieldsOnQueryChangeAtServer(Items.DataSets.CurrentRow);
 EndProcedure
-
 &AtClient
 Procedure DataSetsFieldsBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Parameter)
 		If Not Clone Then
@@ -392,21 +396,34 @@ Procedure DataSetsFieldsOnEditEnd(Item, NewRow, CancelEdit)
 	If DataSetRowParent.Type=DataSetsTypes.Union Then
 		FillDataSetUnionFieldsByChildQuerys(DataSetRowParent.GetID());
 	EndIf;
-	
 EndProcedure
 
 &AtClient
 Procedure FieldsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
-	
 	CurrentData=Items.DataSetsFields.CurrentData;
 	If CurrentData=Undefined Then
 		Return;
 	EndIf;
 	
 	UT_CommonClient.EditType(CurrentData.ValueType, 2,StandardProcessing,ThisObject, New NotifyDescription("FieldsValueTypeStartChoiceEND",ThisObject, New Structure("CurrentRow",Items.DataSetsFields.CurrentRow)));
-
 EndProcedure
 
+&AtClient
+Procedure FieldsPresentationExpressionOpening(Item, StandardProcessing)
+	StandardProcessing=False;
+	CurrentData=Items.DataSetsFields.CurrentData;
+	If CurrentData = Undefined Then
+		Return;
+	EndIf;
+
+	AdditionalParameters=New Structure;
+	AdditionalParameters.Insert("RowID", CurrentData.GetID());
+
+	OpenEditExpressionForm(CurrentData.PresentationExpression,
+		New NotifyDescription("FieldsPresentationExpressionOpeningOnEnd", ThisObject, AdditionalParameters), False,
+		StrTemplate(NSTR("ru = 'Редактирование выражения ресурса для %1';en = 'Editing resource expression for %1'"),CurrentData.DataPath));
+	 
+EndProcedure
 #EndRegion
 
 #Region DataSetLinks
@@ -419,7 +436,6 @@ Procedure DataSetLinksSourceDataSetOnChange(Item)
 	EndIf;
 
 	FillDataSetLinkFieldChoiceList(CurrentData.SourceDataSet, Items.DataSetLinksSourceExpression);
-
 EndProcedure
 
 &AtClient
@@ -430,9 +446,7 @@ Procedure DataSetLinksDestinationDataSetOnChange(Item)
 	EndIf;
 
 	FillDataSetLinkFieldChoiceList(CurrentData.DestinationDataSet, Items.DataSetLinksDestinationExpression);
-
 EndProcedure
-
 
 &AtClient
 Procedure DataSetLinksBeforeRowChange(Item, Cancel)
@@ -445,11 +459,9 @@ Procedure DataSetLinksBeforeRowChange(Item, Cancel)
 	FillDataSetLinkFieldChoiceList(CurrentData.DestinationDataSet, Items.DataSetLinksDestinationExpression);
 
 EndProcedure
-
 #EndRegion
 
 #Region Resources
-
 &AtClient
 Procedure ResourceAvailableFieldSelection(Item, RowSelected, Field, StandardProcessing)
 	StandardProcessing=False;
@@ -461,9 +473,10 @@ EndProcedure
 Procedure ResourcesBeforeRowChange(Item, Cancel)
 	FillResourceExpressionChoiceList(Item.CurrentRow);
 EndProcedure
+
 &AtClient
 Procedure ResourcesExpressionOpening(Item, StandardProcessing)
-		StandardProcessing=False;
+	StandardProcessing=False;
 	CurrentData=Items.Resources.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -475,7 +488,6 @@ Procedure ResourcesExpressionOpening(Item, StandardProcessing)
 	OpenEditExpressionForm(CurrentData.Expression,
 		New NotifyDescription("ResourcesExpressionOpeningEND", ThisObject, AdditionalParameters), True,
 		NSTR("ru = 'Редактирование выражения ресурса для';en = 'Edit resource expression for '") + CurrentData.DataPath);
-
 EndProcedure
 
 &AtClient
@@ -502,13 +514,11 @@ Procedure ResourcesGroupsStartChoice(Item, ChoiceData, StandardProcessing)
 	UT_CommonClient.OpenValueListChoiceItemsForm(AvailableGroupsList,
 		New NotifyDescription("ResourcesGroupsStartChoiceEND", ThisObject, AdditionalParameters),
 		"Fields Groups", , True, False, False, , FormWindowOpeningMode.LockOwnerWindow);
-	
 EndProcedure
 
 #EndRegion
 
 #Region CalculatedFields
-
 &AtClient
 Procedure CalculatedFieldsOnEditEnd(Item, NewRow, CancelEdit)
 	FillResourcesAuxuliaryData();
@@ -518,7 +528,6 @@ EndProcedure
 Procedure CalculatedFieldsAfterDeleteRow(Item)
 	FillResourcesAuxuliaryData();
 EndProcedure
-
 &AtClient
 Procedure CalculatedFieldsOnStartEdit(Item, NewRow, Clone)
 	CurrentData=Items.CalculatedFields.CurrentData;
@@ -531,10 +540,9 @@ Procedure CalculatedFieldsOnStartEdit(Item, NewRow, Clone)
 		CurrentData.Title=CurrentData.DataPath;
 	EndIf;
 EndProcedure
-
 &AtClient
 Procedure CalculatedFieldsExpressionOpening(Item, StandardProcessing)
-		StandardProcessing=False;
+	StandardProcessing=False;
 	CurrentData=Items.CalculatedFields.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -546,9 +554,7 @@ Procedure CalculatedFieldsExpressionOpening(Item, StandardProcessing)
 	OpenEditExpressionForm(CurrentData.Expression,
 		New NotifyDescription("CalculatedFieldsExpressionOpeningEND", ThisObject, AdditionalParameters),False,
 		NSTR("ru = 'Редактирование выражения ресурса для ';en = 'Edit resource expression for '") + CurrentData.DataPath);
-		
 EndProcedure
-
 &AtClient
 Procedure CalculatedFieldsAvailableValuesStartChoice(Item, ChoiceData, StandardProcessing)
 	CurrentData=Items.CalculatedFields.CurrentData;
@@ -567,7 +573,6 @@ Procedure CalculatedFieldsAvailableValuesStartChoice(Item, ChoiceData, StandardP
 		FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
-
 &AtClient
 Procedure CalculatedFieldsDataPathOnChange(Item)
 	CurrentData=Items.CalculatedFields.CurrentData;
@@ -576,7 +581,6 @@ Procedure CalculatedFieldsDataPathOnChange(Item)
 	EndIf;
 
 	CurrentData.Title=UT_StringFunctionsClientServer.IdentifierPresentation(CurrentData.DataPath);
-	
 EndProcedure
 
 &AtClient
@@ -587,8 +591,8 @@ Procedure CalculatedFieldsValueTypeStartChoice(Item, ChoiceData, StandardProcess
 	EndIf;
 	
 	UT_CommonClient.EditType(CurrentData.ValueType, 2,StandardProcessing,ThisObject, New NotifyDescription("CalculatedFieldsValueTypeStartChoiceEND",ThisObject, New Structure("CurrentRow",Items.CalculatedFields.CurrentRow)));
-
 EndProcedure
+
 
 #EndRegion
 
@@ -610,7 +614,6 @@ Procedure DCSParametersOnStartEdit(Item, NewRow, Clone)
 
 	SetParameterValueFieldChoiceList(CurrentData);
 	SetParameterValueFieldTypeRestriction(CurrentData);
-	
 EndProcedure
 
 &AtClient
@@ -638,8 +641,7 @@ EndProcedure
 
 &AtClient
 Procedure DCSParametersAvailableValuesStartChoice(Item, ChoiceData, StandardProcessing)
-	
-		StandardProcessing=False;
+	StandardProcessing=False;
 
 	CurrentData=Items.DCSParameters.CurrentData;
 	If CurrentData = Undefined Then
@@ -661,7 +663,6 @@ EndProcedure
 
 &AtClient
 Procedure DCSParametersValueStartChoice(Item, ChoiceData, StandardProcessing)
-	
 	CurrentData=Items.DCSParameters.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -691,11 +692,9 @@ Procedure DCSParametersValueStartChoice(Item, ChoiceData, StandardProcessing)
 		FormWindowOpeningMode.LockOwnerWindow, AvailableValues);
 	
 EndProcedure
-
-
 &AtClient
 Procedure DCSParametersValueListAllowedOnChange(Item)
-		CurrentData=Items.DCSParameters.CurrentData;
+	CurrentData=Items.DCSParameters.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
 	EndIf;
@@ -714,9 +713,7 @@ Procedure DCSParametersValueListAllowedOnChange(Item)
 	CurrentData.Value=NewValue;
 
 	SetParameterValueFieldTypeRestriction(CurrentData);
-	
 EndProcedure
-
 &AtClient
 Procedure DCSParametersExpressionOpening(Item, StandardProcessing)
 		StandardProcessing=False;
@@ -742,12 +739,11 @@ Procedure DCSParametersNameOnChange(Item)
 	EndIf;
 
 	CurrentData.Title=UT_StringFunctionsClientServer.IdentifierPresentation(CurrentData.Name);
-	
 EndProcedure
 
 &AtClient
 Procedure DCSParametersBeforeDeleteRow(Item, Cancel)
-		CurrentData=Items.DCSParameters.CurrentData;
+	CurrentData=Items.DCSParameters.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
 	EndIf;
@@ -763,9 +759,7 @@ Procedure DCSParametersValueTypeStartChoice(Item, ChoiceData, StandardProcessing
 	EndIf;
 	
 	UT_CommonClient.EditType(CurrentData.ValueType, 3,StandardProcessing,ThisObject, New NotifyDescription("DCSParametersValueTypeStartChoiceEND",ThisObject, New Structure("CurrentRow",Items.DCSParameters.CurrentRow)));
-
 EndProcedure
-
 #EndRegion
 
 #Region CurrentVariantSettings
@@ -809,6 +803,7 @@ EndProcedure
 
 &AtClient
 Procedure SettingsOnActivateRow(Item)
+	
 	SettingsItem = CurrentSettingsComposer.Settings.GetObjectByID(
 		Items.Settings.CurrentRow);
 	ItemType = TypeOf(SettingsItem);
@@ -872,7 +867,6 @@ Procedure SettingsOnActivateRow(Item)
 
 EndProcedure
 
-
 &AtClient
 Procedure GoToReport(Item)
 
@@ -886,6 +880,7 @@ EndProcedure
 
 &AtClient
 Procedure LocalSelectedFieldsOnChange(Item)
+		
 		If LocalSelectedFields Then
 
 		Items.SelectionFieldsPages.CurrentPage = Items.SelectedFieldsSettings;
@@ -904,7 +899,8 @@ EndProcedure
 
 &AtClient
 Procedure LocalFilterOnChange(Item)
-		If LocalFilter Then
+		
+	If LocalFilter Then
 
 		Items.FilterPages.CurrentPage = Items.FilterSettings;
 
@@ -922,7 +918,8 @@ EndProcedure
 
 &AtClient
 Procedure LocalOrderOnChange(Item)
-		If LocalOrder Then
+		
+	If LocalOrder Then
 
 		Items.OrderPages.CurrentPage = Items.OrderSettings;
 
@@ -940,7 +937,8 @@ EndProcedure
 
 &AtClient
 Procedure LocalConditionalAppearanceOnChange(Item)
-		If LocalConditionalAppearance Then
+		
+	If LocalConditionalAppearance Then
 
 		Items.ConditionalAppearancePages.CurrentPage = Items.ConditionalAppearanceSettings;
 
@@ -958,7 +956,8 @@ EndProcedure
 
 &AtClient
 Procedure LocalOutputParametersOnChange(Item)
-		If LocalOutputParameters Then
+		
+	If LocalOutputParameters Then
 
 		Items.OutputParametersPages.CurrentPage = Items.OutputParametersSettings;
 
@@ -970,11 +969,12 @@ Procedure LocalOutputParametersOnChange(Item)
 			Items.Settings.CurrentRow);
 		CurrentSettingsComposer.Settings.ClearItemOutputParameters(SettingsItem);
 	EndIf;
+	
 EndProcedure
-
 #EndRegion
 
 #Region SettingVariants
+
 &AtClient
 Procedure SettingVariantsOnActivateRow(Item)
 	SettingVariantsOnActivateRowAtServer(Items.SettingVariants.CurrentRow);
@@ -989,7 +989,8 @@ EndProcedure
 
 &AtClient
 Procedure SettingVariantsOnStartEdit(Item, NewRow, Clone)
-		If Not NewRow Then
+		
+	If Not NewRow Then
 		Return;
 	EndIf;
 	CurrentData=Items.SettingVariants.CurrentData;
@@ -1000,7 +1001,6 @@ Procedure SettingVariantsOnStartEdit(Item, NewRow, Clone)
 	CurrentData.Name="Variant" + CurrentData.GetID();
 	CurrentData.Presentation=CurrentData.Name;
 EndProcedure
-
 
 #EndRegion
 
@@ -1154,6 +1154,8 @@ Procedure Attachable_ExecuteToolsCommonCommand(Command)
 	UT_CommonClient.Attachable_ExecuteToolsCommonCommand(ThisObject, Command);
 EndProcedure
 
+
+
 #EndRegion
 
 #Region Private
@@ -1196,7 +1198,6 @@ Procedure SaveSchemaToFileOnEndSaving(Result, AdditionalParameters) Export
 	
 	UT_CodeEditorClient.SetEditorOriginalTextEqualToCurrent(ThisObject,"Query");
 EndProcedure
-
 &AtServer
 Function PrepareDSCForSaveFile()
 	SaveToFormTableCurrentSettingsVariantSetting();
@@ -1273,6 +1274,7 @@ Procedure FillDataSetFieldsOnQueryChange(DataSetRowID)
 	If Not IsCorrectQueryOfSet(DataSetRowID) Then
 		Return;
 	EndIf;
+	
 	FillDataSetFieldsOnQueryChangeAtServer(DataSetRowID);
 	FillDCSParametersOnDataSetQueryChange(DataSetRowID);
 	FillResourcesAuxuliaryData();
@@ -1586,7 +1588,6 @@ Procedure GroupDataSetsRightPanelOnCurrentPageChange(Item, CurrentPage)
 	FillDatDataSetDataSourceChoiceList();
 EndProcedure
 
-
 &AtClientAtServerNoContext
 Function DataSetFieldRolePresentation(Role)
 	If Role = Undefined Then
@@ -1783,6 +1784,21 @@ Procedure SaveQueryTextToCurrentDataSet()
 	Endif;
 
 EndProcedure
+
+&AtClient
+Procedure FieldsPresentationExpressionOpeningOnEnd(Result, AdditionalParameters) Export
+	If Result = Undefined Then
+		Return;
+	EndIf;
+	DataSetRow=Items.DataSets.CurrentData;
+	If DataSetRow = Undefined Then
+		Return;
+	EndIf;
+	
+	CurrentRowData=DataSetRow.Fields.FindByID(AdditionalParameters.RowID);
+	CurrentRowData.PresentationExpression=Result;
+EndProcedure
+
 
 #EndRegion
 
@@ -2266,6 +2282,8 @@ EndProcedure
 
 #EndRegion
 
+#Region CodeEditor
+
 &AtClient
 Procedure SetQueryText(NewText, SetOriginalText = False, NewOriginalText = "")
 	UT_CodeEditorClient.SetEditorText(ThisObject, "Query", NewText);
@@ -2313,96 +2331,97 @@ Procedure Attachable_CodeEditorDeferProcessingOfEditorEvents() Export
 	UT_CodeEditorClient.EditorEventsDeferProcessing(ThisObject);
 EndProcedure
 
+#EndRegion
+
 &AtClient
-Функция ПоляДляФормыРедактированияВыражения(ДобавлятьПараметры)
-	Поля = Новый Массив;
+Function FieldsForEditExpressionForm(AddParameters)
+	Fields = New Array;
 	
-	НаборыДанныхВерхнегоУровня=НаборыДанныхВерхнегоУровня();
+	TopLevelDataSets=TopLevelDataSets();
 
-	МассивПутей=Новый Массив;
+	DataPathsArray=New Array;
 
-	Для Каждого Набор Из НаборыДанныхВерхнегоУровня Цикл
-		Для Каждого Поле Из Набор.Поля Цикл
-			Если МассивПутей.Найти(Поле.ПутьКДанным) <> Неопределено Тогда
-				Продолжить;
-			КонецЕсли;
+	For Each DataSet In TopLevelDataSets Do
+		For Each Field In DataSet.Fields Do
+			If DataPathsArray.Find(Field.DataPath) <> Undefined Then
+				Continue;
+			Endif;
 
-			ТекПоле = Новый Структура;
-			ТекПоле.Вставить("Вид", Поле.Вид);
-			ТекПоле.Вставить("Поле", Поле.Поле);
-			ТекПоле.Вставить("ПутьКДанным", Поле.ПутьКДанным);
-			ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
-			ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначенияЗапроса);
-			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
-			Поля.Добавить(ТекПоле);
+			CurrentField = New Structure;
+			CurrentField.Insert("Type", Field.Type);
+			CurrentField.Insert("Field", Field.Field);
+			CurrentField.Insert("DataPath", Field.DataPath);
+			CurrentField.Insert("ValueType", Field.ValueType);
+			CurrentField.Insert("QueryValueType", Field.QueryValueType);
+			CurrentField.Insert("CalculatedField", False);
+			Fields.Add(CurrentField);
 
-			МассивПутей.Добавить(Поле.ПутьКДанным);
-		КонецЦикла;
-	КонецЦикла;
+			DataPathsArray.Add(Field.DataPath);
+		EndDo;
+	EndDo;
 
-	Для Каждого Поле Из ВычисляемыеПоля Цикл
-		Если МассивПутей.Найти(Поле.ПутьКДанным) <> Неопределено Тогда
-			Продолжить;
-		КонецЕсли;
+	For each Field In CalculatedFields Do
+		If DataPathsArray.Find(Field.DataPath) <> Undefined Then
+			Continue;
+		EndIf;
 		
-		ТекПоле = Новый Структура;
-		ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
-		ТекПоле.Вставить("Поле", Поле.ПутьКДанным);
-		ТекПоле.Вставить("ПутьКДанным", Поле.ПутьКДанным);
-		ТекПоле.Вставить("ТипЗначения", Поле.ТипЗначения);
-		ТекПоле.Вставить("ТипЗначенияЗапроса", Поле.ТипЗначения);
-		ТекПоле.Вставить("ВычисляемоеПоле", Истина);
-		Поля.Добавить(ТекПоле);
+		CurrentField = New Structure;
+		CurrentField.Insert("Type", DataSetFieldsTypes.Field);
+		CurrentField.Insert("Поле", Field.DataPath);
+		CurrentField.Insert("DataPath", Field.DataPath);
+		CurrentField.Insert("ValueType", Field.ValueType);
+		CurrentField.Insert("QueryValueType", Field.ValueType);
+		CurrentField.Insert("CalculatedField", True);
+		Fields.Add(CurrentField);
 
-		МассивПутей.Добавить(Поле.ПутьКДанным);
+		DataPathsArray.Add(Field.DataPath);
 
-	КонецЦикла;
+	EndDo;
 
-	Если ДобавлятьПараметры Тогда
-		Для Каждого ТекПараметр Из ПараметрыСКД Цикл
-			ТекПоле = Новый Структура;
-			ТекПоле.Вставить("Вид", ВидыПолейНаборовДанных.Поле);
-			ТекПоле.Вставить("Поле", ТекПараметр.Имя);
-			ТекПоле.Вставить("ПутьКДанным", "ПараметрыДанных." + ТекПараметр.Имя);
-			ТекПоле.Вставить("ТипЗначения", ТекПараметр.ТипЗначения);
-			ТекПоле.Вставить("ТипЗначенияЗапроса", ТекПараметр.ТипЗначения);
-			ТекПоле.Вставить("ВычисляемоеПоле", Ложь);
-			Поля.Добавить(ТекПоле);
-		КонецЦикла;
-	КонецЕсли;
+	If AddParameters Then
+		For Each CurrentParameter In DCSParameters Do
+			CurrentField = New Structure;
+			CurrentField.Insert("Type", DataSetFieldsTypes.Field);
+			CurrentField.Insert("Field", CurrentParameter.Name);
+			CurrentField.Insert("DataPath", "DataParameters." + CurrentParameter.Name);
+			CurrentField.Insert("ValueType", CurrentParameter.ValueType);
+			CurrentField.Insert("QueryValueType", CurrentParameter.ValueType);
+			CurrentField.Insert("CalculatedField", False);
+			Fields.Add(CurrentField);
+		EndDo;
+	EndIf;
 
-	Возврат Поля;	
-КонецФункции
+	Return Fields;	
+EndFunction
 
 &AtClient
-Procedure OpenEditExpressionForm(Текст, ОписаниеОповещенияОЗакрытии, ДобавлятьПараметры, Заголовок = "",
-	РежимОткрытия = Неопределено) Export
-	ПараметрыФормы = Новый Структура;
-	ПараметрыФормы.Вставить("Текст", Текст);
-	ПараметрыФормы.Вставить("Заголовок", Заголовок);
-	ПараметрыФормы.Вставить("ВидыПолейНаборовДанных", ВидыПолейНаборовДанных);
-	ПараметрыФормы.Вставить("Поля", ПоляДляФормыРедактированияВыражения(ДобавлятьПараметры));
+Procedure OpenEditExpressionForm(Text, OnCloseNotifyDescription, AddParameters, Title = "",
+	OpeningMode = Undefined) Export
+	FormParameters = New Structure;
+	FormParameters.Insert("Text", Text);
+	FormParameters.Insert("Title", Title);
+	FormParameters.Insert("DataSetFieldsTypes", DataSetFieldsTypes);
+	FormParameters.Insert("Fields", FieldsForEditExpressionForm(AddParameters));
 
-	Если РежимОткрытия = Неопределено Тогда
-		ОткрытьФорму("Обработка.УИ_РедакторСКД.Форма.ФормаРедактированияВыражения",
-					 ПараметрыФормы,
+	If OpeningMode = Undefined Then
+		OpenForm("DataProcessor.UT_DCSEditor.Form.EditExpression",
+					 FormParameters,
 					 ,
 					 ,
 					 ,
 					 ,
-					 ОписаниеОповещенияОЗакрытии);
-	Иначе
-		ОткрытьФорму("Обработка.УИ_РедакторСКД.Форма.ФормаРедактированияВыражения",
-					 ПараметрыФормы,
+					 OnCloseNotifyDescription);
+	Else
+		OpenForm("DataProcessor.UT_DCSEditor.Form.EditExpression",
+					 FormParameters,
 					 ,
 					 ,
 					 ,
 					 ,
-					 ОписаниеОповещенияОЗакрытии,
-					 РежимОткрытия);
-	КонецЕсли;
+					 OnCloseNotifyDescription,
+					 OpeningMode);
+	EndIf;
 EndProcedure
-
 
 &AtServer
 Procedure InitializeForm()
@@ -2628,6 +2647,7 @@ Procedure ReadDCSDataSetsToFormData(DCSDataSets, ParentDataSetRow = Undefined)
 		EndIf;
 		FillPropertyValues(NewSet, DataSetRow, , "Fields");
 		NewSet.QueryOriginal = NewSet.Query;
+		
 		ReadDCSDataSetFieldsToFormData(NewSet, DataSetRow);
 
 		If NewSet.Type = SetsTypes.Union Then
@@ -2992,36 +3012,6 @@ Procedure AssembleDCSFromFormData(EnableSettingsVariants = False)
 	InitializeSettingsComposerByAssembledDCS();
 EndProcedure
 
-&AtClient
-Procedure FieldsPresentationExpressionOpening(Item, StandardProcessing)
-//	 StandardProcessing=Ложь;
-//	ТекДанные=Элементы.НаборыДанныхПоля.ТекущиеДанные;
-//	Если ТекДанные = Неопределено Тогда
-//		Возврат;
-//	КонецЕсли;
-//
-//	ДопПараметры=Новый Структура;
-//	ДопПараметры.Вставить("ИдентификаторСтроки", ТекДанные.ПолучитьИдентификатор());
-//
-//	OpenEditExpressionForm(ТекДанные.ВыражениеПредставления,
-//		Новый ОписаниеОповещения("ПоляВыражениеПредставленияОткрытиеЗавершение", ThisObject, ДопПараметры), Ложь,
-//		"Редактирование выражения ресурса для " + ТекДанные.ПутьКДанным);
-//	 
-EndProcedure
-&AtClient
-Procedure ПоляВыражениеПредставленияОткрытиеЗавершение(Result, AdditionalParameters) Export
-	Если Result = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-	DataSetRow=Элементы.DataSets.ТекущиеДанные;
-	Если DataSetRow = Неопределено Тогда
-		Возврат;
-	КонецЕсли;
-	
-	ТекДанныеСтроки=DataSetRow.Поля.FindByID(AdditionalParameters.ИдентификаторСтроки);
-	ТекДанныеСтроки.ВыражениеПредставления=Result;
-EndProcedure
-
 &AtServer
 Function IsCorrectQueryOfSet(DataSetRowID)
 	DataSetRow=DataSets.FindByID(DataSetRowID);
@@ -3041,6 +3031,6 @@ EndFunction
 
 #EndRegion
 
-
+#EndRegion
 DataSetsTypes=DataSetsTypes();
 DataSetFieldsTypes=DataSetFieldsTypes();

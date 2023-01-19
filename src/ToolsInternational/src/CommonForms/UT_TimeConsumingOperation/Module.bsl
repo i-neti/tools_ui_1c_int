@@ -36,6 +36,7 @@ EndProcedure
 
 &AtClient
 Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
+	
 	If Status <> "Running" Then
 		Return;
 	EndIf;
@@ -46,10 +47,12 @@ Procedure BeforeClose(Cancel, Exit, WarningText, StandardProcessing)
 	EndIf;
 
 	AttachIdleHandler("Attachable_CancelJob", 0.1, True);
+	
 EndProcedure
 
 &AtClient
 Procedure OnClose(Exit)
+	
 	If Exit Then
 		Return;
 	EndIf;
@@ -132,7 +135,7 @@ Procedure Attachable_CheckJobExecution()
 		AttachIdleHandler("Attachable_CheckJobExecution", WaitInterval, True);
 	EndIf;
 
-КонецПроцедуры
+EndProcedure
 
 &AtClient
 Procedure Attachable_CancelJob()

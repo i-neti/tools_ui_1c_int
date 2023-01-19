@@ -113,6 +113,7 @@ Function _ValueTablesCompare(BaseTable, ComparisonTable, ColumnsList = Undefined
 	EndTry;
 EndFunction
 
+
 // Description
 //
 // Parameters:

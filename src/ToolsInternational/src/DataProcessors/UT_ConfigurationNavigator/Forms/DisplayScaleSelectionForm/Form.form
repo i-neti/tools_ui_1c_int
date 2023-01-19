@@ -113,18 +113,42 @@
       <listChoiceMode>true</listChoiceMode>
       <typeDomainEnabled>true</typeDomainEnabled>
       <choiceList>
+        <presentation>
+          <key>en</key>
+          <value>Auto</value>
+        </presentation>
+        <presentation>
+          <key>ru</key>
+          <value>Auto</value>
+        </presentation>
         <value xsi:type="core:StringValue">
-          <value>Авто</value>
+          <value>Auto</value>
         </value>
       </choiceList>
       <choiceList>
-        <value xsi:type="core:StringValue">
+        <presentation>
+          <key>en</key>
+          <value>Compact</value>
+        </presentation>
+        <presentation>
+          <key>ru</key>
           <value>Компактный</value>
+        </presentation>
+        <value xsi:type="core:StringValue">
+          <value>Compact</value>
         </value>
       </choiceList>
       <choiceList>
-        <value xsi:type="core:StringValue">
+        <presentation>
+          <key>en</key>
+          <value>Normal</value>
+        </presentation>
+        <presentation>
+          <key>ru</key>
           <value>Обычный</value>
+        </presentation>
+        <value xsi:type="core:StringValue">
+          <value>Normal</value>
         </value>
       </choiceList>
     </extInfo>

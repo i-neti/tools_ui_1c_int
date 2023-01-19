@@ -575,7 +575,7 @@ Procedure FillFormFieldsChoiceLists()
  					|FROM
  					|	Catalog.UT_Algorithms.Parameters AS UT_AlgorithmsParameters";
 
-    Selection = Query.Execute().StartChoosing();
+    Selection = Query.Execute().Select();
 
 	While Selection.Next() Do
 
@@ -860,6 +860,5 @@ EndProcedure
 Procedure BeforeWrite(Cancel, WriteParameters)
 	Object.AlgorithmText = UT_CodeEditorClient.EditorCodeText(ThisObject, "Algorithm");
 EndProcedure
-
 
 #EndRegion

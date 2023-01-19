@@ -31,10 +31,27 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 		ThisForm.Title = Parameters.Title;
 	EndIf;
 EndProcedure
-
 &AtClient
-Procedure CommandClose(Command)
-	Close();
+Procedure CommandOK(Command)
+	Result = New Structure;
+	Result.Insert("ValueType", _ValueType);
+
+	If _ValueType = "Boundary" Then
+		varStruct = GenerateSpecialValue(_ValueType, _BoundaryValue, _BoundaryBoundaryType);
+	ElsIf _ValueType = "PointInTime" Then
+		varStruct = GenerateSpecialValue(_ValueType, _PointInTimeDate, _PointInTimeRef);
+	Else
+		Return;
+	EndIf;
+
+	If varStruct.Cancel Then
+		Return;
+	EndIf;
+
+	Result.Insert("StringInternal", varStruct.Value);
+	Result.Insert("Presentation", varStruct.Presentation);
+
+	Close(Result);
 EndProcedure
 
 &AtServerNoContext
@@ -72,26 +89,7 @@ Function GenerateSpecialValue(Val varType, Val varValue1, Val varValue2)
 
 	Return varStruct;
 EndFunction
-
 &AtClient
-Procedure CommandOK(Command)
-	Result = New Structure;
-	Result.Insert("ValueType", _ValueType);
-
-	If _ValueType = "Boundary" Then
-		varStruct = GenerateSpecialValue(_ValueType, _BoundaryValue, _BoundaryBoundaryType);
-	ElsIf _ValueType = "PointInTime" Then
-		varStruct = GenerateSpecialValue(_ValueType, _PointInTimeDate, _PointInTimeRef);
-	Else
-		Return;
-	EndIf;
-
-	If varStruct.Cancel Then
-		Return;
-	EndIf;
-
-	Result.Insert("StringInternal", varStruct.Value);
-	Result.Insert("Presentation", varStruct.Presentation);
-
-	Close(Result);
+Procedure CommandClose(Command)
+	Close();
 EndProcedure

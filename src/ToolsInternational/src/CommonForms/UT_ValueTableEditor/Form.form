@@ -361,12 +361,12 @@
       <common>true</common>
     </userVisible>
     <title>
-      <key>ru</key>
-      <value>Колонки таблицы</value>
+      <key>en</key>
+      <value>Table columns</value>
     </title>
     <title>
-      <key>en</key>
-      <value>Group table columns</value>
+      <key>ru</key>
+      <value>Колонки таблицы</value>
     </title>
     <extendedTooltip>
       <name>GroupTableColumnsExtendedTooltip</name>

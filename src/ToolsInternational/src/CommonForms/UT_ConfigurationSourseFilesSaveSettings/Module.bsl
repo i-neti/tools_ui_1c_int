@@ -1,3 +1,5 @@
+
+
 #Region Variables
 
 #EndRegion
@@ -43,7 +45,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	User = UserName();
 
 	SetVisibleAndEnabled();
-	
 EndProcedure
 
 
@@ -59,7 +60,6 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			|en = 'No save directory is specified for source %1'"),Row.Source), , , , Cancel);
 		EndIf;
 	EndDo;
-	
 	If InfobasePlacement = 0 Then
 		CheckedAttributes.Add("InfobaseDirectory");
 	Else
@@ -88,6 +88,7 @@ EndProcedure
 
 #Region FormHeaderItemsEventsHandlers
 
+
 &AtClient
 Procedure InfobasePlacementOnChange(Item)
 	SetVisibleAndEnabled();
@@ -111,7 +112,6 @@ Procedure PlatformLaunchFileStartChoice(Item, ChoiceData, StandardProcessing)
 		FileDialogMode.Open,
 		New NotifyDescription("PlatformLaunchFileStartChoiceOnEnd", ThisObject));
 EndProcedure
-
 &AtClient
 Procedure SaveDirectoriesDirectoryStartChoice(Item, ChoiceData, StandardProcessing)
 	CurrentData = Items.SaveDirectories.CurrentData;
@@ -143,7 +143,9 @@ EndProcedure
 
 #EndRegion
 
+
 #Region FormCommandsEventHandlers
+
 
 &AtClient
 Procedure SelectCommonSaveDirectory(Command)
@@ -202,6 +204,8 @@ Procedure UnloadSourceModules(Command)
 	
 	Close(SaveSettings);
 EndProcedure
+
+
 
 #EndRegion
 

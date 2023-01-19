@@ -1,21 +1,16 @@
 // Работа с буфером обмена из 1С
 //
 // Copyright 2020 ООО "Центр прикладных разработок"
-//
-//   Licensed under the Apache License, Version 2.0 (the "License");
+////   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
 //   You may obtain a copy of the License at
-//
-//       http://www.apache.org/licenses/LICENSE-2.0
-//
-//   Unless required by applicable law or agreed to in writing, software
+////       http://www.apache.org/licenses/LICENSE-2.0
+////   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
-//
-//
-// URL:    https://github.com/cpr1c/clipboard_1c
+//// URL:    https://github.com/cpr1c/clipboard_1c
 // Требования: платформа 1С версии 8.3.14 и выше
 // С более ранними платформами могут быть проблемы с подключением компоненты, а также с работой некоторых методов
 
@@ -23,7 +18,6 @@
 // Translated to english variant of script by Neti company (https://erpdev.i-neti.com/)
 //  Requirements: 1C platform version 8.3.14 and higher
 // With earlier platforms, there may be problems with connecting components, as well as with the operation of some methods
-
 
 #Region Public
 

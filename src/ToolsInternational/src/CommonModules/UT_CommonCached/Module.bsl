@@ -22,7 +22,8 @@ EndFunction
 //   DisabledSybsystems - Map - the key specifies the name of the subsystem to be disabled, 
 //   and the value is must to set to True., 
 //                                         
-Procedure InsertChildSybsystemsNames(Names, ParentSubsystem, DisabledSubsystems,ParentSubsystemName = "")
+Procedure InsertChildSybsystemsNames(Names, ParentSubsystem, DisabledSubsystems,
+	ParentSubsystemName = "")
 
 	For Each CurrentSubSystem IN ParentSubsystem.Subsystems Do
 

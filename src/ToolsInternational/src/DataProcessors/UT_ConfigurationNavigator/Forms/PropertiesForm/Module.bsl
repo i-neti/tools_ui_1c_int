@@ -667,7 +667,7 @@ Procedure OnOpen(Cancel)
 	EndDo;
 
 	If StrFind(_FullName, "Role.") = 1 And Not IsBlankString(_AccessRightToObject) Then
-		_AccessRightToObjectOnChange(Items._ПравоДоступаКОбъекту);
+		_AccessRightToObjectOnChange(Items._AccessRightToObject);
 	EndIf;
 EndProcedure
 
@@ -1167,7 +1167,6 @@ Procedure vFillPredefinedObjectItems(MDObject, TreeNode)
 	If ValueTable.Count() <> 0 Then
 		TreeSection = TreeNode.GetItems().Add();
 		TreeSection.Name = "Predefined (" + ValueTable.Count() + ")";
-
 		For Each Itm In ValueTable Do
 			TreeRow = TreeSection.GetItems().Add();
 			TreeRow.Name = Manager.GetPredefinedNames(Itm.Ref);
@@ -2721,19 +2720,19 @@ Function vGetAvailableObjectsForRole(Val pRole, Val pRight, Val DescriptionOfAcc
 EndFunction
 
 &AtServerNoContext
-Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
-	СтрукРезультат = New Structure("HasData, Roles, Users", False);
+Function vGetAccessRightsToObject(Val RigthName, Val FullName)
+	ResultStructure = New Structure("HasData, Roles, Users", False);
 
-	If IsBlankString(ИмяПрава) Then
-		Return СтрукРезультат;
+	If IsBlankString(RigthName) Then
+		Return ResultStructure;
 	EndIf;
 
 	vRestrictedObjects = vGetDescriptionOfRestrictionsForAccessParameters();
 
-	ТабРоли = New ValueTable;
-	ТабРоли.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
-	ТабРоли.Columns.Add("Name", New TypeDescription("String"));
-	ТабРоли.Columns.Add("Synonym", New TypeDescription("String"));
+	RigthsTable = New ValueTable;
+	RigthsTable.Columns.Add("RestrictionByCondition", New TypeDescription("Boolean"));
+	RigthsTable.Columns.Add("Name", New TypeDescription("String"));
+	RigthsTable.Columns.Add("Synonym", New TypeDescription("String"));
 
 	UsersTable = New ValueTable;
 	UsersTable.Columns.Add("Name", New TypeDescription("String"));
@@ -2749,7 +2748,7 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		MDObject = Metadata.FindByFullName(FullName);
 
 		If MDObject = Undefined Then
-			Return СтрукРезультат;
+			Return ResultStructure;
 		EndIf;
 	EndIf;
 
@@ -2758,41 +2757,41 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		vRestrictedObjects[MDType] = pField;
 	EndIf;
 
-	ЭтоОбычныйРежим = True;
+	IsOrdinaryMode = True;
 
-	If ЭтоОбычныйРежим And IsBlankString(ИмяПрава) Then
-		Return СтрукРезультат;
+	If IsOrdinaryMode And IsBlankString(RigthName) Then
+		Return ResultStructure;
 	EndIf;
-	If ЭтоОбычныйРежим Then
+	If IsOrdinaryMode Then
 		For Each Itm In Metadata.Roles Do
-			If AccessRight(ИмяПрава, MDObject, Itm) Then
-				NewLine = ТабРоли.Add();
+			If AccessRight(RigthName, MDObject, Itm) Then
+				NewLine = RigthsTable.Add();
 				FillPropertyValues(NewLine, Itm);
 
 				pField = vRestrictedObjects[MDType];
 				If pField <> Undefined Then
-					NewLine.RestrictionByCondition = AccessParameters(ИмяПрава, MDObject, pField, Itm).RestrictionByCondition;
+					NewLine.RestrictionByCondition = AccessParameters(RigthName, MDObject, pField, Itm).RestrictionByCondition;
 				EndIf;
 			EndIf;
 		EndDo;
 
-		ТабРоли.Sort("Name");
+		RigthsTable.Sort("Name");
 	EndIf;
 
 	_TableRolesAndUsers = vRolesAndUsersTable();
 
-	If ЭтоОбычныйРежим Then
+	If IsOrdinaryMode Then
 		StructureR = New Structure("NameR");
 		StructureP = New Structure("Name");
 
-		For Each Row In ТабРоли Do
+		For Each Row In RigthsTable Do
 			StructureR.NameR = Row.Name;
 			For Each LineX In _TableRolesAndUsers.FindRows(StructureR) Do
-				StructureP.Name = LineX.NameP;
+				StructureP.Name = LineX.NameUsr;
 				If UsersTable.FindRows(StructureP).Count() = 0 Then
 					NewLine = UsersTable.Add();
-					NewLine.Name = LineX.NameP;
-					NewLine.FullName = LineX.FullNameP;
+					NewLine.Name = LineX.NameUsr;
+					NewLine.FullName = LineX.FullNameUsr;
 				EndIf;
 			EndDo;
 		EndDo;
@@ -2800,30 +2799,30 @@ Function vGetAccessRightsToObject(Val ИмяПрава, Val FullName)
 		UsersTable.Sort("Name");
 	EndIf;
 
-	СтрукРезультат.HasData = True;
-	СтрукРезультат.Roles = New Array;
-	СтрукРезультат.Users = New Array;
+	ResultStructure.HasData = True;
+	ResultStructure.Roles = New Array;
+	ResultStructure.Users = New Array;
 
-	For Each Row In ТабРоли Do
+	For Each Row In RigthsTable Do
 		Struc = New Structure("Name, Synonym, RestrictionByCondition");
 		FillPropertyValues(Struc, Row);
-		СтрукРезультат.Roles.Add(Struc);
+		ResultStructure.Roles.Add(Struc);
 	EndDo;
 
 	For Each Row In UsersTable Do
 		Struc = New Structure("Name, FullName");
 		FillPropertyValues(Struc, Row);
-		СтрукРезультат.Users.Add(Struc);
+		ResultStructure.Users.Add(Struc);
 	EndDo;
 
-	Return СтрукРезультат;
+	Return ResultStructure;
 EndFunction
 &AtClient
 Procedure _FillInDependentObjects(Command)
 	_DependentObjects.GetItems().Clear();
 	_WhereFound = "";
 
-	вЗаполнитьЗависимыеОбъекты();
+	FillDependingObjects();
 
 	For Each Itm In _DependentObjects.GetItems() Do
 		Items._DependentObjects.Expand(Itm.GetID(), False);
@@ -2831,206 +2830,206 @@ Procedure _FillInDependentObjects(Command)
 EndProcedure
 
 &AtServer
-Procedure вЗаполнитьЗависимыеОбъекты()
+Procedure FillDependingObjects()
 
-	пОбъектМД = Metadata.FindByFullName(_FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(_FullName);
+	If pMetadataObject = Undefined Then
 		Return;
 	EndIf;
-	пКорневойУзел = _DependentObjects.GetItems().Add();
-	пКорневойУзел.NodeType = 1;
-	пКорневойУзел.Name = пОбъектМД.Name;
-	пКорневойУзел.Presentation = пОбъектМД.Presentation();
-	пКорневойУзел.FullName = _FullName;
+	pRootNode = _DependentObjects.GetItems().Add();
+	pRootNode.NodeType = 1;
+	pRootNode.Name = pMetadataObject.Name;
+	pRootNode.Presentation = pMetadataObject.Presentation();
+	pRootNode.FullName = _FullName;
 
 	Pos = StrFind(_FullName, ".");
-	пТипДляПоиска = Type(Left(_FullName, Pos - 1) + "Ref" + Mid(_FullName, Pos));
+	pTypeForSearch = Type(Left(_FullName, Pos - 1) + "Ref" + Mid(_FullName, Pos));
 
-	пНадоСмотретьВидыСубконтоПС = (Left(_FullName, Pos - 1) = "ChartOfCharacteristicTypes");
+	pNeedToWatchExtraDimensionsTypes = (Left(_FullName, Pos - 1) = "ChartOfCharacteristicTypes");
 
-	пТабРезультат = New ValueTable;
-	пТабРезультат.Columns.Add("Name", New TypeDescription("String"));
-	пТабРезультат.Columns.Add("Presentation", New TypeDescription("String"));
-	пТабРезультат.Columns.Add("FullName", New TypeDescription("String"));
-	пТабРезультат.Columns.Add("WhereFound", New TypeDescription("String"));
+	pResultTable = New ValueTable;
+	pResultTable.Columns.Add("Name", New TypeDescription("String"));
+	pResultTable.Columns.Add("Presentation", New TypeDescription("String"));
+	pResultTable.Columns.Add("FullName", New TypeDescription("String"));
+	pResultTable.Columns.Add("WhereFound", New TypeDescription("String"));
 	
 	
 	// ---
-	пСтрукРазделы = New Structure("SessionParameters, DefinedTypes, Constants");
+	pSectionsStructure = New Structure("SessionParameters, DefinedTypes, Constants");
 
-	пСоотв = New Map;
+	pMap = New Map;
 
-	For Each пЭлем In пСтрукРазделы Do
-		пТабРезультат.Clear();
+	For Each pItem In pSectionsStructure Do
+		pResultTable.Clear();
 
-		пРазделМД = Metadata[пЭлем.Key];
+		pMetadataSection = Metadata[pItem.Key];
 
-		For Each MDObject In пРазделМД Do
+		For Each MDObject In pMetadataSection Do
 			pFullName = MDObject.FullName();
-			пГдеНайдено = "";
-			пСчетчик = 0;
+			pWhereFound = "";
+			pCounter = 0;
 
-			If MDObject.Type.Types().Find(пТипДляПоиска) <> Undefined Then
-				пПуть = "Object.Type";
-				If пСчетчик = 0 Then
-					пГдеНайдено = пПуть;
+			If MDObject.Type.Types().Find(pTypeForSearch) <> Undefined Then
+				pPath = "Object.Type";
+				If pCounter = 0 Then
+					pWhereFound = pPath;
 				Else
-					пГдеНайдено = пГдеНайдено + "," + пПуть;
+					pWhereFound = pWhereFound + "," + pPath;
 				EndIf;
-				пСчетчик = пСчетчик + 1;
+				pCounter = pCounter + 1;
 
-				пСоотв[pFullName] = 1;
+				pMap[pFullName] = 1;
 			EndIf;
 
-			If пСоотв[pFullName] <> Undefined Then
-				NewLine = пТабРезультат.Add();
+			If pMap[pFullName] <> Undefined Then
+				NewLine = pResultTable.Add();
 				NewLine.Name = MDObject.Name;
 				NewLine.Presentation = MDObject.Presentation();
 				NewLine.FullName = pFullName;
-				NewLine.WhereFound = пГдеНайдено;
+				NewLine.WhereFound = pWhereFound;
 			EndIf;
 		EndDo;
 
-		пКоличество = пТабРезультат.Count();
-		If пКоличество <> 0 Then
-			пТабРезультат.Sort("Name");
+		pCount = pResultTable.Count();
+		If pCount <> 0 Then
+			pResultTable.Sort("Name");
 
-			пУзелРаздела = пКорневойУзел.GetItems().Add();
-			пУзелРаздела.Name = пЭлем.Key + " (" + пКоличество + ")";
-			пУзелРаздела.NodeType = 2;
-			пКоллекцияЭлементов = пУзелРаздела.GetItems();
+			pSectionNode = pRootNode.GetItems().Add();
+			pSectionNode.Name = pItem.Key + " (" + pCount + ")";
+			pSectionNode.NodeType = 2;
+			pItemsCollection = pSectionNode.GetItems();
 
-			For Each Row In пТабРезультат Do
-				FillPropertyValues(пКоллекцияЭлементов.Add(), Row);
+			For Each Row In pResultTable Do
+				FillPropertyValues(pItemsCollection.Add(), Row);
 			EndDo;
 		EndIf;
 	EndDo;
 	
 	// ---
-	пСтрукРазделы = New Structure("ExchangePlans, Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts,
+	pSectionsStructure = New Structure("ExchangePlans, Catalogs, Documents, ChartsOfCalculationTypes, ChartsOfCharacteristicTypes, ChartsOfAccounts,
 									|InformationRegisters, AccumulationRegisters, AccountingRegisters, CalculationRegisters,
 									|BusinessProcesses, Tasks");
 
-	пСтрукОбласти = New Structure("Dimensions, Resources, Attributes");
+	pRegionStructure = New Structure("Dimensions, Resources, Attributes");
 
-	пСоотв = New Map;
+	pMap = New Map;
 
-	For Each пЭлем In пСтрукРазделы Do
-		пТабРезультат.Clear();
+	For Each pItem In pSectionsStructure Do
+		pResultTable.Clear();
 
-		пРазделМД = Metadata[пЭлем.Key];
+		pMetadataSection = Metadata[pItem.Key];
 
-		пЭтоПланСчетов = (пЭлем.Key = "ChartsOfAccounts");
-		пЭтоПланОбмена = (пЭлем.Key = "ExchangePlans");
-		пЭтоРегистр = (StrFind(пЭлем.Key, "Регистры") = 1);
+		pIsChartOfAccount = (pItem.Key = "ChartsOfAccounts");
+		pIsExchangePlan = (pItem.Key = "ExchangePlans");
+		pIsRegister = (StrFind(pItem.Key, "Registers") > 1);
 
-		For Each MDObject In пРазделМД Do
+		For Each MDObject In pMetadataSection Do
 			pFullName = MDObject.FullName();
-			пГдеНайдено = "";
-			пСчетчик = 0;
+			pWhereFound = "";
+			pCounter = 0;
 
-			If пЭтоРегистр Then
-				For Each пОбласть In пСтрукОбласти Do
-					For Each пРеквизит In MDObject[пОбласть.Key] Do
-						If пРеквизит.Type.Types().Find(пТипДляПоиска) <> Undefined Then
-							пПуть = "Object." + пОбласть.Key + "." + пРеквизит.Name;
-							If пСчетчик = 0 Then
-								пГдеНайдено = пПуть;
+			If pIsRegister Then
+				For Each pRegion In pRegionStructure Do
+					For Each pAttribute In MDObject[pRegion.Key] Do
+						If pAttribute.Type.Types().Find(pTypeForSearch) <> Undefined Then
+							pPath = "Object." + pRegion.Key + "." + pAttribute.Name;
+							If pCounter = 0 Then
+								pWhereFound = pPath;
 							Else
-								пГдеНайдено = пГдеНайдено + "," + пПуть;
+								pWhereFound = pWhereFound + "," + pPath;
 							EndIf;
-							пСчетчик = пСчетчик + 1;
+							pCounter = pCounter + 1;
 
-							пСоотв[pFullName] = 1;
+							pMap[pFullName] = 1;
 						EndIf;
 					EndDo;
 				EndDo;
 
-				If пСоотв[pFullName] <> Undefined Then
-					NewLine = пТабРезультат.Add();
+				If pMap[pFullName] <> Undefined Then
+					NewLine = pResultTable.Add();
 					NewLine.Name = MDObject.Name;
 					NewLine.Presentation = MDObject.Presentation();
 					NewLine.FullName = pFullName;
-					NewLine.WhereFound = пГдеНайдено;
+					NewLine.WhereFound = pWhereFound;
 				EndIf;
 
 			Else
-				For Each пРеквизит In MDObject.Attributes Do
-					If пРеквизит.Type.Types().Find(пТипДляПоиска) <> Undefined Then
-						If пСчетчик = 0 Then
-							пГдеНайдено = "Object.Attributes." + пРеквизит.Name;
+				For Each pAttribute In MDObject.Attributes Do
+					If pAttribute.Type.Types().Find(pTypeForSearch) <> Undefined Then
+						If pCounter = 0 Then
+							pWhereFound = "Object.Attributes." + pAttribute.Name;
 						Else
-							пГдеНайдено = пГдеНайдено + ",Object.Attributes." + пРеквизит.Name;
+							pWhereFound = pWhereFound + ",Object.Attributes." + pAttribute.Name;
 						EndIf;
-						пСчетчик = пСчетчик + 1;
+						pCounter = pCounter + 1;
 
-						пСоотв[pFullName] = 1;
+						pMap[pFullName] = 1;
 					EndIf;
 				EndDo;
 
-				For Each пТабличнаяЧасть In MDObject.TabularSections Do
-					For Each пРеквизит In пТабличнаяЧасть.Attributes Do
-						If пРеквизит.Type.Types().Find(пТипДляПоиска) <> Undefined Then
-							If пСчетчик = 0 Then
-								пГдеНайдено = "Object." + пТабличнаяЧасть.Name + ".Attributes." + пРеквизит.Name;
+				For Each pTabularSection In MDObject.TabularSections Do
+					For Each pAttribute In pTabularSection.Attributes Do
+						If pAttribute.Type.Types().Find(pTypeForSearch) <> Undefined Then
+							If pCounter = 0 Then
+								pWhereFound = "Object." + pTabularSection.Name + ".Attributes." + pAttribute.Name;
 							Else
-								пГдеНайдено = пГдеНайдено + ",Object." + пТабличнаяЧасть.Name + ".Attributes."
-									+ пРеквизит.Name;
+								pWhereFound = pWhereFound + ",Object." + pTabularSection.Name + ".Attributes."
+									+ pAttribute.Name;
 							EndIf;
-							пСчетчик = пСчетчик + 1;
+							pCounter = pCounter + 1;
 
-							пСоотв[pFullName] = 1;
+							pMap[pFullName] = 1;
 						EndIf;
 					EndDo;
 				EndDo;
 
-				If пЭтоПланОбмена Then
-					If MDObject.Content.Contains(пОбъектМД) Then
-						If пСчетчик = 0 Then
-							пГдеНайдено = "Object.Content";
+				If pIsExchangePlan Then
+					If MDObject.Content.Contains(pMetadataObject) Then
+						If pCounter = 0 Then
+							pWhereFound = "Object.Content";
 						Else
-							пГдеНайдено = пГдеНайдено + ",Object.Content";
+							pWhereFound = pWhereFound + ",Object.Content";
 						EndIf;
-						пСчетчик = пСчетчик + 1;
+						pCounter = pCounter + 1;
 
-						пСоотв[pFullName] = 1;
+						pMap[pFullName] = 1;
 					EndIf;
 				EndIf;
 
-				If пЭтоПланСчетов And пНадоСмотретьВидыСубконтоПС Then
-					If MDObject.ExtDimensionTypes = пОбъектМД Then
-						If пСчетчик = 0 Then
-							пГдеНайдено = "Object.ExtDimensionTypes";
+				If pIsChartOfAccount And pNeedToWatchExtraDimensionsTypes Then
+					If MDObject.ExtDimensionTypes = pMetadataObject Then
+						If pCounter = 0 Then
+							pWhereFound = "Object.ExtDimensionTypes";
 						Else
-							пГдеНайдено = пГдеНайдено + ",Object.ExtDimensionTypes";
+							pWhereFound = pWhereFound + ",Object.ExtDimensionTypes";
 						EndIf;
-						пСчетчик = пСчетчик + 1;
+						pCounter = pCounter + 1;
 
-						пСоотв[pFullName] = 1;
+						pMap[pFullName] = 1;
 					EndIf;
 				EndIf;
 			EndIf;
 
-			If пСоотв[pFullName] <> Undefined Then
-				NewLine = пТабРезультат.Add();
+			If pMap[pFullName] <> Undefined Then
+				NewLine = pResultTable.Add();
 				NewLine.Name = MDObject.Name;
 				NewLine.Presentation = MDObject.Presentation();
 				NewLine.FullName = pFullName;
-				NewLine.WhereFound = пГдеНайдено;
+				NewLine.WhereFound = pWhereFound;
 			EndIf;
 		EndDo;
 
-		пКоличество = пТабРезультат.Count();
-		If пКоличество <> 0 Then
-			пТабРезультат.Sort("Name");
+		pCount = pResultTable.Count();
+		If pCount <> 0 Then
+			pResultTable.Sort("Name");
 
-			пУзелРаздела = пКорневойУзел.GetItems().Add();
-			пУзелРаздела.Name = пЭлем.Key + " (" + пКоличество + ")";
-			пУзелРаздела.NodeType = 2;
-			пКоллекцияЭлементов = пУзелРаздела.GetItems();
+			pSectionNode = pRootNode.GetItems().Add();
+			pSectionNode.Name = pItem.Key + " (" + pCount + ")";
+			pSectionNode.NodeType = 2;
+			pItemsCollection = pSectionNode.GetItems();
 
-			For Each Row In пТабРезультат Do
-				FillPropertyValues(пКоллекцияЭлементов.Add(), Row);
+			For Each Row In pResultTable Do
+				FillPropertyValues(pItemsCollection.Add(), Row);
 			EndDo;
 		EndIf;
 	EndDo;
@@ -3039,14 +3038,14 @@ EndProcedure
 
 &AtClient
 Procedure _DependentObjectsOnActivateRow(Item)
-	AttachIdleHandler("вОбработкаАктивизацииСтрокиЗависимых", 0.1, True);
+	AttachIdleHandler("vDependentObjectsOnRowActivation", 0.1, True);
 EndProcedure
 
 &AtClient
-Procedure вОбработкаАктивизацииСтрокиЗависимых()
+Procedure vDependentObjectsOnRowActivation ()
 	CurData = Items._DependentObjects.CurrentData;
 	If CurData <> Undefined Then
-		_WhereFound = StrReplace(CurData.NodeType, ",", Chars.LF);
+		_WhereFound = StrReplace(CurData.WhereFound, ",", Chars.LF);
 	EndIf;
 EndProcedure
 
@@ -3083,13 +3082,13 @@ EndProcedure
 
 &AtClient
 Procedure _RecordConstant(Command)
-	If вЗаписатьКонстанту() Then
+	If vWriteConstant() Then
 		pObjectType = Left(_FullName, StrFind(_FullName, ".") - 1);
 
 		If pObjectType = "Constant" Then
-			ShowMessageBox( , "Value константы изменено!", 20);
+			ShowMessageBox( , "ru = 'Значение константы изменено!';en = 'Constant value changed!'", 20);
 		ElsIf pObjectType = "SessionParameter" Then
-			ShowMessageBox( , "Value параметра сеанса изменено!", 20);
+			ShowMessageBox( , "ru = 'Значение параметра сеанса изменено!';en = 'Session parameter value changed!'", 20);
 		EndIf;
 
 		_ReadConstant(Undefined);
@@ -3097,26 +3096,26 @@ Procedure _RecordConstant(Command)
 EndProcedure
 
 &AtServer
-Function вЗаписатьКонстанту()
+Function vWriteConstant()
 	SetPrivilegedMode(True);
 
-	пОбъектМД = Metadata.FindByFullName(_FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(_FullName);
+	If pMetadataObject = Undefined Then
 		Return False;
 	EndIf;
 
 	pObjectType = Left(_FullName, StrFind(_FullName, ".") - 1);
 
 	If pObjectType = "Constant" Then
-		пМенеджерЗначения = Constants[пОбъектМД.Name].CreateValueManager();
+		pValueManager = Constants[pMetadataObject.Name].CreateValueManager();
 		If _UseTextWhenWritingConstants Then
-			пМенеджерЗначения.Value = _TextConstantValue;
+			pValueManager.Value = _TextConstantValue;
 		Else
-			пМенеджерЗначения.Value = _ConstantValue;
+			pValueManager.Value = _ConstantValue;
 		EndIf;
 
 		Try
-			пМенеджерЗначения.Write();
+			pValueManager.Write();
 			Return True;
 		Except
 			Message(BriefErrorDescription(ErrorInfo()));
@@ -3126,9 +3125,9 @@ Function вЗаписатьКонстанту()
 	ElsIf pObjectType = "SessionParameter" Then
 		Try
 			If _UseTextWhenWritingConstants Then
-				SessionParameters[пОбъектМД.Name] = _TextConstantValue;
+				SessionParameters[pMetadataObject.Name] = _TextConstantValue;
 			Else
-				SessionParameters[пОбъектМД.Name] = _ConstantValue;
+				SessionParameters[pMetadataObject.Name] = _ConstantValue;
 			EndIf;
 			Return True;
 		Except
@@ -3148,11 +3147,11 @@ Function vGetConstant(Val FullName)
 	pResult = New Structure("Cancel, ReasonForRefusal, ReadOnly, Text, Value, ValueType", False, "", False,
 		"");
 
-	пОбъектМД = Metadata.FindByFullName(FullName);
-	If пОбъектМД = Undefined Then
+	pMetadataObject = Metadata.FindByFullName(FullName);
+	If pMetadataObject = Undefined Then
 		pResult.Cancel = True;
 		pResult.ReadOnly = True;
-		pResult.ReasonForRefusal = "Not удалость найти объект метаданных!";
+		pResult.ReasonForRefusal = "ru = 'Не удалость найти объект метаданных!';en = 'Metadata object not found!'";
 		Return pResult;
 	EndIf;
 
@@ -3160,17 +3159,17 @@ Function vGetConstant(Val FullName)
 
 	If pObjectType = "Constant" Then
 		Query = New Query;
-		Query.Text = "ВЫБРАТЬ ПЕРВЫЕ 1
-					   |	т.Value КАК Value
-					   |ИЗ
-					   |	" + FullName + " КАК т";
+		Query.Text = "Select First 1
+					   |	t.Value AS Value
+					   |FROM
+					   |	" + FullName + " AS t";
 
 		Try
-			Выборка = Query.Execute().StartChoosing();
+			Selection = Query.Execute().Select();
 
-			pResult.Value = ?(Выборка.Next(), Выборка.Value, Undefined);
+			pResult.Value = ?(Selection.Next(), Selection.Value, Undefined);
 			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
-				пОбъектМД.Type);
+				pMetadataObject.Type);
 		Except
 			Message(BriefErrorDescription(ErrorInfo()));
 			pResult.Cancel = True;
@@ -3180,18 +3179,18 @@ Function vGetConstant(Val FullName)
 
 	ElsIf pObjectType = "SessionParameter" Then
 		Try
-			pResult.Value = SessionParameters[пОбъектМД.Name];
+			pResult.Value = SessionParameters[pMetadataObject.Name];
 			pResult.ValueType = vTypeNameToString(vCreateStructureOfTypes(), TypeOf(pResult.Value),
-				пОбъектМД.Type);
+				pMetadataObject.Type);
 		Except
 			pResult.Cancel = True;
-			pResult.ReasonForRefusal = "значение не установлено!";
+			pResult.ReasonForRefusal = "ru = 'значение не установлено!';en = 'value not set!'";
 		EndTry;
 
 	Else
 		pResult.Cancel = True;
 		pResult.ReadOnly = True;
-		pResult.ReasonForRefusal = pObjectType + " не поддерживается!";
+		pResult.ReasonForRefusal = pObjectType + "ru = ' не поддерживается!';en = ' not support!'";
 		Return pResult;
 	EndIf;
 
@@ -3204,7 +3203,7 @@ Function vGetConstant(Val FullName)
 	pUnsupportedTypes.Add(Type("FixedMap"));
 
 	For Each Itm In pUnsupportedTypes Do
-		If пОбъектМД.Type.ContainsType(Itm) Then
+		If pMetadataObject.Type.ContainsType(Itm) Then
 			pResult.ReadOnly = True;
 			Break;
 		EndIf;

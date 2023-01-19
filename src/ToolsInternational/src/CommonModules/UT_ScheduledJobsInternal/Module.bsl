@@ -73,9 +73,7 @@ Procedure AddBackgroundJobProperties(Val BackgroundJobArray, Val BackgroundJobPr
 			ScheduledJob.UUID);
 		
 		Row.ErrorDescription = ?(
-			BackgroundJob.ErrorInfo = Undefined,
-			"",
-			DetailErrorDescription(BackgroundJob.ErrorInfo));
+			BackgroundJob.ErrorInfo = Undefined,"",	DetailErrorDescription(BackgroundJob.ErrorInfo));
 		
 		Index = Index - 1;
 	EndDo;

@@ -72,6 +72,7 @@ Function FormGroupNewDescription() Export
 	Return Parameters;
 
 EndFunction
+
 #EndRegion
 
 #Region FormItemsProgramingCreation  
@@ -113,7 +114,8 @@ Function CreateItemByDescription(Form, ItemDescription) Export
 	EndIf;
 
 	If ItemDescription.BeforeItem = Undefined Then
-		FormItem = Form.Items.Add (FormFieldTableName(Form, ItemDescription.ItemParent)	+ ItemDescription.Name, ItemDescription.Properties.FieldType, FormItem(Form,
+		FormItem = Form.Items.Add (FormFieldTableName(Form, ItemDescription.ItemParent)	
+		+ ItemDescription.Name, ItemDescription.Properties.FieldType, FormItem(Form,
 			ItemDescription.ItemParent));
 	Else
 		FormItem = Form.Items.Insert(FormFieldTableName(Form, ItemDescription.ItemParent)
@@ -230,7 +232,8 @@ Function IsCommandBarButton(Form, Val ButtonParent)
 		Return IsCommandBarButton(Form, ButtonParent.Parent);
 	EndIf;
 EndFunction
-  
+
+//@skip-warning  
 Function FormFieldTableName(Form, Val ItemParent)
 //@skip-warning
 	If ItemParent = Undefined Then
@@ -383,4 +386,5 @@ EndProcedure
 	UT_Forms.CreateCommandByDescription(Form, ButtonDescription);
 	UT_Forms.CreateButtonByDescription(Form, ButtonDescription);
 EndProcedure
+
 #EndRegion

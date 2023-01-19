@@ -1,4 +1,5 @@
 #Region ProgramInterface
+
 #Region ConfigurationMethodsEvents
 
 Procedure OnStart() Export
@@ -343,9 +344,9 @@ Procedure ОpenDynamicList(MetadataObjectName, OnEndNotifyDescription = Undefine
 	ParametersStructure = New Structure("MetadataObjectName", MetadataObjectName);
 
 	If OnEndNotifyDescription = Undefined Then
-		OpenForm("DataProcessor.UT_DynamicList.Форма", ParametersStructure, , MetadataObjectName);
+		OpenForm("DataProcessor.UT_DynamicList.Form", ParametersStructure, , MetadataObjectName);
 	Else
-		OpenForm("DataProcessor.UT_DynamicList.Форма", ParametersStructure, , MetadataObjectName, , ,
+		OpenForm("DataProcessor.UT_DynamicList.Form", ParametersStructure, , MetadataObjectName, , ,
 			OnEndNotifyDescription);
 	EndIf;
 
@@ -413,6 +414,7 @@ Procedure CompareSpreadsheetDocuments(SpreadsheetDocumentAddressInTempStorage1,
 	OpenForm("CommonForm.UT_SpreadsheetDocumentsComparison", FormOpenParameters, ThisObject);
 
 EndProcedure
+
 #Region ToolsAttachableCommandMethods
 
 Procedure Attachable_ExecuteToolsCommonCommand(Form, Command) Export
@@ -495,6 +497,7 @@ EndProcedure
 //  Structure - New parameters of value table editing
 // * SerializeToXML - Boolean - If TRUE, then the string presentation of VT wiil be computed with UT_Common.ValueFromXMLString and UT_Common.ValueToXMLString.
 // If FALSE, then with platform methods ValueToStringInternal and ValueFromStringInternal
+// ReadOnly - boolean - if true table will open to readonly ( only view)
 Function ValueTableNewEditingParameters() Export
 	Structure = New Structure;
 	Structure.Insert("SerializeToXML", False);
@@ -624,6 +627,7 @@ Procedure FormFieldValueStartChoiceTypeChoiceEnd(Result, AdditionalParameters) E
 	EndIf;
 EndProcedure
 
+
 Procedure FormFieldFileNameStartChoice (FileDescriptionStructure, Item, ChoiseData, StandardProcessing,
 	DialogMode, OnEndNotifyDescription) Export
 	StandardProcessing=False;
@@ -658,6 +662,7 @@ Procedure SaveAssistiveLibrariesAtClientOnStart() Export
 EndProcedure
 
 // Assistive libraries directory
+// 
 // Return type:
 //  String - Assistive libraries directory
 Function UT_AssistiveLibrariesDirectory() Export
@@ -668,7 +673,8 @@ Function UT_AssistiveLibrariesDirectory() Export
 	
 	Return FileVariablesStructure.UserDataWorkingDirectory + ?(StrEndsWith(
 		FileVariablesStructure.UserDataWorkingDirectory, GetPathSeparator()), "",
-		GetPathSeparator()) + "tools_ui_1c_int" + GetPathSeparator() + Format(UT_CommonClientServer.Version(), "NG=0;");
+		GetPathSeparator()) + "tools_ui_1c_int" + GetPathSeparator() + 
+		Format(UT_CommonClientServer.Version(), "NG=0;");
 EndFunction
 #EndRegion
 
