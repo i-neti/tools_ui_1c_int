@@ -1,4 +1,6 @@
+
 #Region ProgramInterface
+
 // Create copy of value type of Structure, Recursively, according of types of properties. 
 // If  structure properties contains values of object types  (catalogref, DocumentRef,etc),
 //  their contents are not copied, but references to the source object are returned..
@@ -48,10 +50,12 @@ Procedure SupplementStructure(Receiver, Source, Replace = Undefined) Export
 EndProcedure
 
 // Create full copy of structure, map, array, list or value table, Recursively, 
-//  taking into account the types of child elements. Object types values (CatalogObject,DocumentObject, etc) not copied and returns links to the source object.
+//  taking into account the types of child elements. Object types values 
+//  (CatalogObject,DocumentObject, etc) not copied and returns links to the source object.
 //
 // Parameters:
-//  Source - Structure, Map, Array, ValueList, ValueTable - object that you want  to copy.
+//  Source - Structure, Map, Array, ValueList, ValueTable - object that you want  
+//  to copy.
 //
 // Return value:
 //  Structure, Map, Array, ValueList, ValueTable- copy of the object passed as a parameter to the Source..
@@ -88,6 +92,7 @@ EndFunction
 //
 // Parameters:
 //  SourceMap - Map - map, that need to be copied.
+// 
 // 
 // Return value:
 //  Map - copy of Source Map.
@@ -177,13 +182,14 @@ Function ScheduleToStructure (Val Schedule) Export
 EndFunction
 
 // Converts  Structure to JobSchedule  .
+// 
 // Parameters:
 //  ScheduleStructure - Structure - Schedule in Structure form.
 // 
 // Return value:
 //  JobSchedule - Schedule.
 //
-Function StructureToSchedule(Знач ScheduleStructure) Export
+Function StructureToSchedule(Val ScheduleStructure) Export
 
 	If ScheduleStructure = UNdefined Then
 		Return New JobSchedule;
@@ -192,7 +198,6 @@ Function StructureToSchedule(Знач ScheduleStructure) Export
 		+ "WeekDays,CompletionInterval,Months,RepeatPause,WeeksPeriod,RepeatPeriodInDay,DaysRepeatPeriod";
 	Result = New JobSchedule;
 	FillPropertyValues(Result, ScheduleStructure, KeysList);
-
 	DetailedDailySchedules = New Array;
 	For Each Schedule In ScheduleStructure.DetailedDailySchedules Do
 		DetailedDailySchedules.Add(StructureToSchedule(Schedule));
@@ -217,13 +222,11 @@ Procedure CheckParameter(Val ProcedureOrFunctionName, Val ParameterName, Val Par
 	Val PropertiesTypesToExpect = Undefined) Export
 
 	Context = "CommonClientServer.CheckParameter";
-	Validate(
-		TypeOf(ProcedureOrFunctionName) = Type("String"),
+	Validate(TypeOf(ProcedureOrFunctionName) = Type("String"),
 		NStr("ru = 'Недопустимое значение параметра ИмяПроцедурыИлиФункции'; en = 'Invalid value of ProcedureOrFunctionName parameter.'"), 
 		Context);
 		
-	Validate(
-		TypeOf(ParameterName) = Type("String"), 
+	Validate(TypeOf(ParameterName) = Type("String"), 
 		NStr("ru = 'Недопустимое значение параметра ИмяПараметра'; en = 'Invalid value of ParameterName parameter.'"),
 		Context);
 
@@ -816,14 +819,8 @@ EndFunction
 // Returns:
 //  Number - the changed item count.
 //
-Function ChangeFilterItems(SearchArea,
-								Val FieldName = Undefined,
-								Val Presentation = Undefined,
-								Val RightValue = Undefined,
-								Val ComparisonType = Undefined,
-								Val Usage = Undefined,
-								Val DisplayMode = Undefined,
-								Val UserSettingID = Undefined) Export
+Function ChangeFilterItems(SearchArea,Val FieldName = Undefined,Val Presentation = Undefined,Val RightValue = Undefined,
+	Val ComparisonType = Undefined,	Val Usage = Undefined,Val DisplayMode = Undefined,Val UserSettingID = Undefined) Export
 	
 	If ValueIsFilled(FieldName) Then
 		SearchValue = New DataCompositionField(FieldName);
@@ -983,15 +980,7 @@ Procedure SetDynamicListFilterItem(DynamicList, FieldName,
 		DynamicListFilter = DynamicList.SettingsComposer.Settings.Filter;
 	EndIf;
 	
-	SetFilterItem(
-		DynamicListFilter,
-		FieldName,
-		RightValue,
-		ComparisonType,
-		Presentation,
-		Usage,
-		DisplayMode,
-		UserSettingID);
+	SetFilterItem(DynamicListFilter,FieldName,RightValue,ComparisonType,Presentation,Usage,	DisplayMode,UserSettingID);
 	
 EndProcedure
 
@@ -1382,12 +1371,10 @@ Function SerializeObjectForDebugToStructure(ObjectForDebugging, DcsSettingsOrHTT
 EndFunction
 
 Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined, ExternalDataSets=Undefined) Export
-	
 	ImmediatelyOpenConsole = False;
 #If ThickClientOrdinaryApplication or ThickClientManagedApplication Then
 	ImmediatelyOpenConsole = True;
 #EndIf
-
 	AllRefsType = UT_CommonCached.AllRefsTypeDescription();
 	SerializeObject = SerializeObjectForDebugToStructure(ObjectForDebugging, DcsSettingsOrHTTPConnection, ExternalDataSets);
 	If AllRefsType.ContainsType(TypeOf(ObjectForDebugging)) Then
@@ -1405,9 +1392,7 @@ Function DebugObject(ObjectForDebugging, DcsSettingsOrHTTPConnection = Undefined
 	If ImmediatelyOpenConsole Then
 		DebuggingData = PutToTempStorage(SerializeObject);
 #If Client Then
-
 		UT_CommonClient.OpenDebuggingConsole(DebugObjectType, DebuggingData);
-
 #EndIf
 		Return Undefined;
 	Else
