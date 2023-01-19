@@ -59,7 +59,6 @@ Procedure FileNameAtServerStartChoice(Item, ChoiceData, StandardProcessing)
 		New NotifyDescription("FileNameAtServerStartChoiceEnd", ThisObject));
 EndProcedure
 
-
 &AtClient
 Procedure FileNameAtServerStartChoiceEnd(Result, AdditionalParameters) Export
 	If Result = Undefined Then

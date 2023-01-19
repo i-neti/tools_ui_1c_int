@@ -6,7 +6,6 @@
 // https://creativecommons.org/licenses/by/4.0/legalcode
 // Translated by Neti Company
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
 #Region EventHandlers
 
 &AtServer
@@ -416,14 +415,16 @@ EndProcedure
 &AtClient
 Procedure StartFileSavingDialog(Val CompletionHandler)
 	
-	Var SaveFileDialog;
+	Var SaveFileDialog, ОписаниеОповещения;;
 	
 	SaveFileDialog = New FileDialog(FileDialogMode.Save);
 	SaveFileDialog.FullFileName = UT_CommonClientServer.ReplaceProhibitedCharsInFileName(
 		DocumentName);
 	SaveFileDialog.Filter = NStr("ru = 'Табличный документ'; en = 'Spreadsheet documents'") + " (*.mxl)|*.mxl";
 	SaveFileDialog.Show(CompletionHandler);
-	
+	// TODO Change String SaveFileDialog.Show(CompletionHandler);  to this :
+	//ОписаниеОповещения = Новый ОписаниеОповещения("ПриЗавершенииДиалогаВыбораФайла", ЭтотОбъект, ОбработчикЗавершения);
+	//ФайловаяСистемаКлиент.ПоказатьДиалогВыбора(ОписаниеОповещения, ДиалогСохраненияФайла);		
 EndProcedure
 
 &AtClient
@@ -583,7 +584,6 @@ Procedure Attachable_OnSwitchLanguage(LanguageCode, AdditionalParameters) Export
 		NotifyDescription = New NotifyDescription("OnAnswerTemplateTranslationQuestion", ThisObject);
 		ShowQueryBox(NotifyDescription, QuestionText, Buttons);
 	EndIf;
-	
 EndProcedure
 
 &AtClient

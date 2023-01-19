@@ -27,7 +27,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillValueTableColumns(VT);
 	CreateFormValueTableColumns();
 	FillFormValueTableByTable(VT);
-	
 EndProcedure
 
 #EndRegion
@@ -37,12 +36,9 @@ EndProcedure
 &AtClient
 Procedure TableColumnsBeforeEditEnd(Item, NewRow, CancelEdit, Cancel)
 	ProcessColumnNameChange(NewRow, CancelEdit, Cancel);
-	
 EndProcedure
-
 &AtClient
 Procedure TableColumnsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
-	
 	CurrentData=Items.TableColumns.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
@@ -53,21 +49,17 @@ Procedure TableColumnsValueTypeStartChoice(Item, ChoiceData, StandardProcessing)
 	UT_CommonClient.EditType(CurrentData.ValueType, 1, StandardProcessing, ThisObject,
 		New NotifyDescription("TableColumnsValueTypeStartChoiceEND", ThisObject,
 		New Structure("CurrentRow", CurrentRow)));
-	
 EndProcedure
-
 
 &AtClient
 Procedure TableColumnsAfterDeleteRow(Item)
 	CreateFormValueTableColumns();
 EndProcedure
 
-
 &AtClient
 Procedure TableColumnsOnEditEnd(Item, NewRow, CancelEdit)
 	CreateFormValueTableColumns();
 EndProcedure
-
 
 #EndRegion
 

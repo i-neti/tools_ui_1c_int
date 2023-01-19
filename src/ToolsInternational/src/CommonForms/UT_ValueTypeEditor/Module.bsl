@@ -121,7 +121,10 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	FillTypesTree(True);
 	
 	SetConditionalAppearance();
+	
 EndProcedure
+
+
 
 #EndRegion
 
@@ -139,7 +142,6 @@ Procedure TypesTreeOnActivateRow(Item)
 	Items.GroupStringQualifier.Visible=CurrentData.Name="String";
 	Items.GroupDateQualifier.Visible=CurrentData.Name="Date";
 EndProcedure
-
 
 &AtClient
 Procedure UnlimitedStringLengthOnChange(Item)
@@ -212,7 +214,6 @@ Procedure TypesTreeSelectedOnChange(Item)
 
 EndProcedure
 
-
 &AtClient
 Procedure CompositeDataTypeOnChange(Item)
 	If Not CompositeDataType Then
@@ -226,6 +227,7 @@ Procedure CompositeDataTypeOnChange(Item)
 		SetSelectedTypesInTree(TypesTree,SelectedTypes);
 	EndIf;
 EndProcedure
+
 
 &AtClient
 Procedure TypesTreeSelection(Item, RowSelected, Field, StandardProcessing)
@@ -287,6 +289,7 @@ Procedure Apply(Command)
 	Else
 		ReturnValue = Description;
 	EndIf;
+	
 	
 	Close(ReturnValue);
 EndProcedure
@@ -403,6 +406,7 @@ Function AddTypeToTypesTree(FillSelectedTypes,TypeName, Picture, Presentation = 
 		EndIf;
 	EndIf;
 
+
 	Return NewRow;
 EndFunction
 
@@ -431,6 +435,7 @@ Procedure FillPrimitiveTypes(FillSelectedTypes)
 	If ValueStorageIsAvailable() Then      
 		AddTypeToTypesTree(FillSelectedTypes,"ValueStorage", New Picture);
 	EndIf;
+	
 	If ValueCollectionIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"ValueTable", PictureLib.UT_ValueTable);
 		AddTypeToTypesTree(FillSelectedTypes,"ValueList", PictureLib.UT_ValueList);
@@ -451,6 +456,7 @@ Procedure FillPrimitiveTypes(FillSelectedTypes)
 	If NullIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"Null", PictureLib.UT_Null);
 	EndIf;
+	
 EndProcedure
 
 &AtServer
@@ -534,7 +540,6 @@ Procedure FillTypesTree(FillSelectedTypes=False)
 		AddTypeToTypesTree(FillSelectedTypes,"AnyRef", New Picture, "Any reference");
 	EndIf;
 
-	
 	If StandardPeriodIsAvailable() Then
 		AddTypeToTypesTree(FillSelectedTypes,"StandardBeginningDate", New Picture, "Standard beginning date");
 		AddTypeToTypesTree(FillSelectedTypes,"StandardPeriod", New Picture, "Standard period");
@@ -586,7 +591,6 @@ Procedure SetConditionalAppearance()
 		Appearance.Value=False;
 
 	EndIf;
-	
 EndProcedure
 
 &AtServer

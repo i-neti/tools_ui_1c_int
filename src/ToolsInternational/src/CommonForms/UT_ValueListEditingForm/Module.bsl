@@ -44,9 +44,7 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 				ListItem.Check, ListItem.Picture);
 		EndDo;
 	EndIf;
-	
 EndProcedure
-
 &AtClient
 Procedure Apply(Command)
 	If Not ReturnOnlySelectedValues Then
@@ -61,5 +59,6 @@ Procedure Apply(Command)
 			ReturnList.Add(Item.Value, Item.Presentation, Item.Check, Item.Picture);
 		EndDo;
 	EndIf;
+	
 	Close(ReturnList);
 EndProcedure

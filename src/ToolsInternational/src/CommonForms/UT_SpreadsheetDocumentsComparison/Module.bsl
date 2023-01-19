@@ -11,6 +11,11 @@
 
 &AtServer
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
+	// TODO Addthis check - but without use SSL
+	//Если ОбщегоНазначения.ЭтоМобильныйКлиент() Тогда
+	//	Отказ = Истина;
+	//	ВызватьИсключение НСтр("ru = 'Операция не доступна в мобильном клиенте, используйте тонкий клиент.'");
+	//КонецЕсли;
 	
 	SpreadsheetDocumentsToCompare = GetFromTempStorage(Parameters.SpreadsheetDocumentsAddress);
 	SpreadsheetDocumentLeft = PrepareSpreadsheetDocument(SpreadsheetDocumentsToCompare.Left);
@@ -20,7 +25,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	Items.RightSpreadsheetDocumentGroup.Title = Parameters.TitleRight;
 	
 	CompareAtServer();
-	
 EndProcedure
 
 #EndRegion

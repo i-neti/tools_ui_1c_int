@@ -5,6 +5,7 @@
 Procedure OnCreateAtServer(Cancel, StandardProcessing)
 	ReadCodeEditorSettings();
 
+
 	SetItemsVisibility();
 EndProcedure
 
@@ -41,11 +42,9 @@ Procedure FillCheckProcessingAtServer(Cancel, CheckedAttributes)
 			
 			UT_CommonClientServer.MessageToUser(StrTemplate(NStr("ru = 'С источником исходного кода %1 обнаружено более одной строки. Запись невозможна';
 			|en = 'More than one line was detected with the source code source %1. Recording is not possible'"),Row.Source),,,, Cancel)
-			
 		EndIf;
 	EndDo;
 EndProcedure
-
 
 #EndRegion
 
@@ -73,6 +72,26 @@ Procedure ConfigurationSourceFilesDirectoriesDirectoryStartChoice(Item, ChoiceDa
 		FileDialogMode.ChooseDirectory,
 		New NotifyDescription("ConfigurationSourceFilesDirectoriesDirectoryStartChoiceCompletion", ThisObject,
 		NotificationAdditionalParameters));
+EndProcedure
+
+&AtClient
+Procedure CodeTemplatesFileNameStartChoice(Item, ChoiceData, StandardProcessing)
+	CurrData = Items.CodeTemplates.CurrentData;
+	If CurrData = Undefined Then
+		Return;
+	EndIf;
+	
+	FileDetails = UT_CommonClient.EmptyDescriptionStructureOfSelectedFile();
+	FileDetails.FileName = CurrData.FileName;
+	UT_CommonClient.AddFormatToSavingFileDescription(FileDetails, NStr("ru = 'Файл шаблона кода(*.st)'; en = 'Script template file(*.st)'"), "st");
+	
+	NotifyAddlParameters = New Structure;
+	NotifyAddlParameters.Inser("CurrentRow", Items.CodeTemplates.CurrentRow);
+	
+	UT_CommonClient.FormFieldFileNameStartChoice(FileDetails, Item, ChoiceData, StandardProcessing,
+		FileDialogMode.Open,
+		New NotifyDescription("CodeTemplatesFileNameStartChoiceCompletion", ThisObject,
+		NotifyAddlParameters));
 EndProcedure
 
 #EndRegion
@@ -104,26 +123,6 @@ Procedure SaveConfigurationModulesToFiles(Command)
 	
 	UT_CodeEditorClient.SaveConfigurationModulesToFiles(
 		New NotifyDescription("SaveConfigurationModulesToFilesCompletion", ThisObject), CurrentDirectories);
-EndProcedure
-
-&AtClient
-Procedure CodeTemplatesFileNameStartChoice(Item, ChoiceData, StandardProcessing)
-	CurrData = Items.CodeTemplates.CurrentData;
-	If CurrData = Undefined Then
-		Return;
-	EndIf;
-	
-	FileDetails = UT_CommonClient.SelectedFileDetailsEmptyStructure();
-	FileDetails.FileName = CurrData.FileName;
-	UT_CommonClient.AddFormatToSavingFileDetails(FileDetails, NStr("ru = 'Файл шаблона кода(*.st)'; en = 'Script template file(*.st)'"), "st");
-	
-	NotifyAddlParameters = New Structure;
-	NotifyAddlParameters.Inser("CurrentRow", Items.CodeTemplates.CurrentRow);
-	
-	UT_CommonClient.FormFieldFileNameStartChoice(FileDetails, Item, ChoiceData, StandardProcessing,
-		FileDialogMode.Open,
-		New NotifyDescription("CodeTemplatesFileNameStartChoiceCompletion", ThisObject,
-		NotifyAddlParameters));
 EndProcedure
 
 #EndRegion
@@ -188,6 +187,8 @@ Procedure ReadCodeEditorSettings()
 	EndDo;
 EndProcedure
 
+
+
 &AtClient
 Procedure SaveConfigurationModulesToFilesCompletion(Result, AdditionalParameters) Export
 	If Result = Undefined Then
@@ -245,6 +246,7 @@ Procedure CodeTemplatesFileNameStartChoiceCompletion(Result, AdditionalParameter
 	Modified = True;
 EndProcedure
 
+
 &AtServer
 Procedure SetItemsVisibility()
 	Variants = UT_CodeEditorClientServer.CodeEditorVariants();
@@ -259,7 +261,8 @@ Procedure SetChoiseListOfStructureItem(Item, DataStructure)
 	Item.ChoiceList.Clear();
 	For Each KeyValue In DataStructure Do
 		Item.ChoiceList.Add(KeyValue.Key, KeyValue.Value);
-	EndDo;		
+	EndDo;	
+		
 EndProcedure
 
 &AtServer
