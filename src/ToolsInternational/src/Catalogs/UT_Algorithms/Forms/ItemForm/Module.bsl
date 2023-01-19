@@ -861,5 +861,4 @@ Procedure BeforeWrite(Cancel, WriteParameters)
 	Object.AlgorithmText = UT_CodeEditorClient.EditorCodeText(ThisObject, "Algorithm");
 EndProcedure
 
-
 #EndRegion

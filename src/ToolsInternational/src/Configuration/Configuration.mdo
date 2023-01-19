@@ -142,33 +142,33 @@
   <catalogs>Catalog.UT_Algorithms</catalogs>
   <catalogs>Catalog.AdditionalReportsAndDataProcessors</catalogs>
   <reports>Report.UT_ReportsConsole</reports>
-  <dataProcessors>DataProcessor.UT_CodeConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ConsoleWebServices</dataProcessors>
+  <dataProcessors>DataProcessor.UT_GroupProcessingCatalogsAndDocuments</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConstantsEditor</dataProcessors>
   <dataProcessors>DataProcessor.UT_DatabaseStorageStructure</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DCSEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DuplicateObjectDetection</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DynamicList</dataProcessors>
-  <dataProcessors>DataProcessor.UT_FileManager</dataProcessors>
-  <dataProcessors>DataProcessor.UT_GroupProcessingCatalogsAndDocuments</dataProcessors>
-  <dataProcessors>DataProcessor.UT_HTMLEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_HTTPRequestConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_JobsConsole</dataProcessors>
-  <dataProcessors>DataProcessor.UT_JSONEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_LicenseInformation1C</dataProcessors>
   <dataProcessors>DataProcessor.UT_MarkedObjectsDeletion</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectReferencesSearch</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectsAttributesEditor</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ObjectsComparison</dataProcessors>
   <dataProcessors>DataProcessor.UT_PerformingSheduledJobsOnTheClient</dataProcessors>
   <dataProcessors>DataProcessor.UT_QueryConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_JobsConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_RegisterChangesForDataExchange</dataProcessors>
-  <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_CodeConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DuplicateObjectDetection</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectReferencesSearch</dataProcessors>
   <dataProcessors>DataProcessor.UT_Support</dataProcessors>
-  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectsAttributesEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DynamicList</dataProcessors>
+  <dataProcessors>DataProcessor.UT_HTTPRequestConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ExportImportDataXMLWithFilters</dataProcessors>
-  <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
-  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
   <dataProcessors>DataProcessor.UT_ConfigurationNavigator</dataProcessors>
+  <dataProcessors>DataProcessor.UT_FileManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ComparisonDataConsole</dataProcessors>
+  <dataProcessors>DataProcessor.UT_LicenseInformation1C</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ConsoleWebServices</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ImportDataFromSpreadsheetDocument</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DebugData</dataProcessors>
+  <dataProcessors>DataProcessor.UT_SettingsStoragesManager</dataProcessors>
+  <dataProcessors>DataProcessor.UT_JSONEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_HTMLEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_UniversalDataExchangeXML</dataProcessors>
+  <dataProcessors>DataProcessor.UT_DCSEditor</dataProcessors>
+  <dataProcessors>DataProcessor.UT_ObjectsComparison</dataProcessors>
 </mdclass:Configuration>

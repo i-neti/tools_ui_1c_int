@@ -18,13 +18,11 @@ Function GetParameter(ParameterName) Export
 EndFunction
 
 Function RemoveParameter(Key) Export
-	
 		StorageParameters = GetParameters();
 		StorageParameters.Delete(Key);
 		Storage = New ValueStorage(StorageParameters);
 		Write();
 		Return True;	
-
 EndFunction
 
 Function RenameParameter(Key, NewName) Export

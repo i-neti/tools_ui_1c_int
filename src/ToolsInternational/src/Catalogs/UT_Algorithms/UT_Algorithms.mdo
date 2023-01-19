@@ -452,6 +452,15 @@
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
+  <forms uuid="2f3f6e24-624a-4534-a7a5-c9b2b72fab59">
+    <name>ListForm</name>
+    <synonym>
+      <key>en</key>
+      <value>List form</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
   <forms uuid="e4b0e632-6f4c-11e9-1495-002522f8f390">
     <name>EditorForm</name>
     <synonym>
@@ -461,15 +470,6 @@
     <synonym>
       <key>ru</key>
       <value>Форма редактора</value>
-    </synonym>
-    <usePurposes>PersonalComputer</usePurposes>
-    <usePurposes>MobileDevice</usePurposes>
-  </forms>
-  <forms uuid="2f3f6e24-624a-4534-a7a5-c9b2b72fab59">
-    <name>ListForm</name>
-    <synonym>
-      <key>en</key>
-      <value>List form</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
