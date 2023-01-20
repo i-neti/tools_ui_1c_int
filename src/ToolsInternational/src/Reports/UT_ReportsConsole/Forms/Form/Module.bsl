@@ -487,6 +487,7 @@ EndFunction
 // Parameters:
 //  ItemsCollection - the collection of elements to which is added user setting 
 //
+//
 // Return value:
 //  String - generated name of user setting.
 &AtClient
@@ -1158,7 +1159,6 @@ Function GenerateAtServerToSpreadsheetDocument()
 			Return NStr(
 				"ru = 'He понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1278,7 +1278,6 @@ Function GenerateAtServerToCollection()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1348,7 +1347,6 @@ Function GenerateAtServerAsXML()
 	EndIf;
 
 	Return Undefined;
-
 EndFunction
 
 // Generate report result for collection and output as XML text .
@@ -1400,7 +1398,6 @@ Function GenerateAtServerAsXMLCollection()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1482,7 +1479,6 @@ Function GenerateAtServerToDataCompositionTemplate()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1557,7 +1553,6 @@ Function GenerateAtServerToDataCompositionTemplateForCollection()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1620,7 +1615,6 @@ Function GenerateAtServerToExecutedDataCompositionSettings()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1677,7 +1671,6 @@ Function GenerateAtServerToExecutedDataCompositionSettingsXML()
 			Return NStr(
 				"ru = 'Не понятно, какой отчет нужно формировать. Выберите отчет или вариант или настройку и повторите формирование отчета.';
 				|en = 'It is not clear which report needs to be generated. Select a report or an variant or a setting and re-generate the report.'");
-
 		EndIf;
 
 	EndIf;
@@ -1883,7 +1876,6 @@ Procedure OpenDataCompositionSchemaWizard()
 	//		"ru = 'Конструктор схемы компоновки данных можно открыть только в толстом клиенте. В тонком клиенте и веб клиенте редактирование схемы компоновки данных возможно только в тексте схемы компоновки данных.';
 	//		|en = 'Data composition wizard can be opened only in thick client. In thin and webclient editing of data composition schema is possible only in the text of  data composition schema.'"));
 #EndIf
-
 EndProcedure
 
 &AtClient
@@ -2782,7 +2774,6 @@ Procedure OnOpen(Cancel)
 		Try
 			DownloadConsoleFile(DownloadableFileName);
 		Except
-			
 			UT_CommonClientServer.MessageToUser(NSTR("ru = 'Ошибка загрузки отчетов из файла';en = 'Error loading reports from file'"));
 		EndTry;
 	EndIf;
@@ -2976,7 +2967,6 @@ EndProcedure
 // command handler CompareWithStandartSpreadsheetDocument.
 &AtClient
 Procedure CompareWithStandartSpreadsheetDocument(Command)
-
 	If Not ValueIsFilled(StandardSpreadsheetDocumentTempStorageURL) Then
 		ShowMessageBox(, NStr("ru = 'Нет сохраненного эталона'; en = 'There is no standard spreadsheet document to compare'"));
 		Return;
@@ -3008,7 +2998,6 @@ Procedure SaveStandartOfDataCompositionTemplate(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler CompareWithStandartDataCompositionTemplate.
@@ -3029,7 +3018,6 @@ Procedure CompareWithStandartDataCompositionTemplate(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler SaveStandartExecutableSettings.
@@ -3044,7 +3032,6 @@ Procedure SaveStandartExecutableSettings(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler CompareWithStandartExecutableSettings.
@@ -3065,7 +3052,6 @@ Procedure CompareWithStandartExecutableSettings(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler SaveStandartXMLResult.
@@ -3080,7 +3066,6 @@ Procedure SaveStandartXMLResult(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler CompareWithStandartXMLResult.
@@ -3101,7 +3086,6 @@ Procedure CompareWithStandartXMLResult(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler SaveStandartDataCompositionTemplateForTemplate.
@@ -3116,7 +3100,6 @@ Procedure SaveStandartDataCompositionTemplateForTemplate(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler CompareWithStandartDataCompositionTemplateForCollection.
@@ -3137,7 +3120,6 @@ Procedure CompareWithStandartDataCompositionTemplateForCollection(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler SaveStandartXMLResultForCollection.
@@ -3152,7 +3134,6 @@ Procedure SaveStandartXMLResultForCollection(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler CompareWithStandartXMLResultForCollection.
@@ -3173,7 +3154,6 @@ Procedure CompareWithStandartXMLResultForCollection(Command)
 		ShowMessageBox( , NStr("ru = 'Сравнение файлов возможно только в толстом клиенте';
 		|en = 'File comparison is only possible in a thick client'"));
 #EndIf
-
 EndProcedure
 
 // command handler OutputToResultForCurrentTemplate.
@@ -3241,7 +3221,6 @@ Procedure SaveSchemaToFileAfterAttachFileExtension(Attached, AdditionalParameter
 
 		FileChoose.Show(New NotifyDescription("SaveSchemaToFileAfterFileSelection", ThisForm,
 			New Structure("FileChoose", FileChoose)));
-
 	Else
 
 		GetFile(PutDataCompositionSchemaToTempStorage(), , True);
@@ -3302,7 +3281,6 @@ Procedure LoadSchemaFromFileAfterAttachExtension(Attached, AdditionalParameters)
 		|en = 'File of data composition schema  (*.xml)|*.xml|All files (*.*)|*.*'");
 		FileChoose.Filter = Filter;
 		FileChoose.Extension = "xml";
-
 		BeginPuttingFiles(New NotifyDescription("LoadSchemaFromFileAfterPutFiles", ThisForm), ,
 			FileChoose);
 
@@ -3361,6 +3339,7 @@ EndProcedure
 // 
 // Event handler OnActivateField of Structure table.
 // Activate settings page linked with column that user activated
+//
 &AtClient
 Procedure StructureOnActivateField(Item)
 	
@@ -3393,13 +3372,15 @@ Procedure StructureOnActivateField(Item)
 		Items.SettingsPages.CurrentPage = SelectedPage;
 
 	EndIf;
+	
 EndProcedure
-
 
 // Event handler OnActivateField of Structure1 table.
 // Activate settings page linked with column that user activated
+//
 &AtClient
 Procedure Settings1OnActivateField(Item)
+	
 	Var SelectedPage;
 
 	If Items.Settings1.CurrentItem.Name = "Structure1HasSelection" Then
@@ -3429,13 +3410,13 @@ Procedure Settings1OnActivateField(Item)
 		Items.PagesSettings1.CurrentPage = SelectedPage;
 
 	EndIf;
+	
 EndProcedure
 
 // Handler StructureOnActivateRow of  Structure form item
 // Sets pages  with settings up to date
 &AtClient
 Procedure StructureOnActivateRow(Item)
-	
 	TreeCurrentRow = Items.Structure.CurrentRow;
 	If TreeCurrentRow = Undefined Then
 		Return;
@@ -3500,13 +3481,14 @@ Procedure StructureOnActivateRow(Item)
 		OutputParametersAvailable(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
-
 
 // Handler StructureOnActivateRow of  Structure1 form item
 // Sets pages  with settings up to date
 &AtClient
 Procedure Settings1OnActivateRow(Item)
+	
 	SettingsItem = ExecutedSettingsComposer.Settings.GetObjectByID(
 		Items.Settings1.CurrentRow);
 	ItemType = TypeOf(SettingsItem);
@@ -3567,6 +3549,7 @@ Procedure Settings1OnActivateRow(Item)
 		OutputParametersAvailable1(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnClick for Decorations.
@@ -3596,6 +3579,7 @@ EndProcedure
 // Event handler OnChange of checkbox LocalSelectedFields.
 &AtClient
 Procedure LocalSelectedFieldsOnChange(Item)
+		
 		If LocalSelectedFields Then
 
 		Items.PagesSelectedFields.CurrentPage = Items.SelectedFieldsSettings;
@@ -3608,12 +3592,14 @@ Procedure LocalSelectedFieldsOnChange(Item)
 			Items.Structure.CurrentRow);
 		Report.SettingsComposer.Settings.ClearItemSelection(SettingsItem);
 
-	EndIf;
+		EndIf;
+		
 EndProcedure
 
 // Event handler OnChange of checkbox LocalSelectedFields1.
 &AtClient
 Procedure LocalSelectedFields1OnChange(Item)
+	
 	If LocalSelectedFields1 Then
 
 		Items.PagesSelectedFields1.CurrentPage = Items.SelectedFieldsSettings1;
@@ -3627,12 +3613,14 @@ Procedure LocalSelectedFields1OnChange(Item)
 		ExecutedSettingsComposer.Settings.ClearItemSelection(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalFilter.
 &AtClient
 Procedure LocalFilterOnChange(Item)
-		If LocalFilter Then
+		
+	If LocalFilter Then
 
 		Items.FilterPages.CurrentPage = Items.FilterSettings;
 
@@ -3645,12 +3633,14 @@ Procedure LocalFilterOnChange(Item)
 		Report.SettingsComposer.Settings.ClearItemFilter(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalFilter1.
 &AtClient
 Procedure LocalFilter1OnChange(Item)
-		If LocalFilter1 Then
+		
+	If LocalFilter1 Then
 
 		Items.FilterPages1.CurrentPage = Items.FilterSettings1;
 
@@ -3663,6 +3653,7 @@ Procedure LocalFilter1OnChange(Item)
 		ExecutedSettingsComposer.Settings.ClearItemFilter(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalOrder.
@@ -3682,11 +3673,13 @@ Procedure LocalOrderOnChange(Item)
 		Report.SettingsComposer.Settings.ClearItemOrder(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalOrder1.
 &AtClient
 Procedure LocalOrder1OnChange(Item)
+	
 	If LocalOrder1 Then
 
 		Items.OrderPages1.CurrentPage = Items.OrderSettings1;
@@ -3700,12 +3693,14 @@ Procedure LocalOrder1OnChange(Item)
 		ExecutedSettingsComposer.Settings.ClearItemOrder(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalConditionalAppearance.
 &AtClient
 Procedure LocalConditionalAppearanceOnChange(Item)
-		If LocalConditionalAppearance Then
+		
+	If LocalConditionalAppearance Then
 
 		Items.ConditionalAppearancePages.CurrentPage = Items.ConditionalAppearanceSettings;
 
@@ -3717,12 +3712,14 @@ Procedure LocalConditionalAppearanceOnChange(Item)
 			Items.Structure.CurrentRow);
 		Report.SettingsComposer.Settings.ClearItemConditionalAppearance(SettingsItem);
 
-	EndIf;
+		EndIf;
+		
 EndProcedure
 
 // Event handler OnChange of checkbox LocalConditionalAppearance1.
 &AtClient
 Procedure LocalConditionalAppearance1OnChange(Item)
+	
 	If LocalConditionalAppearance1 Then
 
 		Items.ConditionalAppearancePages1.CurrentPage = Items.ConditionalAppearanceSettings1;
@@ -3736,12 +3733,14 @@ Procedure LocalConditionalAppearance1OnChange(Item)
 		ExecutedSettingsComposer.Settings.ClearItemConditionalAppearance(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalOutputParameters.
 &AtClient
 Procedure LocalOutputParametersOnChange(Item)
-		If LocalOutputParameters Then
+		
+	If LocalOutputParameters Then
 
 		Items.OutputParametersPages.CurrentPage = Items.OutputParametersSettings;
 
@@ -3753,11 +3752,13 @@ Procedure LocalOutputParametersOnChange(Item)
 			Items.Structure.CurrentRow);
 		Report.SettingsComposer.Settings.ClearItemOutputParameters(SettingsItem);
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnChange of checkbox LocalOutputParameters1.
 &AtClient
 Procedure LocalOutputParameters1OnChange(Item)
+	
 	If LocalOutputParameters1 Then
 
 		Items.OutputParametersPages1.CurrentPage = Items.OutputParametersSettings1;
@@ -3770,6 +3771,7 @@ Procedure LocalOutputParameters1OnChange(Item)
 			Items.Settings1.CurrentRow);
 		ExecutedSettingsComposer.Settings.ClearItemOutputParameters(SettingsItem);
 	EndIf;
+	
 EndProcedure
 
 // Event handler OnActivateRow of item  ReportsTree.
@@ -3834,6 +3836,7 @@ Procedure ReportsTreeOnActivateRow(Item)
 		EndTry;
 
 	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -3844,8 +3847,10 @@ EndProcedure
 // Event handler OnChange items linked with settings.
 &AtClient
 Procedure SettingsOnChange(Item)
+	
 	CurrentRowSettingsIsChanged = True;
 	Modified = True;
+	
 EndProcedure
 
 &AtClient
@@ -3859,6 +3864,7 @@ Procedure SettingsDrag(Item, DragParameters, StandardProcessing, Row, Field)
 	CurrentRowSettingsIsChanged = True;
 	Modified = True;
 EndProcedure
+
 
 
 // Event handler BeforeAddRow of Item ReportsTree.
@@ -3875,43 +3881,51 @@ Procedure ReportsTreeBeforeAddRow(Item, Cancel, Clone, Parent, IsFolder, Paramet
 
 		EndIf;
 
-	EndIf;
+		EndIf;
+		
 EndProcedure
 
 // Event handler BeforeDeleteRow of item ReportsTree.
 &AtClient
 Procedure ReportsTreeBeforeDeleteRow(Item, Cancel)
+	
 	CurrentRow = Undefined;
+	
 EndProcedure
 
 // Event handler Selection of item ReportsTree.
 &AtClient
 Procedure ReportsTreeSelection(Item, RowSelected, Field, StandardProcessing)
+	
 	StandardProcessing = False;
 	GenerateAtClient();
+	
 EndProcedure
-
 
 // Event handler AdditionalDetailProcessing of  Spreadsheet Document ResultSpreadsheetDocument.
 &AtClient
 Procedure ResultSpreadsheetDocumentAdditionalDetailProcessing(Item, Details, StandardProcessing, AdditionalParameters)
+	
 	StandardProcessing = False;
 	DetailProcessing = New DataCompositionDetailsProcess(DetailsDataURL,
 		New DataCompositionAvailableSettingsSource(ExecutedReportSchemaURL));
 	DetailProcessing.ShowActionChoice(
 		New NotifyDescription("ResultSpreadsheetDocumentDetailProcessingOnEnd", ThisForm,
 		New Structure("Details", Details)), Details, , , , Items.ResultSpreadsheetDocument);
+		
 EndProcedure
 
 // Event handler DetailProcessing Spreadsheet Document ResultSpreadsheetDocument.
 &AtClient
 Procedure ResultSpreadsheetDocumentDetailProcessing(Item, Details, StandardProcessing, AdditionalParameters)
+		
 		StandardProcessing = False;
 	DetailProcessing = New DataCompositionDetailsProcess(DetailsDataURL,
 		New DataCompositionAvailableSettingsSource(ExecutedReportSchemaURL));
 	DetailProcessing.ShowActionChoice(
 		New NotifyDescription("ResultSpreadsheetDocumentDetailProcessingOnEnd", ThisForm,
 		New Structure("Details", Details)), Details, , , True, );
+		
 EndProcedure
 
 // Details action choose event handler.
@@ -3940,6 +3954,7 @@ EndProcedure
 // Event handler OnPageChange of panel ResultsPanel.
 &AtClient
 Procedure ResultsPanelOnCurrentPageChange(Item, CurrentPage)
+    
     If Items.ResultsPanel.CurrentPage = Items.PageResultSpreadsheetDocument Then
 
 		If ReportNeedsToGenerate And Not ResultFilledSpreadsheetDocument Then
@@ -4011,12 +4026,14 @@ Procedure ResultsPanelOnCurrentPageChange(Item, CurrentPage)
 		ShowMessageBox( , Result);
 
 	EndIf;
+	
 EndProcedure
 
 // Event handler selection of  TreeResult table.
 &AtClient
 Procedure TreeResultSelection(Item, RowSelected, Field, StandardProcessing)
-		Var Value;
+	
+	Var Value;
 
 	StandardProcessing = False;
 
@@ -4039,7 +4056,6 @@ Procedure ExternalDataSetsPresentationStartChoice(Item, ChoiceData, StandardProc
 	UT_CommonClient.EditValueTable(CurrentData.Value, ThisObject,
 		New NotifyDescription("ExternalDataSetsPresentationStartChoiceOnEnd", ThisObject,New Structure("CurrentRow",Items.ExternalDataSets.CurrentRow)));
 EndProcedure
-
 &AtClient
 Procedure ExternalDataSetsPresentationStartChoiceOnEnd(Result, AdditionalParameters) Export
 	If Result=Undefined Then

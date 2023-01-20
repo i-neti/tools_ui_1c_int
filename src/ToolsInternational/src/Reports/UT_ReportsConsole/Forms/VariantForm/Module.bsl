@@ -25,70 +25,6 @@ Procedure SelectedFieldsAvailable(SettingsItem)
 EndProcedure
 
 &AtClient
-Procedure SettingsOnActivateRow(Item)
-	SettingsItem = Report.SettingsComposer.Settings.GetObjectByID(
-		Items.Structure.CurrentLine);
-	ItemType = TypeOf(SettingsItem);
-
-	If ItemType = Undefined Or ItemType = Type("DataCompositionChartStructureItemCollection")
-		Or ItemType = Type("DataCompositionTableStructureItemCollection") Then
-
-		GroupFieldsNotAvailable();
-		SelectedFieldsUnavailable();
-		FilterUnavailable();
-		OrderUnavailable();
-		ConditionalAppearanceUnavailable();
-		OutputParametersUnavailable();
-
-	ElsIf ItemType = Type("DataCompositionSettings") Or ItemType = Type(
-		"DataCompositionNestedObjectSettings") Then
-
-		GroupFieldsNotAvailable();
-
-		LocalSelectedFields = True;
-		Items.LocalSelectedFields.ReadOnly = True;
-		Items.SelectionFieldsPages.CurrentPage = Items.SelectedFieldsSettings;
-
-		LocalFilter = True;
-		Items.LocalFilter.ReadOnly = True;
-		Items.FilterPages.CurrentPage = Items.FilterSettings;
-
-		LocalOrder = True;
-		Items.LocalOrder.ReadOnly = True;
-		Items.OrderPages.CurrentPage = Items.OrderSettings;
-
-		LocalConditionalAppearance = True;
-		Items.LocalConditionalAppearance.ReadOnly = True;
-		Items.ConditionalAppearancePages.CurrentPage = Items.ConditionalAppearanceSettings;
-
-		LocalOutputParameters = True;
-		Items.LocalOutputParameters.ReadOnly = True;
-		Items.OutputParametersPages.CurrentPage = Items.OutputParametersSettings;
-
-	ElsIf ItemType = Type("DataCompositionGroup") Or ItemType = Type(
-		"DataCompositionTableGroup") Or ItemType = Type("DataCompositionChartGroup") Then
-
-		Items.GroupFieldsPages.CurrentPage = Items.GroupFieldsSettings;
-
-		SelectedFieldsAvailable(SettingsItem);
-		FilterAvailable(SettingsItem);
-		OrderAvailable(SettingsItem);
-		ConditionalAppearanceAvailable(SettingsItem);
-		OutputParametersAvailable(SettingsItem);
-
-	ElsIf ItemType = Type("DataCompositionTable") Or ItemType = Type("DataCompositionChart") Then
-
-		GroupFieldsNotAvailable();
-		SelectedFieldsAvailable(SettingsItem);
-		FilterUnavailable();
-		OrderUnavailable();
-		ConditionalAppearanceAvailable(SettingsItem);
-		OutputParametersAvailable(SettingsItem);
-
-	EndIf;
-EndProcedure
-
-&AtClient
 Procedure SelectedFieldsUnavailable()
 
 	LocalSelectedFields = False;
@@ -210,24 +146,8 @@ Procedure OutputParametersUnavailable()
 EndProcedure
 
 &AtClient
-Procedure LocalSelectedFieldsOnChange(Item)
-	If LocalSelectedFields Then
-
-		Items.SelectionFieldsPages.CurrentPage = Items.SelectedFieldsSettings;
-
-	Else
-
-		Items.SelectionFieldsPages.CurrentPage = Items.DisabledSelectedFieldsSettings;
-
-		SettingsItem = Report.SettingsComposer.Settings.GetObjectByID(
-			Items.Structure.CurrentLine);
-		Report.SettingsComposer.Settings.ClearItemSelection(SettingsItem);
-
-	EndIf;
-EndProcedure
-
-&AtClient
 Procedure SettingsOnActivateField(Item)
+	
 	Var SelectedPage;
 
 	If Items.Structure.CurrentItem.Name = "StructureHasSelection" Then
@@ -257,6 +177,73 @@ Procedure SettingsOnActivateField(Item)
 		Items.SettingsPages.CurrentPage = SelectedPage;
 
 	EndIf;
+	
+EndProcedure
+
+&AtClient
+Procedure SettingsOnActivateRow(Item)
+	
+	SettingsItem = Report.SettingsComposer.Settings.GetObjectByID(
+		Items.Structure.CurrentLine);
+	ItemType = TypeOf(SettingsItem);
+
+	If ItemType = Undefined Or ItemType = Type("DataCompositionChartStructureItemCollection")
+		Or ItemType = Type("DataCompositionTableStructureItemCollection") Then
+
+		GroupFieldsNotAvailable();
+		SelectedFieldsUnavailable();
+		FilterUnavailable();
+		OrderUnavailable();
+		ConditionalAppearanceUnavailable();
+		OutputParametersUnavailable();
+
+	ElsIf ItemType = Type("DataCompositionSettings") Or ItemType = Type(
+		"DataCompositionNestedObjectSettings") Then
+
+		GroupFieldsNotAvailable();
+
+		LocalSelectedFields = True;
+		Items.LocalSelectedFields.ReadOnly = True;
+		Items.SelectionFieldsPages.CurrentPage = Items.SelectedFieldsSettings;
+
+		LocalFilter = True;
+		Items.LocalFilter.ReadOnly = True;
+		Items.FilterPages.CurrentPage = Items.FilterSettings;
+
+		LocalOrder = True;
+		Items.LocalOrder.ReadOnly = True;
+		Items.OrderPages.CurrentPage = Items.OrderSettings;
+
+		LocalConditionalAppearance = True;
+		Items.LocalConditionalAppearance.ReadOnly = True;
+		Items.ConditionalAppearancePages.CurrentPage = Items.ConditionalAppearanceSettings;
+
+		LocalOutputParameters = True;
+		Items.LocalOutputParameters.ReadOnly = True;
+		Items.OutputParametersPages.CurrentPage = Items.OutputParametersSettings;
+
+	ElsIf ItemType = Type("DataCompositionGroup") Or ItemType = Type(
+		"DataCompositionTableGroup") Or ItemType = Type("DataCompositionChartGroup") Then
+
+		Items.GroupFieldsPages.CurrentPage = Items.GroupFieldsSettings;
+
+		SelectedFieldsAvailable(SettingsItem);
+		FilterAvailable(SettingsItem);
+		OrderAvailable(SettingsItem);
+		ConditionalAppearanceAvailable(SettingsItem);
+		OutputParametersAvailable(SettingsItem);
+
+	ElsIf ItemType = Type("DataCompositionTable") Or ItemType = Type("DataCompositionChart") Then
+
+		GroupFieldsNotAvailable();
+		SelectedFieldsAvailable(SettingsItem);
+		FilterUnavailable();
+		OrderUnavailable();
+		ConditionalAppearanceAvailable(SettingsItem);
+		OutputParametersAvailable(SettingsItem);
+
+	EndIf;
+	
 EndProcedure
 
 &AtClient
@@ -271,7 +258,27 @@ Procedure GoToReport(Item)
 EndProcedure
 
 &AtClient
+Procedure LocalSelectedFieldsOnChange(Item)
+	
+	If LocalSelectedFields Then
+
+		Items.SelectionFieldsPages.CurrentPage = Items.SelectedFieldsSettings;
+
+	Else
+
+		Items.SelectionFieldsPages.CurrentPage = Items.DisabledSelectedFieldsSettings;
+
+		SettingsItem = Report.SettingsComposer.Settings.GetObjectByID(
+			Items.Structure.CurrentLine);
+		Report.SettingsComposer.Settings.ClearItemSelection(SettingsItem);
+
+	EndIf;
+	
+EndProcedure
+
+&AtClient
 Procedure LocalFilterOnChange(Item)
+	
 	If LocalFilter Then
 
 		Items.FilterPages.CurrentPage = Items.FilterSettings;
@@ -290,6 +297,7 @@ EndProcedure
 
 &AtClient
 Procedure LocalOrderOnChange(Item)
+	
 	If LocalOrder Then
 
 		Items.OrderPages.CurrentPage = Items.OrderSettings;
@@ -303,10 +311,12 @@ Procedure LocalOrderOnChange(Item)
 		Report.SettingsComposer.Settings.ClearItemOrder(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 &AtClient
 Procedure LocalConditionalAppearanceOnChange(Item)
+	
 	If LocalConditionalAppearance Then
 
 		Items.ConditionalAppearancePages.CurrentPage = Items.ConditionalAppearanceSettings;
@@ -320,11 +330,13 @@ Procedure LocalConditionalAppearanceOnChange(Item)
 		Report.SettingsComposer.Settings.ClearItemConditionalAppearance(SettingsItem);
 
 	EndIf;
+	
 EndProcedure
 
 &AtClient
 Procedure LocalOutputParametersOnChange(Item)
-		If LocalOutputParameters Then
+		
+	If LocalOutputParameters Then
 
 		Items.OutputParametersPages.CurrentPage = Items.OutputParametersSettings;
 
