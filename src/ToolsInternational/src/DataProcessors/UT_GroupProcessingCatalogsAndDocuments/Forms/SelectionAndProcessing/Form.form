@@ -610,12 +610,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Выбор объектов</value>
+        <key>en</key>
+        <value>Choise objects</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group choise objects</value>
+        <key>ru</key>
+        <value>Выбор объектов</value>
       </title>
       <toolTip>
         <key>ru</key>
@@ -1207,12 +1207,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Найденные объекты</value>
+        <key>en</key>
+        <value>Founded objects</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group found objects</value>
+        <key>ru</key>
+        <value>Найденные объекты</value>
       </title>
       <toolTip>
         <key>ru</key>
@@ -2204,12 +2204,12 @@
         <common>true</common>
       </userVisible>
       <title>
-        <key>ru</key>
-        <value>Обработки</value>
+        <key>en</key>
+        <value>Data processors</value>
       </title>
       <title>
-        <key>en</key>
-        <value>Group data processors</value>
+        <key>ru</key>
+        <value>Обработки</value>
       </title>
       <toolTip>
         <key>ru</key>
