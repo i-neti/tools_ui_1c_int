@@ -1694,12 +1694,12 @@
             <common>true</common>
           </userVisible>
           <title>
-            <key>ru</key>
-            <value>Доступные обработки</value>
+            <key>en</key>
+            <value>Available data processors</value>
           </title>
           <title>
-            <key>en</key>
-            <value>Group available data processors</value>
+            <key>ru</key>
+            <value>Доступные обработки</value>
           </title>
           <toolTip>
             <key>ru</key>
@@ -2125,12 +2125,12 @@
             <common>true</common>
           </userVisible>
           <title>
-            <key>ru</key>
-            <value>Выбранные обработки (перетащить из доступных обработок)</value>
+            <key>en</key>
+            <value>Selected data processors (drag and drop from available data processors)</value>
           </title>
           <title>
-            <key>en</key>
-            <value>Group selected data processors</value>
+            <key>ru</key>
+            <value>Выбранные обработки (перетащить из доступных обработок)</value>
           </title>
           <toolTip>
             <key>ru</key>

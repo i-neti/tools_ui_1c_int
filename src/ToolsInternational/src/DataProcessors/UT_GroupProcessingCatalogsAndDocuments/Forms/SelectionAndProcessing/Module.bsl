@@ -2,20 +2,29 @@
 Var ProcessingDragAndDrop;
 
 &AtServer
+Function TypeDescription(TypeString) Export
+
+	ArrayTypes = New Array;
+	ArrayTypes.Add(Type(TypeString));
+	TypeDescription = New TypeDescription(ArrayTypes);
+
+	Return TypeDescription;
+
+EndFunction
+
+
+&AtServer
 Function GetListTypesObjects()
-	
 	ValueTable = FormDataToValue(TableFieldTypesObjects, Type("ValueTable"));
 
 	ListOfSelected = New ValueList;
 	ListOfSelected.LoadValues(ValueTable.UnloadColumn("TableName"));
 
 	Return ListOfSelected;
-	
 EndFunction
 
 &AtClient
 Procedure OpenFormSelectionTable()
-	
 	StructureParameters = New Structure;
 	StructureParameters.Insert("ObjectType", Object.ObjectType);
 	StructureParameters.Insert("ProcessTabularParts", Object.ProcessTabularParts);
@@ -24,12 +33,10 @@ Procedure OpenFormSelectionTable()
 	OpenForm(GetFullFormName("FormSelectionTables"), StructureParameters, ThisObject, , , ,
 		New NotifyDescription("OpenFormSelectionTableEnd", ThisObject),
 		FormWindowOpeningMode.LockOwnerWindow);
-		
 EndProcedure
 
 &AtClient
 Procedure OpenFormSelectionTableEnd(Result, AdditionalParameters) Export
-	
 	If Result = Undefined Then
 		Return;
 	EndIf;
@@ -93,7 +100,6 @@ Procedure OnCreateAtServer(Cancel, StandardProcessing)
 
 	FormAttributeToValue("Object").DownloadDataProcessors(ThisForm, AvailableDataProcessors, SelectedDataProcessors);
 
-	// CategoriesObjects - КатегорииОбъектов
 	InConfigurationYesCategories = Metadata.Catalogs.Find("CategoriesObjects") <> Undefined;
 	InConfigurationYesProperties = Metadata.ChartsOfCharacteristicTypes.Find("ObjectProperties") <> Undefined;
 	InConfigurationYesOrderManagement = Metadata.InformationRegisters.Find(
@@ -112,7 +118,7 @@ EndProcedure
 
 &AtServer
 Procedure SearchObjectOnChangeAtServer()
-//	УстановитьВидимостьДоступность();
+//	SetVisibleAvalible();
 	QueryText = GetQueryText();
 	ArbitraryQueryText = QueryText;
 	DataSelection = Undefined;
@@ -136,7 +142,7 @@ Function GenerateSearchConditionByString()
 				If SearchConditionByString <> "" Then
 					SearchConditionByString = SearchConditionByString + " OR ";
 				EndIf;
-				SearchConditionByString = SearchConditionByString + " Presentation LIKE ""%" + StringForSearch + "%""";
+				SearchConditionByString = SearchConditionByString + " Description LIKE ""%" + StringForSearch + "%""";
 			EndIf;
 
 			If MetadataObject.CodeLength <> 0 And MetadataObject.CodeType
@@ -184,7 +190,7 @@ Function GetQueryText()
 			<> Metadata.ObjectProperties.CatalogMainPresentation.AsDescription Then
 			If MetadataObject.DescriptionLength <> 0 Then
 				QueryText = QueryText + ", 
-											  |	Presentation";
+											  |	Description";
 			EndIf;
 			If MetadataObject.CodeLength <> 0 Then
 				Condition = "Code";
@@ -197,7 +203,7 @@ Function GetQueryText()
 											  |	Code";
 			EndIf;
 			If MetadataObject.DescriptionLength <> 0 Then
-				Condition = "Presentation";
+				Condition = "Description";
 			EndIf;
 		EndIf;
 	ElsIf SearchableObject.Type = "Document" Then
@@ -228,13 +234,11 @@ Function GetQueryText()
 	//If SearchConditionByString <> "" Then
 	//	QueryText = QueryText + "WHERE " + SearchConditionByString + Chars.LF;
 	//EndIf;
-	Return QueryText;
-	
+	Return QueryText;	
 EndFunction
 
 &AtClient
 Procedure SearchObjectChoiceProcessing(Item, SelectedValue, StandardProcessing)
-	
 	StandardProcessing = False;
 
 	If ValueIsFilled(SelectedValue) Then
@@ -246,16 +250,13 @@ Procedure SearchObjectChoiceProcessing(Item, SelectedValue, StandardProcessing)
 	EndIf;
 
 	SearchObjectOnChangeAtServer();
-	
 EndProcedure
 
 &AtClient
 Procedure FindLinks(Command)
-	
 	Status(Nstr("ru = 'Поиск ссылок...';en = 'Search for links...'"));
 	FindLinksByFilter();
 	Items.GroupPages.CurrentPage = Items.GroupFoundObjects;
-	
 EndProcedure
 
 &AtServer
@@ -373,7 +374,6 @@ EndProcedure
 
 &AtClient
 Procedure ExecuteProcessing(Command)
-	
 	For Each String In SelectedDataProcessors Do
 		UserInterruptProcessing();
 

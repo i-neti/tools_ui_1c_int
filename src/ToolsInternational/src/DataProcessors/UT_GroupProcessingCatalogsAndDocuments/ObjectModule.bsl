@@ -111,7 +111,7 @@ Procedure DownloadDataProcessors(CurrentForm, AvailableDataProcessors2, Selected
 	Forms = ThisObject.Metadata().Forms;
 
 	For Each Form In Forms Do
-		If Form.Name = "SelectionAndProcessing" Or Form.Name = "ФормаНастроек" Or Form.Name = "TemplateProcessing"
+		If Form.Name = "SelectionAndProcessing" Or Form.Name = "SettingsForm" Or Form.Name = "TemplateProcessing"
 			Or Form.Name = "FormSelectionTables" Or Form.Name = "FormSelection" Then
 
 			Continue;
