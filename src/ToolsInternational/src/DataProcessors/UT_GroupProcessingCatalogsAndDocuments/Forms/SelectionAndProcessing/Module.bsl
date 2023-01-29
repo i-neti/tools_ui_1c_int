@@ -402,7 +402,7 @@ Procedure ExecuteProcessing(Command)
 		EndIf;
 
 		If Not ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), ProcessingFormName) Then
-			Message("Processing " + FormName + " недоступна для типа <" + SearchObject.Type + ">");
+			Message(StrTemplate(NSTR("ru = 'Обработка %1 недоступна для типа <%2>';en = 'Data processor %1 unavailable for type < %2 >'"),FormName,SearchObject.Type));
 			Continue;
 		EndIf;
 
@@ -410,12 +410,10 @@ Procedure ExecuteProcessing(Command)
 		Processing.DownloadSettings();
 		Processing.ExecuteProcessing();
 	EndDo;
-	
 EndProcedure
 
 &AtServer
 Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
-	
 	TableItem = Items.FoundObjects;
 
 	//clear
@@ -468,10 +466,10 @@ Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
 	EndDo;
 
 	//data filling
-	РедValueTable = FormAttributeToValue(TableItem.Name);
-	РедValueTable.Clear();
+	EditingValueTable = FormAttributeToValue(TableItem.Name);
+	EditingValueTable.Clear();
 	For Each Row In ValueTable Do
-		NewRow = РедValueTable.Add();
+		NewRow = EditingValueTable.Add();
 		FillPropertyValues(NewRow, Row);
 
 		NewRow.Choose = True;
@@ -504,23 +502,19 @@ Procedure CreateColumns(ValueTable, ArrayAttributesDefault = Undefined) Export
 		EndIf;
 	EndDo;
 
-	ValueToFormAttribute(РедValueTable, TableItem.Name);
-	
+	ValueToFormAttribute(EditingValueTable, TableItem.Name);
 EndProcedure
 
 &AtServer
 Function GetFullFormName(NameDesiredForm)
-	
 	ArrayString = StrSplit(ThisForm.FormName, ".");
 	ArrayString[ArrayString.Count() - 1] = NameDesiredForm;
 
 	Return StrConcat(ArrayString, ".");
-	
 EndFunction
 
 &AtClient
 Procedure Filter(Command)
-	
 	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
@@ -537,23 +531,19 @@ Procedure Filter(Command)
 
 	OpenForm(GetFullFormName("FormSelection"), StructureParameters, ThisObject, , , ,
 		New NotifyDescription("FilterEnd", ThisObject), FormWindowOpeningMode.LockOwnerWindow);
-		
 EndProcedure
 
 &AtClient
 Procedure FilterEnd(Result, AdditionalParameters) Export
-	
 	If Result = Undefined Then
 		Return;
 	EndIf;
 
 	ProcessSelectionResult(Result);
-	
 EndProcedure
 
 &AtServer
 Procedure ProcessSelectionResult(ResultSelection)
-	
 	DataSelection = ResultSelection.Settings;
 	SearchString = ResultSelection.SearchString;
 	QueryParameters.Load(ResultSelection.QueryParameters.Unload());
@@ -561,18 +551,16 @@ Procedure ProcessSelectionResult(ResultSelection)
 	QueryText = ResultSelection.QueryText;
 	ArbitraryQueryText = ResultSelection.ArbitraryQueryText;
 	Object.SearchMode = ResultSelection.SearchMode;
-	
 EndProcedure
 
 &AtClient
 Procedure OnOpen(Cancel)
-//	УстановитьВидимостьДоступность();
+//	SetVisibleAvalible();
 	SetPicturesProcessing();
 EndProcedure
 
 &AtClient
 Procedure AvailableDataProcessorsSelection(Item, SelectedRow, Field, StandardProcessing)
-	
 	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
@@ -593,7 +581,6 @@ Procedure AvailableDataProcessorsSelection(Item, SelectedRow, Field, StandardPro
 			ShowMessageBox( , Message);
 			Return;
 		EndIf;
-
 		StructureParameters.Settings = FormTheSettings(Item.CurrentData);
 		StructureParameters.Insert("Parent", CurrentLine.GetID());
 		StructureParameters.Insert("CurrentLine", Undefined);
@@ -613,11 +600,9 @@ Procedure AvailableDataProcessorsSelection(Item, SelectedRow, Field, StandardPro
 
 		FormNameToOpen = GetFullFormName(Parent.FormName);
 	EndIf;
-
 	OpenForm(FormNameToOpen, StructureParameters, ThisObject, , , ,
 		New NotifyDescription("AvailableDataProcessorsSelectionEnd", ThisObject),
 		FormWindowOpeningMode.LockOwnerWindow);
-		
 EndProcedure
 
 &AtClient
@@ -629,7 +614,6 @@ EndProcedure
 
 &AtServer
 Function FormAStructureOfParameters()
-	
 	StructureParameters = New Structure;
 	StructureParameters.Insert("Setting", Undefined);
 	StructureParameters.Insert("Settings", New Array);
@@ -647,7 +631,6 @@ Function FormAStructureOfParameters()
 		"Object").UnloadColumn("Object"));
 
 	Return StructureParameters;
-	
 EndFunction
 
 &AtClient
@@ -672,7 +655,6 @@ Procedure AvailableDataProcessorsBeforeAddRow(Item, Cancel, Copy, Parent, Group)
 				Cancel = True;
 				Return;
 			EndIf;
-
 			Cancel = Not GetForm(GetFullFormName(Item.CurrentData.FormName)).mUseSettings;
 			If Not Cancel Then
 			//your addition
@@ -699,7 +681,6 @@ Procedure AvailableDataProcessorsBeforeAddRow(Item, Cancel, Copy, Parent, Group)
 			CurrentData = Item.CurrentData;
 			Parent = Item.CurrentData.GetParent();
 			NewRow = AddRow(Parent);
-
 			If Not CurrentData.Setting[0].Value = Undefined Then
 				NewSetting = New Structure;
 				For Each AttributeSetting In CurrentData.Setting[0].Value Do
@@ -729,7 +710,6 @@ Function AddRow(CurrentLine)
 	Items.AvailableDataProcessors.ChangeRow();
 
 	Return NewRow;
-	
 EndFunction
 
 &AtClient
@@ -745,12 +725,10 @@ Function FormTheSettings(CurrentLine)
 	EndDo;
 
 	Return ArraySettings;
-	
 EndFunction
 
 &AtClient
 Procedure AvailableDataProcessorsBeforeRowChange(Item, Cancel)
-	
 	If TableFieldTypesObjects.Count() = 0 Then
 		Return;
 	EndIf;
@@ -758,7 +736,6 @@ Procedure AvailableDataProcessorsBeforeRowChange(Item, Cancel)
 	If Item.CurrentData.GetParent() = Undefined Then
 		Cancel = True;
 	EndIf;
-	
 EndProcedure
 
 &AtClient
@@ -769,11 +746,9 @@ Procedure AvailableDataProcessorsBeforeDeleteRow(Item, Cancel)
 	EndIf;
 
 	Cancel=True;
-
 	ShowQueryBox(New NotifyDescription("AvailableDataProcessorsBeforeDeleteRowEnd", ThisForm,
-		New Structure("CurrentLine", Item.CurrentLine)), "Delete настройку?", QuestionDialogMode.OKCancel, ,
+		New Structure("CurrentLine", Item.CurrentLine)),NSTR("ru = 'Удалить настройку?';en = 'Delete setting ?'"), QuestionDialogMode.OKCancel, ,
 		DialogReturnCode.OK);
-		
 EndProcedure
 
 &AtClient
@@ -794,7 +769,6 @@ EndProcedure
 
 &AtClient
 Procedure AvailableDataProcessorsDragStart(Item, DragParameters, StandardProcessing)
-	
 	If Not CheckAvailabilityProcessing() Then
 		StandardProcessing = False;
 		Message = StrTemplate(Nstr("ru = 'Данная обработка недоступна для типа <%1>';en = 'This processing is not available for type <%1>'")
@@ -802,14 +776,11 @@ Procedure AvailableDataProcessorsDragStart(Item, DragParameters, StandardProcess
 		ShowMessageBox( , Message);
 		Return;
 	EndIf;
-
 	ProcessingDragAndDrop = True;
-	
 EndProcedure
 
 &AtClient
 Function CheckAvailabilityProcessing()
-	
 	RowIndex = Items.AvailableDataProcessors.CurrentRow;
 	CurrentLine = AvailableDataProcessors.FindByID(RowIndex);
 
@@ -819,12 +790,10 @@ Function CheckAvailabilityProcessing()
 	EndIf;
 
 	Return ProcessingAvailable(?(Object.ObjectType = 0, "Catalog", "Document"), Parent.FormName);
-	
 EndFunction
 
 &AtClient
 Procedure SelectedDataProcessorsDrag(Item, DragParameters, StandardProcessing, Row, Field)
-	
 	If Not ProcessingDragAndDrop Then
 		Return;
 	EndIf;
@@ -840,7 +809,6 @@ Procedure SelectedDataProcessorsDrag(Item, DragParameters, StandardProcessing, R
 	EndDo;
 
 	ProcessingDragAndDrop = False;
-	
 EndProcedure
 
 &AtClient
@@ -899,14 +867,12 @@ EndFunction
 
 &AtClient
 Procedure AvailableDataProcessorsEditEnd(Item, NewRow, CancelEdit)
-	
 	If Item.CurrentData.GetParent() = Undefined Then
 		Return;
 	EndIf;
 
 	Setting = Item.CurrentData.Setting[0].Value;
 	Setting.Processing = Item.CurrentData.Processing;
-	
 EndProcedure
 
 &AtClient
@@ -940,7 +906,6 @@ EndProcedure
 
 &AtClient
 Procedure TableFieldTypesObjectsBeforeDeleteRowEnd(Result, AdditionalParameters) Export
-	
 	If Not Result Then
 		Return;
 	EndIf;
@@ -949,23 +914,19 @@ Procedure TableFieldTypesObjectsBeforeDeleteRowEnd(Result, AdditionalParameters)
 	TableFieldTypesObjects.Delete(TableFieldTypesObjects.FindByID(CurrentLine));
 
 	Items.TableFieldTypesObjects.Refresh();
-	
 EndProcedure
-
 Function TruncateArray(Array, Array2)
-	
-	Мас = New Array;
+	Arr = New Array;
 
 	For Each CurrentElement In Array Do
 		If Array2.Find(CurrentElement) = Undefined Then
 			Continue;
 		EndIf;
 
-		Мас.Add(CurrentElement);
+		Arr.Add(CurrentElement);
 	EndDo;
 
-	Return Мас;
-	
+	Return Arr;
 EndFunction
 
 &AtServer
@@ -976,9 +937,9 @@ Procedure QueryInitialization()
 	TotalRows = TableFieldTypesObjects.Count();
 	//If TotalRows = 0 Then
 	//	If Not QueryBuilder = Undefined And Not QueryBuilder.Filter = Undefined Then
-	//		КоличествоОтборов = QueryBuilder.Filter.Count();
-	//		For IndexOf = 1 To КоличествоОтборов Do
-	//			QueryBuilder.Filter.Delete(КоличествоОтборов - IndexOf);
+	//		FiltersCount = QueryBuilder.Filter.Count();
+	//		For IndexOf = 1 To FiltersCount Do
+	//			QueryBuilder.Filter.Delete(FiltersCount - IndexOf);
 	//		EndDo; 
 	//	EndIf; 
 	//	QueryBuilder = Undefined;
@@ -1045,9 +1006,9 @@ Procedure QueryInitialization()
 			Filter.Insert("ThisTP", False);
 			ArrayString = TableAttributes.FindRows(Filter);
 			If MetadataRowObjects.NumberType = Metadata.ObjectProperties.DocumentNumberType.String Then
-				CurrentType = UT_FormsServer.TypeDescription("String");
+				CurrentType = TypeDescription("String");
 			Else
-				CurrentType = UT_FormsServer.TypeDescription("Number");
+				CurrentType = TypeDescription("Number");
 			EndIf;
 
 			If ArrayString.Count() > 0 Then
@@ -1069,7 +1030,7 @@ Procedure QueryInitialization()
 			Filter.Insert("Name", "Date");
 			Filter.Insert("ThisTP", False);
 			ArrayString = TableAttributes.FindRows(Filter);
-			CurrentType = UT_FormsServer.TypeDescription("Date");
+			CurrentType = TypeDescription("Date");
 
 			If ArrayString.Count() > 0 Then
 				RowAttributes = ArrayString[0];
@@ -1089,7 +1050,7 @@ Procedure QueryInitialization()
 			Filter.Insert("Name", "Posted");
 			Filter.Insert("ThisTP", False);
 			ArrayString = TableAttributes.FindRows(Filter);
-			CurrentType = UT_FormsServer.TypeDescription("Boolean");
+			CurrentType = TypeDescription("Boolean");
 
 			If ArrayString.Count() > 0 Then
 				RowAttributes = ArrayString[0];
@@ -1111,9 +1072,9 @@ Procedure QueryInitialization()
 				Filter.Insert("ThisTP", False);
 				ArrayString = TableAttributes.FindRows(Filter);
 				If MetadataRowObjects.CodeType = Metadata.ObjectProperties.CatalogCodeType.String Then
-					CurrentType = UT_FormsServer.TypeDescription("String");
+					CurrentType = TypeDescription("String");
 				Else
-					CurrentType = UT_FormsServer.TypeDescription("Number");
+					CurrentType = TypeDescription("Number");
 				EndIf;
 
 				If ArrayString.Count() > 0 Then
@@ -1136,7 +1097,7 @@ Procedure QueryInitialization()
 				Filter.Insert("Name", "Description");
 				Filter.Insert("ThisTP", False);
 				ArrayString = TableAttributes.FindRows(Filter);
-				CurrentType = UT_FormsServer.TypeDescription("String");
+				CurrentType = TypeDescription("String");
 
 				If ArrayString.Count() > 0 Then
 					RowAttributes = ArrayString[0];
@@ -1223,8 +1184,6 @@ Procedure QueryInitialization()
 	If KindNameSingleType = False Then
 		KindNameSingleType = Undefined;
 	EndIf;
-	//ВКонфигурацииЕстьОстаткиНоменклатуры - InConfigurationIsBalanceProducts
-	//GoodsInWarehouses
 	InConfigurationIsBalanceProducts = Not Metadata.AccumulationRegisters.Find("GoodsInWarehouses") = Undefined;
 	ControlBalanceProducts = (Object.ObjectType = 0) And (KindNameSingleType = "Products")
 		And InConfigurationIsBalanceProducts;
@@ -1236,7 +1195,7 @@ Procedure QueryInitialization()
 	For Each KeyAndValue In StructureTypesObjects Do
 		ArrayTypes.Add(KeyAndValue.Value);
 	EndDo;
-	//	ОписаниеВсехТипов = New TypeDescription(ArrayTypes);
+	//	AllTypesDescription = New TypeDescription(ArrayTypes);
 
 
 	///============================= DETERMINATION OF THE COMPOSITION OF DETAILS
@@ -1287,7 +1246,7 @@ Procedure QueryInitialization()
 
 	EndIf;
 
-	ViewList.Add(Prefix + "Пометка удаления", "H_DeletionMark");
+	ViewList.Add(Prefix + "Deletion mark", "H_DeletionMark");
 
 	If Object.ObjectType = 0 And Not KindNameSingleType = Undefined Then
 
@@ -1314,7 +1273,7 @@ Procedure QueryInitialization()
 
 	//If AccessibilityInWebApplicationProducts Then
 	//	
-	//	ListPresentations.Add(Prefix+"Доступна в веб-приложении ""Управление заказами""","П_ДоступнаВВебПриложенииУпрЗаказами");
+	//	ListPresentations.Add(Prefix+"Avalible in web-application "Orders managment""","P_AvalibleInWebAppOrdersManagment);
 	//	
 	//EndIf;
 	For Each KeyAndValue In StructureAttributesHeaders Do
@@ -1479,7 +1438,7 @@ Procedure QueryInitialization()
 			//|	CASE
 			//|		WHEN Table_П_Веб.Products IS NULL THEN True
 			//|		ELSE False
-			//|	END AS П_ДоступнаВВебПриложенииУпрЗаказами";
+			//|	END AS P_AvalibleInWebAppOrdersManagment";
 		EndIf;
 
 		///============================= FORMING THE QUERY TEXT BY "WHERE" And "JOIN"
@@ -1522,10 +1481,9 @@ Procedure QueryInitialization()
 
 		If AccessibilityInWebApplicationProducts Then
 
-		//НоменклатураНеиспользуемаяВВебУправленииЗаказами - ProductsUnusedInWebOrderManagement
-		//QueryTextObject = QueryTextObject + "," + "
+			//QueryTextObject = QueryTextObject + "," + "
 			//|	LEFT JOIN InformationRegister.ProductsUnusedInWebOrderManagement AS Table_П_Веб
-			//|	ПО " + AliasTable + ".Ref = Table_П_Веб.Products";
+			//|	ПО " + AliasTable + ".Ref = Table_P_Web.Products";
 			//
 		EndIf;
 
@@ -1697,12 +1655,10 @@ Procedure CheckNecessaryClearResults(CompletionNotifyDescription)
 	EndIf;
 
 	CheckNecessaryClearResultsEnd(True, AdditionalParametersNotify);
-	
 EndProcedure
 
 &AtClient
 Procedure CheckNecessaryClearResultsEnd(Result, AdditionalParameters) Export
-	
 	CompletionNotifyDescription = AdditionalParameters.CompletionNotifyDescription;
 	If Result Then
 		ClearResults();
@@ -1710,19 +1666,14 @@ Procedure CheckNecessaryClearResultsEnd(Result, AdditionalParameters) Export
 	EndIf;
 
 	ExecuteNotifyProcessing(CompletionNotifyDescription, Result);
-	
 EndProcedure
-
 &AtClient
 Procedure QuestionAboutCleaningSelectionResult(CompletionNotifyDescription) Export
-	
 	Answer = Undefined;
-	
 	Message = Nstr("ru = 'Результат отбора будет очищен. Продолжить?';en = 'The selection result will be cleared. Proceed?'");
 	ShowQueryBox(New NotifyDescription("QuestionAboutCleaningSelectionResultEnd", ThisForm,
 		New Structure("CompletionNotifyDescription", CompletionNotifyDescription)),
 		Message, QuestionDialogMode.OKCancel);
-		
 EndProcedure
 
 &AtClient
@@ -1747,7 +1698,6 @@ Procedure TableFieldTypesObjectsAfterDeleteRowEnd(Result, AdditionalParameters) 
 		QueryInitialization();
 	EndIf;
 EndProcedure
-
 Procedure ClearResults()
 	FoundObjects.Clear();
 EndProcedure
@@ -1755,7 +1705,6 @@ EndProcedure
 // () 
 &AtServer
 Procedure OnLoadDataFromSettingsAtServer(Settings)
-	
 	ArrayOfStringsToDelete = New Array;
 	MetadataObjects = Metadata[?(Object.ObjectType = 1, "Documents", "Catalogs")];
 
@@ -1786,7 +1735,6 @@ EndProcedure
 
 &AtClient
 Procedure ProcessTabularPartsOnChangeEnd(Result, AdditionalParameters) Export
-	
 	Item = AdditionalParameters.Item;
 	If Result Then
 		TableFieldTypesObjects.Clear();
@@ -1794,23 +1742,18 @@ Procedure ProcessTabularPartsOnChangeEnd(Result, AdditionalParameters) Export
 	Else
 		Item.Value = Not Item.Value;
 	EndIf;
-	
 EndProcedure
 
 &AtClient
 Procedure ObjectTypeOnChange(Item)
-	
 	TableFieldTypesObjects.Clear();
 	QueryInitialization();
-	
 EndProcedure
 
 &AtClient
 Procedure FoundObjectsSelection(Item, SelectedRow, Field, StandardProcessing)
-	
 	CurrentData = FoundObjects.FindByID(SelectedRow);
 	ShowValue(Undefined, CurrentData.Object);
-	
 EndProcedure
 
 //@skip-warning
@@ -1821,14 +1764,12 @@ EndProcedure
 
 &AtClient
 Procedure EditObject(Command)
-	
 	CurrentData = Items.FoundObjects.CurrentData;
 	If CurrentData = Undefined Then
 		Return;
 	EndIf;
 
 	UT_CommonClient.EditObject(CurrentData.Object);
-	
 EndProcedure
 
 &AtClient
