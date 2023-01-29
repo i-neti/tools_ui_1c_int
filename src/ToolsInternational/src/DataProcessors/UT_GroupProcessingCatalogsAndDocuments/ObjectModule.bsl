@@ -28,15 +28,23 @@ Function GetComparisonType(FieldName, ComparisonType, ParameterName) Export
 		Return "_Table." + FieldName + " <= &" + ParameterName;
 
 	ElsIf ComparisonType = DataCompositionComparisonType.NotInList Then
-		Return "НЕ _Table." + FieldName + " В (&" + ParameterName + ")";
+		Return "NOT _Table." + FieldName + " В (&" + ParameterName + ")";
 
 	ElsIf ComparisonType = DataCompositionComparisonType.NotInHierarchy Or ComparisonType
 		= DataCompositionComparisonType.NotInListByHierarchy Then
-		Return "НЕ _Table." + FieldName + " IN HIERARCHY (&" + ParameterName + ")";
+		Return "NOT _Table." + FieldName + " IN HIERARCHY (&" + ParameterName + ")";
 
 	ElsIf ComparisonType = DataCompositionComparisonType.NotEqual Then
 		Return "_Table." + FieldName + " <> &" + ParameterName;
-
+	ElsIf ComparisonType = DataCompositionComparisonType.Contains Then
+		Return "_Table." + FieldName +" LIKE ""%""+&"+ParameterName+"+""%"" ";
+	ElsIf ComparisonType = DataCompositionComparisonType.NotContains Then
+		Return "NOT _Table." + FieldName +" LIKE ""%""+&"+ParameterName+"+""%"" ";
+	ElsIf ComparisonType = DataCompositionComparisonType.BeginsWith Then
+		Return "_Table." + FieldName +" LIKE """"+&"+ParameterName+"+""%"" ";
+	ElsIf ComparisonType = DataCompositionComparisonType.NotBeginsWith Then
+		Return "NOT _Table." + FieldName +" LIKE """"+&"+ParameterName+"+""%"" ";
+		
 	EndIf;
 
 EndFunction // ()
@@ -103,7 +111,7 @@ Procedure DownloadDataProcessors(CurrentForm, AvailableDataProcessors2, Selected
 	Forms = ThisObject.Metadata().Forms;
 
 	For Each Form In Forms Do
-		If Form.Name = "SelectionAndProcessing" Or Form.Name = "ФормаНастроек" Or Form.Name = "TemplateProcessing"
+		If Form.Name = "SelectionAndProcessing" Or Form.Name = "SettingsForm" Or Form.Name = "TemplateProcessing"
 			Or Form.Name = "FormSelectionTables" Or Form.Name = "FormSelection" Then
 
 			Continue;
@@ -112,7 +120,8 @@ Procedure DownloadDataProcessors(CurrentForm, AvailableDataProcessors2, Selected
 		If Not FoundRow = Undefined Then
 			If Not FoundRow.Processing = Form.Synonym Then
 				FoundRow.Processing = Form.Synonym;
-			EndIf;			
+			EndIf;	
+					
 			If Not MapAccessibilitySettings[Form.Name] Then
 				FoundRow.Rows.Clear();
 			EndIf;

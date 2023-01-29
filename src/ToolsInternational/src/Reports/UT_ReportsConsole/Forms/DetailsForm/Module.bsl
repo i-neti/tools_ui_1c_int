@@ -53,15 +53,17 @@ Procedure ExecuteAtServer(DataCompositionSchema_)
 
 	DetailsDataURL = PutToTempStorage(DetailsDataObject, UUID);
 EndProcedure
+
 &AtClient
 Procedure ResultDetailProcessing(Item, Details, StandardProcessing, AdditionalParameters)
-	       StandardProcessing = False;
+	StandardProcessing = False;
 
 	DetailProcessing = New DataCompositionDetailsProcess(DetailsDataURL,
 		New DataCompositionAvailableSettingsSource(ExecutedReportSchemaURL));
 	DetailProcessing.ShowActionChoice(New NotifyDescription("ResultDetailProcessingEnd1",
 		ThisForm, New Structure("Details", Details)), Details, , , , );
 EndProcedure
+
 &AtClient
 Procedure ResultDetailProcessingEnd1(ChosenAction, ChosenActionParameter,
 	AdditionalParameters) Export
@@ -80,11 +82,11 @@ EndProcedure
 
 &AtClient
 Procedure ChangeVariant(Command)
-	ПараметрыФормы=New Structure("Variant, ExecutedReportSchemaURL", Report.SettingsComposer.Settings,
+	FormParameters=New Structure("Variant, ExecutedReportSchemaURL", Report.SettingsComposer.Settings,
 		ExecutedReportSchemaURL);
 
 	OnCloseNotifyDescription=New NotifyDescription("ChangeVariantEnd", ThisObject);
-	OpenForm("Report.UT_ReportsConsole.Form.VariantForm", ПараметрыФормы, ThisObject, , , ,
+	OpenForm("Report.UT_ReportsConsole.Form.VariantForm", FormParameters, ThisObject, , , ,
 		OnCloseNotifyDescription, FormWindowOpeningMode.LockOwnerWindow);
 EndProcedure
 
