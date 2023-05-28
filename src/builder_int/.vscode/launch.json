@@ -1,0 +1,20 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Отладка 1Script",
+            "type": "oscript",
+            "request": "launch",
+            "program": "D:/UI/gh/tools_ui_1c_int/src/builder_int/build.os",
+            "args": ["--versionEDT=edt@2021.2.10"],
+            "cwd": "${workspaceRoot}",
+            "env": {},
+            "runtimeExecutable": null,
+            "runtimeArgs": [],
+            "debugPort": 2801
+        }
+    ]
+}
