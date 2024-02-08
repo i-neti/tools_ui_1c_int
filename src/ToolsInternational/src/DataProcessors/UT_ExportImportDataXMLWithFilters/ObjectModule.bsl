@@ -570,7 +570,7 @@ Procedure ExportContent(RecalculateDataToExportByRef = False) Export
 	FullExportContent = New ValueTable;
 	FullExportContent.Columns.Add("MDObject");
 	FullExportContent.Columns.Add("TreeRow");
-	FullExportContent.Indexes.Add("ОбъектМД");
+	FullExportContent.Indexes.Add("MDObject");
 
 	AuxiliaryExportContent = New ValueTable;
 	AuxiliaryExportContent.Columns.Add("MDObject");
