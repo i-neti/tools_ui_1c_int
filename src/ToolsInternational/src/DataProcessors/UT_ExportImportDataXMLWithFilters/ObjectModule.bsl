@@ -395,7 +395,7 @@ Procedure Initializing() Export
 	MetadataTree.Columns.Add("Detail");
 	MetadataTree.Columns.Add("MetadataObjectName");
 	MetadataTree.Columns.Add("MDObject");
-	MetadataTree.Columns.Add("FullMetadataName");
+	MetadataTree.Columns.Add("MetadataFullName");
 	MetadataTree.Columns.Add("BuilderSettings");
 	MetadataTree.Columns.Add("UseFilter");
 	MetadataTree.Columns.Add("PictureIndex");
