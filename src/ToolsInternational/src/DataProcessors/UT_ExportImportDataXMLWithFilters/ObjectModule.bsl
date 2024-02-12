@@ -395,7 +395,7 @@ Procedure Initializing() Export
 	MetadataTree.Columns.Add("Detail");
 	MetadataTree.Columns.Add("MetadataObjectName");
 	MetadataTree.Columns.Add("MDObject");
-	MetadataTree.Columns.Add("FullMetadataName");
+	MetadataTree.Columns.Add("MetadataFullName");
 	MetadataTree.Columns.Add("BuilderSettings");
 	MetadataTree.Columns.Add("UseFilter");
 	MetadataTree.Columns.Add("PictureIndex");
@@ -570,7 +570,7 @@ Procedure ExportContent(RecalculateDataToExportByRef = False) Export
 	FullExportContent = New ValueTable;
 	FullExportContent.Columns.Add("MDObject");
 	FullExportContent.Columns.Add("TreeRow");
-	FullExportContent.Indexes.Add("ОбъектМД");
+	FullExportContent.Indexes.Add("MDObject");
 
 	AuxiliaryExportContent = New ValueTable;
 	AuxiliaryExportContent.Columns.Add("MDObject");
