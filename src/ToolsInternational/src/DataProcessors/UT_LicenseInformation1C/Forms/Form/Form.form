@@ -1227,6 +1227,14 @@
         <items xsi:type="form:FormField">
           <name>LicensesListLastName</name>
           <id>85</id>
+          <title>
+            <key>ru</key>
+            <value>Фамилия</value>
+          </title>
+          <title>
+            <key>en</key>
+            <value>Last name</value>
+          </title>
           <visible>true</visible>
           <enabled>true</enabled>
           <userVisible>
